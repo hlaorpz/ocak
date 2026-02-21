@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
     <title>OCAK — Açık Kapı Buluşması</title>
-    <meta name="description" content="OCAK Açık Kapı online buluşması. Ateşin yanında sana da yer var.">
+    <meta name="description" content="OCAK Açık Kapı online buluşması. Ateşin yanında sana da yer var. Advaita ile tanış, soruların varsa sor.">
     <meta property="og:title" content="OCAK — Açık Kapı Buluşması">
-    <meta property="og:description" content="OCAK Açık Kapı online buluşması. Ateşin yanında sana da yer var.">
+    <meta property="og:description" content="Ateşin yanında sana da yer var. Taahhütsüz, ücretsiz, online.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://ocak.life/acik-kapi">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,12 +42,8 @@
             line-height: 1.7;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* Grain overlay */
         body::after {
             content: '';
             position: fixed;
@@ -59,12 +55,31 @@
             background-repeat: repeat;
         }
 
-        /* Navigation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.15s; }
+        .reveal-delay-2 { transition-delay: 0.3s; }
+        .reveal-delay-3 { transition-delay: 0.45s; }
+
         nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
             padding: 1.5rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(26, 18, 16, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .nav-logo {
@@ -89,37 +104,273 @@
 
         .nav-back:hover { color: var(--cream); }
 
-        /* Main content */
-        .page-content {
-            flex: 1;
+        .hero {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
             position: relative;
+            overflow: hidden;
         }
 
-        /* Ember glow */
-        .page-content::before {
+        .hero::before {
             content: '';
             position: absolute;
-            bottom: -10%;
+            bottom: -20%;
             left: 50%;
             transform: translateX(-50%);
-            width: 600px;
-            height: 600px;
+            width: 800px;
+            height: 800px;
             background: radial-gradient(
                 ellipse at center,
-                rgba(196, 75, 47, 0.08) 0%,
-                rgba(196, 75, 47, 0.03) 30%,
+                rgba(196, 75, 47, 0.1) 0%,
+                rgba(196, 75, 47, 0.04) 30%,
+                rgba(212, 168, 85, 0.02) 50%,
                 transparent 70%
             );
             pointer-events: none;
         }
 
-        /* Event info */
-        .event-label {
+        .hero-eyebrow {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--ember);
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.3s forwards;
+        }
+
+        .hero-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2rem, 5vw, 3.8rem);
+            font-weight: 300;
+            line-height: 1.25;
+            color: var(--cream);
+            max-width: 650px;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.6s forwards;
+        }
+
+        .hero-title em { font-style: italic; color: var(--ember-soft); }
+
+        .hero-subtitle {
+            font-family: var(--font-sans);
+            font-size: 1.05rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            max-width: 440px;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeUp 1s ease 0.9s forwards;
+        }
+
+        .hero-cta {
+            display: inline-block;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--coal);
+            background: var(--ember);
+            text-decoration: none;
+            padding: 1rem 2.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeUp 1s ease 1.2s forwards;
+        }
+
+        .hero-cta:hover {
+            background: var(--ember-soft);
+            box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1.8s forwards;
+        }
+
+        .hero-scroll span {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--smoke);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--smoke), transparent);
+            animation: scrollPulse 2s ease infinite;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .divider-ember {
+            width: 6px;
+            height: 6px;
+            background: var(--ember);
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--ember), 0 0 30px rgba(196, 75, 47, 0.2);
+        }
+
+        .details {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 5rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .details-label {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--ember);
+            margin-bottom: 2.5rem;
+        }
+
+        .details-text {
+            font-family: var(--font-serif);
+            font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+            font-weight: 300;
+            line-height: 1.9;
+            color: var(--cream-soft);
+            margin-bottom: 2rem;
+        }
+
+        .details-text strong { font-weight: 500; color: var(--cream); }
+        .details-text:last-of-type { margin-bottom: 0; }
+
+        .info-section {
+            padding: 0 2rem 6rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .info-card {
+            background: var(--ash);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: background 0.4s ease;
+        }
+
+        .info-card:hover { background: #443C38; }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--ember);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .info-card:hover::before { transform: scaleX(1); }
+
+        .info-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+
+        .info-title {
+            font-family: var(--font-serif);
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            line-height: 1.6;
+        }
+
+        .info-value span { color: var(--gold); }
+
+        .for-whom {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 5rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .for-whom-label {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--ember);
+            margin-bottom: 2.5rem;
+        }
+
+        .for-whom-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 300;
+            font-style: italic;
+            color: var(--cream);
+            margin-bottom: 2rem;
+        }
+
+        .for-whom-list {
+            list-style: none;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .for-whom-item {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: var(--cream-soft);
+            line-height: 1.8;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(61, 53, 50, 0.5);
+        }
+
+        .for-whom-item:last-child { border-bottom: none; }
+        .for-whom-item em { color: var(--ember-soft); font-style: italic; }
+
+        .host {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 5rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .host-label {
             font-family: var(--font-sans);
             font-size: 0.7rem;
             font-weight: 400;
@@ -127,74 +378,95 @@
             text-transform: uppercase;
             color: var(--ember);
             margin-bottom: 2rem;
-            text-align: center;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.2s forwards;
         }
 
-        .event-title {
+        .host-name {
             font-family: var(--font-serif);
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-size: clamp(1.5rem, 3vw, 2rem);
             font-weight: 300;
             color: var(--cream);
-            text-align: center;
-            margin-bottom: 1rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.4s forwards;
+            margin-bottom: 1.5rem;
         }
 
-        .event-title em {
-            font-style: italic;
-            color: var(--ember-soft);
-        }
-
-        .event-details {
-            text-align: center;
-            margin-bottom: 0.5rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.6s forwards;
-        }
-
-        .event-detail {
+        .host-bio {
             font-family: var(--font-sans);
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             font-weight: 300;
             color: var(--warm-gray);
-            margin-bottom: 0.3rem;
+            line-height: 1.85;
+            max-width: 520px;
+            margin: 0 auto;
         }
 
-        .event-date {
-            font-family: var(--font-serif);
-            font-size: 1.1rem;
+        .registration {
+            padding: 6rem 2rem 7rem;
+            text-align: center;
+            background: var(--coal-deep);
+            position: relative;
+        }
+
+        .registration::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ash), transparent);
+        }
+
+        .registration::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 400px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(196, 75, 47, 0.06) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        .reg-label {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
             font-weight: 400;
-            color: var(--gold);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--ember);
+            margin-bottom: 1.5rem;
         }
 
-        .event-desc {
+        .reg-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+            font-weight: 300;
+            font-style: italic;
+            color: var(--cream);
+            margin-bottom: 1rem;
+        }
+
+        .reg-desc {
             font-family: var(--font-sans);
             font-size: 0.92rem;
             font-weight: 300;
             color: var(--warm-gray);
-            max-width: 480px;
-            text-align: center;
-            line-height: 1.8;
-            margin-top: 1.5rem;
-            margin-bottom: 3rem;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.7s forwards;
+            max-width: 400px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
         }
 
-        /* Form */
         .form-container {
             width: 100%;
-            max-width: 440px;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.8s forwards;
+            max-width: 420px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        .form-group {
-            margin-bottom: 1rem;
-        }
+        .form-group { margin-bottom: 0.8rem; }
 
         .form-input {
             width: 100%;
@@ -209,13 +481,8 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-input::placeholder {
-            color: var(--smoke);
-        }
-
-        .form-input:focus {
-            border-color: var(--smoke);
-        }
+        .form-input::placeholder { color: var(--smoke); }
+        .form-input:focus { border-color: var(--smoke); }
 
         .form-button {
             width: 100%;
@@ -230,38 +497,43 @@
             padding: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 0.5rem;
+            margin-top: 0.3rem;
         }
 
         .form-button:hover {
             background: var(--ember-soft);
-            box-shadow: 0 0 20px rgba(196, 75, 47, 0.3);
+            box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
         }
 
-        .form-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .form-button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .form-note {
             font-family: var(--font-sans);
             font-size: 0.72rem;
             color: var(--smoke);
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 1.2rem;
         }
 
-        /* Success state */
+        .form-error {
+            display: none;
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            color: var(--ember);
+            text-align: center;
+            margin-top: 0.8rem;
+        }
+
         .success-container {
             display: none;
             text-align: center;
             max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
-        .success-icon {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-        }
+        .success-icon { font-size: 1.8rem; margin-bottom: 1.5rem; }
 
         .success-title {
             font-family: var(--font-serif);
@@ -291,47 +563,50 @@
             color: var(--coal);
             background: var(--gold);
             text-decoration: none;
-            padding: 0.9rem 2rem;
+            padding: 0.9rem 2.2rem;
             transition: all 0.3s ease;
         }
 
-        .success-zoom-link:hover {
-            box-shadow: 0 0 20px rgba(212, 168, 85, 0.3);
-        }
+        .success-zoom-link:hover { box-shadow: 0 0 20px rgba(212, 168, 85, 0.3); }
 
         .success-note {
             font-family: var(--font-sans);
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 300;
             color: var(--smoke);
             margin-top: 1.5rem;
+            line-height: 1.6;
         }
 
-        /* Error */
-        .form-error {
-            display: none;
-            font-family: var(--font-sans);
-            font-size: 0.82rem;
-            color: var(--ember);
-            text-align: center;
-            margin-top: 0.8rem;
-        }
-
-        /* Footer */
         footer {
-            padding: 2rem 2.5rem;
-            text-align: center;
+            padding: 3rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-top: 1px solid rgba(61, 53, 50, 0.5);
         }
 
-        .footer-text {
+        .footer-left {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            color: var(--smoke);
+        }
+
+        .footer-center {
             font-family: var(--font-sans);
             font-size: 0.75rem;
             font-weight: 300;
             color: var(--smoke);
         }
 
+        .footer-right { display: flex; align-items: center; gap: 1.5rem; }
+
         .footer-link {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 300;
             color: var(--smoke);
             text-decoration: none;
             transition: color 0.3s ease;
@@ -339,18 +614,42 @@
 
         .footer-link:hover { color: var(--cream); }
 
-        /* Animations */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(25px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
         @media (max-width: 768px) {
             nav { padding: 1.2rem 1.5rem; }
-            .page-content { padding: 2rem 1.5rem; }
-            .form-container { max-width: 100%; }
-            footer { padding: 1.5rem; }
+            .hero { padding: 5rem 1.5rem 3rem; }
+            .hero-title { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+            .details { padding: 4rem 1.5rem 5rem; }
+            .for-whom { padding: 4rem 1.5rem 5rem; }
+            .host { padding: 4rem 1.5rem 5rem; }
+            .registration { padding: 4rem 1.5rem 5rem; }
+            .info-section { padding: 0 1.5rem 5rem; }
+            .info-grid { grid-template-columns: 1fr; gap: 1px; }
+            .info-card { padding: 2rem 1.5rem; }
+            footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-scroll { display: none; }
         }
     </style>
 </head>
@@ -361,21 +660,85 @@
         <a href="/" class="nav-back">← Ana Sayfa</a>
     </nav>
 
-    <main class="page-content">
-        <p class="event-label">Açık Kapı Buluşması</p>
-        <h1 class="event-title">Ateşin yanında <em>yer var</em></h1>
-
-        <div class="event-details">
-            <p class="event-date">15 Nisan 2026, Çarşamba</p>
-            <p class="event-detail">Saat 20:00 · Online (Zoom) · 90 dakika</p>
+    <section class="hero">
+        <p class="hero-eyebrow">Açık Kapı Buluşması</p>
+        <h1 class="hero-title">Ateşin yanında <em>sana da yer var</em></h1>
+        <p class="hero-subtitle">OCAK'ı merak ediyorsan, bu buluşma senin için. Taahhütsüz, ücretsiz, online.</p>
+        <a href="#kayit" class="hero-cta">Yerimi Ayırt</a>
+        <div class="hero-scroll">
+            <span>Detaylar</span>
+            <div class="scroll-line"></div>
         </div>
+    </section>
 
-        <p class="event-desc">
-            OCAK'ı merak edenler için açık bir buluşma. Advaita ile tanış, soruların varsa sor, ateşin sıcaklığını hisset. Taahhütsüz, ücretsiz.
+    <div class="divider"><div class="divider-ember"></div></div>
+
+    <section class="details">
+        <p class="details-label reveal">Bu Buluşma Ne?</p>
+        <p class="details-text reveal reveal-delay-1">
+            Açık Kapı, OCAK'ın kapısını aralamak isteyenler için. Advaita ile tanışacaksın.
+            OCAK'ın ne olduğunu, nasıl çalıştığını, kimlere göre olduğunu
+            <strong>doğrudan duyacaksın.</strong>
         </p>
+        <p class="details-text reveal reveal-delay-2">
+            Soruların varsa sorabilir, ateşin sıcaklığını hissedebilirsin.
+            Bağlanmak zorunda değilsin. Sadece <strong>gel, dinle, hisset.</strong>
+        </p>
+    </section>
 
-        <!-- Form -->
-        <div class="form-container" id="form-container">
+    <section class="info-section">
+        <div class="info-grid">
+            <div class="info-card reveal reveal-delay-1">
+                <div class="info-icon">📅</div>
+                <h3 class="info-title">Tarih</h3>
+                <p class="info-value"><span>15 Nisan 2026</span><br>Çarşamba, 20:00</p>
+            </div>
+            <div class="info-card reveal reveal-delay-2">
+                <div class="info-icon">💻</div>
+                <h3 class="info-title">Nerede</h3>
+                <p class="info-value"><span>Online — Zoom</span><br>Kayıt olunca link gelecek</p>
+            </div>
+            <div class="info-card reveal reveal-delay-3">
+                <div class="info-icon">⏱</div>
+                <h3 class="info-title">Süre</h3>
+                <p class="info-value"><span>90 dakika</span><br>Ücretsiz, taahhütsüz</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"><div class="divider-ember"></div></div>
+
+    <section class="for-whom">
+        <p class="for-whom-label reveal">Kimin İçin</p>
+        <h2 class="for-whom-title reveal reveal-delay-1">Eğer içinde şunlardan biri varsa…</h2>
+        <ul class="for-whom-list">
+            <li class="for-whom-item reveal reveal-delay-1">"Bir şeyi <em>unuttuğumu</em> biliyorum ama ne olduğunu hatırlayamıyorum."</li>
+            <li class="for-whom-item reveal reveal-delay-2">"Dışarıdan her şey yolunda ama içimde bir <em>sıkışma</em> var."</li>
+            <li class="for-whom-item reveal reveal-delay-2">"Kadın çemberi merak ediyorum ama <em>ilk adımı</em> atamıyorum."</li>
+            <li class="for-whom-item reveal reveal-delay-3">"Spiritüel pratiğim var ama bir <em>çerçeve</em> arıyorum."</li>
+        </ul>
+    </section>
+
+    <div class="divider"><div class="divider-ember"></div></div>
+
+    <section class="host">
+        <p class="host-label reveal">Ateşi Taşıyan</p>
+        <h2 class="host-name reveal reveal-delay-1">Advaita Sonat</h2>
+        <p class="host-bio reveal reveal-delay-2">
+            Kakao seremonisti, nefes ve beden çalışması fasilitatörü, kadın çemberi rehberi.
+            Güney Amerika'dan Hindistan'a, İzlanda'dan Anadolu'ya beş kültürün bilgeliğini
+            taşıyor. Seni bize bağımlı yapmak için değil — seni sana geri vermek için burada.
+        </p>
+    </section>
+
+    <div class="divider"><div class="divider-ember"></div></div>
+
+    <section class="registration" id="kayit">
+        <p class="reg-label reveal">Kayıt</p>
+        <h2 class="reg-title reveal reveal-delay-1">Ateşin yanına gel</h2>
+        <p class="reg-desc reveal reveal-delay-1">İsim ve email yeterli. Zoom linkin hemen ekranda görünecek, ayrıca email olarak da ulaşacak.</p>
+
+        <div class="form-container reveal reveal-delay-2" id="form-container">
             <form id="acik-kapi-form">
                 <div class="form-group">
                     <input type="text" class="form-input" name="name" placeholder="İsmin" required>
@@ -385,11 +748,10 @@
                 </div>
                 <button type="submit" class="form-button" id="submit-btn">Kayıt Ol</button>
             </form>
-            <p class="form-note">Zoom linkin sana hemen email olarak da ulaşacak.</p>
+            <p class="form-note">Verilerin sadece sana ait. İstediğin zaman ayrılabilirsin.</p>
             <p class="form-error" id="form-error"></p>
         </div>
 
-        <!-- Success -->
         <div class="success-container" id="success-container">
             <div class="success-icon">🔥</div>
             <h2 class="success-title">Hoş geldin, ateşin yanına.</h2>
@@ -398,20 +760,42 @@
                 Ayrıca email adresine de gönderdik.
             </p>
             <a href="#" class="success-zoom-link" id="zoom-link" target="_blank">Zoom'a Katıl</a>
-            <p class="success-note">15 Nisan 2026 · 20:00 · Linki kaydetmeyi unutma.</p>
+            <p class="success-note">15 Nisan 2026, Çarşamba · Saat 20:00<br>Linki kaydetmeyi unutma.</p>
         </div>
-    </main>
+    </section>
 
     <footer>
-        <p class="footer-text">
-            <a href="/" class="footer-link">OCAK</a> · İzmir, Türkiye ·
+        <span class="footer-left">OCAK</span>
+        <span class="footer-center">İzmir, Türkiye</span>
+        <div class="footer-right">
             <a href="https://instagram.com/ocak.life" target="_blank" rel="noopener" class="footer-link">Instagram</a>
-        </p>
+            <a href="mailto:merhaba@ocak.life" class="footer-link">İletişim</a>
+        </div>
     </footer>
 
     <script>
-        // ---- AYAR ----
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0zKMg14Bwdc-0tHmgq6UGoY0Iczrep-WWxOj9HxobS2MNtk-aI920sXCWhsnW6-KKiw/exec';
+
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+        reveals.forEach(el => observer.observe(el));
+
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 60);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
 
         const form = document.getElementById('acik-kapi-form');
         const submitBtn = document.getElementById('submit-btn');
