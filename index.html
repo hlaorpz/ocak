@@ -647,6 +647,105 @@
         }
 
         /* ============================================
+           Açık Kapı Banner
+           ============================================ */
+
+        .acik-kapi-banner {
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .acik-kapi-banner::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 300px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(212, 168, 85, 0.04) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        .acik-kapi-card {
+            max-width: 560px;
+            margin: 0 auto;
+            border: 1px solid var(--ash);
+            padding: 2.5rem 3rem;
+            position: relative;
+            transition: border-color 0.4s ease;
+        }
+
+        .acik-kapi-card:hover {
+            border-color: var(--smoke);
+        }
+
+        .acik-kapi-eyebrow {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .acik-kapi-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+            font-weight: 300;
+            font-style: italic;
+            color: var(--cream);
+            margin-bottom: 0.8rem;
+        }
+
+        .acik-kapi-detail {
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            margin-bottom: 0.3rem;
+        }
+
+        .acik-kapi-desc {
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: var(--smoke);
+            margin-top: 1rem;
+            line-height: 1.7;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .acik-kapi-cta {
+            display: inline-block;
+            margin-top: 2rem;
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--cream);
+            background: transparent;
+            border: 1px solid var(--smoke);
+            text-decoration: none;
+            padding: 0.9rem 2.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .acik-kapi-cta:hover {
+            border-color: var(--gold);
+            background: rgba(212, 168, 85, 0.08);
+        }
+
+        /* ============================================
            Email Signup — Ateş Mektupları
            ============================================ */
 
@@ -877,6 +976,14 @@
                 padding: 2.2rem 1.5rem;
             }
 
+            .acik-kapi-banner {
+                padding: 4rem 1.5rem;
+            }
+
+            .acik-kapi-card {
+                padding: 2.2rem 1.5rem;
+            }
+
             .signup {
                 padding: 5rem 1.5rem;
             }
@@ -935,6 +1042,7 @@
         <div class="nav-right">
             <a href="#manifesto" class="nav-link">Hikâye</a>
             <a href="#gathering" class="nav-link">Çember</a>
+            <a href="/acik-kapi.html" class="nav-link">Açık Kapı</a>
             <a href="#signup" class="nav-link">Mektuplar</a>
             <a href="https://instagram.com/ocak.life" target="_blank" rel="noopener" aria-label="Instagram">
                 <svg class="nav-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" color="#F2EAE2">
@@ -1032,6 +1140,22 @@
             <p class="gathering-detail">İzmir · Davetiye ile · 8–12 kadın</p>
             <p class="gathering-detail" style="color: var(--smoke); margin-top: 0.8rem; font-size: 0.82rem;">Tarih ve detaylar yakında açıklanacak.</p>
             <a href="/basvuru.html" class="gathering-cta">Başvur</a>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="divider">
+        <div class="divider-ember"></div>
+    </div>
+
+    <!-- Açık Kapı Banner -->
+    <section class="acik-kapi-banner" id="acik-kapi">
+        <div class="acik-kapi-card reveal">
+            <p class="acik-kapi-eyebrow">Açık Kapı Buluşması</p>
+            <h3 class="acik-kapi-title">OCAK'ı merak mı ediyorsun?</h3>
+            <p class="acik-kapi-detail">15 Nisan 2026, Çarşamba · 20:00 · Online (Zoom)</p>
+            <p class="acik-kapi-desc">Advaita ile tanış, soruların varsa sor, ateşin sıcaklığını hisset. Taahhütsüz, ücretsiz.</p>
+            <a href="/acik-kapi.html" class="acik-kapi-cta">Detaylar ve Kayıt</a>
         </div>
     </section>
 
