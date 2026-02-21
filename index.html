@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>OCAK — Ateşin Yanında Yer Var</title>
     <meta name="description" content="Kadim bilgeliği modern yaşamla buluşturan kadın çemberi. Seni sana geri vermek için buradayız.">
     <meta property="og:title" content="OCAK — Ateşin Yanında Yer Var">
@@ -649,6 +650,19 @@
             margin-top: 1rem;
         }
 
+        .signup-error {
+            display: none;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            color: var(--ember-soft);
+            margin-top: 1rem;
+        }
+
+        .signup-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* ============================================
            Footer
            ============================================ */
@@ -917,6 +931,7 @@
         </form>
         <p class="signup-note reveal reveal-delay-2">İstediğin zaman ayrılabilirsin. Verilerin sadece sana ait.</p>
         <p class="signup-success" id="signup-success">Hoş geldin. İlk mektubun yolda. 🔥</p>
+        <p class="signup-error" id="signup-error">Bir şeyler ters gitti. Lütfen tekrar dene.</p>
     </section>
 
     <!-- Footer -->
@@ -951,18 +966,56 @@
             nav.classList.toggle('scrolled', window.scrollY > 60);
         });
 
-        // Email form (placeholder — will connect to MailerLite)
-        document.getElementById('email-form').addEventListener('submit', function(e) {
+        // Email form — MailerLite integration
+        document.getElementById('email-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const email = this.querySelector('input').value;
+            const input = this.querySelector('input');
+            const button = this.querySelector('button');
+            const email = input.value.trim();
+            const errorEl = document.getElementById('signup-error');
+            const successEl = document.getElementById('signup-success');
+            
+            // Reset error state
+            errorEl.style.display = 'none';
+            
+            // Loading state
+            button.disabled = true;
+            button.textContent = 'Gönderiliyor…';
 
-            // TODO: Connect to MailerLite API
-            // For now, show success message
-            console.log('Email signup:', email);
+            try {
+                const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiMjAzN2ZlOTc3NjY2OGY3MzBhYmM3ZTIyOWNiMjM0NzU4ZmE5Y2M0YjU5ZTNjNTE1NzU4ODEyYTZhYjg5NDJjMTlhOGM0NjE4Mjc3MjU4MmMiLCJpYXQiOjE3NzE2MzM3MzEuMDAwNzEsIm5iZiI6MTc3MTYzMzczMS4wMDA3MTIsImV4cCI6NDkyNzMwNzMzMC45OTM0NDEsInN1YiI6IjIxNDk1MTQiLCJzY29wZXMiOltdfQ.CNKxZ7mgrBj3bmEKGROSk8TmQNfmaDytHXVAGZD4mMfUM7g5hnuOyYjknTcV5DyR_4akIyTYiD8eSc-WSh66Y-BgfkQzsuGxR7KGm_4o0TasxGj3FZUPIbGmdycwUrqc9MpRG0eo1KQqKADjY6rQntkNDAMamv35bo1lBd6jpXHiwOJPpjoD1zT-Nx7akd4PnGrMkTbFN7yTtAZw3xWIo27Lkd-UO87ujg4jM6aDmriEZMqvJ9YbZ0LrrGM--Yq4_KqK_elMQ1ZlnRcY08LhbvTOFNWqFM47u2BI0qWWGMR9A42-LwmdFo_wQacNyXpAgBCjDezPqgowxg4kdFsmZA8yZnbKk810ZOMpEfoIrMn5jwQDn611dgvpDKOB_z56Oh5hBIQCeL4AaptdUJZDpCl6-SSwQR4pEzqUdyTOrz3V4Vc8dMHAChJHCGRBzPet0CzjnMlzrCUTuMjBzDDu47DUg5hLXlgWsWqw8ymgrOpnyMR0EShebHHwRM2Pg82JkHScmxsA4VZXf3UOOfuuj0MiFJspHvBq1gz847066Dath55qbz7wdXXjw6qKo-JgrR3IVEFvuyE_ZHaOrOVI7Al4wxKIm7TtDn2LaWYwRi6TIsfR-YSZN_bGPuE0s3aU-Q80MGovMUGtqOwt95BFd9bE-Wnn8PaIphP-PoukHbg',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        groups: ['179971109280548440']
+                    })
+                });
 
-            this.style.display = 'none';
-            document.getElementById('signup-success').style.display = 'block';
-            document.querySelector('.signup-note').style.display = 'none';
+                const data = await res.json();
+
+                if (res.ok || res.status === 200 || res.status === 201) {
+                    this.style.display = 'none';
+                    successEl.style.display = 'block';
+                    document.querySelector('.signup-note').style.display = 'none';
+                } else if (data.message && data.message.includes('already')) {
+                    this.style.display = 'none';
+                    successEl.textContent = 'Zaten aramızdasın. Ateş yanıyor. 🔥';
+                    successEl.style.display = 'block';
+                    document.querySelector('.signup-note').style.display = 'none';
+                } else {
+                    throw new Error(data.message || 'API error');
+                }
+            } catch (err) {
+                console.error('MailerLite error:', err);
+                errorEl.style.display = 'block';
+                button.disabled = false;
+                button.textContent = 'Katıl';
+            }
         });
 
         // Smooth scroll for anchor links
