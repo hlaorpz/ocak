@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="tr" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>OCAK — Açık Kapı Buluşması</title>
+    <meta name="description" content="OCAK Açık Kapı online buluşması. Ateşin yanında sana da yer var.">
+    <meta property="og:title" content="OCAK — Açık Kapı Buluşması">
+    <meta property="og:description" content="OCAK Açık Kapı online buluşması. Ateşin yanında sana da yer var.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ocak.life/acik-kapi">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --coal: #1A1210;
+            --coal-deep: #110C0A;
+            --ember: #C44B2F;
+            --ember-soft: #D4603F;
+            --ember-glow: rgba(196, 75, 47, 0.15);
+            --cream: #F2EAE2;
+            --cream-soft: rgba(242, 234, 226, 0.85);
+            --gold: #D4A855;
+            --gold-soft: rgba(212, 168, 85, 0.6);
+            --ash: #3D3532;
+            --smoke: #5C5350;
+            --warm-gray: #8A7E78;
+            --font-serif: 'Cormorant Garamond', Georgia, serif;
+            --font-sans: 'Jost', sans-serif;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            background-color: var(--coal);
+            color: var(--cream);
+            font-family: var(--font-sans);
+            font-weight: 300;
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+        }
+
+        /* Navigation */
+        nav {
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            color: var(--cream);
+            text-decoration: none;
+        }
+
+        .nav-back {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-back:hover { color: var(--cream); }
+
+        /* Main content */
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Ember glow */
+        .page-content::before {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(196, 75, 47, 0.08) 0%,
+                rgba(196, 75, 47, 0.03) 30%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        /* Event info */
+        .event-label {
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--ember);
+            margin-bottom: 2rem;
+            text-align: center;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.2s forwards;
+        }
+
+        .event-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 300;
+            color: var(--cream);
+            text-align: center;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.4s forwards;
+        }
+
+        .event-title em {
+            font-style: italic;
+            color: var(--ember-soft);
+        }
+
+        .event-details {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.6s forwards;
+        }
+
+        .event-detail {
+            font-family: var(--font-sans);
+            font-size: 0.92rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            margin-bottom: 0.3rem;
+        }
+
+        .event-date {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--gold);
+        }
+
+        .event-desc {
+            font-family: var(--font-sans);
+            font-size: 0.92rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            max-width: 480px;
+            text-align: center;
+            line-height: 1.8;
+            margin-top: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.7s forwards;
+        }
+
+        /* Form */
+        .form-container {
+            width: 100%;
+            max-width: 440px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.8s forwards;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: var(--cream);
+            background: var(--ash);
+            border: 1px solid var(--ash);
+            padding: 0.95rem 1.2rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input::placeholder {
+            color: var(--smoke);
+        }
+
+        .form-input:focus {
+            border-color: var(--smoke);
+        }
+
+        .form-button {
+            width: 100%;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--coal);
+            background: var(--ember);
+            border: 1px solid var(--ember);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .form-button:hover {
+            background: var(--ember-soft);
+            box-shadow: 0 0 20px rgba(196, 75, 47, 0.3);
+        }
+
+        .form-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .form-note {
+            font-family: var(--font-sans);
+            font-size: 0.72rem;
+            color: var(--smoke);
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        /* Success state */
+        .success-container {
+            display: none;
+            text-align: center;
+            max-width: 480px;
+        }
+
+        .success-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .success-title {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--cream);
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            font-family: var(--font-sans);
+            font-size: 0.92rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .success-zoom-link {
+            display: inline-block;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--coal);
+            background: var(--gold);
+            text-decoration: none;
+            padding: 0.9rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .success-zoom-link:hover {
+            box-shadow: 0 0 20px rgba(212, 168, 85, 0.3);
+        }
+
+        .success-note {
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            font-weight: 300;
+            color: var(--smoke);
+            margin-top: 1.5rem;
+        }
+
+        /* Error */
+        .form-error {
+            display: none;
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            color: var(--ember);
+            text-align: center;
+            margin-top: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem 2.5rem;
+            text-align: center;
+            border-top: 1px solid rgba(61, 53, 50, 0.5);
+        }
+
+        .footer-text {
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: var(--smoke);
+        }
+
+        .footer-link {
+            color: var(--smoke);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover { color: var(--cream); }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav { padding: 1.2rem 1.5rem; }
+            .page-content { padding: 2rem 1.5rem; }
+            .form-container { max-width: 100%; }
+            footer { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">OCAK</a>
+        <a href="/" class="nav-back">← Ana Sayfa</a>
+    </nav>
+
+    <main class="page-content">
+        <p class="event-label">Açık Kapı Buluşması</p>
+        <h1 class="event-title">Ateşin yanında <em>yer var</em></h1>
+
+        <div class="event-details">
+            <p class="event-date">15 Nisan 2026, Çarşamba</p>
+            <p class="event-detail">Saat 20:00 · Online (Zoom) · 90 dakika</p>
+        </div>
+
+        <p class="event-desc">
+            OCAK'ı merak edenler için açık bir buluşma. Advaita ile tanış, soruların varsa sor, ateşin sıcaklığını hisset. Taahhütsüz, ücretsiz.
+        </p>
+
+        <!-- Form -->
+        <div class="form-container" id="form-container">
+            <form id="acik-kapi-form">
+                <div class="form-group">
+                    <input type="text" class="form-input" name="name" placeholder="İsmin" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" name="email" placeholder="Email adresin" required>
+                </div>
+                <button type="submit" class="form-button" id="submit-btn">Kayıt Ol</button>
+            </form>
+            <p class="form-note">Zoom linkin sana hemen email olarak da ulaşacak.</p>
+            <p class="form-error" id="form-error"></p>
+        </div>
+
+        <!-- Success -->
+        <div class="success-container" id="success-container">
+            <div class="success-icon">🔥</div>
+            <h2 class="success-title">Hoş geldin, ateşin yanına.</h2>
+            <p class="success-text">
+                Kaydın tamamlandı. Zoom linkini aşağıda bulabilirsin.<br>
+                Ayrıca email adresine de gönderdik.
+            </p>
+            <a href="#" class="success-zoom-link" id="zoom-link" target="_blank">Zoom'a Katıl</a>
+            <p class="success-note">15 Nisan 2026 · 20:00 · Linki kaydetmeyi unutma.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p class="footer-text">
+            <a href="/" class="footer-link">OCAK</a> · İzmir, Türkiye ·
+            <a href="https://instagram.com/ocak.life" target="_blank" rel="noopener" class="footer-link">Instagram</a>
+        </p>
+    </footer>
+
+    <script>
+        // ---- AYAR ----
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0zKMg14Bwdc-0tHmgq6UGoY0Iczrep-WWxOj9HxobS2MNtk-aI920sXCWhsnW6-KKiw/exec';
+
+        const form = document.getElementById('acik-kapi-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formContainer = document.getElementById('form-container');
+        const successContainer = document.getElementById('success-container');
+        const formError = document.getElementById('form-error');
+        const zoomLink = document.getElementById('zoom-link');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            formError.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Kaydediliyor...';
+
+            const formData = new FormData(form);
+            const data = {
+                formType: 'acik-kapi',
+                name: formData.get('name').trim(),
+                email: formData.get('email').trim()
+            };
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    formContainer.style.display = 'none';
+                    successContainer.style.display = 'block';
+                    if (result.zoomLink) {
+                        zoomLink.href = result.zoomLink;
+                    }
+                } else {
+                    throw new Error(result.message || 'Bir hata oluştu');
+                }
+            } catch (error) {
+                formError.textContent = 'Bir hata oluştu. Lütfen tekrar dene.';
+                formError.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Kayıt Ol';
+            }
+        });
+    </script>
+
+</body>
+</html>
