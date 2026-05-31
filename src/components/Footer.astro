@@ -39,6 +39,10 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
+    <p class="footer__manifesto">
+      Seni bize bağımlı yapmak için değil, seni sana geri vermek için buradayız.
+    </p>
+
     <div class="footer__bottom">
       <span class="footer__brand">OCAK</span>
       <span class="footer__year">© {year}</span>
@@ -97,6 +101,24 @@ const year = new Date().getFullYear();
 
   .footer__col a:hover {
     color: var(--ember);
+  }
+
+  /* Sabit manifesto imzası — her sayfa, sessiz alt-zemin (KARAR 162 footer
+   * göçü tersi DEĞİL: manifesto-vurgu sayfa-içi içerik katmanı olarak
+   * kalıyor, bu footer cümlesi ayrı bir vaat imzası katmanıdır). Stil
+   * disiplini: cream-soft (cream parlak değil), Cormorant italik, küçük
+   * punto (manifesto-vurgu 1.35-1.6rem / ic-ses 1.25-1.5rem altı), glyph
+   * YOK, glow YOK — sayfa-içi vurgu paletinden ayrı tutulur. */
+  .footer__manifesto {
+    margin: 0 auto;
+    max-width: 32rem;
+    text-align: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--cream-soft);
   }
 
   .footer__bottom {
