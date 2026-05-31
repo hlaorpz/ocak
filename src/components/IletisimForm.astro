@@ -1,0 +1,487 @@
+---
+// IletisimForm — /iletisim sayfa-içi mesaj formu (#29 Brief F.5, KARAR 125+126).
+// Notion `## section: form-anchor` sıra 2 konumunda IletisimForm component'i basılır
+// (registry'den). Field'lar: isim + email + mesaj + KVKK onayı. Submit Apps Script
+// doPost unified router → handleIletisim → Notion Başvurular DB (Tip: İletişim).
+// MailerLite YOK (KARAR 126 — lansman sonrası transactional).
+//
+// Pattern miras: AtesMektuplari (coal-deep arka + ember focus + üst ambient çizgi),
+// AnadoluBasvuru (KVKK details/summary + em-dash imza success state, KARAR 115 ton).
+//
+// introHtml (KARAR 151): loader form-anchor look-backward `bize-yaz` section'ını
+// consume edip render edilmiş HTML olarak buraya geçer. Form ile aynı scope'ta
+// basılır, success state'te form ile birlikte gizlenir.
+import { APPS_SCRIPT_URL } from '../lib/api';
+
+interface Props {
+  introHtml?: string;
+}
+
+const { introHtml } = Astro.props;
+---
+<section data-section="iletisim-form" class="ocak-iletisim-form">
+  <div class="ocak-iletisim-form__container">
+    {introHtml && <div class="ocak-iletisim-form__intro" set:html={introHtml} />}
+    <form class="ocak-iletisim-form__form" data-endpoint={APPS_SCRIPT_URL}>
+      {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return. */}
+      <div class="hp-field" aria-hidden="true">
+        <label for="if-website">Website</label>
+        <input type="text" name="website" id="if-website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="ocak-iletisim-form__group">
+        <label for="if-isim">İsim <span class="ocak-iletisim-form__required">*</span></label>
+        <input
+          id="if-isim"
+          type="text"
+          name="isim"
+          class="ocak-iletisim-form__input"
+          placeholder="Adın"
+          required
+          oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+          oninput="this.setCustomValidity('')"
+        />
+      </div>
+
+      <div class="ocak-iletisim-form__group">
+        <label for="if-email">Email <span class="ocak-iletisim-form__required">*</span></label>
+        <input
+          id="if-email"
+          type="email"
+          name="email"
+          class="ocak-iletisim-form__input"
+          placeholder="email@adresin.com"
+          required
+          pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+          oninvalid="this.setCustomValidity('Geçerli bir email gir')"
+          oninput="this.setCustomValidity('')"
+        />
+      </div>
+
+      <div class="ocak-iletisim-form__group">
+        <label for="if-mesaj">Mesajın <span class="ocak-iletisim-form__required">*</span></label>
+        <textarea
+          id="if-mesaj"
+          name="mesaj"
+          class="ocak-iletisim-form__textarea"
+          rows="6"
+          placeholder="Aklındakini paylaş. Yedi gün içinde döneriz."
+          required
+          oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+          oninput="this.setCustomValidity('')"
+        ></textarea>
+      </div>
+
+      <div class="ocak-iletisim-form__group ocak-iletisim-form__kvkk">
+        <label class="ocak-iletisim-form__kvkk-onay">
+          <input type="checkbox" name="kvkk" required
+            oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
+            onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+          <span class="ocak-iletisim-form__kvkk-text">
+            Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
+            <span class="ocak-iletisim-form__required">*</span>
+          </span>
+        </label>
+        <details class="ocak-iletisim-form__kvkk-detay">
+          <summary>KVKK aydınlatma metnini oku</summary>
+          <div class="ocak-iletisim-form__kvkk-icerik">
+            <p>
+              OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
+              yalnızca aşağıdaki amaçlarla kullanırız:
+            </p>
+            <ul>
+              <li>Mesajına 48 saat içinde dönmek</li>
+              <li>İstersen lansman sonrası program iletişimi (bülten + duyurular)</li>
+            </ul>
+            <p>
+              Verilerini üçüncü taraflara satmayız, paylaşmayız. Talebin üzerine
+              silinir (selam@ocak.biz).
+            </p>
+          </div>
+        </details>
+      </div>
+
+      <button type="submit" class="ocak-iletisim-form__submit">GÖNDER</button>
+
+      <p class="ocak-iletisim-form__error" role="alert" hidden></p>
+    </form>
+
+    <div class="ocak-iletisim-form__success" hidden>
+      <div class="ocak-iletisim-form__success-ember" aria-hidden="true"></div>
+      <h3 class="ocak-iletisim-form__success-title">Mesajın bize ulaştı.</h3>
+      <p class="ocak-iletisim-form__success-text">Yakında kız kardeş gibi cevaplayacağız.</p>
+      <p class="ocak-iletisim-form__success-imza">— OCAK</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Section — coal-deep + üst ambient çizgi (AtesMektuplari kardeşi).
+   * #31 Brief G.3 P3: dikey padding daraltma (space-9 6rem → space-7 3rem). */
+  .ocak-iletisim-form {
+    padding: var(--space-7) var(--space-6);
+    background: var(--coal-deep);
+    position: relative;
+  }
+
+  .ocak-iletisim-form::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ash), transparent);
+  }
+
+  .ocak-iletisim-form__container {
+    max-width: 560px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* KARAR 151 A.2 — __intro scope atmosfer.css'e taşındı (Astro scoped CSS +
+   * set:html DOM uyumsuzluğu). Bkz. atmosfer.css "Form-içi __intro" bölümü. */
+
+  /* === Form group === */
+  .ocak-iletisim-form__group {
+    margin-bottom: var(--space-5);
+  }
+
+  .ocak-iletisim-form__group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .ocak-iletisim-form__group > label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--cream-soft);
+    margin-bottom: 0.55rem;
+  }
+
+  .ocak-iletisim-form__required {
+    color: var(--ember);
+    margin-left: 0.15rem;
+  }
+
+  /* === Input + textarea — ash bg, ember focus === */
+  .ocak-iletisim-form__input,
+  .ocak-iletisim-form__textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--cream);
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    padding: 0.9rem 1.2rem;
+    outline: none;
+    transition: border-color var(--duration-base) var(--ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .ocak-iletisim-form__input::placeholder,
+  .ocak-iletisim-form__textarea::placeholder {
+    color: var(--smoke);
+  }
+
+  .ocak-iletisim-form__input:focus,
+  .ocak-iletisim-form__textarea:focus {
+    border-color: var(--ember);
+  }
+
+  .ocak-iletisim-form__textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+
+  /* === KVKK === */
+  .ocak-iletisim-form__kvkk {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ash);
+  }
+
+  .ocak-iletisim-form__kvkk-onay {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    cursor: pointer;
+    margin-bottom: var(--space-3);
+  }
+
+  .ocak-iletisim-form__kvkk-onay input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--ember);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .ocak-iletisim-form__kvkk-text {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--cream-soft);
+    line-height: 1.6;
+  }
+
+  .ocak-iletisim-form__kvkk-detay summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    padding: 0.4rem 0;
+    transition: color var(--duration-base) var(--ease-out);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .ocak-iletisim-form__kvkk-detay summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ocak-iletisim-form__kvkk-detay summary:hover,
+  .ocak-iletisim-form__kvkk-detay summary:focus-visible {
+    color: var(--ember);
+    outline: none;
+  }
+
+  .ocak-iletisim-form__kvkk-detay summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .ocak-iletisim-form__kvkk-detay[open] summary::after {
+    transform: rotate(-135deg);
+  }
+
+  .ocak-iletisim-form__kvkk-icerik {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--cream-soft);
+    line-height: 1.7;
+    padding: var(--space-2) 0;
+  }
+
+  /* #31 Brief G.4 P2 — baseline section[data-section][class^="ocak-"] p
+   * (text-base 1rem) panel içindeki p/ul/li'yi override ediyordu (kvkk-icerik
+   * font-size container'a 0.75rem inherit etmiyordu). !important + maximum
+   * specificity ile pekiştir. */
+  .ocak-iletisim-form__kvkk-icerik p,
+  .ocak-iletisim-form__kvkk-icerik ul,
+  .ocak-iletisim-form__kvkk-icerik li {
+    font-size: 0.75rem !important;
+    line-height: 1.7;
+  }
+
+  .ocak-iletisim-form__kvkk-icerik p {
+    margin: 0 0 var(--space-2);
+  }
+
+  .ocak-iletisim-form__kvkk-icerik ul {
+    margin: 0 0 var(--space-2);
+    padding-left: 1.2rem;
+  }
+
+  /* === Submit (AtesMektuplari KATIL paterni — uppercase letter-spacing) === */
+  .ocak-iletisim-form__submit {
+    width: 100%;
+    padding: 1.1rem 2rem;
+    margin-top: var(--space-6);
+    background: var(--ember);
+    border: 1px solid var(--ember);
+    color: var(--coal);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--duration-base) var(--ease-out),
+                opacity var(--duration-base) var(--ease-out),
+                box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .ocak-iletisim-form__submit:hover:not(:disabled) {
+    background: var(--ember-soft);
+    box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+  }
+
+  .ocak-iletisim-form__submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .ocak-iletisim-form__error {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    text-align: center;
+    margin: var(--space-3) 0 0;
+  }
+
+  .ocak-iletisim-form__form[hidden] { display: none; }
+  .ocak-iletisim-form__success[hidden] { display: none; }
+
+  /* === Success — em-dash imza (AnadoluBasvuru pattern, KARAR 115 ton).
+   * #31 Brief G.3 P3: success padding daralt (space-7 → space-5). */
+  .ocak-iletisim-form__success {
+    scroll-margin-top: var(--nav-height);
+    text-align: center;
+    padding: var(--space-5) 0;
+    animation: ocak-iletisim-fade 0.8s var(--ease-out) forwards;
+  }
+
+  .ocak-iletisim-form__success-ember {
+    width: 10px;
+    height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--ember), 0 0 40px rgba(196, 75, 47, 0.3);
+    margin: 0 auto var(--space-6);
+  }
+
+  .ocak-iletisim-form__success-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    color: var(--gold);
+    font-weight: 400;
+    margin: 0 0 var(--space-4);
+  }
+
+  /* #31 Brief G.4 P3 — success-text margin baseline section[data-section]
+   * [class^="ocak-"] p (0,2,2) component (0,1,0)'i yutuyordu → p block kutusu
+   * sola yaslı kalıyordu (text-align center sadece içerideki text'i ortalıyor
+   * ama 42ch kutu kendisi sol). !important + margin auto ile pekiştir. */
+  .ocak-iletisim-form__success-text {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0 auto var(--space-5) !important;
+    max-width: 42ch;
+    text-align: center !important;
+  }
+
+  .ocak-iletisim-form__success-imza {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--cream-soft);
+    margin: 0 auto !important;             /* #31 Brief G.4 P3 — kutu ortalı */
+    text-align: center !important;
+  }
+
+  @keyframes ocak-iletisim-fade {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === Mobil === */
+  @media (max-width: 480px) {
+    .ocak-iletisim-form {
+      padding: var(--space-7) var(--space-5);
+    }
+    .ocak-iletisim-form__group {
+      margin-bottom: var(--space-4);
+    }
+  }
+
+  /* === A11y === */
+  @media (prefers-reduced-motion: reduce) {
+    .ocak-iletisim-form__input,
+    .ocak-iletisim-form__textarea,
+    .ocak-iletisim-form__submit,
+    .ocak-iletisim-form__kvkk-detay summary::after,
+    .ocak-iletisim-form__success {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { scrollToSuccess } from '../lib/scroll-to-success';
+
+  // Submit pattern AtesMektuplari/AnadoluBasvuru verbatim — text/plain POST,
+  // result.status === 'success' → success state; aksi → error, form aktif kalır.
+  // KARAR 116 status disiplini.
+  const form = document.querySelector<HTMLFormElement>('.ocak-iletisim-form__form');
+  if (form) {
+    const section = form.closest('.ocak-iletisim-form') as HTMLElement;
+    const submit = form.querySelector<HTMLButtonElement>('.ocak-iletisim-form__submit')!;
+    const errorEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__error')!;
+    const successEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__success')!;
+    const introEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__intro');
+    const endpoint = form.dataset.endpoint!;
+    const oldText = submit.textContent ?? 'GÖNDER';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      submit.disabled = true;
+      submit.textContent = 'Gönderiliyor…';
+
+      const data = new FormData(form);
+      const payload = {
+        formType: 'iletisim',
+        isim: (data.get('isim') ?? '').toString().trim(),
+        email: (data.get('email') ?? '').toString().trim(),
+        mesaj: (data.get('mesaj') ?? '').toString().trim(),
+        // KARAR 152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
+        website: (data.get('website') ?? '').toString(),
+      };
+
+      if (!payload.isim || !payload.email || !payload.mesaj) {
+        errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+        return;
+      }
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          form.hidden = true;
+          // KARAR 151 — Notion intro form ile birlikte gizlenir.
+          if (introEl) introEl.hidden = true;
+          successEl.hidden = false;
+          scrollToSuccess(successEl);
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({
+              event: 'form_submit',
+              form_type: 'iletisim',
+            });
+          }
+        } else {
+          throw new Error(result.message || 'API error');
+        }
+      } catch (err) {
+        console.error('İletişim form error:', err);
+        errorEl.textContent =
+          'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+      }
+    });
+  }
+</script>

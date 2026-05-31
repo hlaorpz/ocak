@@ -1,0 +1,138 @@
+---
+// AlOlVer — 3 sütun pillar grid (Çekirdek manifesto kondense)
+// İçerik sabit: AL/OL/VER üç hareket — Notion'da al-ol-ver section'ı OMIT'te
+// (defansif), bu component sayfa içinde explicit basılır.
+// Legacy referans: .pillars-grid + .pillar-card (ash bg, ember top-border hover).
+
+const pillars = [
+  {
+    name: 'AL',
+    label: 'Araçlar',
+    desc: 'Nefes, hareket, ritüel. Bilgi değil — bedenle öğrenilen, eve götürülen araçlar.',
+  },
+  {
+    name: 'OL',
+    label: 'Kapasiteler',
+    desc: 'Bedenini dinleyen, sezgiye güvenen, sınır koyabilen, sessizlikle kalabilen kadın.',
+  },
+  {
+    name: 'VER',
+    label: 'Aktarım',
+    desc: 'Çemberini açan, yanındaki kadına alan tutan, kızına taşıyan kadın. OCAK çoğalır.',
+  },
+];
+---
+<section class="al-ol-ver" data-section="al-ol-ver-component" aria-labelledby="al-ol-ver-baslik">
+  <div class="al-ol-ver__inner">
+    <p class="ocak-overline">OCAK'TA</p>
+    <h2 id="al-ol-ver-baslik" class="al-ol-ver__baslik">Üç hareket. Bir kadın.</h2>
+
+    <div class="al-ol-ver__grid">
+      {pillars.map((pillar) => (
+        <article class="al-ol-ver__kart">
+          <div class="al-ol-ver__isim">{pillar.name}</div>
+          <h3 class="al-ol-ver__etiket">{pillar.label}</h3>
+          <p class="al-ol-ver__desc">{pillar.desc}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .al-ol-ver {
+    /* Outer padding-yatay 0 (SonrakiBulusma .sonraki-bulusma paralel) — effective
+       grid container 64rem birebir, kart kutuları aynı genişlik. Block padding
+       (top/bottom) AlOlVer tipografik ritmi için cömert kalır. */
+    padding: var(--space-9) 0 var(--space-10);
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .al-ol-ver__inner {
+    text-align: center;
+  }
+
+  .al-ol-ver__baslik {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    color: var(--cream);
+    margin: var(--space-6) 0 var(--space-8);
+    line-height: var(--leading-snug);
+  }
+
+  .al-ol-ver__grid {
+    /* Ölçü hizalama (brief Paket 7): grid template + gap SonrakiBulusma
+       .sonraki-bulusma__liste ile birebir — 3 sütun kart kutusu aynı boyut. */
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-7);
+  }
+
+  @media (min-width: 768px) {
+    .al-ol-ver__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .al-ol-ver__kart {
+    /* Ölçü hizalama: padding + height SonrakiBulusma .sonraki-bulusma__kart ile
+       birebir. Görsel kimlik (ash bg + ember top-border hover + translateY)
+       korunur; sadece kutu ölçüsü aynılaşır. */
+    background: var(--ash);
+    height: 100%;
+    padding: var(--space-5);
+    border-top: 3px solid transparent;
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out),
+                transform var(--duration-base) var(--ease-out);
+    text-align: center;
+    position: relative;
+  }
+
+  .al-ol-ver__kart:hover {
+    border-top-color: var(--ember);
+    background: var(--ash-warm);
+    transform: translateY(-2px);
+  }
+
+  .al-ol-ver__isim {
+    font-family: var(--font-display);
+    font-size: var(--text-h1);
+    font-weight: 300;
+    color: var(--ember);
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-4);
+    line-height: 1;
+  }
+
+  .al-ol-ver__etiket {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--cream);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    margin: 0 0 var(--space-4);
+  }
+
+  .al-ol-ver__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
+    color: var(--cream-soft);
+    font-weight: 300;
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .al-ol-ver__kart {
+      transition: none;
+    }
+    .al-ol-ver__kart:hover {
+      transform: none;
+    }
+  }
+</style>

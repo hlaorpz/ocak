@@ -1,0 +1,60 @@
+---
+// PageContent — Notion fragment-split render helper (#29 Brief F.5 + KARAR 127 genişletme).
+// Loader body'i tanınan marker'larda parçaladı; her markdown chunk renderMarkdown
+// HTML'ine indi. Burada diziyi iterate eder:
+//   - markdown        → <Fragment set:html={html} />
+//   - form-anchor     → formAnchorRegistry[slug][index] component'i (props default'u +
+//                        formAnchorProps[slug][index]); KARAR 151 introHtml prop'u
+//                        loader look-backward'ı consume etmişse component scope'una iletilir.
+//   - al-ol-ver       → <AlOlVer /> (sabit içerikli pillar grid, prop yok)
+//   - sonraki-bulusma → <SonrakiBulusma slug={slug} /> (slug'tan otomatik kategori/heading)
+//   - etkinlik-takvimi → <EtkinlikTakvimi /> (tüm gelecek etkinlikler, /takvim — KARAR 153)
+//
+// Sıra korunur: marker'lar Notion'daki konumlarında basılır.
+// Defansif: slug registry'de yoksa veya index karşılığı component'i yoksa null basar.
+import { formAnchorRegistry, formAnchorProps } from '../lib/form-anchor-registry';
+import AlOlVer from './AlOlVer.astro';
+import SonrakiBulusma from './SonrakiBulusma.astro';
+import EtkinlikTakvimi from './EtkinlikTakvimi.astro';
+
+type Fragment =
+  | { kind: 'markdown'; html: string }
+  | { kind: 'form-anchor'; index: number; introHtml?: string }
+  | { kind: 'al-ol-ver' }
+  | { kind: 'sonraki-bulusma' }
+  | { kind: 'etkinlik-takvimi' };
+
+interface Props {
+  slug: string;
+  fragments: Fragment[];
+}
+
+const { slug, fragments } = Astro.props;
+const components = formAnchorRegistry[slug] ?? [];
+const propsList = formAnchorProps[slug] ?? [];
+---
+{
+  fragments.map((frag) => {
+    if (frag.kind === 'markdown') {
+      return <Fragment set:html={frag.html} />;
+    }
+    if (frag.kind === 'al-ol-ver') {
+      return <AlOlVer />;
+    }
+    if (frag.kind === 'sonraki-bulusma') {
+      return <SonrakiBulusma slug={slug} />;
+    }
+    if (frag.kind === 'etkinlik-takvimi') {
+      return <EtkinlikTakvimi />;
+    }
+    const Component = components[frag.index];
+    if (!Component) {
+      console.warn(
+        `[PageContent] ${slug}: form-anchor index ${frag.index} için registry component'i yok.`,
+      );
+      return null;
+    }
+    const props = propsList[frag.index] ?? {};
+    return <Component {...props} introHtml={frag.introHtml} />;
+  })
+}

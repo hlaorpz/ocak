@@ -1,0 +1,356 @@
+---
+// AtesMektuplari — ana sayfa bülten formu (#23 Brief 3, KARAR 96 davranış verbatim)
+// Plugin `ates-mektuplari` section'ını OMIT ediyor; bu component manuel render edilir.
+// Endpoint: unified Apps Script doPost (api.ts). Token Apps Script tarafında — client'ta yok.
+// Görünür metin Notion form spec'inden; yapı + submit davranışı legacy/index.html verbatim.
+//
+// introHtml (KARAR 151): loader form-anchor look-backward'ı önceki section etiketini
+// consume edip render edilmiş HTML olarak buraya geçer. Geldiğinde internal
+// __heading + __desc gizlenir, intro div render edilir (içerik kaybı önleme — KARAR 102
+// gerçek yapıyı gör). Gelmediğinde eski davranış: internal heading + desc görünür.
+import { APPS_SCRIPT_URL } from '../lib/api';
+
+interface Props {
+  introHtml?: string;
+}
+
+const { introHtml } = Astro.props;
+---
+<section class="ates-mektuplari" id="ates-mektuplari">
+  <div class="ocak-container ocak-container--prose">
+    {introHtml ? (
+      <div class="ates-mektuplari__intro" set:html={introHtml} />
+    ) : (
+      <>
+        <h2 class="ates-mektuplari__heading">Ateş Mektupları</h2>
+        <p class="ates-mektuplari__desc">Ayda bir, doğrudan kutuna. Sönmesin ateş.</p>
+      </>
+    )}
+
+    <form class="ates-mektuplari__form" data-endpoint={APPS_SCRIPT_URL}>
+      {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return. */}
+      <div class="hp-field" aria-hidden="true">
+        <label for="am-website">Website</label>
+        <input type="text" name="website" id="am-website" tabindex="-1" autocomplete="off" />
+      </div>
+      <div class="ates-mektuplari__row">
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="E-postan"
+          aria-label="E-posta adresin"
+          class="ates-mektuplari__input"
+          pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+          oninvalid="this.setCustomValidity('Geçerli bir email gir')"
+          oninput="this.setCustomValidity('')"
+        />
+        <button type="submit" class="ates-mektuplari__button">KATIL</button>
+      </div>
+
+      <fieldset class="ates-mektuplari__kanal">
+        <legend class="ates-mektuplari__kanal-legend">Bizi nereden duydun?</legend>
+        <div class="ates-mektuplari__kanal-list">
+          <label class="ates-mektuplari__kanal-item">
+            <input type="radio" name="ilk_dokunus_kanali" value="Instagram" required
+              oninvalid="this.setCustomValidity('Bir seçim yap')"
+              onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+            <span>Instagram</span>
+          </label>
+          <label class="ates-mektuplari__kanal-item">
+            <input type="radio" name="ilk_dokunus_kanali" value="Arkadaş" />
+            <span>Arkadaş</span>
+          </label>
+          <label class="ates-mektuplari__kanal-item">
+            <input type="radio" name="ilk_dokunus_kanali" value="Google" />
+            <span>Google</span>
+          </label>
+          <label class="ates-mektuplari__kanal-item">
+            <input type="radio" name="ilk_dokunus_kanali" value="Etkinlik" />
+            <span>Etkinlik</span>
+          </label>
+          <label class="ates-mektuplari__kanal-item">
+            <input type="radio" name="ilk_dokunus_kanali" value="Diğer" />
+            <span>Diğer</span>
+          </label>
+        </div>
+      </fieldset>
+    </form>
+
+    <p class="ates-mektuplari__note">İstediğin zaman ayrılabilirsin. Verilerin sadece sana ait.</p>
+    <div class="ates-mektuplari__success" hidden>
+      <div class="ates-mektuplari__success-ember" aria-hidden="true"></div>
+      <p class="ates-mektuplari__success-text">Hoş geldin. İlk mektubun yolda.</p>
+    </div>
+    <p class="ates-mektuplari__error" role="alert" hidden>
+      Bir şeyler ters gitti. Lütfen tekrar dene.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Section: legacy .signup birebir — coal-deep bg + üst ambient çizgi */
+  .ates-mektuplari {
+    padding: var(--space-9) var(--space-6);
+    background: var(--coal-deep);
+    position: relative;
+    text-align: center;
+  }
+
+  .ates-mektuplari::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ash), transparent);
+  }
+
+  .ates-mektuplari__heading {
+    font-family: var(--font-display);
+    font-style: italic;                       /* legacy .signup-title */
+    font-size: var(--text-h2);
+    color: var(--cream);
+    font-weight: 400;
+    margin: 0 0 var(--space-3);
+  }
+
+  .ates-mektuplari__desc {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    margin: 0 auto var(--space-6);
+    max-width: 40ch;
+  }
+
+  /* KARAR 151 A.2 — __intro scope atmosfer.css'e taşındı (Astro scoped CSS +
+   * set:html DOM uyumsuzluğu). Bkz. atmosfer.css "Form-içi __intro" bölümü. */
+
+  /* Form: legacy .signup-form — input+button satırı + altında kanal satırı */
+  .ates-mektuplari__form {
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .ates-mektuplari__form[hidden] {
+    display: none;
+  }
+
+  /* Üst satır: email + KATIL inline (legacy gap:0) */
+  .ates-mektuplari__row {
+    display: flex;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* Mobil: alt alta — küçük ekranda input + button sığamaz */
+  @media (max-width: 480px) {
+    .ates-mektuplari__row {
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+  }
+
+  /* "Bizi nereden duydun?" yatay radio satırı (küçük punto, mütevazı) */
+  .ates-mektuplari__kanal {
+    border: 0;
+    padding: 0;
+    margin: var(--space-4) 0 0;
+    text-align: center;
+  }
+
+  .ates-mektuplari__kanal-legend {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--smoke);
+    margin: 0 0 var(--space-2);
+    padding: 0;
+  }
+
+  .ates-mektuplari__kanal-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .ates-mektuplari__kanal-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--cream-soft);
+    cursor: pointer;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .ates-mektuplari__kanal-item input[type='radio'] {
+    accent-color: var(--ember);
+    width: 13px;
+    height: 13px;
+    cursor: pointer;
+  }
+
+  .ates-mektuplari__kanal-item:hover { color: var(--cream); }
+
+  /* Input: legacy .signup-input — ash bg, border-right yok (button bitişik) */
+  .ates-mektuplari__input {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    border-right: none;
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  @media (max-width: 480px) {
+    .ates-mektuplari__input {
+      border-right: 1px solid var(--ash);     /* alt alta düşünce border restore */
+    }
+  }
+
+  .ates-mektuplari__input::placeholder {
+    color: var(--smoke);
+  }
+
+  .ates-mektuplari__input:focus {
+    outline: none;
+    border-color: var(--ember);
+  }
+
+  /* Button: legacy .signup-button — KATIL uppercase + letter-spacing + coal text */
+  .ates-mektuplari__button {
+    padding: 0.9rem 1.8rem;
+    background: var(--ember);
+    border: 1px solid var(--ember);
+    color: var(--coal);                       /* legacy: koyu metin ember üstünde okunabilirlik */
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--duration-base) var(--ease-out),
+                opacity var(--duration-base) var(--ease-out);
+  }
+
+  .ates-mektuplari__button:hover:not(:disabled) {
+    background: var(--ember-soft);            /* legacy hover */
+  }
+
+  .ates-mektuplari__button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .ates-mektuplari__note {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--smoke);
+    margin: var(--space-4) 0 0;
+  }
+
+  /* Success: legacy .signup-success — serif italic gold (KARAR 87 ton).
+   * KARAR 157 — ember glyph wrapper + text split (5/5 form UI uniform).
+   * Ember rule AcikKapiKayit __success-ember birebir (10px ember + glow).
+   */
+  .ates-mektuplari__success {
+    scroll-margin-top: var(--nav-height);
+    margin: var(--space-5) 0 0;
+  }
+
+  .ates-mektuplari__success-ember {
+    width: 10px;
+    height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--ember), 0 0 40px rgba(196, 75, 47, 0.3);
+    margin: 0 auto var(--space-6);
+  }
+
+  .ates-mektuplari__success-text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin: 0;
+  }
+
+  .ates-mektuplari__error {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    margin: var(--space-3) 0 0;
+  }
+</style>
+
+<script>
+  import { scrollToSuccess } from '../lib/scroll-to-success';
+
+  // Submit davranışı legacy/acik-kapi.html verbatim: text/plain POST (CORS bypass),
+  // result.status === 'success' → success state; aksi → error, form aktif kalır.
+  const form = document.querySelector<HTMLFormElement>('.ates-mektuplari__form');
+  if (form) {
+    const section = form.closest('.ates-mektuplari') as HTMLElement;
+    const button = form.querySelector<HTMLButtonElement>('.ates-mektuplari__button')!;
+    const successEl = section.querySelector<HTMLElement>('.ates-mektuplari__success')!;
+    const errorEl = section.querySelector<HTMLElement>('.ates-mektuplari__error')!;
+    const noteEl = section.querySelector<HTMLElement>('.ates-mektuplari__note')!;
+    const introEl = section.querySelector<HTMLElement>('.ates-mektuplari__intro');
+    const endpoint = form.dataset.endpoint!;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      button.disabled = true;
+      const oldText = button.textContent;
+      button.textContent = 'Gönderiliyor…';
+
+      const fd = new FormData(form);
+      const email = (fd.get('email') ?? '').toString().trim();
+      const ilk_dokunus_kanali = (fd.get('ilk_dokunus_kanali') ?? '').toString();
+      // KARAR 152 honeypot — gerçek kullanıcıda hep boş; bot doldurursa Apps Script erken döner.
+      const website = (fd.get('website') ?? '').toString();
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ formType: 'ates-mektuplari', email, ilk_dokunus_kanali, website }),
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          // TODO (#24 Brief 2 C3 — KARAR 104 sınırı): already-subscribed dalı atlandı.
+          // Apps Script handleAtesMektuplari MailerLite response shape'ini (yeni vs duplicate)
+          // ayırmıyor. Eklendiğinde: result.subscriberState === 'existing' → success metni
+          // "Zaten aramızdasın. Ateş yanıyor. 🔥" override. Lansman sonrası veya #25'te.
+          form.hidden = true;
+          noteEl.hidden = true;
+          // KARAR 151 — introHtml prop'undan render edilmiş intro varsa success'le
+          // birlikte gizlenir (form + intro sibling scope).
+          if (introEl) introEl.hidden = true;
+          successEl.hidden = false;
+          scrollToSuccess(successEl);
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({
+              event: 'form_submit',
+              form_type: 'ates-mektuplari',
+            });
+          }
+        } else {
+          throw new Error(result.message || 'API error');
+        }
+      } catch (err) {
+        console.error('Ateş Mektupları error:', err);
+        errorEl.hidden = false;
+        button.disabled = false;
+        button.textContent = oldText;
+      }
+    });
+  }
+</script>

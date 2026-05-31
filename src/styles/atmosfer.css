@@ -1,0 +1,1343 @@
+/* ============================================================================
+ * atmosfer.css — Plugin output atmosfer retarget ailesi (#23 Brief 2)
+ * ----------------------------------------------------------------------------
+ * Dinamik route (src/pages/[...slug].astro) plugin'in ham HTML çıktısını basar:
+ * <section data-section="..."> yapıları, component class'ları (.hero__*, .sss__*)
+ * DEĞİL. Component'lerin scoped/`:global` style'ları yalnızca o component render
+ * edildiğinde iner — dinamik route'ta inmez. Bu dosya o boşluğu plugin output'un
+ * `data-section` yapısını hedefleyerek kapatır.
+ *
+ * KARAR: component scoped CSS'lere DOKUNULMADI (Kaan, Brief 2). Bu, paralel bir
+ * selector ailesi — birleştirme/dedup Brief 3+ işi. Değerler component + legacy
+ * verbatim (KARAR 102, 105).
+ *
+ * data-oda kaynağı: Layout `<main data-oda={oda}>` (Senaryo Y — plugin hero'da
+ * data-oda yok). Oda değerleri: OCAK / Yol / Buluşmalar / Yolculuk / Biz / İletişim.
+ *
+ * Kapsam: ATMOSFER (glow, fadeUp, hover, chevron, separator). Container/max-width
+ * layout ve reveal-on-scroll binding plugin output'a EKLENMEDİ — content layout
+ * #24-25, reveal binding Brief 3+. Grain zaten GrainOverlay (Layout) ile her
+ * sayfada iniyor; reveal class'ları + fadeUp keyframes zaten global.css'te.
+ * ==========================================================================*/
+
+/* KARAR 115 → 116 evrim: ember ambient çizgi nav::after'a taşındı.
+ * Bkz. commit 95f1fbe (Sohbet #25 Brief A Item 1, 24 May 2026).
+ *
+ * ===== EMBER LINE — #25 Brief A item 1 (KARAR 115 metafor genişletme) =====
+ * Önceden: #main::before 1px ember ambient çizgi her sayfanın main tepesinde.
+ * Sorun: nav border-bottom subtle + main::before sticky scroll=0'da yan yana iki
+ * 1px gösteriyordu ("koyu geçiş bandı"). Çözüm: ember ambient çizgi nav'ın alt
+ * kenarına taşındı (Nav.astro `.nav::after`). Nav border-bottom silindi.
+ * Ember kor metaforu nav'ın signature'ı oldu, sticky scroll'da yerinde kalır.
+ * #main::before BLOĞU SİLİNDİ — tek otorite Nav.astro'da. */
+
+/* ===== HERO (retarget: .hero* → [data-section="hero"]) ===================== */
+/* Plugin output: <section data-section="hero" data-overline="X"><h1><em>..</h1><p>..</p></section>
+ * .hero__glow div YOK → glow ::after pseudo; overline element YOK → ::before attr;
+ * CTA/scroll YOK (component-only, ana sayfa override Brief 3). */
+
+[data-section="hero"] {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  overflow: hidden;
+  text-align: center;
+  padding: var(--space-8) var(--space-5);
+}
+
+/* Glow — legacy/index.html .hero::before VERBATIM (Brief 2b): 800x800 box,
+ * bottom -20% left 50% translateX(-50%), radial ellipse at center, stop 0/30/50/70.
+ * [data-section="hero"] overflow:hidden ile alttan kırpılır. blur YOK, drift YOK.
+ * Default soft (5 oda); OCAK strong override. (KARAR 102 sapma 2)
+ * Hero.astro .hero__glow ile birebir aynı geometri/stop (iki dosya hizalı). */
+[data-section="hero"]::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(196, 75, 47, 0.10) 0%,
+    rgba(196, 75, 47, 0.04) 30%,
+    rgba(212, 168, 85, 0.02) 50%,
+    transparent 70%
+  );
+}
+
+[data-oda="OCAK"] [data-section="hero"]::after {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(196, 75, 47, 0.12) 0%,
+    rgba(196, 75, 47, 0.05) 30%,
+    rgba(212, 168, 85, 0.02) 50%,
+    transparent 70%
+  );
+}
+
+/* Bottom fade (Hero B kararı, #30 Brief F sonu Item 6b) — glow alt kenarındaki sert
+ * sınırı maskeler + Hero altı coal section'a yumuşak geçiş. fade-out z-index 1 →
+ * glow ::after (z-index 0) üstünde, content > * (z-index 1, DOM sonrası) fade'in
+ * üstünde. Pseudo ::after children'dan sonra render olur — DOM order çözmek için
+ * explicit z-index gerekli. */
+[data-section="hero"] .hero-fade-out {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* %25 → %40 (#30 Brief F sonu Item 6b-revize): glow center Hero altından ~220px
+     (~%24 Hero), radial 70% stop'a kadar ~500px (~%55). %25 yalnız glow alt yarısını
+     kapsıyordu — parlak ember üst yarısı fade dışında sert görünüyordu. */
+  height: 40%;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent, var(--coal));
+}
+
+/* İçerik glow'un üstünde */
+[data-section="hero"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Overline — data-overline attribute'undan görünür metin (::before, ilk flex item).
+ * .ocak-overline değerleri + ember rengi (component .hero__overline override'ı). */
+[data-section="hero"][data-overline]::before {
+  content: attr(data-overline);
+  order: -1;
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ember);
+}
+
+[data-section="hero"] h1 {
+  font-family: var(--font-display);
+  font-style: italic;          /* #24 Brief 3b S2 — 18 plugin Hero sayfası italik global (component Hero zaten italik Brief 2 Commit 3) */
+  font-size: var(--text-hero);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--cream);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+[data-section="hero"] > p {
+  font-family: var(--font-display);
+  font-size: var(--text-manifesto);
+  font-style: italic;
+  color: var(--cream-soft);
+  margin: 0;
+  max-width: 32ch;
+}
+
+/* fadeUp staggered intro (legacy verbatim: overline .3s / title .6s / subtitle .9s).
+ * @keyframes fadeUp global.css'te. CTA 1.2s / scroll 1.8s plugin output'ta yok. */
+[data-section="hero"][data-overline]::before,
+[data-section="hero"] h1,
+[data-section="hero"] > p {
+  opacity: 0;
+  animation: fadeUp 0.9s ease both;
+}
+
+[data-section="hero"][data-overline]::before { animation-delay: 0.3s; }
+[data-section="hero"] h1               { animation-delay: 0.6s; }
+[data-section="hero"] > p              { animation-delay: 0.9s; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-section="hero"][data-overline]::before,
+  [data-section="hero"] h1,
+  [data-section="hero"] > p {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  [data-section="hero"] { gap: var(--space-4); }
+}
+
+/* ===== SİRADAKİ KAPI (retarget: grid → [data-section]; .ocak-kapi-kart match) === */
+/* Plugin output: <section data-section="siradaki-kapi"><article class="ocak-kapi-kart">..
+ * .siradaki-kapi__grid wrapper YOK → section'ın kendisi grid. .ocak-kapi-kart class'ı
+ * plugin'de birebir var → kural verbatim (component :global ile aynı). */
+
+[data-section="siradaki-kapi"] {
+  padding: var(--space-8) 0;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  [data-section="siradaki-kapi"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ocak-kapi-kart {
+  position: relative;
+  padding: var(--space-5);
+  background: transparent;
+  border-top: 1px solid var(--smoke);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+/* Ember separator — üst border hover'da 0→100% grow */
+.ocak-kapi-kart::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--ember);
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.ocak-kapi-kart:hover::before,
+.ocak-kapi-kart:focus-within::before {
+  width: 100%;
+}
+
+.ocak-kapi-kart h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  color: var(--cream);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.ocak-kapi-kart p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.ocak-kapi-kart a {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  align-self: flex-start;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.ocak-kapi-kart a:hover,
+.ocak-kapi-kart a:focus-visible {
+  border-bottom-color: var(--ember);
+}
+
+@media (max-width: 768px) {
+  .ocak-kapi-kart { padding: var(--space-4); }
+}
+
+/* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
+/* Plugin output: <section data-section="sss"><h2>..</h2><details><summary>Q</summary>
+ * <div class="sss-cevap"><p>A</p></div></details>.. (class="sss" YOK, cevap class
+ * "sss-cevap" tek-tire — component "sss__cevap" çift-altçizgi değil). */
+
+[data-section="sss"] {
+  max-width: var(--max-w-prose);                /* #31 Brief G.4 P5 — section class
+                                                 * yok → ocak-* baseline match etmiyordu,
+                                                 * full-width sola dayalı görünüyordu */
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+[data-section="sss"] details {
+  border-bottom: 1px solid var(--ash);
+  margin-bottom: var(--space-3);                /* #31 Brief G.4 P5 — sorular arası nefes */
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+[data-section="sss"] details[open] {
+  border-bottom-color: var(--ember);
+}
+
+[data-section="sss"] summary {
+  list-style: none;
+  cursor: pointer;
+  padding: var(--space-4) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  color: var(--cream);
+  font-weight: 400;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+[data-section="sss"] summary::-webkit-details-marker {
+  display: none;
+}
+
+[data-section="sss"] summary:hover,
+[data-section="sss"] summary:focus-visible {
+  color: var(--ember);
+  outline: none;
+}
+
+/* Chevron — 45° → açıkta -135° (legacy verbatim) */
+[data-section="sss"] summary::after {
+  content: '';
+  margin-left: auto;
+  width: 12px;
+  height: 12px;
+  border-right: 1px solid var(--ember);
+  border-bottom: 1px solid var(--ember);
+  transform: rotate(45deg);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+[data-section="sss"] details[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+[data-section="sss"] .sss-cevap,
+[data-section="sss"] details > div,
+[data-section="sss"] details > p {
+  padding: 0 0 var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  line-height: 1.7;
+}
+
+[data-section="sss"] .sss-cevap p,
+[data-section="sss"] details > div p {
+  margin: 0 0 var(--space-2);
+}
+
+[data-section="sss"] .sss-cevap p:last-child,
+[data-section="sss"] details > div p:last-child {
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-section="sss"] summary,
+  [data-section="sss"] summary::after,
+  [data-section="sss"] details {
+    transition: none;
+  }
+}
+
+/* #32 Brief H — SSS h2 başlık ortalı. SSS section "ocak-*" class almıyor
+ * (component-driven), baseline `section[data-section][class^="ocak-"] h2`
+ * text-align:center buraya düşmüyordu → global h2 default'una (left) kalıyordu.
+ * İki selektör defansif: data-section attribute ile sınıf hint birlikte. */
+section[data-section="sss"] > h2,
+.ocak-sss > h2 {
+  text-align: center;
+}
+
+/* ===== EŞİK ACCORDION (/sen-neredesin, 10 esik-* section) ===================== */
+/* Plugin output: <details name="esikler" data-section="esik-NAME">
+ *   <summary>0 · UYKU</summary> ..kalan içerik, h2 strip..
+ * </details>
+ * KARAR 105 SSS pattern'inin vurgulu kardeşi: ember sol border + custom marker
+ * (+ → ×), exclusive accordion (HTML5 name attribute — Chrome 120+/Safari 17.4+/
+ * FF 123+; eski tarayıcı çoklu açık olur, graceful degradation).
+ * `esik-kadini` whitelist dışında → plugin onu baseline prose'a basıyor, bu selector
+ * ailesi sadece details elementleri vuruyor, çakışma yok. */
+
+details[data-section^="esik-"] {
+  border-left: 3px solid var(--ash);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  margin: 0 auto;
+  max-width: var(--max-w-prose);
+  transition: border-color 0.4s ease, padding 0.4s ease;
+}
+
+details[data-section^="esik-"]:hover {
+  border-left-color: var(--ember-soft); /* hafif kor sinyali */
+}
+
+details[data-section^="esik-"][open] {
+  border-left-color: var(--ember);
+  padding: var(--space-6) 0 var(--space-7) var(--space-5);
+  border-top: 1px solid var(--ash); /* nefes çizgisi */
+  margin-top: var(--space-4);
+}
+
+details[data-section^="esik-"] summary {
+  list-style: none; /* native marker kapat */
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.3;
+  color: var(--cream);
+  padding: var(--space-2) 0;
+}
+
+details[data-section^="esik-"] summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom marker: + → × (45° rotate) */
+details[data-section^="esik-"] summary::after {
+  content: '+';
+  font-family: 'Cormorant Garamond', serif;
+  font-style: normal;
+  font-size: 1.5rem;
+  color: var(--ember);
+  transition: transform 0.4s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+details[data-section^="esik-"][open] summary::after {
+  transform: rotate(45deg);
+}
+
+/* Açılan body'de ilk eleman summary'den sonra nefes alsın */
+details[data-section^="esik-"] > *:not(summary) {
+  margin-top: var(--space-5);
+}
+
+/* Body içindeki prose — baseline `section[data-section][class^="ocak-"]` buraya
+ * match etmez (details elementi + class yok), o yüzden açıkça yazıyoruz. */
+details[data-section^="esik-"] p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+details[data-section^="esik-"] summary:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details[data-section^="esik-"],
+  details[data-section^="esik-"] summary::after {
+    transition: none;
+  }
+}
+
+/* ===== BİR SONRAKI (retarget: .bir-sonraki__quote → [data-section] > blockquote) = */
+/* Plugin output: <section data-section="bir-sonraki"><blockquote>..ham içerik..</blockquote></section>
+ * .bir-sonraki__quote class YOK → dış blockquote hedeflenir. Ember sol border 3px +
+ * ember-alpha-15 tint bg + krem italik (global blockquote'u specificity ile ezer). */
+
+[data-section="bir-sonraki"] {
+  padding: var(--space-8) 0;
+}
+
+[data-section="bir-sonraki"] > blockquote {
+  position: relative;
+  margin: 0;
+  padding: var(--space-5) var(--space-6);
+  background: var(--ember-alpha-15);
+  border-left: 3px solid var(--ember);
+  border-radius: 0 2px 2px 0;
+  color: var(--cream);
+  line-height: 1.7;
+  /* #31 Brief G.3 P4: font-display + text-manifesto + italic kaldırıldı —
+   * içerik düz paragraf + normal punto. KARAR 105 *kutu görseli* (ember
+   * border + alpha-15 bg) korunur; tema satırı Notion'da **Tema..** ile
+   * bold gelir, baseline strong (font-weight: 500) zaten bunu taşır. */
+}
+
+[data-section="bir-sonraki"] > blockquote p {
+  margin: 0 0 var(--space-2);
+}
+
+[data-section="bir-sonraki"] > blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Bir-Sonraki nested defans (#31 Brief G.1 Item 11) — /cember Notion içerik
+ * karma pattern (h2 + nested blockquote + multi-p) baseline ocak-* h2 kuralı
+ * (m: 9rem 0 5rem) ve global blockquote (border-left + padding) ile deforme
+ * oluyordu. Kutu içinde başlık/nested italik krem inherit, ekstra border/padding
+ * sıfır. KARAR 105 ruhu — tek ember sol border 3px korunur. */
+[data-section="bir-sonraki"] > blockquote h2,
+[data-section="bir-sonraki"] > blockquote h3,
+[data-section="bir-sonraki"] > blockquote h4 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h4);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  margin: 0 0 var(--space-3);
+  text-align: left;
+}
+
+[data-section="bir-sonraki"] > blockquote h2:first-child,
+[data-section="bir-sonraki"] > blockquote h3:first-child,
+[data-section="bir-sonraki"] > blockquote h4:first-child {
+  margin-top: 0;
+}
+
+[data-section="bir-sonraki"] > blockquote blockquote {
+  border-left: none;
+  padding: 0;
+  margin: 0 0 var(--space-2);
+  background: transparent;
+  font-family: inherit;
+  font-style: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+[data-section="bir-sonraki"] > blockquote blockquote p {
+  margin: 0;
+}
+
+/* #31 Brief G.4 P4 — bir-sonraki içeriği AGRESİF düz paragraf. G.3 P4
+ * blockquote'tan italic kaldırdı ama içerideki h2/p>em/p>strong KARAR 118
+ * :has manifesto-vurgu + h2 italic kuralları tarafından override ediliyordu.
+ * !important ile düz body font/text-base/normal/cream. strong tema satırı
+ * bold kalır (Notion **Tema..**). :has max-width/margin/center sıfırla. */
+section[data-section="bir-sonraki"] > blockquote h2,
+section[data-section="bir-sonraki"] > blockquote h3,
+section[data-section="bir-sonraki"] > blockquote h4,
+section[data-section="bir-sonraki"] > blockquote p,
+section[data-section="bir-sonraki"] > blockquote p > em,
+section[data-section="bir-sonraki"] > blockquote p > strong {
+  font-family: var(--font-body) !important;
+  font-size: var(--text-base) !important;
+  font-style: normal !important;
+  color: var(--cream) !important;
+  line-height: var(--leading-prose) !important;
+}
+
+section[data-section="bir-sonraki"] > blockquote p > strong,
+section[data-section="bir-sonraki"] > blockquote h2,
+section[data-section="bir-sonraki"] > blockquote h3,
+section[data-section="bir-sonraki"] > blockquote h4 {
+  font-weight: 700 !important;
+}
+
+section[data-section="bir-sonraki"] > blockquote > p:has(> em:only-child),
+section[data-section="bir-sonraki"] > blockquote > p:has(> strong:only-child) {
+  max-width: none !important;
+  margin: 0 0 var(--space-2) !important;
+  text-align: left !important;
+}
+
+@media (max-width: 768px) {
+  [data-section="bir-sonraki"] > blockquote {
+    padding: var(--space-4) var(--space-5);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   GENERIC PROSE BASELINE (#24 Brief 3b, KARAR 116, S1)
+   Plugin tüm prose section'larını `<section data-section="X" class="ocak-X">`
+   emit ediyor. 5 kanonik section (hero/sss/bir-sonraki/siradaki-kapi/sonraki-bulusma)
+   component-driven, class="ocak-X" almıyor → bu baseline'a düşmezler.
+   124 jenerik section bu baseline ile max-width okuma kolonu + tipografi ritmi alır.
+   Spesifik override'lar (manifesto/cekirdek-vaat/esik-kadini) bunun üzerine eklenir;
+   `section[data-section="X"][class^="ocak-"]` selector'üyle specificity korunur
+   (0,3,2 > baseline 0,2,2).
+   ───────────────────────────────────────────────────────────────────── */
+
+section[data-section][class^="ocak-"] {
+  max-width: var(--max-w-prose);              /* 38rem ≈ 608px okuma kolonu */
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6) var(--space-9);   /* 4-2-6rem (#31 Brief G.2 P1) */
+  position: relative;
+}
+
+section[data-section][class^="ocak-"] p {
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);          /* 1.9 cömert nefes */
+  font-weight: 300;
+  color: var(--cream-soft);
+  margin: 0 0 var(--space-6);                 /* ~2rem paragraf arası */
+}
+
+section[data-section][class^="ocak-"] p:last-child {
+  margin-bottom: 0;
+}
+
+section[data-section][class^="ocak-"] strong {
+  font-weight: 500;
+  color: var(--cream);
+}
+
+section[data-section][class^="ocak-"] em {
+  font-style: italic;
+  color: var(--cream);                        /* italik vurgu krem parlak */
+}
+
+/* Başlıklar — h2 italic kapanış vurgusu, h3 normal */
+
+section[data-section][class^="ocak-"] h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h2);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  margin: var(--space-7) 0 var(--space-4);    /* 3rem üst / 1rem alt (#31 Brief G.2 P1) */
+  text-align: center;
+}
+
+section[data-section][class^="ocak-"] h2:first-child {
+  margin-top: 0;
+}
+
+section[data-section][class^="ocak-"] h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  margin: var(--space-8) 0 var(--space-4);
+  text-align: center;
+}
+
+/* Listeler — bullet · ember marker, ol numbered italic ember */
+
+section[data-section][class^="ocak-"] ul,
+section[data-section][class^="ocak-"] ol {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--space-6) 0;
+  text-align: left;
+}
+
+section[data-section][class^="ocak-"] li {
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  font-weight: 300;
+  color: var(--cream-soft);
+  padding-left: var(--space-6);
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+section[data-section][class^="ocak-"] ul li::before {
+  content: '·';
+  color: var(--ember);
+  font-weight: 700;
+  position: absolute;
+  left: var(--space-3);
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+section[data-section][class^="ocak-"] ol {
+  counter-reset: ocak-list;
+}
+
+section[data-section][class^="ocak-"] ol li {
+  counter-increment: ocak-list;
+}
+
+section[data-section][class^="ocak-"] ol li::before {
+  content: counter(ocak-list);
+  color: var(--ember);
+  font-family: var(--font-display);
+  font-style: italic;
+  position: absolute;
+  left: 0;
+  font-weight: 400;
+}
+
+/* Blockquote — global.css default'unu prose context'inde override.
+ * #25 Brief A item 4: bir-sonraki kanonik section'a class="ocak-bir-sonraki"
+ * eklendi (plugin transformSection) — bu baseline o section'ı da yakalar artık.
+ * Nested blockquote'lar (Notion `>` notation) görsel olarak parent'a karışır;
+ * defansif :empty hide plugin cleanup'ı geçmiş edge case için belt-and-suspenders. */
+
+section[data-section][class^="ocak-"] blockquote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h4);
+  color: var(--cream);
+  border-left: 3px solid var(--ember);
+  padding: var(--space-4) var(--space-6);
+  margin: var(--space-8) 0;
+  text-align: left;
+  line-height: var(--leading-snug);
+}
+
+/* Nested blockquote — outer'ın 3px ember border'ı + global.css 1px ember
+ * yan yana "dik çizgi devamı" oluşturuyordu. Nested'ı görsel olarak sıfırla,
+ * iç içerik parent stiline akışkan karışır (typography inherit). */
+section[data-section][class^="ocak-"] blockquote blockquote {
+  border-left: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  font-style: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
+/* Defansif :empty hide — plugin cleanWhitespaceNodes çoğunu zaten kaldırır;
+ * notion-to-md edge case'inde saf empty (text node bile yok) sızıntı için. */
+section[data-section][class^="ocak-"] blockquote:empty,
+section[data-section][class^="ocak-"] blockquote > p:empty {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   TABLO — generic prose ailesi (#27 Brief B B4.1, KARAR 116 baseline kardeşi).
+   /cember 12 ay döngüsü + /ekip Çıraklık tablosu toplu iyileşme.
+   th için --font-display (Cormorant italic) — atmosfer'in diğer italik
+   serif kullanımıyla tutarlı (`--font-serif` token yok, --font-display
+   serif ailesi). 0,3,2 specificity baseline ile uyumlu.
+   ───────────────────────────────────────────────────────────────────── */
+
+section[data-section][class^="ocak-"] table {
+  width: 100%;
+  max-width: var(--max-w-prose);
+  margin: var(--space-8) auto;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+}
+
+section[data-section][class^="ocak-"] table th,
+section[data-section][class^="ocak-"] table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--ash);
+  font-weight: 300;
+  line-height: var(--leading-prose);
+  vertical-align: top;
+}
+
+section[data-section][class^="ocak-"] table th {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--cream);
+  font-weight: 400;
+  border-bottom-color: var(--ember);
+}
+
+section[data-section][class^="ocak-"] table tr:last-child td {
+  border-bottom: none;
+}
+
+section[data-section][class^="ocak-"] table strong {
+  color: var(--cream);
+  font-weight: 500;
+}
+
+/* Overline — plugin data-overline attr'ından ::before content (Hero pattern) */
+
+section[data-section][class^="ocak-"][data-overline]::before {
+  content: attr(data-overline);
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  color: var(--ember);
+  text-transform: uppercase;
+  margin-bottom: var(--space-7);
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SPESİFİK PROSE OVERRIDE'LAR (#24 Brief 2, specificity Brief 3b'de güçlendirildi)
+   Selector: `section[data-section="X"][class^="ocak-"]` → 0,3,2 (baseline 0,2,2 > ezer)
+   Anlatı şart koşan blokların text-align center + manifesto font + büyük kapanış vurgusu.
+   ───────────────────────────────────────────────────────────────────── */
+
+section[data-section="manifesto"][class^="ocak-"],
+section[data-section="cekirdek-vaat"][class^="ocak-"],
+section[data-section="esik-kadini"][class^="ocak-"] {
+  text-align: center;
+}
+
+/* #31 Brief G.4 P1 — manifesto family agresif center (üçüncü retry, !important
+ * kabul). G.2 P2 + G.3 P1 ikisi de p kuralına müdahale etti ama manifesto
+ * DOM kapanışı h2 (<h2><em>OCAK o çemberi yeniden kuruyor.</em></h2>) — p
+ * kuralları boşa gitti. Bu kural section'ın TÜM direct child'larını (p, h2,
+ * h3, blockquote vb.) center'lar. !important :has kuralı dahil her şeyi yener.
+ * Lansman sonrası refactor turu için not. */
+section[data-section="manifesto"][class*="ocak-manifesto"] > *,
+section[data-section="cekirdek-vaat"][class*="ocak-cekirdek-vaat"] > *,
+section[data-section="esik-kadini"][class*="ocak-esik-kadini"] > * {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Paragraf — legacy .manifesto-text birebir (font-display, --text-manifesto).
+ * #31 Brief G.3 P1 retry: G.2 P2 fix'i :has kuralı (0,3,3) tarafından
+ * yutuldu (P2 specificity 0,2,2). Çözüm: (1) :not(.never) ile specificity'yi
+ * (0,4,2) yap → :has yener. (2) max-width: 30rem kaldırıldı, baseline 38rem
+ * korunur — uzun cümlelerin satır wrap'i azalır, görsel "sol-blok" hissi
+ * kalkar. Tek-em paragraflar :has kuralı ile aynı niyetle merkezde kalır. */
+section[data-section="manifesto"][class^="ocak-"] > p:not(.never),
+section[data-section="cekirdek-vaat"][class^="ocak-"] > p:not(.never),
+section[data-section="esik-kadini"][class^="ocak-"] > p:not(.never) {
+  font-family: var(--font-display);
+  font-size: var(--text-manifesto);           /* clamp(1.2rem, 2.5vw, 1.55rem) */
+  margin: 0 auto var(--space-7);
+  text-align: center;
+}
+
+/* Çekirdek-vaat blockquote — ortalı, h4, ember border kapalı (manifesto'yla birleşik akış) */
+section[data-section="cekirdek-vaat"][class^="ocak-"] blockquote {
+  border-left: none;
+  padding: var(--space-6) 0;
+  margin: var(--space-8) auto;
+  max-width: 30rem;
+  text-align: center;
+}
+
+/* Esik-Kadini kapanış vurgusu — son paragraf büyük italik anlatı kapanışı
+   Brief 3a bulgusu: p:last-of-type Notion DOM'una uymuyordu — > p:last-child
+   yedeği eklendi (direct child + iki konum match). */
+section[data-section="esik-kadini"][class^="ocak-"] > p:last-child,
+section[data-section="esik-kadini"][class^="ocak-"] > p:last-of-type {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h3);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  letter-spacing: -0.01em;
+  margin: var(--space-9) auto 0;             /* (#31 Brief G.3 P1) defansif center */
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   STANDALONE VURGU PARAGRAFI — Manifesto hierarchy (#25 Brief A item 9,
+   #26 Brief 0 KARAR 118 devam: bold varyant)
+   Niyet: Notion'da bullet'tan çıkarılıp düz paragraf olarak yazılmış
+   vurgu cümleleri (manifesto kapanışı tipi). İki HTML pattern:
+     <p><em>Tek cümle, em paragraph'ın tek child'ı.</em></p>      (italic)
+     <p><strong>Tek cümle, strong paragraph'ın tek child'ı.</strong></p>  (bold)
+   :only-child + :has() ile mid-paragraph `<p>...<em>vurgu</em>...</p>`
+   yakalanmaz (inner element parent'ında başka text/node varsa match etmez).
+   Spec cekirdek-vaat blockquote pattern'inden referans (atmosfer.css:551):
+   max-width 30rem, margin auto, center, font-display clamp h4, cream.
+   Italik açılışı sadece em için — strong dik kalır (browser default bold).
+   ───────────────────────────────────────────────────────────────────── */
+
+section[data-section][class^="ocak-"] > p:has(> em:only-child),
+section[data-section][class^="ocak-"] > p:has(> strong:only-child) {
+  max-width: 30rem;
+  margin: var(--space-8) auto;
+  text-align: center;
+}
+
+section[data-section][class^="ocak-"] > p:has(> em:only-child) > em,
+section[data-section][class^="ocak-"] > p:has(> strong:only-child) > strong {
+  font-family: var(--font-display);
+  font-size: var(--text-h4);             /* clamp(1.3rem, 2.5vw, 1.7rem) */
+  color: var(--cream);
+  line-height: var(--leading-snug);
+}
+
+/* Italic-only — strong dik kalsın, em italik aileye çekilsin. */
+section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  section[data-section][class^="ocak-"] {
+    padding: var(--space-7) var(--space-5) var(--space-8); /* 3-1.5-4rem (#31 Brief G.2 P1) */
+  }
+}
+
+/* =============================================================================
+ * #29 Brief F.5 — Yeni kanonik section render kuralları
+ * -----------------------------------------------------------------------------
+ * mini-cta + buyuk-vurgu plugin transformları baseline'ın ÜZERİNE oturur.
+ * Atmosfer Brief G amber/gold turunda kalibre edilir; burada sadece görsel
+ * ayırt edilebilir baseline. form-anchor defansif :empty hide — fragment-split
+ * kullanılan rotalarda boş <section> emit edilmez, ama back-compat için tutulur.
+ * ============================================================================*/
+
+/* === mini-cta — ash-warm kart + ember sol border + render-side ok =========== */
+section[data-section="mini-cta"] {
+  background: var(--ash-warm);
+  border-left: 3px solid var(--ember);
+  padding: clamp(1.25rem, 2vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+  margin: clamp(2rem, 4vw, 3rem) auto;
+  max-width: var(--max-w-prose);
+  border-radius: var(--radius-sm);
+}
+
+section[data-section="mini-cta"] > p {
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  margin: 0 0 var(--space-4);
+}
+
+section[data-section="mini-cta"] > p:last-of-type {
+  margin-bottom: var(--space-3);
+}
+
+section[data-section="mini-cta"] > a {
+  display: inline-block;
+  color: var(--ember);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  margin-top: var(--space-2);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+section[data-section="mini-cta"] > a::before {
+  content: "→ ";
+}
+
+section[data-section="mini-cta"] > a:hover,
+section[data-section="mini-cta"] > a:focus-visible {
+  transform: translateX(4px);
+  outline: none;
+}
+
+/* === buyuk-vurgu — ortalı italik gold (lansman amber/gold Brief G'de kalibre) === */
+section[data-section="buyuk-vurgu"] {
+  text-align: center;
+  padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 2vw, 2rem);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+/* Generic ocak-* manifesto-vurgu kuralını override et — daha büyük + gold ton. */
+section[data-section="buyuk-vurgu"].ocak-buyuk-vurgu > p,
+section[data-section="buyuk-vurgu"].ocak-buyuk-vurgu > p > em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.3;
+  font-weight: 400;
+  max-width: none;
+  margin: 0 auto;
+}
+
+/* === manifesto-vurgu — köz nokta + krem italik prose (KARAR 153) ============
+ * Plugin output: <section data-section="manifesto-vurgu" class="ocak-manifesto-vurgu">
+ *   <span class="manifesto-vurgu__ember" aria-hidden="true"></span>
+ *   <p>{prose}</p>
+ * </section>
+ * buyuk-vurgu'nun kardeşi — buyuk-vurgu altın/amber + glyph yok; bu krem + köz
+ * glyph (kasıtlı ton ayrışması, footer'dan göç eden manifesto cümlesi için
+ * kanonik kap). Baseline `section[data-section][class^="ocak-"]` (0,2,2)
+ * specificity'sini eşitlemek için `.ocak-manifesto-vurgu` class hint'i
+ * eklendi — eşit specificity'de source order kazanır (buyuk-vurgu paterni). */
+
+section[data-section="manifesto-vurgu"].ocak-manifesto-vurgu {
+  max-width: 540px;
+  margin-inline: auto;
+  padding: clamp(3rem, 6vw, 4.5rem) var(--space-6);
+  text-align: center;
+}
+
+/* Köz nokta glyph — yanan kor, paragraph'tan önce, sabit (animasyon yok) */
+section[data-section="manifesto-vurgu"] .manifesto-vurgu__ember {
+  display: block;
+  width: 7px;
+  height: 7px;
+  margin: 0 auto clamp(1.5rem, 3vw, 2rem);
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 10px 2px rgba(196, 75, 47, 0.5);
+}
+
+section[data-section="manifesto-vurgu"].ocak-manifesto-vurgu > p {
+  margin: 0 auto;
+  max-width: 480px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.35rem, 3vw, 1.6rem);   /* ~22–26px */
+  line-height: 1.55;
+  color: var(--cream);
+}
+
+/* === form-anchor — fragment-split sonrası bu marker görünmemeli, defansif hide === */
+section[data-section="form-anchor"][data-form-anchor]:empty {
+  display: none;
+}
+
+/* #32 Brief H — KVKK bullet sıkışıklık (mikro fix).
+ * IletisimForm ve AnadoluBasvuru "kvkk-icerik" panel'inde bullet'lar üst üste
+ * yapışık görünüyordu (Shift+Enter satır hissi yerine). Bullet arası dar
+ * (0.25rem) + line-height nefesli (1.5). !important — KARAR 140 P2 nested
+ * baseline `ocak-* li` margin'i yutuyor olabilir, KARAR 138 lansman öncesi
+ * !important kabul. Astro scoped component class'larını global atmosfer.css'ten
+ * literal isimle target ediyoruz (Astro class adlarını yeniden adlandırmaz,
+ * sadece selectors'a data attribute ekler). */
+.ocak-iletisim-form__kvkk-icerik ul,
+.ocak-iletisim-form__kvkk-icerik ol,
+.anadolu-basvuru__kvkk-icerik ul,
+.anadolu-basvuru__kvkk-icerik ol,
+.kvkk-icerik ul,
+.kvkk-icerik ol {
+  margin: 0.5rem 0;
+}
+
+.ocak-iletisim-form__kvkk-icerik li,
+.anadolu-basvuru__kvkk-icerik li,
+.kvkk-icerik li {
+  margin-bottom: 0.25rem !important;
+  line-height: 1.5 !important;
+}
+
+.ocak-iletisim-form__kvkk-icerik li:last-child,
+.anadolu-basvuru__kvkk-icerik li:last-child,
+.kvkk-icerik li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ─── Form-içi __intro (Notion-injected via set:html) — KARAR 151 A.2 ============
+ * 5 form anchor component'inde `<div class="...__intro" set:html={introHtml} />`
+ * Notion'dan render edilmiş overline + h2 + body üretiyor. Astro scoped CSS,
+ * child selector'lere `[data-astro-cid-XXX]` ekliyor; set:html injected DOM'da
+ * bu attribute olmadığı için scoped `__intro > p`, `__intro > h2`, vs. kuralları
+ * tetiklenmiyor. Çözüm: bu kuralları atmosfer.css'e global olarak taşı
+ * (KARAR 140 precedent: Astro class adlarını yeniden adlandırmaz, literal isimle
+ * target etmek güvenli). Eski component scoped değerleri (KARAR 151 fc63bfd)
+ * kelimesi kelimesine taşındı; KARAR 151 öncesi __label/__title/__heading/__desc
+ * parity birebir korundu. */
+
+.cember-basvuru__intro,
+.acik-kapi-kayit__intro,
+.ocak-iletisim-form__intro,
+.ates-mektuplari__intro,
+.ocak-ates-mektuplari-cta__intro {
+  text-align: center;
+}
+
+.cember-basvuru__intro,
+.acik-kapi-kayit__intro {
+  margin-bottom: var(--space-7);
+}
+
+.ocak-iletisim-form__intro,
+.ates-mektuplari__intro {
+  margin-bottom: var(--space-6);
+}
+
+.ocak-ates-mektuplari-cta__intro {
+  margin-bottom: var(--space-5);
+}
+
+.cember-basvuru__intro[hidden],
+.acik-kapi-kayit__intro[hidden],
+.ocak-iletisim-form__intro[hidden],
+.ates-mektuplari__intro[hidden],
+.ocak-ates-mektuplari-cta__intro[hidden] {
+  display: none;
+}
+
+/* Overline — Notion'da `**...**` Cmd+B → <p><strong>X</strong></p>.
+ * Sadece Cember + AcikKapi pattern'inde kullanılıyor (iletisim/atesmektuplari
+ * intro'ları h2 ile başlıyor, overline yok). */
+.cember-basvuru__intro > p:first-of-type:has(strong:only-child),
+.acik-kapi-kayit__intro > p:first-of-type:has(strong:only-child) {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ember);
+  line-height: 1.4;
+  margin-top: 0;
+  margin-inline: 0;
+}
+
+.cember-basvuru__intro > p:first-of-type:has(strong:only-child) {
+  margin-bottom: var(--space-5);
+}
+
+.acik-kapi-kayit__intro > p:first-of-type:has(strong:only-child) {
+  margin-bottom: var(--space-4);
+}
+
+.cember-basvuru__intro > p:first-of-type:has(strong:only-child) strong,
+.acik-kapi-kayit__intro > p:first-of-type:has(strong:only-child) strong {
+  font-weight: inherit;
+}
+
+/* H2 — 5 form uniform (eski __title / __heading parity: var(--text-h2) küçük). */
+.cember-basvuru__intro > h2,
+.acik-kapi-kayit__intro > h2,
+.ocak-iletisim-form__intro > h2,
+.ates-mektuplari__intro > h2,
+.ocak-ates-mektuplari-cta__intro > h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h2);
+  color: var(--cream);
+  font-weight: 400;
+  margin-top: 0;
+  margin-inline: 0;
+}
+
+.cember-basvuru__intro > h2,
+.ocak-iletisim-form__intro > h2 {
+  margin-bottom: var(--space-4);
+}
+
+.acik-kapi-kayit__intro > h2,
+.ates-mektuplari__intro > h2,
+.ocak-ates-mektuplari-cta__intro > h2 {
+  margin-bottom: var(--space-3);
+}
+
+.cember-basvuru__intro > h2 em,
+.acik-kapi-kayit__intro > h2 em,
+.ocak-iletisim-form__intro > h2 em,
+.ates-mektuplari__intro > h2 em,
+.ocak-ates-mektuplari-cta__intro > h2 em {
+  font-style: inherit;
+}
+
+/* Body — ilk paragraph dışı paragraph'lar (overline scope ilk p'yi alıyor).
+ * AtesMektuplariCTA body için kural YOK; section[data-section][class^="ocak-"] p
+ * global baseline'ı zaten bu prose'u çiziyor (eski davranış birebir korunur). */
+.cember-basvuru__intro > p:not(:first-of-type) {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.acik-kapi-kayit__intro > p:not(:first-of-type) {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0 auto;
+  max-width: 400px;
+}
+
+.ocak-iletisim-form__intro > p:not(:first-of-type) {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0 auto var(--space-3);
+  max-width: 48ch;
+}
+
+.ates-mektuplari__intro > p:not(:first-of-type) {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0 auto var(--space-3);
+  max-width: 40ch;
+}
+
+/* IletisimForm ek pattern — h2 + paragraph + ul (KVKK link listesi vs.).
+ * ul + li tipografisi (overline'sız text body) ve liste düzeni. */
+.ocak-iletisim-form__intro > ul,
+.ocak-iletisim-form__intro > ul li {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+  line-height: 1.7;
+}
+
+.ocak-iletisim-form__intro > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto var(--space-3);
+  max-width: 48ch;
+  text-align: left;
+}
+
+.ocak-iletisim-form__intro > ul > li {
+  margin-bottom: var(--space-2);
+}
+
+/* === atmosfer.css reduced-motion === */
+@media (prefers-reduced-motion: reduce) {
+  section[data-section="mini-cta"] > a {
+    transition: none;
+  }
+}
+
+/* ===== RAF AKORDEON (/araclar, 7 raf-* section) ================================ */
+/* Override emit (src/pages/araclar.astro): section sarmalama korunur, içeride
+ * <details>/<summary> + body. raf-cekirdek baştan açık, raf-beden..raf-yaratici
+ * kapalı. Brief Araçlar Yedi Raf Yön 5.
+ *
+ * Yeri (file sonu) ve specificity arttırımı — Ek Brief 2 teşhisinin sonucu:
+ * 1. tur daraltma source order yüzünden GENERIC PROSE BASELINE (line 700+) tarafından
+ *    eziliyordu (özellikle h3 0,1,4 vs 0,2,2 ve body p 0,1,1 vs 0,2,2). Düzeltme:
+ *    (a) bloğu file sonuna taşı → eşit specificity'de source order kazanır,
+ *    (b) h3 + body p selector'lerine extra class qualifier ekle → 0,2,4 ve 0,3,2
+ *        baseline (0,2,2) üzerinde kazanır.
+ *
+ * Görsel dil: SSS pattern (KARAR 105) — chevron 45°→açıkta -135°, border ash→ember.
+ * Eşik accordion'dan (ember sol border + → ×) farklı: kasıtlı imza ayrımı. */
+
+/* Section: baseline padding `var(--space-8) var(--space-6) var(--space-9)` (64-32-96)
+ * accordion için devasa → kapalı 7 raf bir ekrana sığmıyordu. Shorthand override
+ * dikey 8, sol-sağ 32 (baseline kolon eni korunur). */
+section[data-section^="raf-"][class^="ocak-raf-"] {
+  padding: var(--space-2) var(--space-6);
+  border-bottom: 1px solid var(--ash);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+/* Açık raf → alt sınır ember (SSS details[open] paralel) */
+section[data-section^="raf-"][class^="ocak-raf-"]:has(details[open]) {
+  border-bottom-color: var(--ember);
+}
+
+/* Modül alt kenar simetri (Ek Brief 4 teşhisi): baseline section padding
+ * asimetrisi (`var(--space-8) … var(--space-9)` = 64 üst / 96 alt) sayfanın
+ * TÜM section'larında geçerli — diğer bölümlerde dikey ritm kasıtlı, ama raf
+ * modülü specificity-fixed kompakt iç padding aldığı için modülün DIŞ kenarı
+ * asimetrik oldu (üst toplam ~112 vs alt toplam ~81 = ~31px ham fark). Son raf'a
+ * margin-bottom eklenir. İlk pas var(--space-6) (32) eyeball'da "az açıldı ama
+ * tam simetrik değil" — line-height/glyph metrikleri ham padding ölçüsünün
+ * ötesinde ekstra üst nefes bırakıyor. var(--space-7) (48) ile cömert eşitleme. */
+section[data-section="raf-yaratici"][class^="ocak-raf-"] {
+  margin-bottom: var(--space-7);
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: var(--space-2) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary::-webkit-details-marker {
+  display: none;
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+/* h3 — specificity (0,2,4) > baseline section h3 (0,2,2). margin 0 (kapalı raf
+ * dikey kompaktlığı korunur), font-size baseline `var(--text-h3)` (clamp 22-29px)
+ * geri alındı — Ek Brief 3 hiyerarşi düzeltmesi: 16px aşırıydı, raf başlığı gövde
+ * paragrafından küçük görünüyordu. h2 sayfa başlığından küçük, gövdeden büyük. */
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  font-size: var(--text-h3);
+  line-height: 1.2;
+}
+
+/* Chevron — SSS verbatim (45° → açıkta -135°), h3 sağ kenarında */
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3::after {
+  content: '';
+  margin-left: auto;
+  width: 12px;
+  height: 12px;
+  border-right: 1px solid var(--ember);
+  border-bottom: 1px solid var(--ember);
+  transform: rotate(45deg);
+  transition: transform var(--duration-base) var(--ease-out);
+  flex-shrink: 0;
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] > details[open] > summary > h3::after {
+  transform: rotate(-135deg);
+}
+
+/* Tanım cümlesi — italik soluk krem, h3 hemen altında tek-birim hissi.
+ * font-size baseline gövde paragrafıyla yakın (`var(--text-base)`, 16px) — h3
+ * büyüyünce orantı korunur, italik+soluk renk tanım rolünü işaretler. */
+section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__tanim {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--cream-soft);
+  font-weight: 300;
+  text-align: left;
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__tanim em {
+  font-style: italic;
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:hover > h3,
+section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:focus-visible > h3 {
+  color: var(--ember);
+}
+
+/* Body: araçlar arası sıkı satır. Specificity (0,3,2) > baseline section p (0,2,2).
+ * Em-dash paragrafları "sıkı liste" hissi — margin neredeyse sıfır, line-height
+ * baseline `--leading-prose` (1.9) yerine 1.5 (sıkı satır). */
+section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik {
+  padding-top: var(--space-3);
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobil (max-width: 768px) baseline override `section[…class^="ocak-"]` (line 992)
+ * padding'i tekrar büyütür (3-1.5-4rem) — eşit specificity, source order ile
+ * burada (file sonu) baseline mobil'i de eziyoruz. Sol-sağ var(--space-5) tutuldu
+ * (baseline mobil ile aynı kolon eni). */
+@media (max-width: 768px) {
+  section[data-section^="raf-"][class^="ocak-raf-"] {
+    padding: var(--space-2) var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  section[data-section^="raf-"][class^="ocak-raf-"],
+  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary,
+  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3,
+  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3::after {
+    transition: none;
+  }
+}

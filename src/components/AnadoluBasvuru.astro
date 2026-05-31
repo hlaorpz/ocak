@@ -1,0 +1,859 @@
+---
+// AnadoluBasvuru — /anadolu/basvuru sayfasında 13 field niyet mektubu formu (#28 Brief B, KARAR 123).
+// Mevcut 3 form pattern'inden BİLİNÇLİ sapma: ağır form (13 field) ayrı route, accordion 3 grup.
+// Endpoint: unified Apps Script doPost (api.ts). formType: 'anadolu-basvuru'.
+// Backend: Apps Script handleAnadoluBasvuru → MailerLite ANADOLU_GROUP + Notion Başvurular DB.
+// Accordion: native <details>, JS yok (SSS.astro pattern); ilk grup default açık.
+// KVKK: checkbox required + <details> expander (Q5 cevabı, lansman sonrası tam metin).
+import { APPS_SCRIPT_URL } from '../lib/api';
+---
+<section class="anadolu-basvuru" data-section="anadolu-basvuru">
+  <div class="anadolu-basvuru__container">
+    <form class="anadolu-basvuru__form" data-endpoint={APPS_SCRIPT_URL}>
+      {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return.
+       * Accordion dışında ki kapalı grup hidden olsa bile DOM'da daima mevcut. */}
+      <div class="hp-field" aria-hidden="true">
+        <label for="ab-website">Website</label>
+        <input type="text" name="website" id="ab-website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <!-- GRUP 1 — İletişim (default açık) -->
+      <details class="anadolu-basvuru__grup" open>
+        <summary>İletişim</summary>
+        <div class="anadolu-basvuru__grup-icerik">
+          <div class="anadolu-basvuru__group">
+            <label for="ab-ad">Ad <span class="anadolu-basvuru__required">*</span></label>
+            <input
+              id="ab-ad"
+              type="text"
+              class="anadolu-basvuru__input"
+              name="ad"
+              placeholder="Adın"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-email">Email <span class="anadolu-basvuru__required">*</span></label>
+            <input
+              id="ab-email"
+              type="email"
+              class="anadolu-basvuru__input"
+              name="email"
+              placeholder="email@adresin.com"
+              required
+              pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+              oninvalid="this.setCustomValidity('Geçerli bir email gir')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-telefon">Telefon <span class="anadolu-basvuru__required">*</span></label>
+            <input
+              id="ab-telefon"
+              type="tel"
+              class="anadolu-basvuru__input"
+              name="telefon"
+              placeholder="+90 5xx xxx xx xx"
+              required
+              oninvalid="this.setCustomValidity('Geçerli bir telefon numarası gir')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-sehir">Şehir <span class="anadolu-basvuru__required">*</span></label>
+            <input
+              id="ab-sehir"
+              type="text"
+              class="anadolu-basvuru__input"
+              name="sehir"
+              placeholder="Yaşadığın şehir"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-yas">Yaş <span class="anadolu-basvuru__required">*</span></label>
+            <input
+              id="ab-yas"
+              type="number"
+              class="anadolu-basvuru__input"
+              name="yas"
+              min="18"
+              max="99"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <span class="anadolu-basvuru__label-as-legend">
+              Bizi nereden duydun? <span class="anadolu-basvuru__required">*</span>
+            </span>
+            <div class="anadolu-basvuru__radios">
+              <label class="anadolu-basvuru__radio">
+                <input type="radio" name="ilk_dokunus_kanali" value="Instagram" required
+                  oninvalid="this.setCustomValidity('Bir seçim yap')"
+                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">Instagram</span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input type="radio" name="ilk_dokunus_kanali" value="Arkadaş" />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">Arkadaş tavsiyesi</span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input type="radio" name="ilk_dokunus_kanali" value="Google" />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">Google arama</span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input type="radio" name="ilk_dokunus_kanali" value="Etkinlik" />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">Etkinlik</span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input type="radio" name="ilk_dokunus_kanali" value="Diğer" />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">Diğer</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- GRUP 2 — Niyet -->
+      <details class="anadolu-basvuru__grup">
+        <summary>Niyet</summary>
+        <div class="anadolu-basvuru__grup-icerik">
+          <div class="anadolu-basvuru__group">
+            <label for="ab-niyet">Neden bu yıl? <span class="anadolu-basvuru__required">*</span></label>
+            <textarea
+              id="ab-niyet"
+              class="anadolu-basvuru__textarea"
+              name="niyet_mektubu"
+              rows="5"
+              placeholder="Niyet mektubun. Bu yolculuğa şu an, bu hayatında neden katılmak istediğini birkaç paragrafta anlat."
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            ></textarea>
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-su-an">
+              Şu an hayatında nerede duruyorsun?
+              <span class="anadolu-basvuru__required">*</span>
+            </label>
+            <textarea
+              id="ab-su-an"
+              class="anadolu-basvuru__textarea"
+              name="su_an_nerede"
+              rows="4"
+              placeholder="İş, ilişki, içsel durum — kısaca paylaş."
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            ></textarea>
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-gecis">Bu yıl önemli bir geçiş yaşıyor musun?</label>
+            <textarea
+              id="ab-gecis"
+              class="anadolu-basvuru__textarea"
+              name="gecis_notu"
+              rows="3"
+              placeholder="Boşanma, taşınma, yas, yeni başlangıç... yaşıyorsan birkaç cümle."
+            ></textarea>
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-saglik">Sağlık notu</label>
+            <textarea
+              id="ab-saglik"
+              class="anadolu-basvuru__textarea"
+              name="saglik_notu"
+              rows="3"
+              placeholder="Bilmemiz gereken fiziksel veya psikolojik bir durum varsa."
+            ></textarea>
+          </div>
+
+          <div class="anadolu-basvuru__group">
+            <label for="ab-cember">Çember / retreat deneyimi</label>
+            <textarea
+              id="ab-cember"
+              class="anadolu-basvuru__textarea"
+              name="cember_deneyimi"
+              rows="3"
+              placeholder="Daha önce katıldığın çember, retreat veya derin grup deneyimleri."
+            ></textarea>
+          </div>
+        </div>
+      </details>
+
+      <!-- GRUP 3 — Katılım -->
+      <details class="anadolu-basvuru__grup">
+        <summary>Katılım</summary>
+        <div class="anadolu-basvuru__grup-icerik">
+          <div class="anadolu-basvuru__group">
+            <span class="anadolu-basvuru__label-as-legend">
+              Bu yolculuğa ekonomik katılımın hangi şekilde olur?
+              <span class="anadolu-basvuru__required">*</span>
+            </span>
+            <div class="anadolu-basvuru__radios">
+              <label class="anadolu-basvuru__radio">
+                <input
+                  type="radio"
+                  name="ekonomik_katilim"
+                  value="Tam katılım — kendi yolculuğum için ödüyorum"
+                  required
+                  oninvalid="this.setCustomValidity('Bir seçim yap')"
+                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))"
+                />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">
+                  Tam katılım — kendi yolculuğum için ödüyorum
+                </span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input
+                  type="radio"
+                  name="ekonomik_katilim"
+                  value="Burs/indirim talep ediyorum — uygun bir paylaşımla konuşmak isterim"
+                />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">
+                  Burs/indirim talep ediyorum — uygun bir paylaşımla konuşmak isterim
+                </span>
+              </label>
+              <label class="anadolu-basvuru__radio">
+                <input
+                  type="radio"
+                  name="ekonomik_katilim"
+                  value="Askıda yer almak istiyorum — başka bir kadına yer açmak için ek katkı"
+                />
+                <span class="anadolu-basvuru__radio-circle" aria-hidden="true"></span>
+                <span class="anadolu-basvuru__radio-text">
+                  Askıda yer almak istiyorum — başka bir kadına yer açmak için ek katkı
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="anadolu-basvuru__group anadolu-basvuru__kvkk">
+            <label class="anadolu-basvuru__kvkk-onay">
+              <input type="checkbox" name="kvkk" required
+                oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
+                onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+              <span class="anadolu-basvuru__kvkk-text">
+                Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
+                <span class="anadolu-basvuru__required">*</span>
+              </span>
+            </label>
+            <details class="anadolu-basvuru__kvkk-detay">
+              <summary>KVKK aydınlatma metnini oku</summary>
+              <div class="anadolu-basvuru__kvkk-icerik">
+                <p>
+                  OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
+                  yalnızca aşağıdaki amaçlarla kullanırız:
+                </p>
+                <ul>
+                  <li>Anadolu Yolculuğu başvurunun değerlendirilmesi</li>
+                  <li>Tanışma görüşmesi için iletişim</li>
+                  <li>Lansman sonrası program iletişimi (bülten + duyurular)</li>
+                </ul>
+                <p>
+                  Verilerini üçüncü taraflara satmayız, paylaşmayız. Talebin üzerine
+                  silinir (selam@ocak.biz). Detaylı KVKK metni için <a href="/iletisim">/iletisim</a> sayfası.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+
+      <button type="submit" class="anadolu-basvuru__submit">Niyet Mektubunu Yolla</button>
+
+      <p class="anadolu-basvuru__error" role="alert" hidden></p>
+    </form>
+
+    <div class="anadolu-basvuru__success" hidden>
+      <div class="anadolu-basvuru__success-ember" aria-hidden="true"></div>
+      <h3 class="anadolu-basvuru__success-title">Niyet mektubun ulaştı.</h3>
+      <p class="anadolu-basvuru__success-text">
+        Bir hafta içinde tanışmak için kapını çalıyoruz.
+      </p>
+      <p class="anadolu-basvuru__success-imza">— OCAK</p>
+      <a href="/anadolu" class="anadolu-basvuru__success-back">← Anadolu'ya dön</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Section — coal-deep + üst ambient çizgi + ember glow (CemberBasvuru kardeşi) */
+  .anadolu-basvuru {
+    padding: var(--space-9) var(--space-6);
+    background: var(--coal-deep);
+    position: relative;
+  }
+
+  .anadolu-basvuru::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ash), transparent);
+  }
+
+  /* Brief M — width: min(600px, 100%): mobil (390) sabit 600px ortalanma
+     ile +105px doc overflow yapıyordu. Fluid: desktop'ta 600px, mobilde
+     viewport'a sığar (KARAR 150 GrainOverlay sınıfı yarım iş). */
+  .anadolu-basvuru::after {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    width: min(600px, 100%);
+    height: 600px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(196, 75, 47, 0.08) 0%,
+      rgba(196, 75, 47, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+
+  .anadolu-basvuru__container {
+    max-width: 620px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === Accordion grupları === */
+  .anadolu-basvuru__grup {
+    border-bottom: 1px solid var(--ash);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__grup[open] {
+    border-bottom-color: var(--ember);
+  }
+
+  .anadolu-basvuru__grup > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-5) 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h3);
+    color: var(--cream);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__grup > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .anadolu-basvuru__grup > summary:hover,
+  .anadolu-basvuru__grup > summary:focus-visible {
+    color: var(--ember);
+    outline: none;
+  }
+
+  /* Chevron — SSS pattern, ember 45deg → -135deg */
+  .anadolu-basvuru__grup > summary::after {
+    content: '';
+    margin-left: auto;
+    width: 12px;
+    height: 12px;
+    border-right: 1px solid var(--ember);
+    border-bottom: 1px solid var(--ember);
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__grup[open] > summary::after {
+    transform: rotate(-135deg);
+  }
+
+  .anadolu-basvuru__grup-icerik {
+    padding: var(--space-3) 0 var(--space-6);
+  }
+
+  /* === Form group === */
+  .anadolu-basvuru__group {
+    margin-bottom: var(--space-5);
+  }
+
+  .anadolu-basvuru__group:last-child {
+    margin-bottom: 0;
+  }
+
+  .anadolu-basvuru__group > label,
+  .anadolu-basvuru__label-as-legend {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--cream-soft);
+    margin-bottom: 0.55rem;
+  }
+
+  .anadolu-basvuru__required {
+    color: var(--ember);
+    margin-left: 0.15rem;
+  }
+
+  /* === Input + textarea === */
+  .anadolu-basvuru__input,
+  .anadolu-basvuru__textarea {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--cream);
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    padding: 0.9rem 1.2rem;
+    outline: none;
+    transition: border-color var(--duration-base) var(--ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .anadolu-basvuru__input::placeholder,
+  .anadolu-basvuru__textarea::placeholder {
+    color: var(--smoke);
+  }
+
+  .anadolu-basvuru__input:focus,
+  .anadolu-basvuru__textarea:focus {
+    border-color: var(--ember);
+  }
+
+  .anadolu-basvuru__textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+
+  /* === Radio grubu (CemberBasvuru pattern) === */
+  .anadolu-basvuru__radios {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .anadolu-basvuru__radio {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.9rem 1.2rem;
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    cursor: pointer;
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__radio:hover {
+    border-color: var(--smoke);
+  }
+
+  .anadolu-basvuru__radio input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .anadolu-basvuru__radio:has(input:checked) {
+    border-color: var(--ember);
+    background: rgba(196, 75, 47, 0.06);
+  }
+
+  .anadolu-basvuru__radio-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--smoke);
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__radio:has(input:checked) .anadolu-basvuru__radio-circle {
+    border-color: var(--ember);
+  }
+
+  .anadolu-basvuru__radio-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ember);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .anadolu-basvuru__radio:has(input:checked) .anadolu-basvuru__radio-circle::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .anadolu-basvuru__radio-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--cream-soft);
+    line-height: 1.5;
+  }
+
+  /* === KVKK checkbox + expander === */
+  .anadolu-basvuru__kvkk {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ash);
+  }
+
+  .anadolu-basvuru__kvkk-onay {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    cursor: pointer;
+    margin-bottom: var(--space-3);
+  }
+
+  .anadolu-basvuru__kvkk-onay input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--ember);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .anadolu-basvuru__kvkk-text {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--cream-soft);
+    line-height: 1.6;
+  }
+
+  .anadolu-basvuru__kvkk-detay summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    padding: 0.4rem 0;
+    transition: color var(--duration-base) var(--ease-out);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .anadolu-basvuru__kvkk-detay summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .anadolu-basvuru__kvkk-detay summary:hover,
+  .anadolu-basvuru__kvkk-detay summary:focus-visible {
+    color: var(--ember);
+    outline: none;
+  }
+
+  .anadolu-basvuru__kvkk-detay summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__kvkk-detay[open] summary::after {
+    transform: rotate(-135deg);
+  }
+
+  .anadolu-basvuru__kvkk-icerik {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--cream-soft);
+    line-height: 1.7;
+    padding: var(--space-2) 0;
+  }
+
+  .anadolu-basvuru__kvkk-icerik p {
+    margin: 0 0 var(--space-2);
+  }
+
+  .anadolu-basvuru__kvkk-icerik ul {
+    margin: 0 0 var(--space-2);
+    padding-left: 1.2rem;
+  }
+
+  .anadolu-basvuru__kvkk-icerik li {
+    margin-bottom: 0.25rem;
+  }
+
+  .anadolu-basvuru__kvkk-icerik a {
+    color: var(--ember);
+    text-decoration: underline;
+    text-decoration-color: rgba(196, 75, 47, 0.4);
+    text-underline-offset: 0.2em;
+  }
+
+  /* === Submit button — KATIL paterni, geniş + ember === */
+  .anadolu-basvuru__submit {
+    width: 100%;
+    padding: 1.1rem 2rem;
+    margin-top: var(--space-6);
+    background: var(--ember);
+    border: 1px solid var(--ember);
+    color: var(--coal);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--duration-base) var(--ease-out),
+                opacity var(--duration-base) var(--ease-out),
+                box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__submit:hover:not(:disabled) {
+    background: var(--ember-soft);
+    box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+  }
+
+  .anadolu-basvuru__submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .anadolu-basvuru__error {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    text-align: center;
+    margin: var(--space-3) 0 0;
+  }
+
+  .anadolu-basvuru__form[hidden] { display: none; }
+  .anadolu-basvuru__success[hidden] { display: none; }
+
+  /* === Success state — KARAR 115 AtesMektuplari ton, em-dash imza === */
+  .anadolu-basvuru__success {
+    scroll-margin-top: var(--nav-height);
+    text-align: center;
+    padding: var(--space-7) 0;
+    animation: anadolu-basvuru-fade 0.8s var(--ease-out) forwards;
+  }
+
+  .anadolu-basvuru__success-ember {
+    width: 10px;
+    height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--ember), 0 0 40px rgba(196, 75, 47, 0.3);
+    margin: 0 auto var(--space-6);
+  }
+
+  .anadolu-basvuru__success-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    color: var(--gold);
+    font-weight: 400;
+    margin: 0 0 var(--space-4);
+  }
+
+  .anadolu-basvuru__success-text {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0 auto var(--space-5);
+    max-width: 42ch;
+  }
+
+  .anadolu-basvuru__success-imza {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--cream-soft);
+    margin: 0 0 var(--space-7);
+  }
+
+  .anadolu-basvuru__success-back {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+    padding: 0.9rem 2rem;
+    border: 1px solid var(--smoke);
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+  }
+
+  .anadolu-basvuru__success-back:hover {
+    border-color: var(--ember);
+    background: rgba(196, 75, 47, 0.1);
+  }
+
+  @keyframes anadolu-basvuru-fade {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === Mobil === */
+  @media (max-width: 480px) {
+    .anadolu-basvuru {
+      padding: var(--space-7) var(--space-5);
+    }
+    .anadolu-basvuru__grup > summary {
+      font-size: var(--text-h4);
+      padding: var(--space-4) 0;
+    }
+    .anadolu-basvuru__grup-icerik {
+      padding: var(--space-2) 0 var(--space-5);
+    }
+    .anadolu-basvuru__group {
+      margin-bottom: var(--space-4);
+    }
+  }
+
+  /* === A11y === */
+  @media (prefers-reduced-motion: reduce) {
+    .anadolu-basvuru__grup > summary,
+    .anadolu-basvuru__grup > summary::after,
+    .anadolu-basvuru__grup,
+    .anadolu-basvuru__kvkk-detay summary::after,
+    .anadolu-basvuru__radio,
+    .anadolu-basvuru__radio-circle,
+    .anadolu-basvuru__radio-circle::after,
+    .anadolu-basvuru__submit,
+    .anadolu-basvuru__input,
+    .anadolu-basvuru__textarea,
+    .anadolu-basvuru__success {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { scrollToSuccess } from '../lib/scroll-to-success';
+
+  // Submit pattern CemberBasvuru verbatim — text/plain POST, result.status === 'success' → success state.
+  // 13 field payload: KARAR 123 müşteri datası attribution (ilk_dokunus_kanali) + KARAR 117 askıda eğitim (ekonomik_katilim).
+  const form = document.querySelector<HTMLFormElement>('.anadolu-basvuru__form');
+  if (form) {
+    const section = form.closest('.anadolu-basvuru') as HTMLElement;
+    const submit = form.querySelector<HTMLButtonElement>('.anadolu-basvuru__submit')!;
+    const errorEl = section.querySelector<HTMLElement>('.anadolu-basvuru__error')!;
+    const successEl = section.querySelector<HTMLElement>('.anadolu-basvuru__success')!;
+    const endpoint = form.dataset.endpoint!;
+    const oldText = submit.textContent ?? 'Niyet Mektubunu Yolla';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      submit.disabled = true;
+      submit.textContent = 'Gönderiliyor…';
+
+      const data = new FormData(form);
+      const payload = {
+        formType: 'anadolu-basvuru',
+        ad: (data.get('ad') ?? '').toString().trim(),
+        email: (data.get('email') ?? '').toString().trim(),
+        telefon: (data.get('telefon') ?? '').toString().trim(),
+        sehir: (data.get('sehir') ?? '').toString().trim(),
+        yas: (data.get('yas') ?? '').toString().trim(),
+        ilk_dokunus_kanali: (data.get('ilk_dokunus_kanali') ?? '').toString(),
+        niyet_mektubu: (data.get('niyet_mektubu') ?? '').toString().trim(),
+        su_an_nerede: (data.get('su_an_nerede') ?? '').toString().trim(),
+        gecis_notu: (data.get('gecis_notu') ?? '').toString().trim(),
+        saglik_notu: (data.get('saglik_notu') ?? '').toString().trim(),
+        cember_deneyimi: (data.get('cember_deneyimi') ?? '').toString().trim(),
+        ekonomik_katilim: (data.get('ekonomik_katilim') ?? '').toString(),
+        // KARAR 152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
+        website: (data.get('website') ?? '').toString(),
+      };
+
+      // Defansif validasyon (native required attribute zorunlu alanları yakalar).
+      const eksik =
+        !payload.ad ||
+        !payload.email ||
+        !payload.telefon ||
+        !payload.sehir ||
+        !payload.yas ||
+        !payload.ilk_dokunus_kanali ||
+        !payload.niyet_mektubu ||
+        !payload.su_an_nerede ||
+        !payload.ekonomik_katilim;
+      if (eksik) {
+        errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+        // Eksik field'ın olduğu accordion grubunu aç ki kullanıcı görebilsin.
+        section.querySelectorAll<HTMLDetailsElement>('.anadolu-basvuru__grup').forEach((d) => {
+          if (d.querySelector(':invalid')) d.open = true;
+        });
+        return;
+      }
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          form.hidden = true;
+          successEl.hidden = false;
+          scrollToSuccess(successEl);
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({
+              event: 'form_submit',
+              form_type: 'anadolu',
+            });
+          }
+        } else {
+          throw new Error(result.message || 'API error');
+        }
+      } catch (err) {
+        console.error('Anadolu başvuru error:', err);
+        errorEl.textContent =
+          'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+      }
+    });
+  }
+</script>

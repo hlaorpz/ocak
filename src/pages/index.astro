@@ -1,0 +1,37 @@
+---
+// index.astro — ana sayfa override (#23 Brief 3; KARAR 127 fragment-split genişletme).
+// Statik route dinamik [...slug].astro'nun `/` rotasını ezer. Ana sayfa "özel" tek
+// nokta: Hero CTA+scroll plugin output'unda yok → component instance ile basılır.
+// Diğer her şey (al-ol-ver, sonraki-bulusma, ates-mektuplari) fragment-split
+// registry'sinden Notion marker'larıyla geliyor.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import Hero from '../components/Hero.astro';
+
+const sayfa = await getEntry('sayfalar', '/');
+if (!sayfa) {
+  throw new Error("index.astro: 'sayfalar' collection'ında '/' slug'ı bulunamadı.");
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda="OCAK"
+>
+  {/* Hero — component instance (CTA + scroll plugin output'unda yok). Metin Notion
+      hero içeriğinden hardcode (hero-anasayfa OMIT edildiği için Content'te yok). */}
+  <Hero
+    oda="OCAK"
+    overline="KADINLARIN KADİM ATEŞİ"
+    title="Ocağın ne zaman söndü?"
+    subtitle="Ateşin yanında yer var."
+    ctaText="Ateşin yanına gel"
+    ctaHref="#ates-mektuplari"
+  />
+
+  {/* Prose section'lar + marker'lar (al-ol-ver → AlOlVer, sonraki-bulusma →
+      SonrakiBulusma slug auto, form-anchor sıra 7 → AtesMektuplari). */}
+  <PageContent slug="/" fragments={sayfa.data.fragments} />
+</Layout>

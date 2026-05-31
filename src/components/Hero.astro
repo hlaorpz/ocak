@@ -1,0 +1,257 @@
+---
+// Hero — sayfa-başı section (KARAR 92, 93, 102)
+// oda prop'u glow yoğunluğunu belirler (KARAR 102 sapma 2):
+//   - OCAK → strong (0.12 / 0.05 / 0.02)
+//   - diğer 5 oda → soft (0.10 / 0.04 / 0.02)
+// Glow inline radial-gradient (legacy verbatim, blur YOK, drift YOK)
+// fadeUp staggered intro: eyebrow .3s / title .6s / subtitle .9s / cta 1.2s / scroll 1.8s
+// Scroll indicator: legacy scrollPulse (opacity 0.3↔0.8, 2s ease infinite, smoke gradient)
+
+export type Oda = 'OCAK' | 'Yol' | 'Buluşmalar' | 'Yolculuk' | 'Biz' | 'İletişim';
+
+interface Props {
+  oda: Oda;
+  overline?: string;       // ALL CAPS (KARAR 92), opsiyonel
+  title: string;           // ana H1 başlık
+  subtitle?: string;       // italik tagline, opsiyonel
+  ctaText?: string;        // CTA buton metni
+  ctaHref?: string;        // CTA buton link
+  showScroll?: boolean;    // scroll indicator göster (default: true)
+}
+
+const {
+  oda,
+  overline,
+  title,
+  subtitle,
+  ctaText,
+  ctaHref,
+  showScroll = true,
+} = Astro.props;
+---
+<section class="hero" data-section="hero" data-oda={oda}>
+  <div class="hero__glow" aria-hidden="true"></div>
+  <div class="hero__fade-out" aria-hidden="true"></div>
+
+  <div class="hero__content ocak-container">
+    {overline && (
+      <p class="hero__overline ocak-overline">{overline}</p>
+    )}
+
+    <h1 class="hero__title">{title}</h1>
+
+    {subtitle && (
+      <p class="hero__subtitle"><em>{subtitle}</em></p>
+    )}
+
+    {ctaText && ctaHref && (
+      <a class="hero__cta" href={ctaHref}>{ctaText}</a>
+    )}
+
+    {showScroll && (
+      <div class="hero__scroll" aria-hidden="true">
+        <span class="hero__scroll-line"></span>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* === GLOW (KARAR 102 sapma 2 — oda-bazlı, legacy verbatim) === */
+  /* Legacy: radial 800x800, ember rgba, bottom -20% left 50%, blur YOK, drift YOK */
+
+  /* Legacy geometri: 800x800 box, bottom -20% left 50% translateX(-50%),
+     radial ellipse at center. .hero overflow:hidden ile alttan kırpılır.
+     (Brief 2b — legacy/index.html .hero::before verbatim) */
+  .hero__glow {
+    position: absolute;
+    bottom: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* OCAK odası — strong (legacy/index.html .hero::before) */
+  .hero[data-oda="OCAK"] .hero__glow {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(196, 75, 47, 0.12) 0%,
+      rgba(196, 75, 47, 0.05) 30%,
+      rgba(212, 168, 85, 0.02) 50%,
+      transparent 70%
+    );
+  }
+
+  /* Diğer 5 oda — soft (legacy/acik-kapi.html .hero::before) */
+  .hero[data-oda="Yol"] .hero__glow,
+  .hero[data-oda="Buluşmalar"] .hero__glow,
+  .hero[data-oda="Yolculuk"] .hero__glow,
+  .hero[data-oda="Biz"] .hero__glow,
+  .hero[data-oda="İletişim"] .hero__glow {
+    background: radial-gradient(
+      ellipse at center,
+      rgba(196, 75, 47, 0.10) 0%,
+      rgba(196, 75, 47, 0.04) 30%,
+      rgba(212, 168, 85, 0.02) 50%,
+      transparent 70%
+    );
+  }
+
+  /* === BOTTOM FADE (Hero B kararı, #30 Brief F sonu Item 6b) ===
+     Hero alt %25'inde linear-gradient transparent → coal. Glow alt kenarındaki
+     sert sınırı maskeler + Hero altı coal section'a yumuşak geçiş.
+     DOM order: glow → fade-out → content → scroll. fade-out z-index 0 (glow ile aynı),
+     DOM'da sonra → glow'un ÜSTÜNDE. content + scroll z-index 1 → fade-out üstünde. */
+  .hero__fade-out {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* %25 → %40 (#30 Brief F sonu Item 6b-revize): glow center Hero altından ~220px
+       (~%24 Hero), radial 70% stop'a kadar ~500px (~%55). %25 yalnız glow alt yarısını
+       kapsıyordu — parlak ember üst yarısı fade dışında sert görünüyordu. %40 ile glow
+       merkezi fade içinde, üst sınırda radial zaten transparent. */
+    height: 40%;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(to bottom, transparent, var(--coal));
+  }
+
+  /* === CONTENT LAYOUT === */
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  /* === TYPOGRAPHY (semantik fluid token'lar, KARAR 102 sapma 4) === */
+
+  .hero__overline {
+    /* .ocak-overline class'ı zaten global.css'te tanımlı */
+    color: var(--ember);
+  }
+
+  .hero__title {
+    font-family: var(--font-display);
+    font-style: italic;          /* #24 Brief 2 Sürpriz #4 — legacy <em>söndü?</em> partial italic → full italic (KARAR 105 Hero pattern) */
+    font-size: var(--text-hero);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--cream);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .hero__subtitle {
+    font-family: var(--font-display);
+    font-size: var(--text-manifesto);
+    font-style: italic;
+    color: var(--cream-soft);
+    margin: 0;
+    max-width: 32ch;
+  }
+
+  .hero__cta {
+    display: inline-block;
+    padding: var(--space-3) var(--space-6);
+    margin-top: var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream);
+    background: transparent;
+    border: 1px solid var(--ember);
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background-color var(--duration-base) var(--ease-out),
+                color var(--duration-base) var(--ease-out);
+  }
+
+  .hero__cta:hover,
+  .hero__cta:focus-visible {
+    background: var(--ember);
+    color: var(--coal);
+  }
+
+  /* === SCROLL INDICATOR (legacy verbatim: scrollPulse, smoke gradient) === */
+  /* legacy/index.html: .scroll-line 1px×40px, smoke→transparent, scrollPulse 2s ease infinite */
+
+  .hero__scroll {
+    position: absolute;
+    bottom: var(--space-6);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;                /* fade-out (z-index 1) üstünde — alt %25'in
+                                  ortasındaki coal koyulaşma scroll cue'sunu yutmasın */
+  }
+
+  .hero__scroll-line {
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--smoke), transparent);
+    animation: scrollPulse 2s ease infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50%      { opacity: 0.8; }
+  }
+
+  /* === STAGGERED INTRO (legacy verbatim: 0.3 / 0.6 / 0.9 / 1.2 / 1.8s) === */
+  /* fadeUp keyframes global.css'te (Brief 4a) */
+
+  .hero__overline,
+  .hero__title,
+  .hero__subtitle,
+  .hero__cta,
+  .hero__scroll {
+    opacity: 0;
+    animation: fadeUp 0.9s ease both;
+  }
+
+  .hero__overline { animation-delay: 0.3s; }
+  .hero__title    { animation-delay: 0.6s; }
+  .hero__subtitle { animation-delay: 0.9s; }
+  .hero__cta      { animation-delay: 1.2s; }
+  .hero__scroll   { animation-delay: 1.8s; }
+
+  /* === ACCESSIBILITY === */
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__overline,
+    .hero__title,
+    .hero__subtitle,
+    .hero__cta,
+    .hero__scroll {
+      opacity: 1;
+      animation: none;
+    }
+    .hero__scroll-line {
+      animation: none;
+    }
+  }
+
+  /* === RESPONSIVE === */
+
+  @media (max-width: 768px) {
+    .hero__content { gap: var(--space-4); }
+    .hero__scroll { bottom: var(--space-4); }
+  }
+</style>

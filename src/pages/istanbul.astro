@@ -1,0 +1,21 @@
+---
+// istanbul.astro — /istanbul sayfa override (#26 Brief G Adım 5; KARAR 127).
+// SonrakiBulusma artık fragment-split sonraki-bulusma marker'ından geliyor;
+// hard-coded instance kaldırıldı. AtesMektuplariCTA form-anchor registry'den.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+const sayfa = await getEntry('sayfalar', '/istanbul');
+if (!sayfa) {
+  throw new Error("istanbul.astro: 'sayfalar' collection'ında '/istanbul' slug'ı bulunamadı.");
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  <PageContent slug="/istanbul" fragments={sayfa.data.fragments} />
+</Layout>

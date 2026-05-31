@@ -1,0 +1,25 @@
+---
+// takvim.astro — /takvim sayfa override (#26 Brief H Adım 3; #29 Brief F.5 C4; KARAR 153).
+// Statik route dinamik [...slug].astro'nun /takvim rotasını ezer (KARAR 119).
+// AtesMektuplari CTA + EtkinlikTakvimi artık Notion içeriğinin akışından geliyor:
+//   - etkinlik-takvimi → Notion'da `## section: etkinlik-takvimi` marker'ı (KARAR 153),
+//     filtreler düğme yazısının hemen altına konur; PageContent o noktaya
+//     <EtkinlikTakvimi /> basar (fragment-split, sonraki-bulusma paraleli).
+// Sabit page-level instance KALDIRILDI — takvimin yeri Notion'da yönetilir.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+const sayfa = await getEntry('sayfalar', '/takvim');
+if (!sayfa) {
+  throw new Error("takvim.astro: 'sayfalar' collection'ında '/takvim' slug'ı bulunamadı.");
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  <PageContent slug="/takvim" fragments={sayfa.data.fragments} />
+</Layout>

@@ -1,0 +1,194 @@
+---
+// SonrakiBulusma — dinamik etkinlik listesi (KARAR 92, 93; KARAR 127 fragment-split).
+// Çağrı sadece PageContent fragment-split'inden: slug prop'u sayfayı tanımlar,
+// kategori + heading slug'tan otomatik türetilir (getKategori, getHeading).
+//
+// Fallback davranışı (brief karar):
+//   - kategori null (Home) → tüm yaklaşan, DEFAULT_HEADING
+//   - kategori var + o kategoride etkinlik var → kategori filtresi, KATEGORI_HEADING
+//   - kategori var + o kategoride etkinlik yok → tüm yaklaşan, DEFAULT_HEADING
+//
+// Loader publish filtresi (siteGoster + durum∈{Kayıt Açık,Dolu}) zaten uyguladı.
+
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+import {
+  filterEtkinliklerByKategori,
+  getKategori,
+  getHeading,
+} from '../lib/etkinlik-kategori';
+
+type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
+
+interface Props {
+  /** Çağrıldığı sayfanın slug'u (PageContent fragment-split geçirir). */
+  slug: string;
+}
+
+const LIMIT = 3;
+const { slug } = Astro.props;
+const kategori = getKategori(slug);
+
+const sortFn = (a: EtkinlikData, b: EtkinlikData) => {
+  if (a.oneCikar !== b.oneCikar) return a.oneCikar ? -1 : 1; // öne çıkanlar üstte
+  if (a.tarihBaslangic !== b.tarihBaslangic)
+    return a.tarihBaslangic.localeCompare(b.tarihBaslangic); // tarih ASC
+  return a.baslik.localeCompare(b.baslik, 'tr'); // son kırıcı: başlık TR
+};
+
+const tumu = (await getCollection('etkinlikler')).map((e) => e.data);
+const filtrelenmis = filterEtkinliklerByKategori(tumu, kategori).sort(sortFn);
+
+let liste: EtkinlikData[];
+let hasKategoriEtkinlik: boolean;
+if (kategori && filtrelenmis.length === 0) {
+  // Fallback davranışı: kategori var ama o kategoride etkinlik yok →
+  // tüm yaklaşan etkinlikleri DEFAULT_HEADING ile listele.
+  liste = tumu.slice().sort(sortFn).slice(0, LIMIT);
+  hasKategoriEtkinlik = false;
+} else {
+  liste = filtrelenmis.slice(0, LIMIT);
+  hasKategoriEtkinlik = !!kategori && filtrelenmis.length > 0;
+}
+
+const heading = getHeading(slug, hasKategoriEtkinlik);
+const bos = liste.length === 0;
+---
+<section class="sonraki-bulusma" data-section="sonraki-bulusma">
+  <div class="ocak-container">
+    <h2 class="sonraki-bulusma__heading">{heading}</h2>
+
+    {bos ? (
+      <p style="font-style: italic; color: var(--cream); text-align: center;">
+        Bir sonraki buluşma yakında duyurulacak.
+      </p>
+    ) : (
+      <ul class="sonraki-bulusma__liste">
+        {liste.map((etkinlik) => (
+          <li class="sonraki-bulusma__item">
+            <article class="sonraki-bulusma__kart">
+              <span class="sonraki-bulusma__tip">{etkinlik.tip}</span>
+              <h3 class="sonraki-bulusma__baslik">{etkinlik.baslik}</h3>
+              <p class="sonraki-bulusma__meta">
+                <span class="sonraki-bulusma__tarih">
+                  {formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat)}
+                </span>
+                <span class="sonraki-bulusma__sep" aria-hidden="true">·</span>
+                <span class="sonraki-bulusma__mekan">
+                  {etkinlik.mekanDetay ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}` : etkinlik.mekan}
+                </span>
+              </p>
+              {etkinlik.kayitUrl && (
+                <a class="sonraki-bulusma__kayit" href={etkinlik.kayitUrl}>
+                  Kayıt ol →
+                </a>
+              )}
+            </article>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .sonraki-bulusma {
+    padding: var(--space-8) 0;
+  }
+
+  .sonraki-bulusma__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    color: var(--cream);
+    text-align: center;
+    margin: 0 0 var(--space-6);
+    font-weight: 400;
+  }
+
+  .sonraki-bulusma__liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .sonraki-bulusma__liste {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .sonraki-bulusma__item {
+    margin: 0;
+  }
+
+  .sonraki-bulusma__kart {
+    height: 100%;
+    padding: var(--space-5);
+    background: var(--ash);
+    border: 1px solid transparent;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    transition: border-color var(--duration-base) var(--ease-out),
+                background-color var(--duration-base) var(--ease-out);
+  }
+
+  .sonraki-bulusma__kart:hover {
+    border-color: var(--ember);
+    background: var(--ash-warm);
+  }
+
+  .sonraki-bulusma__tip {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--ember);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .sonraki-bulusma__baslik {
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    color: var(--cream);
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  .sonraki-bulusma__meta {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--cream-soft);
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .sonraki-bulusma__sep {
+    color: var(--smoke);
+  }
+
+  .sonraki-bulusma__kayit {
+    display: inline-block;
+    margin-top: auto;
+    padding-top: var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    align-self: flex-start;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .sonraki-bulusma__kayit:hover,
+  .sonraki-bulusma__kayit:focus-visible {
+    border-bottom-color: var(--ember);
+  }
+</style>

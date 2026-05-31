@@ -1,0 +1,128 @@
+/*
+  OCAK — Design Tokens
+  KARAR 35-36: Renk paleti, tipografi, atmosfer.
+  Beyaz (#FFFFFF) yasak — en açık renk: --cream.
+*/
+
+:root {
+  /* ===== RENK PALETİ (KARAR 35) ===== */
+  --coal:        #1A1210;   /* ana zemin */
+  --ember:       #C44B2F;   /* vurgu, CTA, butonlar, başlıklar */
+  --cream:       #F2EAE2;   /* ana yazı rengi (koyu zemin üzerinde) */
+  --gold:        #D4A855;   /* ikincil vurgu, etiketler, ince çizgiler */
+  --ash:         #3D3532;   /* kart arka planı, ikincil zemin */
+  --smoke:       #5C5350;   /* alt metin, tarihler */
+  --warm-gray:   #8A7E78;   /* gövde metin */
+
+  /* Varyant renkler (legacy'den taşındı) */
+  --coal-deep: #110C0A;                          /* daha koyu zemin varyantı */
+  --ash-warm: #443C38;                           /* hover background */
+  --ember-soft: #D4603F;                         /* ember hover state */
+  --ember-alpha-15: rgba(196, 75, 47, 0.15);     /* ambient çizgi, soft glow */
+  --cream-soft: rgba(242, 234, 226, 0.85);       /* alt metin, ikincil */
+  --gold-soft: rgba(212, 168, 85, 0.6);          /* ikincil vurgu */
+
+  /* ===== SEMANTİK ===== */
+  --bg:              var(--coal);
+  --bg-elevated:     var(--ash);
+  --text-primary:    var(--cream);
+  --text-body:       var(--warm-gray);
+  --text-muted:      var(--smoke);
+  --accent:          var(--ember);
+  --accent-soft:     var(--gold);
+  --border-subtle:   color-mix(in oklab, var(--ash) 70%, transparent);
+
+  /* ===== TİPOGRAFİ ===== */
+  --font-display: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --font-body:    'Jost', system-ui, -apple-system, sans-serif;
+
+  /* Tip ölçeği — 1.25 modüler (majör üçlü) */
+  --text-xs:    0.75rem;     /* 12 */
+  --text-sm:    0.875rem;    /* 14 */
+  --text-base:  1rem;        /* 16 */
+  --text-md:    1.125rem;    /* 18 */
+  --text-lg:    1.375rem;    /* 22 */
+  --text-xl:    1.75rem;     /* 28 */
+  --text-2xl:   2.25rem;     /* 36 */
+  --text-3xl:   3rem;        /* 48 */
+  --text-4xl:   4rem;        /* 64 */
+  --text-5xl:   5.5rem;      /* 88 */
+
+  /* Semantik atmosfer tipografisi (legacy clamp'leri verbatim) */
+  --text-hero:       clamp(2.2rem, 5.5vw, 4.2rem);   /* idx hero-title */
+  --text-hero-akp:   clamp(2rem, 5vw, 3.8rem);       /* akp hero (biraz daha küçük) */
+  --text-display:    clamp(1.8rem, 7vw, 2.8rem);     /* mobile hero / büyük başlık */
+  --text-h1:         clamp(1.6rem, 3.5vw, 2.4rem);   /* pillars-title */
+  --text-h2:         clamp(1.5rem, 3vw, 2rem);       /* signup-title */
+  --text-h3:         clamp(1.4rem, 3vw, 1.8rem);     /* gathering-title */
+  --text-h4:         clamp(1.3rem, 2.5vw, 1.7rem);   /* acik-kapi-title */
+  --text-manifesto:  clamp(1.2rem, 2.5vw, 1.55rem);  /* manifesto-text */
+  --text-details:    clamp(1.15rem, 2.5vw, 1.45rem); /* details-text */
+  --text-form-title: clamp(1.6rem, 3.5vw, 2.2rem);   /* bsv form-title */
+
+  --leading-tight:  1.15;
+  --leading-snug:   1.35;
+  --leading-body:   1.65;
+  --leading-loose:  1.85;
+  --leading-prose:  1.9;        /* prose section paragraf — legacy manifesto-text */
+
+  --tracking-tighter: -0.02em;
+  --tracking-tight:   -0.01em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.08em;
+  --tracking-wider:   0.18em;   /* overline (Hero/SiradakiKapi) */
+  --tracking-widest:  0.35em;   /* legacy manifesto-label overline */
+
+  /* ===== BOŞLUK (modüler, 4px tabanlı) ===== */
+  --space-1:   0.25rem;   /* 4 */
+  --space-2:   0.5rem;    /* 8 */
+  --space-3:   0.75rem;   /* 12 */
+  --space-4:   1rem;      /* 16 */
+  --space-5:   1.5rem;    /* 24 */
+  --space-6:   2rem;      /* 32 */
+  --space-7:   3rem;      /* 48 */
+  --space-8:   4rem;      /* 64 */
+  --space-9:   6rem;      /* 96 */
+  --space-10:  8rem;      /* 128 */
+  --space-11:  12rem;     /* 192 */
+
+  /* ===== LAYOUT ===== */
+  --max-w-prose:    38rem;   /* okuma sütunu */
+  --max-w-content:  64rem;   /* genel içerik */
+  --max-w-wide:     80rem;   /* nav, footer */
+
+  --radius-sm:  2px;
+  --radius-md:  4px;
+  --radius-lg:  8px;
+
+  /* ===== HAREKET (KARAR 35: yavaş, cömert) ===== */
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast:    200ms;
+  --duration-base:    400ms;
+  --duration-slow:    800ms;
+  --duration-reveal:  1200ms;
+
+  /* ===== Z-INDEX ===== */
+  --z-glow:     0;
+  --z-content:  1;
+  --z-nav:      50;
+  --z-grain:    100;
+  --z-overlay:  200;
+
+  /* ===== NAV ===== */
+  /* #32 Brief H — sticky offset hedefi. Nav.astro: padding 1rem + brand text-xl
+   * (1.75rem, line-height:1) → ~60-64px. EtkinlikTakvimi ay başlığı sticky'de
+   * nav altına otursun. */
+  --nav-height: 64px;
+}
+
+/* Reduced motion — atmosferi sönümle */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:    0ms;
+    --duration-base:    0ms;
+    --duration-slow:    0ms;
+    --duration-reveal:  0ms;
+  }
+}

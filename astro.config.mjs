@@ -1,0 +1,32 @@
+import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
+import sitemap from '@astrojs/sitemap';
+import remarkOcakSections from './src/lib/remark-ocak-sections.ts';
+
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://ocak.biz',
+  output: 'static',
+  adapter: vercel({
+    webAnalytics: { enabled: false }, // Lansman sonrası açılabilir
+  }),
+  integrations: [
+    sitemap({
+      // /test KARAR 143 — Kaan görsel referansı, Google görmemeli.
+      filter: (page) => !page.includes('/test'),
+    }),
+  ],
+  // remark-ocak-sections: `## section: NAME` → kanonik <section> transform (#23 Brief 1
+  // wiring). Loader renderMarkdown() bu markdown config'ini kullanır (createMarkdownProcessor),
+  // böylece store'a yazılan rendered.html plugin'den geçer. oda/filename opsiyonları
+  // transform'da kullanılmadığı için global wiring yeterli (per-sayfa opsiyon gerekmez).
+  markdown: {
+    remarkPlugins: [remarkOcakSections],
+  },
+  build: {
+    inlineStylesheets: 'auto',
+    assets: '_ocak',
+  },
+  trailingSlash: 'never',
+  compressHTML: true,
+});

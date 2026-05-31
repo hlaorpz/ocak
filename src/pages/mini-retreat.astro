@@ -1,0 +1,22 @@
+---
+// mini-retreat.astro — /mini-retreat sayfa override (#26 Brief G Adım 2; KARAR 127).
+// SonrakiBulusma artık fragment-split sonraki-bulusma marker'ından geliyor
+// (Notion'da `## section: sonraki-bulusma`); hard-coded instance kaldırıldı.
+// AtesMektuplariCTA form-anchor registry'den geliyor.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+const sayfa = await getEntry('sayfalar', '/mini-retreat');
+if (!sayfa) {
+  throw new Error("mini-retreat.astro: 'sayfalar' collection'ında '/mini-retreat' slug'ı bulunamadı.");
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  <PageContent slug="/mini-retreat" fragments={sayfa.data.fragments} />
+</Layout>

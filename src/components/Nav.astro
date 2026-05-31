@@ -1,0 +1,374 @@
+---
+// 6 oda — KARAR 50.
+// Şemsiye sayfalar (Buluşmalar, Yolculuk, Biz) navda görünür;
+// alt sayfaları dropdown #21 sonrası eklenebilir.
+const items = [
+  { label: 'Sen Neredesin?', href: '/sen-neredesin' },
+  { label: 'Buluşmalar',     href: '/bulusmalar' },
+  { label: 'Yolculuk',       href: '/yolculuk' },
+  { label: 'Biz',            href: '/biz' },
+  { label: 'İletişim',       href: '/iletisim' },
+];
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) =>
+  pathname === href || (href !== '/' && pathname.startsWith(href));
+---
+
+<header class="nav" role="banner">
+  <div class="nav__inner">
+    <a href="/" class="nav__brand" aria-label="OCAK ana sayfa">
+      OCAK
+    </a>
+
+    <nav class="nav__menu" aria-label="Ana navigasyon" id="primary-nav">
+      <ul class="nav__list">
+        {items.map((item) => (
+          <li class="nav__item">
+            <a
+              href={item.href}
+              class={`nav__link${isActive(item.href) ? ' is-active' : ''}`}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <button
+      class="nav__toggle"
+      type="button"
+      aria-label="Menüyü aç"
+      aria-controls="primary-nav"
+      aria-expanded="false"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+    /* body bg ile birebir eşit — scroll=0'da step görünmesin (#30 Brief F sonu Item 6a).
+       Önceden color-mix %86 coal + backdrop-filter saturate(140%) idi; saydam alanın
+       saturate'i body coal'ından farklı ton üretiyor, dikdörtgen step oluşuyordu. */
+    background: var(--coal);
+  }
+
+  /* Ember ambient çizgi — nav'ın alt kenarında, sönmeyen kor (KARAR 115 metafor).
+     #25 Brief A item 1: önceden hem .nav border-bottom subtle hem main::before
+     ember vardı → sticky scroll=0'da yan yana iki 1px → "koyu geçiş bandı".
+     Border subtle silindi; ember tek otorite çizgi, nav'la birlikte sticky kalır. */
+  .nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ember-alpha-15), transparent);
+    pointer-events: none;
+  }
+
+  .nav__inner {
+    max-width: var(--max-w-wide);
+    margin-inline: auto;
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  .nav__brand {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1;                  /* #25 Brief A item 2 — Cormorant 1.75rem'in box'ını
+                                        body default 1.65'ten kurtar; align-items:center
+                                        optical merkez'e otursun (linklerin padding-block'lı
+                                        box'larıyla flex baseline match) */
+    color: var(--text-primary);
+    letter-spacing: var(--tracking-wide);
+    transition: color var(--duration-fast) var(--ease-out);
+    /* iOS Safari double-tap-zoom gecikmesini kapat — easter egg 4xtık'ı
+       yutuyordu (hızlı ardışık tap'leri zoom jest'i sanıp click suppress).
+       manipulation: pan + pinch açık, double-tap zoom kapalı. */
+    touch-action: manipulation;
+  }
+
+  .nav__brand:hover {
+    color: var(--ember);
+  }
+
+  .nav__list {
+    display: flex;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .nav__link {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-body);
+    letter-spacing: 0.02em;
+    padding-block: var(--space-2);
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 1px;
+    background: var(--ember);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .nav__link:hover,
+  .nav__link.is-active {
+    color: var(--text-primary);
+  }
+
+  .nav__link:hover::after,
+  .nav__link.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .nav__toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: var(--space-2);
+  }
+
+  .nav__toggle span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--cream);
+    transition: transform var(--duration-base) var(--ease-out),
+                opacity var(--duration-fast);
+  }
+
+  .nav__toggle[aria-expanded='true'] span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .nav__toggle[aria-expanded='true'] span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav__toggle[aria-expanded='true'] span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  @media (max-width: 768px) {
+    .nav__menu {
+      position: fixed;
+      inset: 64px 0 auto 0;
+      background: var(--coal);
+      border-bottom: 1px solid var(--border-subtle);
+      /* Brief J — kapalı state için tam ekran-dışı offset (KARAR yeni).
+         Eski -110% yalnız menu'nün öz yüksekliğinin %10'u kadar buffer veriyordu;
+         menu içerik yüksekliği ~310px olduğundan top:64px başlangıç noktasından
+         sonra ekrana ~33px sızıyordu (DOM ölçüm: rect.visibleBottom=+33).
+         Üç semptom (logo kesilme, hamburger görsel kapsama, "amber altı ikinci
+         dark band") aynı sızıntıdan. -100% öz yükseklik + var(--nav-height) top
+         offset'i + 1px border buffer → menu bottom = -1 (tamamen gizli). */
+      transform: translateY(calc(-100% - var(--nav-height) - 1px));
+      transition: transform var(--duration-base) var(--ease-out);
+      pointer-events: none;
+    }
+    .nav__menu.is-open {
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .nav__list {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--space-6) var(--space-5);
+      gap: var(--space-4);
+    }
+    .nav__link {
+      font-size: var(--text-lg);
+      font-family: var(--font-display);
+    }
+    .nav__toggle {
+      display: flex;
+    }
+  }
+</style>
+
+<!-- Easter egg kalp CSS'i global olmalı: script document.body'ye ekliyor,
+     body Nav.astro scope'u dışında → scoped selektör match etmezdi. -->
+<style is:global>
+  .ocak-easter-heart {
+    /* Konum: position fixed + left:50% + inline top (JS hesaplar).
+       Boyut: JS inline font-size ile band yüksekliğine adapte;
+       buradaki clamp sadece fallback (JS hesabı başarısız olursa). */
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    color: var(--ember); /* Ocak amber — text heart (♥) glyph'i renklenir */
+    font-size: clamp(3rem, 14vw, 7rem);
+    line-height: 1;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+    animation: ocakEasterHeart 3000ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes ocakEasterHeart {
+    /* Toplam 3000ms — fade in 400ms (13.3%), hold 2000ms (66.7%), fade out 600ms (20%).
+       Önceki 2000ms'te hold 1000ms idi; "kalma süresi 2x" briefi → hold 2000ms.
+       translate(-50%,-50%) sabit; Y offset ve scale anime olur. */
+    0%    { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.92); }
+    13.3% { opacity: 1; transform: translate(-50%, -50%)             scale(1);    }
+    80%   { opacity: 1; transform: translate(-50%, -50%)             scale(1);    }
+    100%  { opacity: 0; transform: translate(-50%, calc(-50% - 6px)) scale(1.02); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ocak-easter-heart {
+      animation: none;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav__toggle');
+  const menu = document.querySelector<HTMLElement>('.nav__menu');
+
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Menüyü aç' : 'Menüyü kapat');
+    menu?.classList.toggle('is-open');
+  });
+
+  // Sayfa içi link tıklayınca menüyü kapat
+  menu?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      toggle?.setAttribute('aria-expanded', 'false');
+      menu?.classList.remove('is-open');
+    })
+  );
+
+  // === OCAK wordmark easter egg — 4x hızlı tık → 💜, tek tık → navigasyon ===
+  // preventDefault + debounce: tek tık ~GECIKME_NAV sonra manuel navigasyon;
+  // pencere içinde HEDEF_TAP'a ulaşılırsa navigasyon iptal, kalp gösterilir.
+  // pointerdown kullanıyoruz çünkü iOS Safari hızlı ardışık click'leri
+  // double-tap-zoom sanıp suppress ediyor; pointerdown her tap'te ateşliyor.
+  // (Masaüstü mouse'ta da çalışır — pointer events tüm input türlerini kapsar.)
+  const brand = document.querySelector<HTMLAnchorElement>('.nav__brand');
+  if (brand) {
+    const PENCERE_TAP = 2000;
+    const HEDEF_TAP = 4;
+    const GECIKME_NAV = 400;
+
+    let sayac = 0;
+    let sonTik = 0;
+    let navTimer: number | null = null;
+    let aktifKalp: HTMLElement | null = null;
+
+    const iptalNav = () => {
+      if (navTimer !== null) {
+        window.clearTimeout(navTimer);
+        navTimer = null;
+      }
+    };
+
+    const kalpGoster = () => {
+      // Üst üste tetik: önceki kalbi temizle
+      if (aktifKalp && aktifKalp.parentNode) {
+        aktifKalp.parentNode.removeChild(aktifKalp);
+      }
+      const el = document.createElement('div');
+      el.className = 'ocak-easter-heart';
+      el.setAttribute('aria-hidden', 'true');
+      // ♥ U+2665 (BLACK HEART SUIT) — text glyph, color: var(--ember) ile
+      // amber renklenir. 💜 emoji color font olduğundan CSS color almazdı.
+      el.textContent = '♥';
+
+      // Dikey konum + boyut: nav alt çizgisi ile Hero overline arası band.
+      // Konum band'in ortası; boyut band yüksekliğinin ~%85'i (cap'li).
+      // Hero overline yok / scroll edilmiş → fallback offset + clamp fontu.
+      const nav = document.querySelector('.nav');
+      const overline = document.querySelector('.hero__overline');
+      const navBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+      let yMerkez: number;
+      let bandYukseklik = 0;
+      if (overline) {
+        const overlineTop = overline.getBoundingClientRect().top;
+        if (overlineTop > navBottom) {
+          bandYukseklik = overlineTop - navBottom;
+          yMerkez = navBottom + bandYukseklik / 2;
+        } else {
+          yMerkez = navBottom + Math.max(80, window.innerHeight * 0.15);
+        }
+      } else {
+        yMerkez = navBottom + Math.max(80, window.innerHeight * 0.15);
+      }
+      el.style.top = `${yMerkez}px`;
+      if (bandYukseklik > 0) {
+        // Band'in ~%85'i kadar font-size; min 3rem (48px), max 11rem (~176px).
+        // Cap: çok geniş band'lerde devasa kalp olmasın (estetik).
+        const px = Math.max(48, Math.min(176, bandYukseklik * 0.85));
+        el.style.fontSize = `${px}px`;
+      }
+
+      document.body.appendChild(el);
+      aktifKalp = el;
+      window.setTimeout(() => {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (aktifKalp === el) aktifKalp = null;
+      }, 3000);
+    };
+
+    // click'i tamamen susturuyoruz — pointerdown sayacı tutuyor + manuel nav yapıyor.
+    brand.addEventListener('click', (e) => e.preventDefault());
+
+    brand.addEventListener('pointerdown', (e) => {
+      // Sadece primary button (mouse sol / touch / pen) — sağ tık vb. yoksay.
+      if (e.button !== 0) return;
+      e.preventDefault();
+
+      const simdi = Date.now();
+      if (simdi - sonTik > PENCERE_TAP) {
+        sayac = 1;
+      } else {
+        sayac += 1;
+      }
+      sonTik = simdi;
+
+      // Her tıkta bekleyen navigasyon timer'ını sıfırla
+      iptalNav();
+
+      if (sayac >= HEDEF_TAP) {
+        sayac = 0;
+        kalpGoster();
+        return;
+      }
+
+      // Tek tık fallback: pencere içinde yeni tık gelmezse manuel git
+      const href = brand.getAttribute('href');
+      if (!href) return; // defansif
+      navTimer = window.setTimeout(() => {
+        window.location.href = href;
+      }, GECIKME_NAV);
+    });
+  }
+</script>

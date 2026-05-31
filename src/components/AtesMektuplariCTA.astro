@@ -1,0 +1,61 @@
+---
+// AtesMektuplariCTA — sayfa altında ana sayfa formuna jump link (#26 Brief G).
+// Form değil, duplikasyon değil — anchor link `/#ates-mektuplari`. KARAR 117 ruhu:
+// dört format sayfası (mini-retreat, seremoni, workshop, istanbul) generic etkinlik
+// kaydı, sayfa-özel forma muhtaç değil. Manifesto tonu, kısa.
+//
+// Wrapping `section[data-section="ates-mektuplari-cta"] .ocak-ates-mektuplari-cta`
+// generic baseline (KARAR 116) atmosferi çoktan karşılar — sayfa-özel CSS yok,
+// hizalama burada minimal.
+//
+// introHtml (KARAR 151): loader form-anchor look-backward'ı önceki section etiketini
+// consume edip render edilmiş HTML olarak buraya geçer. CTA submit'siz olduğu için
+// "success state" yok — intro pasif olarak CTA'nın üstünde render edilir, kaldırma
+// dinamiği yok. (Form-anchor consume disiplini /iletisim 2. anchor + 6 jump-CTA
+// sayfası için tutarlılık.)
+interface Props {
+  /** UI'da görünen okunabilir kategori ("mini retreat", "mevsim seremonisi", ...). */
+  kategoriAdi: string;
+  /** KARAR 151 — Notion'dan consume edilmiş intro HTML (varsa). */
+  introHtml?: string;
+}
+const { kategoriAdi, introHtml } = Astro.props;
+---
+<section data-section="ates-mektuplari-cta" class="ocak-ates-mektuplari-cta">
+  {introHtml && <div class="ocak-ates-mektuplari-cta__intro" set:html={introHtml} />}
+  <p>
+    Bir sonraki <strong>{kategoriAdi}</strong> duyurulduğunda haberdar olmak istersen
+    ateş mektuplarına katıl. Ayda bir-iki kez, kısa.
+  </p>
+  <a class="ocak-ates-mektuplari-cta__link" href="/#ates-mektuplari">
+    Ateş mektuplarına katıl →
+  </a>
+</section>
+
+<style>
+  .ocak-ates-mektuplari-cta {
+    text-align: center;
+  }
+
+  /* KARAR 151 A.2 — __intro scope atmosfer.css'e taşındı (Astro scoped CSS +
+   * set:html DOM uyumsuzluğu). Bkz. atmosfer.css "Form-içi __intro" bölümü. */
+
+  .ocak-ates-mektuplari-cta__link {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .ocak-ates-mektuplari-cta__link:hover,
+  .ocak-ates-mektuplari-cta__link:focus-visible {
+    border-bottom-color: var(--ember);
+  }
+</style>

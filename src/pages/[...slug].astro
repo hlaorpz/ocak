@@ -1,0 +1,42 @@
+---
+// [...slug].astro — Notion Sayfalar collection'ından sayfaları üreten tek dinamik route.
+// (#23 Brief 1 — pipeline kurulumu, KARAR 87/108; #29 Brief F.5 PageContent geçişi)
+//
+// rest spread ([...slug]): ana sayfa için params.slug === undefined'i de yakalar
+// ([slug].astro bunu yapmaz, '/' için ayrı dosya gerekirdi).
+//
+// Render: PageContent helper sayfa.data.fragments dizisini iterate eder; markdown
+// chunk'ları HTML olarak basar, form-anchor marker'ları registry'den component'e
+// çevirir. Önceki `<Content />` patikası vestigial (#29 Brief F.5 C3 — back-compat).
+//
+// Sayfa-özel override: Astro'da statik route dinamiğe önceliklidir. Sayfa-özel
+// component (Hero, SonrakiBulusma, EtkinlikTakvimi vb.) gereken yerlerde override
+// dosyaları kullanılır; form-anchor ihtiyacı override gerektirmez (registry üstlenir).
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+export async function getStaticPaths() {
+  const sayfalar = await getCollection('sayfalar');
+  return sayfalar.map((sayfa) => ({
+    // Notion URL formatı (/, /cember) → Astro rest slug (undefined, 'cember').
+    // Loader slug'ı Notion URL'ini verbatim taşır; route'ta baştaki '/'ı strip et.
+    params: { slug: sayfa.data.slug === '/' ? undefined : sayfa.data.slug.replace(/^\//, '') },
+    props: { sayfa },
+  }));
+}
+
+const { sayfa } = Astro.props;
+
+// /test KARAR 143 — Kaan görsel referansı, lansman sonrası da kalır, Google görmemeli.
+const isTest = Astro.params.slug === 'test';
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+  noindex={isTest}
+>
+  <PageContent slug={sayfa.data.slug} fragments={sayfa.data.fragments} />
+</Layout>

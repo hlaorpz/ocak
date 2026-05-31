@@ -1,0 +1,137 @@
+---
+// bulusmalar.astro — /bulusmalar sayfa override (Brief REVİZE — Sekme deseni).
+// Statik route dinamik [...slug].astro'yu ezer (KARAR 119).
+//
+// Önceki sürüm (commit 202a6c4) sticky scroll-spy şerit + 7 section id/reveal
+// patch uyguluyordu; eyeball sonrası "Takvim çok aşağıda" sorunu nedeniyle
+// sekme desenine geçildi. Önceki yaklaşımdan kalan SADECE override dosyasının
+// var olması ([...slug] üzerinden render gibi davranmayı kesmek için) ve format
+// section'larını HTML chunk'ından çıkarma fikri; gerisi yeniden.
+//
+// Mimari:
+//   1. Markdown fragment HTML'inden 6 format section'ı (cember…mini-retreat)
+//      çıkarılır, her birinin İÇ HTML'i (h2 + p) `formats` array'ine kaydedilir.
+//   2. Çıkarılan section'ların yerine BulusmalarFormatSekmeleri component'i
+//      enjekte edilir. Component 6 panel'i SSR'da basar (SEO + AT için).
+//   3. format-takvim, hangisinden-baslasam, siradaki-kapi DOKUNULMADAN HTML'de
+//      kalır — Brief'in "sabit devam bölümleri panel ALTINDA" kuralı doğal
+//      olarak karşılanır (Notion sırasında zaten 6 format'tan sonra geliyorlar).
+//
+// Notion içeriği DEĞİŞMEZ. Loader / remark-ocak-sections / baseline atmosfer
+// dokunulmadı; tüm sayfa-özel davranış override'a kapsanmıştır.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import BulusmalarFormatSekmeleri from '../components/BulusmalarFormatSekmeleri.astro';
+
+const sayfa = await getEntry('sayfalar', '/bulusmalar');
+if (!sayfa) {
+  throw new Error("bulusmalar.astro: 'sayfalar' collection'ında '/bulusmalar' slug'ı bulunamadı.");
+}
+
+// Sekme sırası + etiket (Brief md.11). Takvim YOK — köprü/araç, format değil,
+// devam bölümünde Notion'daki yerinde kalır.
+const FORMAT_ORDER: Array<{ id: string; label: string }> = [
+  { id: 'format-cember', label: 'Çember' },
+  { id: 'format-acik-kapi', label: 'Açık Kapı' },
+  { id: 'format-mevsim-seremonisi', label: 'Seremoni' },
+  { id: 'format-workshop', label: 'Workshop' },
+  { id: 'format-istanbul', label: 'İstanbul' },
+  { id: 'format-mini-retreat', label: 'Mini Retreat' },
+];
+
+interface ExtractedFormat {
+  id: string;
+  label: string;
+  html: string;
+}
+
+/**
+ * Bir markdown HTML chunk'ından 6 format section'ını sırayla çıkar.
+ * Loader output formatı (remark-ocak-sections default case):
+ *   <section data-section="format-X" class="ocak-format-X">…inner…</section>
+ * Format section'ları flat sibling — içinde nested <section> yok, non-greedy
+ * `</section>` match güvenli.
+ *
+ * `firstIdx` ilk eşleşen section'ın ORİJİNAL konumu — sekmeler component'i
+ * tam o noktaya enjekte edilir (Notion'daki "ilk format" sırası korunur).
+ */
+function extractFormats(html: string): {
+  formats: ExtractedFormat[];
+  before: string;
+  after: string;
+  matched: boolean;
+} {
+  const formats: ExtractedFormat[] = [];
+  let modified = html;
+  let firstIdx = -1;
+  for (const { id, label } of FORMAT_ORDER) {
+    const re = new RegExp(
+      `<section data-section="${id}" class="ocak-${id}">([\\s\\S]*?)</section>`,
+    );
+    const match = re.exec(modified);
+    if (!match) {
+      // eslint-disable-next-line no-console
+      console.warn(`[bulusmalar.astro] ${id} section bulunamadı — sekme dışı kalacak.`);
+      continue;
+    }
+    if (firstIdx === -1) firstIdx = match.index;
+    formats.push({ id, label, html: match[1] });
+    modified = modified.slice(0, match.index) + modified.slice(match.index + match[0].length);
+  }
+  if (firstIdx === -1 || formats.length === 0) {
+    return { formats: [], before: html, after: '', matched: false };
+  }
+  return {
+    formats,
+    before: modified.slice(0, firstIdx),
+    after: modified.slice(firstIdx),
+    matched: true,
+  };
+}
+
+type SekmeFragment = { kind: 'format-sekmeler'; formats: ExtractedFormat[] };
+type MarkdownFragment = { kind: 'markdown'; html: string };
+type SayfaFragment = (typeof sayfa.data.fragments)[number];
+type AnyFragment = SayfaFragment | SekmeFragment;
+
+let injected = false;
+const finalFragments: AnyFragment[] = [];
+for (const frag of sayfa.data.fragments) {
+  if (injected || frag.kind !== 'markdown') {
+    finalFragments.push(frag);
+    continue;
+  }
+  const extracted = extractFormats(frag.html);
+  if (!extracted.matched) {
+    finalFragments.push(frag);
+    continue;
+  }
+  injected = true;
+  const beforeFrag: MarkdownFragment = { kind: 'markdown', html: extracted.before };
+  const afterFrag: MarkdownFragment = { kind: 'markdown', html: extracted.after };
+  finalFragments.push(beforeFrag as SayfaFragment);
+  finalFragments.push({ kind: 'format-sekmeler', formats: extracted.formats });
+  finalFragments.push(afterFrag as SayfaFragment);
+}
+
+if (!injected) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    '[bulusmalar.astro] Format section ailesi (cember…mini-retreat) bulunamadı — sekmeler enjekte edilmedi.',
+  );
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  {finalFragments.map((frag) => {
+    if (frag.kind === 'format-sekmeler') {
+      return <BulusmalarFormatSekmeleri formats={frag.formats} />;
+    }
+    return <PageContent slug="/bulusmalar" fragments={[frag]} />;
+  })}
+</Layout>

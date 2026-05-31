@@ -1,0 +1,466 @@
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import remarkOcakSections from './remark-ocak-sections';
+
+const FIXTURES_DIR = join(__dirname, '__fixtures__');
+
+/** Markdown string'ini plugin zincirinden geçirip HTML üretir. */
+function process(md: string, options = {}) {
+  const result = unified()
+    .use(remarkParse)
+    .use(remarkFrontmatter, ['yaml'])
+    .use(remarkOcakSections, options)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .processSync(md);
+  return String(result);
+}
+
+/** Bir fixture dosyasını okuyup render eder. */
+function render(fixtureName: string, options = {}) {
+  const md = readFileSync(join(FIXTURES_DIR, fixtureName), 'utf-8');
+  return process(md, options);
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe('remark-ocak-sections', () => {
+  it('1. hero — <section data-section="hero"> ile sarar, h1 içerir', () => {
+    const html = render('fixture-01-hero.md');
+    expect(html.trimStart().startsWith('<section data-section="hero">')).toBe(true);
+    expect(html).toContain('<h1>');
+    expect(html).toContain('Her ay bir kez. On iki kadın. Bir ateş.');
+    expect(html).toMatchSnapshot();
+  });
+
+  it('2. bir-sonraki — section içinde blockquote, ocak-bir-sonraki class', () => {
+    const html = render('fixture-02-bir-sonraki.md');
+    // #25 Brief A item 4: class="ocak-bir-sonraki" eklendi — baseline match için.
+    expect(html).toContain('<section data-section="bir-sonraki" class="ocak-bir-sonraki">');
+    expect(html).toContain('<blockquote>');
+    expect(html).toMatchSnapshot();
+  });
+
+  it('4. siradaki-kapi — tam 3 ocak-kapi-kart', () => {
+    const html = render('fixture-04-siradaki-kapi.md');
+    expect(html).toContain('<section data-section="siradaki-kapi">');
+    expect(html.match(/ocak-kapi-kart/g)?.length).toBe(3);
+    expect(html).toMatchSnapshot();
+  });
+
+  it('5. sss — bullet sorular details/summary + sss-cevap, h2 korunur', () => {
+    const html = render('fixture-05-sss.md');
+    expect(html).toContain('<section data-section="sss">');
+    expect(html).toContain('<h2>Sorulanlar</h2>');
+    expect(html.match(/<details>/g)?.length).toBe(2);
+    expect(html.match(/<summary>/g)?.length).toBe(2);
+    // summary metni yıldızsız (bold-italik dekorasyon arındırıldı)
+    expect(html).toContain('<summary>Daha önce hiç çembere katılmadım, olur mu?</summary>');
+    // cevap <div class="sss-cevap"> içinde; ilk soru 2 paragraflı
+    expect(html.match(/<div class="sss-cevap">/g)?.length).toBe(2);
+    const ilkCevap = html.match(/<div class="sss-cevap">([\s\S]*?)<\/div>/)?.[1] ?? '';
+    expect(ilkCevap.match(/<p>/g)?.length).toBe(2);
+    expect(html).toMatchSnapshot();
+  });
+
+  it('10. sss fallback — H3 içerik <details> üretmez, warn tetikler', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: sss\n\n### Bu bir H3 soru?\n\nCevap.',
+      { filename: 'fallback-test.md' },
+    );
+    // fallback: içerik olduğu gibi sarılır, details YOK
+    expect(html).toContain('<section data-section="sss">');
+    expect(html).not.toContain('<details>');
+    expect(html).toContain('<h3>Bu bir H3 soru?</h3>');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('fallback-test.md');
+    expect(warn.mock.calls[0][0]).toContain('hasH3=true');
+  });
+
+  it('6. serbest prose — ocak-{name} class ile sarar', () => {
+    const html = process('## section: kucuk-cember\n\nBir paragraf.');
+    expect(html).toContain(
+      '<section data-section="kucuk-cember" class="ocak-kucuk-cember">',
+    );
+    expect(html).toContain('<p>Bir paragraf.</p>');
+  });
+
+  it('8. hero — gövdedeki "overline: AD" data-overline attribute\'una taşınır', () => {
+    const html = process(
+      '## section: hero\n\noverline: ÇEMBER\n\n# *Başlık*\n\nAçıklama paragrafı.',
+    );
+    // overline değeri attribute'a taşındı (ALL CAPS verbatim)
+    expect(html).toContain('<section data-section="hero" data-overline="ÇEMBER">');
+    // "overline:" düz metin olarak body'de KALMAMALI
+    expect(html).not.toContain('overline:');
+    // geri kalan içerik korunur
+    expect(html).toContain('<h1><em>Başlık</em></h1>');
+    expect(html).toContain('<p>Açıklama paragrafı.</p>');
+  });
+
+  it('9. hero — overline yoksa data-overline yazılmaz, içerik değişmez', () => {
+    const html = process('## section: hero\n\n# Başlık\n\nParagraf.');
+    expect(html.trimStart().startsWith('<section data-section="hero">')).toBe(true);
+    expect(html).not.toContain('data-overline');
+    expect(html).toContain('<h1>Başlık</h1>');
+  });
+
+  it('11. OMIT — hero-anasayfa + ates-mektuplari hiç emit edilmez, komşu section korunur', () => {
+    const html = process(
+      '## section: hero-anasayfa\n\noverline: OCAK\n\n# Başlık\n\nAlt metin.\n\n' +
+        '## section: manifesto\n\nManifesto metni.\n\n' +
+        '## section: ates-mektuplari\n\n[FORM]\n\nPlaceholder: E-postan',
+    );
+    // omit edilen iki section hiç çıkmaz
+    expect(html).not.toContain('hero-anasayfa');
+    expect(html).not.toContain('data-overline="OCAK"');
+    expect(html).not.toContain('ates-mektuplari');
+    expect(html).not.toContain('[FORM]');
+    // aradaki normal section korunur
+    expect(html).toContain('<section data-section="manifesto" class="ocak-manifesto">');
+    expect(html).toContain('Manifesto metni.');
+  });
+
+  it('7. siradaki-kapi — 1 kart console.warn tetikler', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    process('## section: siradaki-kapi\n\n### Tek Kart\n\nParagraf.\n\n[Link](/a)');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('1 kart');
+    expect(warn.mock.calls[0][0]).toContain('unknown');
+
+    warn.mockClear();
+    process('## section: siradaki-kapi\n\n### Tek Kart\n\nParagraf.\n\n[Link](/a)', {
+      filename: 'cember.md',
+    });
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('cember.md');
+  });
+
+  it('12. overline — default section (bullet listesi sonrası) data-overline alır', () => {
+    // al-ol-ver artık fragment-split marker pattern'inde (KARAR 127 genişletme);
+    // empty-wrapper case'i tetiklendiği için pattern'i non-special section ile
+    // test ederiz (kucuk-cember default case'ten geçer, overline + class alır).
+    const html = process(
+      '## section: kucuk-cember\n\noverline: ÇEMBER NEDIR\n\n- **Bir** — yargısız\n- **İki** — koşulsuz\n',
+    );
+    expect(html).toContain('data-section="kucuk-cember"');
+    expect(html).toContain('class="ocak-kucuk-cember"');
+    expect(html).toContain('data-overline="ÇEMBER NEDIR"');
+    expect(html).not.toMatch(/<p>overline:/);
+  });
+
+  it('13. overline — esik-kadini default section data-overline alır, kapanış cümlesi korunur', () => {
+    const html = render('fixture-07-overline-esik.md');
+    expect(html).toContain('data-section="esik-kadini"');
+    expect(html).toContain('data-overline="KİME SESLENİYORUZ"');
+    expect(html).not.toMatch(/<p>overline:/);
+    expect(html).toContain('Eşikte duran kadına.');
+    expect(html).toContain('Yalnız durma o eşikte.');
+  });
+
+  it('14. sonraki-bulusma marker — empty wrapper emit, source attr taşır, komşular korunur', () => {
+    // KARAR 127 genişletme: artık OMIT değil, plugin empty wrapper basıyor
+    // (defansif fallback — loader splitBodyByMarkers marker'ı keserse plugin
+    // buraya gelmez; gelirse boş section emit edilir, CSS prose section ailesi
+    // görsel olarak suppress eder).
+    const html = render('fixture-08-sonraki-bulusma-marker.md');
+    expect(html).toContain('data-section="sonraki-bulusma"');
+    expect(html).toContain('class="ocak-sonraki-bulusma"');
+    expect(html).toContain('data-source="bulusmalar:next-3"');
+    expect(html).toContain('data-section="hero"');
+    expect(html).toContain('data-section="bir-sonraki"');
+    expect(html).toContain('<blockquote>');
+  });
+
+  it('14b. al-ol-ver marker — empty wrapper emit, komşu section korunur', () => {
+    // KARAR 127 genişletme: al-ol-ver fragment-split marker pattern'inde
+    // (form-anchor paralel). Loader marker'ı keser ve fragments dizisine
+    // { kind: 'al-ol-ver' } basar; plugin marker'ı görmez. Bu test plugin
+    // savunma fallback'ini doğruluyor (marker bir şekilde loader'dan kaçarsa
+    // empty wrapper emit edilir).
+    const html = render('fixture-18-al-ol-ver-marker.md');
+    expect(html).toContain('data-section="al-ol-ver"');
+    expect(html).toContain('class="ocak-al-ol-ver"');
+    expect(html).toContain('data-section="hero"');
+  });
+
+  it('15. link normalize — Notion italik link artığı `_url_` / `*url` baş+son strip', () => {
+    const html = render('fixture-09-link-italik-artik.md');
+    // İtalik artığı strip + internal Notion link normalize tek pipeline'da uygulanır
+    // (#26 Brief F): baş/son `_`/`*` sıyrılır → ardından `notion.so/<slug>` whitelist
+    // match → `/<slug>`. Bu fixture'daki üç URL de internal whitelist'te.
+    expect(html).toContain('href="/takvim"');
+    expect(html).toContain('href="/anadolu"');
+    expect(html).toContain('href="/mini-retreat"');
+    // External (whitelist dışı) — dokunulmaz, snake_case path korunur
+    expect(html).toContain('href="https://example.com/foo_bar/baz"');
+    // Hiçbir bozuk varyant kalmamalı: href başında veya sonunda _ ya da *
+    expect(html).not.toMatch(/href="[_*]/);
+    // Eski Notion URL formu sızmamalı — hepsi normalize edilmiş olmalı
+    expect(html).not.toContain('href="https://www.notion.so/');
+  });
+
+  it('19. Notion internal link normalize — whitelist match `/<slug>`, dışı korunur (Brief F)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = render('fixture-13-notion-link-normalize.md');
+    // Internal direct slug → `/cember`
+    expect(html).toContain('href="/cember"');
+    // Workspace prefix + 32-hex hash → slug çıkarılır, whitelist'te workshop → `/workshop`
+    expect(html).toContain('href="/workshop"');
+    // Whitelist dışı slug → korunur (warn log'da)
+    expect(html).toContain('href="https://www.notion.so/external-page-xyz"');
+    // Normal external → dokunulmaz
+    expect(html).toContain('href="https://example.com/sayfa"');
+    // Hash fragment regex match etmez → korunur
+    expect(html).toContain('href="https://www.notion.so/#mektuplar"');
+    // Nested path: regex `kayit/yaz-acik-kapi-2026`'yi slug yakalar ama whitelist dışı → korunur
+    expect(html).toContain('href="https://www.notion.so/kayit/yaz-acik-kapi-2026"');
+    // ocak.biz canonical → /<slug> (Brief F.5)
+    expect(html).toContain('href="/cember"'); // duplicate slug var; whitelist match'i doğrular
+    expect(html).toContain('href="/anadolu"');
+    // ocak.biz whitelist dışı → korunur
+    expect(html).toContain('href="https://ocak.biz/eski-sayfa"');
+    // Nested basvuru/<slug>-<yıl> — Notion ve ocak.biz formları, whitelist içi → `/<slug>/basvuru`
+    expect(html).toContain('href="/anadolu/basvuru"');
+    // Nested basvuru whitelist dışı → korunur + warn
+    expect(html).toContain('href="https://ocak.biz/basvuru/unknown-2026"');
+    // Warn çağrıları: 2 notion.so external + 1 ocak.biz external + 1 ocak.biz basvuru/ external
+    const calls = warn.mock.calls.map((c) => c[0]).filter((m) => typeof m === 'string');
+    expect(calls.some((m) => m.includes('external-page-xyz'))).toBe(true);
+    expect(calls.some((m) => m.includes('yaz-acik-kapi-2026'))).toBe(true);
+    expect(calls.some((m) => m.includes('eski-sayfa') && m.includes('ocak.biz'))).toBe(true);
+    expect(calls.some((m) => m.includes('unknown-2026') && m.includes('basvuru'))).toBe(true);
+    warn.mockRestore();
+  });
+
+  it('20. form-anchor scalar — tek anchor, data-form-index="0" boş section', () => {
+    const html = render('fixture-14-form-anchor-scalar.md');
+    expect(html).toContain(
+      '<section data-section="form-anchor" data-form-anchor data-form-index="0"></section>',
+    );
+    // Sadece 1 form-anchor olmalı
+    expect(html.match(/data-form-anchor/g)?.length).toBe(1);
+    // Komşu section'lar korunur
+    expect(html).toContain('data-section="hero"');
+    expect(html).toContain('data-section="sss"');
+  });
+
+  it('21. form-anchor array — iki anchor 0/1 index, sayfa içi sıra korunur', () => {
+    const html = render('fixture-15-form-anchor-array.md');
+    expect(html).toContain('data-form-index="0"');
+    expect(html).toContain('data-form-index="1"');
+    expect(html.match(/data-form-anchor/g)?.length).toBe(2);
+    // Sıra: bize-yaz → 0 → alt-davet → 1 → sss (indexOf monoton artmalı).
+    // Plugin look-backward'ı bilmez (loader işi) — etiketleri olduğu gibi emit eder.
+    // Not: fixture'da `alt-davet` yerine `ates-mektuplari` kullanılırsa plugin OMIT_SECTIONS
+    // onu yutar (ana sayfa AtesMektuplari component slot'u için ayrılmış); o yüzden
+    // jenerik bir intro section adı seçildi. /iletisim runtime davranışı loader testinde
+    // (notion-pages.test.ts "çoklu form-anchor — her biri kendi look-backward consume eder")
+    // ates-mektuplari verbatim ile doğrulanır.
+    const i0 = html.indexOf('data-section="bize-yaz"');
+    const a0 = html.indexOf('data-form-index="0"');
+    const i1 = html.indexOf('data-section="alt-davet"');
+    const a1 = html.indexOf('data-form-index="1"');
+    const iS = html.indexOf('data-section="sss"');
+    expect(i0).toBeGreaterThan(-1);
+    expect(a0).toBeGreaterThan(i0);
+    expect(i1).toBeGreaterThan(a0);
+    expect(a1).toBeGreaterThan(i1);
+    expect(iS).toBeGreaterThan(a1);
+  });
+
+  it('22. mini-cta — paragraph + link son child sıyrılır (bare <a> block-level)', () => {
+    const html = render('fixture-16-mini-cta.md');
+    expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
+    expect(html).toContain('<p>Hangi formatın');
+    // Link son child sıyrılmış (link bare, paragraph wrapper YOK)
+    expect(html).toContain('<a href="/acik-kapi">Açık Kapı\'ya gel</a>');
+    expect(html).not.toMatch(/<p><a href="\/acik-kapi"/);
+  });
+
+  it('23. mini-cta — link yoksa warn + section yine sarılır', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process('## section: mini-cta\n\nSadece metin, link yok.', {
+      filename: 'no-link.md',
+    });
+    expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
+    expect(html).toContain('Sadece metin');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('link bulunamadı');
+    expect(warn.mock.calls[0][0]).toContain('no-link.md');
+    warn.mockRestore();
+  });
+
+  it('24. buyuk-vurgu — italik paragraph data-section + ocak-buyuk-vurgu class', () => {
+    const html = render('fixture-17-buyuk-vurgu.md');
+    expect(html).toContain('<section data-section="buyuk-vurgu" class="ocak-buyuk-vurgu">');
+    expect(html).toContain('<em>Bir daha kriz geldiğinde');
+    // Tek paragraph beklenir — warn olmamalı
+  });
+
+  it('25. buyuk-vurgu — 2+ paragraph warn, ama hepsi render edilir', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: buyuk-vurgu\n\n*İlk paragraf.*\n\n*İkinci paragraf.*',
+      { filename: 'multi-para.md' },
+    );
+    expect(html).toContain('<section data-section="buyuk-vurgu"');
+    expect(html).toContain('İlk paragraf');
+    expect(html).toContain('İkinci paragraf');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('2 paragraph');
+    expect(warn.mock.calls[0][0]).toContain('multi-para.md');
+    warn.mockRestore();
+  });
+
+  it('30. manifesto-vurgu — köz glyph span + krem prose paragraph (KARAR 153)', () => {
+    const html = render('fixture-20-manifesto-vurgu.md');
+    expect(html).toContain('<section data-section="manifesto-vurgu" class="ocak-manifesto-vurgu">');
+    // Köz glyph dekoratif span — paragraph'tan ÖNCE, aria-hidden
+    expect(html).toContain('<span class="manifesto-vurgu__ember" aria-hidden="true"></span>');
+    const spanIdx = html.indexOf('manifesto-vurgu__ember');
+    const pIdx = html.indexOf('<p>Seni bize bağımlı');
+    expect(spanIdx).toBeGreaterThan(-1);
+    expect(pIdx).toBeGreaterThan(spanIdx);
+    // Manifesto cümlesi düz prose paragraph
+    expect(html).toContain('Seni bize bağımlı yapmak için değil');
+    expect(html).toContain('seni sana geri vermek için buradayız');
+    // Tek paragraph beklenir — warn olmamalı (snapshot atılmaz, sıkı match yeterli)
+  });
+
+  it('31. manifesto-vurgu — 2+ paragraph warn, hepsi yine render edilir', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: manifesto-vurgu\n\nİlk paragraf.\n\nİkinci paragraf.',
+      { filename: 'multi-para-mv.md' },
+    );
+    expect(html).toContain('<section data-section="manifesto-vurgu"');
+    expect(html).toContain('<span class="manifesto-vurgu__ember" aria-hidden="true"></span>');
+    expect(html).toContain('İlk paragraf');
+    expect(html).toContain('İkinci paragraf');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('2 paragraph');
+    expect(warn.mock.calls[0][0]).toContain('multi-para-mv.md');
+    warn.mockRestore();
+  });
+
+  it('18. listItem text başında asimetrik `*` artığı strip — KARAR 108 7. kural', () => {
+    const html = render('fixture-12-listitem-asymmetric-star.md');
+    // Asimetrik 4/3 yıldız → text node başında kalan `*` strip edilmiş, içerik bold+italik
+    expect(html).toContain('<li><em><strong>Bir geçişin içindesin</strong></em> — boşanma');
+    expect(html).toContain('<li><em><strong>Eski araçların artık yetmiyor</strong></em> — terapi');
+    expect(html).toContain('<li><em><strong>"Bir şey değişmeli"</strong></em> diyorsun.');
+    // Hiçbir li hâlâ `*` ile başlamamalı
+    expect(html).not.toMatch(/<li[^>]*>\*/);
+    // Sağlam 3+3 markdown korunur — başında strip yok
+    expect(html).toContain('<li><em><strong>Doğru italik+bold</strong></em> — hiç dokunma');
+    // Düz paragraph (listItem değil) — strip kuralı KAPSAMAZ
+    expect(html).toContain('<p>*Düz metin başında yıldız var ama bullet değil — bu farklı bir durum.</p>');
+  });
+
+  it('17. whitespace-only paragraph + blockquote — mdast tree post-order temizliği', () => {
+    const html = render('fixture-11-whitespace-temizlik.md');
+    // İçerikli paragraph'lar korunur
+    expect(html).toContain('Önce dolu paragraph.');
+    expect(html).toContain('Sonra dolu paragraph.');
+    expect(html).toContain('Dolu blockquote.');
+    expect(html).toContain('İçerikli iç paragraph korunur.');
+    // Tamamen boş blockquote'lar (sadece > > > satırları) tree'den kaldırılır.
+    // dolu blockquote 1 tane + nested test 1 outer + 1 inner-empty(silinmeli) = 2 blockquote kalır
+    expect(html.match(/<blockquote>/g)?.length).toBe(2);
+    // Empty paragraph yok
+    expect(html).not.toMatch(/<p>\s*<\/p>/);
+    // Empty blockquote yok
+    expect(html).not.toMatch(/<blockquote>\s*<\/blockquote>/);
+  });
+
+  it('26. esik accordion — whitelist 10 isim details name="esikler", h2 strip → summary', () => {
+    const html = render('fixture-19-esik-accordion.md');
+    // İki esik section (uyku, merak) details olarak basılır — exclusive accordion namespace
+    expect(html.match(/<details name="esikler"/g)?.length).toBe(2);
+    expect(html).toContain('<details name="esikler" data-section="esik-uyku">');
+    expect(html).toContain('<details name="esikler" data-section="esik-merak">');
+    // H2 strip + summary'ye verbatim taşındı (numara + bullet karakteri korundu)
+    expect(html).toContain('<summary>0 · UYKU</summary>');
+    expect(html).toContain('<summary>1 · MERAK</summary>');
+    // H2 ham olarak details body'sinde KALMAMALI (strip teyidi)
+    expect(html).not.toContain('<h2>0 · UYKU</h2>');
+    expect(html).not.toContain('<h2>1 · MERAK</h2>');
+    // Section içeriği details'in içinde
+    expect(html).toContain('Hayatın işliyor.');
+    expect(html).toContain("OCAK'ı duydun.");
+    expect(html).toMatchSnapshot();
+  });
+
+  it('27. son-soz — baseline prose, accordion DEĞİL, h2 korunur', () => {
+    const html = render('fixture-19-esik-accordion.md');
+    // son-soz baseline prose — `<section data-section="son-soz" class="ocak-son-soz">`
+    expect(html).toContain('<section data-section="son-soz" class="ocak-son-soz">');
+    // son-soz'da `<details name="esikler">` OLMAMALI
+    const sonSozMatch = html.match(
+      /<section data-section="son-soz"[^>]*>([\s\S]*?)<\/section>/,
+    );
+    expect(sonSozMatch).not.toBeNull();
+    expect(sonSozMatch?.[1]).not.toContain('<details');
+    expect(sonSozMatch?.[1]).not.toContain('<summary');
+    // H2 baseline prose'da serbest kalır
+    expect(html).toContain('<h2>Son Söz</h2>');
+    expect(html).toContain('Bu harita bir test değil.');
+  });
+
+  it('28. esik whitelist — `esik-kadini` accordion DEĞİL, baseline prose kalır', () => {
+    // esik-kadini /, /hikaye, /site-rehber'de prose section — whitelist dışında olmalı.
+    // fixture-07 zaten esik-kadini render eder; burada açıkça accordion'a düşmediğini doğruluyoruz.
+    const html = render('fixture-07-overline-esik.md');
+    expect(html).toContain('data-section="esik-kadini"');
+    expect(html).toContain('class="ocak-esik-kadini"');
+    // KRİTİK: esik-kadini accordion wrap'ı ALMAMALI (silent bug regression check)
+    expect(html).not.toContain('<details name="esikler"');
+    expect(html).not.toMatch(/<details[^>]*data-section="esik-kadini"/);
+  });
+
+  it('29. esik h2 fallback — h2 yoksa warn + summary section-name', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process('## section: esik-uyku\n\nDoğrudan paragraf, h2 yok.', {
+      filename: 'no-h2.md',
+    });
+    // Fallback: summary section-name'i (esik-uyku) basar, içerik korunur
+    expect(html).toContain('<details name="esikler" data-section="esik-uyku">');
+    expect(html).toContain('<summary>esik-uyku</summary>');
+    expect(html).toContain('Doğrudan paragraf');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('no-h2.md');
+    expect(warn.mock.calls[0][0]).toContain('esik-uyku');
+    warn.mockRestore();
+  });
+
+  it('16. paragraph italik artığı — intraword close + boşluklu çift `_`/`*` strip, snake_case + gerçek italik korunur', () => {
+    const html = render('fixture-10-italik-artik-paragraf.md');
+    // Rule 5 — intraword close
+    expect(html).toContain('Arketip:Kök Kadın');
+    expect(html).not.toContain('_Arketip:_');
+    // Rule 6 — içerikte boşluk
+    expect(html).toContain('Kim için:Tükendiğini hisseden kadın.');
+    expect(html).not.toContain('_Kim için:_');
+    // Tırnak + intraword close (`_`)
+    expect(html).toContain('"Bunu mu yapacağım?"diyen kadın.');
+    expect(html).not.toContain('_"Bunu mu yapacağım?"_');
+    // Star variant
+    expect(html).toContain('"Bir şey eksik"hisseden kadın.');
+    expect(html).not.toContain('*"Bir şey eksik"*');
+    // snake_case korunur — intraword open boundary lookbehind tutar
+    expect(html).toContain('foo_bar_baz dosya adı.');
+    // Gerçek italik (`_x_` whitespace-surrounded) zaten remark <em> üretir — strip etmez
+    expect(html).toContain('<em>gerçek italik</em>');
+  });
+});

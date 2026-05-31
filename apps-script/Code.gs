@@ -1,0 +1,307 @@
+/**
+ * Apps Script — OCAK Site unified form backend (#28 Brief E referans, KARAR 123).
+ *
+ * Bu dosya repo'da REFERANS olarak duruyor (KARAR 102 ruhu). Gerçek kod Google
+ * Workspace'te "Ocak Site Forms" projesinde Code.gs editor'de yaşıyor. Deploy:
+ *   Manage deployments → Active deployment → Edit → New version → Deploy.
+ *   URL aynı kalır; aksi takdirde src/lib/api.ts APPS_SCRIPT_URL güncellemesi gerekir.
+ *
+ * Script Properties (KARAR 116 disiplini — token client'a hiç gitmez):
+ *   - MAILERLITE_API_KEY
+ *   - NOTION_TOKEN              (KARAR 101 rotate, üçüncü yer)
+ *   - NOTION_BASVURULAR_DB_ID   (#28 Brief 0)
+ *
+ * MailerLite group ID'leri kod içi sabitler (PII değil):
+ *   - ATES_MEKTUPLARI_GROUP_ID, ACIK_KAPI_GROUP_ID, CEMBER_GROUP_ID, ANADOLU_GROUP_ID
+ *
+ * Submit pattern: text/plain POST → doPost → router → handle*() → _jsonResponse.
+ * Her handler 3 kanala paralel yazar:
+ *   1. MailerLite subscriber (form'a özel group)
+ *   2. Notion Başvurular DB (#28 ortak DB, Tip etiketiyle ayrım)
+ *   3. Sheets (Q6 cevabı — paralel, lansman sonrası cutover kararı)
+ *
+ * Notion fail durumunda kullanıcı YİNE success görür (MailerLite/Sheets başarılıysa).
+ * Notion hataları Logger.log'a düşer, Kaan periyodik audit. Yedekli sistem (KARAR 123).
+ */
+
+// === Sabit grup ID'leri (KARAR 116) ===
+const ATES_MEKTUPLARI_GROUP_ID = '187372384318130052';
+const ACIK_KAPI_GROUP_ID = '187372390149261252';
+const CEMBER_GROUP_ID = '187798293576681151';
+const ANADOLU_GROUP_ID = '<ANADOLU_GROUP_ID_BURAYA>'; // Brief E Adım 2 — Kaan MailerLite'ta yarat
+
+// === Router ===
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    if (data.formType === 'ates-mektuplari') return handleAtesMektuplari(data);
+    if (data.formType === 'acik-kapi') return handleAcikKapi(data);
+    if (data.formType === 'cember-basvuru') return handleCemberBasvuru(data);
+    if (data.formType === 'anadolu-basvuru') return handleAnadoluBasvuru(data);
+    if (data.formType === 'iletisim') return handleIletisim(data);
+    return _jsonResponse({ status: 'error', message: 'Unknown formType: ' + data.formType });
+  } catch (err) {
+    Logger.log('doPost parse error: ' + err);
+    return _jsonResponse({ status: 'error', message: 'Invalid request' });
+  }
+}
+
+function doGet(e) {
+  return _jsonResponse({ status: 'ok', message: 'OCAK form endpoint live' });
+}
+
+// === Handler: Ateş Mektupları ===
+function handleAtesMektuplari(data) {
+  try {
+    // KARAR 152 honeypot — bot dolu, sessiz success (MailerLite/Notion'a yazma).
+    if (data.website) {
+      Logger.log('Honeypot caught [ates-mektuplari]: website=' + data.website);
+      return _jsonResponse({ status: 'success' });
+    }
+    if (!data.email || !data.email.includes('@')) {
+      return _jsonResponse({ status: 'error', message: 'Email geçersiz' });
+    }
+    _addToMailerLite(data.email, ATES_MEKTUPLARI_GROUP_ID);
+    _writeToNotionBasvurular(data, 'Ateş Mektupları');
+    // Sheets dokunulmuyor (mevcut çağrı varsa burada kalır)
+    return _jsonResponse({ status: 'success' });
+  } catch (err) {
+    Logger.log('handleAtesMektuplari error: ' + err);
+    return _jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+// === Handler: Çember Başvuru ===
+function handleCemberBasvuru(data) {
+  try {
+    // KARAR 152 honeypot — bot dolu, sessiz success.
+    if (data.website) {
+      Logger.log('Honeypot caught [cember-basvuru]: website=' + data.website);
+      return _jsonResponse({ status: 'success' });
+    }
+    if (!data.email || !data.email.includes('@')) {
+      return _jsonResponse({ status: 'error', message: 'Email geçersiz' });
+    }
+    if (!data.isim) {
+      return _jsonResponse({ status: 'error', message: 'İsim zorunlu' });
+    }
+    _addToMailerLite(data.email, CEMBER_GROUP_ID, { name: data.isim });
+    _writeToNotionBasvurular(data, 'Çember');
+    return _jsonResponse({ status: 'success' });
+  } catch (err) {
+    Logger.log('handleCemberBasvuru error: ' + err);
+    return _jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+// === Handler: Açık Kapı Kayıt ===
+function handleAcikKapi(data) {
+  try {
+    // KARAR 152 honeypot — bot dolu, sessiz success (Zoom meeting yaratma).
+    if (data.website) {
+      Logger.log('Honeypot caught [acik-kapi]: website=' + data.website);
+      return _jsonResponse({ status: 'success' });
+    }
+    if (!data.email || !data.email.includes('@')) {
+      return _jsonResponse({ status: 'error', message: 'Email geçersiz' });
+    }
+    _addToMailerLite(data.email, ACIK_KAPI_GROUP_ID, { name: data.name });
+    _writeToNotionBasvurular(data, 'Açık Kapı');
+    // NOT: Zoom Server-to-Server OAuth meeting create burada — mevcut kod aynen kalır.
+    // KARAR 127: etkinlikTarihi Notion Etkinlikler DB'den "Format=Açık Kapı + Statü=Kayıt Açık"
+    // filtresiyle bir sonraki etkinliği çekip "DD MMMM YYYY EEEE · HH:mm" formatında döndürür.
+    // Response shape AcikKapiKayit script'ine uyumlu: { status, zoomLink?, etkinlikTarihi? }.
+    return _jsonResponse({ status: 'success' });
+  } catch (err) {
+    Logger.log('handleAcikKapi error: ' + err);
+    return _jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+// === Handler: Anadolu Başvuru (#28 YENİ) ===
+function handleAnadoluBasvuru(data) {
+  try {
+    // KARAR 152 honeypot — bot dolu, sessiz success.
+    if (data.website) {
+      Logger.log('Honeypot caught [anadolu-basvuru]: website=' + data.website);
+      return _jsonResponse({ status: 'success' });
+    }
+    if (!data.email || !data.email.includes('@')) {
+      return _jsonResponse({ status: 'error', message: 'Email geçersiz' });
+    }
+    if (!data.ad || !data.niyet_mektubu) {
+      return _jsonResponse({ status: 'error', message: 'Zorunlu alanlar eksik' });
+    }
+    _addToMailerLite(data.email, ANADOLU_GROUP_ID, {
+      name: data.ad,
+      phone: data.telefon,
+    });
+    _writeToNotionBasvurular(data, 'Anadolu');
+    // Sheets paralel yazma (eğer mevcut sistem varsa burada çağırılır)
+    return _jsonResponse({ status: 'success' });
+  } catch (err) {
+    Logger.log('handleAnadoluBasvuru error: ' + err);
+    return _jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+// === Handler: İletişim (#29 Brief F.5 YENİ) ===
+// /iletisim sayfasındaki IletisimForm — isim + email + mesaj.
+// KARAR 126: MailerLite YOK (lansman sonrası transactional). Sadece Notion Başvurular DB
+// + Logger trail. Müşteri datası kaybı yok (KARAR 123 ruhu).
+function handleIletisim(data) {
+  try {
+    // KARAR 152 honeypot — bot dolu, sessiz success.
+    if (data.website) {
+      Logger.log('Honeypot caught [iletisim]: website=' + data.website);
+      return _jsonResponse({ status: 'success' });
+    }
+    if (!data.email || !data.email.includes('@')) {
+      return _jsonResponse({ status: 'error', message: 'Email geçersiz' });
+    }
+    if (!data.isim || !data.mesaj) {
+      return _jsonResponse({ status: 'error', message: 'Zorunlu alanlar eksik' });
+    }
+    // Notion Başvurular DB — Tip: "İletişim" (Kaan DB select option ekler, Brief F.5
+    // kapsam dışı paralel iş ~5 dk). Mesaj "Notlar" property'sine yazılır.
+    _writeToNotionBasvurular(
+      { email: data.email, isim: data.isim, mesaj: data.mesaj },
+      'İletişim',
+    );
+    return _jsonResponse({ status: 'success' });
+  } catch (err) {
+    Logger.log('handleIletisim error: ' + err);
+    return _jsonResponse({ status: 'error', message: err.toString() });
+  }
+}
+
+// === Helper: MailerLite subscriber ekle (KARAR 116 token disiplini) ===
+function _addToMailerLite(email, groupId, extraFields) {
+  var apiKey = PropertiesService.getScriptProperties().getProperty('MAILERLITE_API_KEY');
+  var payload = { email: email, groups: [groupId] };
+  if (extraFields) {
+    payload.fields = extraFields;
+  }
+  var response = UrlFetchApp.fetch('https://connect.mailerlite.com/api/subscribers', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + apiKey },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
+  });
+  var code = response.getResponseCode();
+  Logger.log('MailerLite: ' + code + ' — ' + email + ' → ' + groupId);
+  return code === 200 || code === 201;
+}
+
+// === Helper: Notion Başvurular DB'ye paralel yaz (#28 YENİ, 4 form ortak) ===
+function _writeToNotionBasvurular(data, tip) {
+  var token = PropertiesService.getScriptProperties().getProperty('NOTION_TOKEN');
+  var dbId = PropertiesService.getScriptProperties().getProperty('NOTION_BASVURULAR_DB_ID');
+
+  // 4 form farklı title/isim field'ı kullanıyor — normalize
+  var ad = data.ad || data.isim || data.name || data.email;
+
+  // Property name'ler Notion gerçeğine sadık (Brief A sapma haritası teyitli):
+  // Title Case (İlk Dokunuş Kanalı, Geçiş Notu, vs.) için 6 alan;
+  // Select option'ları da Title Case (Tam / Burs Talep / Askıda Yer).
+  var properties = {
+    Ad: { title: [{ text: { content: ad } }] },
+    Email: { email: data.email },
+    Tip: { select: { name: tip } },
+    Durum: { select: { name: 'Yeni' } },
+    Kaynak: { rich_text: [{ text: { content: data.kaynak || tip } }] },
+  };
+
+  if (data.telefon) properties['Telefon'] = { phone_number: data.telefon };
+  if (data.ilk_dokunus_kanali) {
+    properties['İlk dokunuş kanalı'] = { select: { name: data.ilk_dokunus_kanali } };
+  }
+  if (data.yas) properties['Yaş'] = { number: parseInt(data.yas, 10) };
+  if (data.sehir) properties['Şehir'] = { rich_text: [{ text: { content: data.sehir } }] };
+  // Niyet bloğu — iki uzun text field tek "Niyet mektubu" property'sine köşeli
+  // parantezli concat (#30 Brief F sonu Item 4). Sıra: niyet (1) önce, şu an (2) sonra
+  // — formun accordion sırasıyla uyumlu, kullanıcı niyet bloğunu açılış olarak okur.
+  var niyetParcalar = [];
+  if (data.niyet_mektubu) {
+    niyetParcalar.push('[Niyet mektubu]\n' + data.niyet_mektubu);
+  }
+  if (data.su_an_nerede) {
+    niyetParcalar.push('[Şu an hayatında nerede]\n' + data.su_an_nerede);
+  }
+  if (niyetParcalar.length) {
+    properties['Niyet mektubu'] = {
+      rich_text: [{ text: { content: niyetParcalar.join('\n\n') } }],
+    };
+  }
+  if (data.mesaj) {
+    // İletişim form mesajı doğrudan Notlar'a (#29 Brief F.5).
+    properties['Notlar'] = { rich_text: [{ text: { content: data.mesaj } }] };
+  }
+  if (data.gecis_notu) properties['Geçiş notu'] = { rich_text: [{ text: { content: data.gecis_notu } }] };
+  if (data.saglik_notu) properties['Sağlık notu'] = { rich_text: [{ text: { content: data.saglik_notu } }] };
+  if (data.cember_deneyimi) {
+    properties['Çember deneyimi'] = { rich_text: [{ text: { content: data.cember_deneyimi } }] };
+  }
+  if (data.ekonomik_katilim) {
+    // Frontend uzun metin → Notion kısa select (Brief 0 + Brief A teyitli option adları)
+    var ekoMap = {
+      'Tam katılım — kendi yolculuğum için ödüyorum': 'Tam',
+      'Burs/indirim talep ediyorum — uygun bir paylaşımla konuşmak isterim': 'Burs Talep',
+      'Askıda yer almak istiyorum — başka bir kadına yer açmak için ek katkı': 'Askıda Yer',
+    };
+    properties['Ekonomik katılım'] = { select: { name: ekoMap[data.ekonomik_katilim] || 'Tam' } };
+  }
+
+  var payload = { parent: { database_id: dbId }, properties: properties };
+
+  var response = UrlFetchApp.fetch('https://api.notion.com/v1/pages', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Notion-Version': '2022-06-28',
+    },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
+  });
+
+  var code = response.getResponseCode();
+  if (code !== 200) {
+    // Hata yutulur — MailerLite/Sheets başarılıysa kullanıcı success görür.
+    // KARAR 123 müşteri datası kayıt önemi: hata loglanır, lansman sonrası audit.
+    Logger.log('Notion write FAIL [' + tip + ']: ' + code + ' — ' + response.getContentText());
+    return false;
+  }
+  Logger.log('Notion write OK [' + tip + ']: ' + data.email);
+  return true;
+}
+
+// === Helper: JSON response wrapper ===
+function _jsonResponse(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
+    ContentService.MimeType.JSON
+  );
+}
+
+// === Editor test fonksiyonu — Apps Script editor'den Run et ===
+function testHandleAnadoluBasvuru() {
+  var mock = {
+    postData: {
+      contents: JSON.stringify({
+        formType: 'anadolu-basvuru',
+        ad: 'Test Kullanıcı',
+        email: 'kaan+anadolu-test@gmail.com',
+        telefon: '+90 555 555 5555',
+        sehir: 'İstanbul',
+        yas: 35,
+        ilk_dokunus_kanali: 'Instagram',
+        niyet_mektubu: 'Test niyet mektubu — Apps Script editor smoke test.',
+        su_an_nerede: 'Test durumu.',
+        ekonomik_katilim: 'Tam katılım — kendi yolculuğum için ödüyorum',
+      }),
+    },
+  };
+  var result = doPost(mock);
+  Logger.log(result.getContent());
+}

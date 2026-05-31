@@ -1,0 +1,20 @@
+---
+// Reveal — scroll-tetikli giriş animasyonu wrapper'ı (KARAR 102, legacy verbatim)
+// Davranış global.css'te (.reveal / .reveal.visible / .reveal-delay-1|2|3)
+// IntersectionObserver Layout.astro'da (data-reveal yakalar, .visible ekler)
+
+export interface Props {
+  delay?: 1 | 2 | 3;
+  as?: string;
+  class?: string;
+}
+
+const { delay, as: Tag = 'div', class: className = '' } = Astro.props;
+
+const classes = ['reveal', delay ? `reveal-delay-${delay}` : '', className]
+  .filter(Boolean)
+  .join(' ');
+---
+<Tag class={classes} data-reveal>
+  <slot />
+</Tag>

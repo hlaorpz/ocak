@@ -1,0 +1,22 @@
+---
+// /anadolu/basvuru — Anadolu Yolculuğu niyet mektubu (#28 Brief C, KARAR 123).
+// Pattern sapması bilinçli: ağır 13 field form ayrı route (Q1 cevabı).
+// Notion içerik YOK — hard-coded page override (Hero + AnadoluBasvuru).
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import AnadoluBasvuru from '../../components/AnadoluBasvuru.astro';
+---
+<Layout
+  title="Anadolu Yolculuğu Başvurusu"
+  description="Niyet mektubunu yaz, tanışma görüşmesine geç."
+  oda="Yolculuk"
+>
+  <Hero
+    oda="Yolculuk"
+    overline="ANADOLU"
+    title="Niyet mektubunu yaz."
+    subtitle="Bu form üzerinden başvuruyorsun. Yedi gün içinde tanışma görüşmesi için döneriz."
+    showScroll={false}
+  />
+  <AnadoluBasvuru />
+</Layout>

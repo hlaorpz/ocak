@@ -1,0 +1,137 @@
+---
+// araclar.astro — /araclar sayfa override (Brief Araçlar — Yedi Raf Accordion, Yön 5).
+// Statik route dinamik [...slug].astro'yu ezer (KARAR 119, Buluşmalar paterni paralel).
+//
+// İş: 7 raf section'ı (raf-cekirdek..raf-yaratici) progresif accordion'a çevrilir.
+//   - raf-cekirdek baştan AÇIK (her buluşmada var, OCAK Way "başla sonra derinleş").
+//   - raf-beden..raf-yaratici KAPALI (sayfa metni "korkma bu listeden" diyor).
+// Mekanizma: native <details>/<summary>, SSS pattern'i (KARAR 105) — chevron 45°→-135°,
+// border ash→ember, prefers-reduced-motion saygısı. CSS atmosfer.css'te `RAF AKORDEON`.
+//
+// Mimari yol: Buluşmalar paterni (build-time HTML patch + override). Plugin emit
+// transform'una raf accordion eklemek (a) seçeneği reddedildi: plugin generic prose
+// emitter, sayfa-özel UI tek mantıkla orada kalsın → override dosyası.
+//   Buluşmalar override component extraction yapıyor (extractFormats → Sekmeler);
+//   buradaki dönüşüm "section iç-HTML rewrite" (component extraction değil) çünkü
+//   raflar farklı section'lar olarak ID kazanır + baseline prose section CSS'i
+//   tutar. Buluşmalar mimari yaklaşımı esin; sekme/tablist mekanizması ALINMAZ.
+//
+// Notion içeriği DEĞİŞMEZ. Loader / remark-ocak-sections dokunulmadı.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+const sayfa = await getEntry('sayfalar', '/araclar');
+if (!sayfa) {
+  throw new Error("araclar.astro: 'sayfalar' collection'ında '/araclar' slug'ı bulunamadı.");
+}
+
+// 7 raf sırası — Notion'daki sıra; ilk eleman baştan açık.
+const RAF_ORDER: string[] = [
+  'raf-cekirdek',
+  'raf-beden',
+  'raf-enerji',
+  'raf-psikoloji',
+  'raf-doga',
+  'raf-ses',
+  'raf-yaratici',
+];
+
+/**
+ * Bir raf section'ının iç HTML'ini accordion markup'ına çevirir.
+ *   Girdi (renderMarkdown output, compressHTML=true olabilir):
+ *     <h3 id="...">1 · Çekirdek Araçlar</h3>
+ *     <p><em>Tanım cümlesi.</em></p>
+ *     <p>— Madde 1</p>
+ *     <p>— Madde 2</p>
+ *     ...
+ *   Çıktı:
+ *     <details [open]><summary><h3>..</h3><span class="ocak-raf__tanim"><em>..</em></span></summary>
+ *       <div class="ocak-raf__icerik"><p>— Madde 1</p>...</div>
+ *     </details>
+ *
+ * h3 / em-paragraph beklenenden farklıysa → uyarı + içerik olduğu gibi dönüş
+ * (defansif: build çökmez, eyeball'da fark edilir).
+ */
+function rafToAccordion(inner: string, id: string, open: boolean): string {
+  // İlk h3 (id attribute opsiyonel)
+  const h3Match = inner.match(/<h3(\s[^>]*)?>([\s\S]*?)<\/h3>/);
+  // h3'ten hemen sonraki italik tanım paragrafı
+  const emMatch = inner.match(/<p><em>([\s\S]*?)<\/em><\/p>/);
+  if (!h3Match || !emMatch || (emMatch.index ?? -1) < (h3Match.index ?? -1)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[araclar.astro] ${id}: h3/em-tanım beklenen sırada bulunamadı — accordion'a çevrilmedi.`,
+    );
+    return inner;
+  }
+  const h3 = h3Match[0];
+  const tanimInner = emMatch[1];
+  // Kalan içerik: em paragrafından sonrası (madde listesi)
+  const bodyStart = (emMatch.index ?? 0) + emMatch[0].length;
+  const body = inner.slice(bodyStart).trim();
+  const openAttr = open ? ' open' : '';
+  return (
+    `<details${openAttr}>` +
+    `<summary>${h3}<span class="ocak-raf__tanim"><em>${tanimInner}</em></span></summary>` +
+    `<div class="ocak-raf__icerik">${body}</div>` +
+    `</details>`
+  );
+}
+
+/**
+ * Markdown fragment HTML'inde 7 raf section'ının iç HTML'ini accordion'a çevirir.
+ * Section sarmalama (<section data-section="raf-X" class="ocak-raf-X">..</section>)
+ * KORUNUR — baseline prose CSS (max-width, padding) section üstünde, accordion
+ * davranışı içeride.
+ */
+function transformRaflar(html: string): { html: string; touched: number; missing: string[] } {
+  let modified = html;
+  let touched = 0;
+  const missing: string[] = [];
+  for (const id of RAF_ORDER) {
+    const re = new RegExp(
+      `(<section data-section="${id}" class="ocak-${id}">)([\\s\\S]*?)(</section>)`,
+    );
+    const match = re.exec(modified);
+    if (!match) {
+      missing.push(id);
+      continue;
+    }
+    const isFirst = id === RAF_ORDER[0];
+    const newInner = rafToAccordion(match[2], id, isFirst);
+    modified =
+      modified.slice(0, match.index) +
+      match[1] +
+      newInner +
+      match[3] +
+      modified.slice(match.index + match[0].length);
+    touched++;
+  }
+  return { html: modified, touched, missing };
+}
+
+// Yalnız markdown chunk'larında dönüşüm uygulanır (form-anchor/al-ol-ver/sonraki-bulusma
+// fragment kind'larına dokunulmaz). Buluşmalar'da olduğu gibi tek pass yeter — raflar
+// tek bir markdown chunk içinde yan yana (sayfa içinde tek prose blok).
+const finalFragments = sayfa.data.fragments.map((frag) => {
+  if (frag.kind !== 'markdown') return frag;
+  const result = transformRaflar(frag.html);
+  if (result.touched === 0) return frag;
+  if (result.missing.length > 0) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[araclar.astro] eksik raf section'ları: ${result.missing.join(', ')} — accordion eksik.`,
+    );
+  }
+  return { ...frag, html: result.html };
+});
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  <PageContent slug="/araclar" fragments={finalFragments} />
+</Layout>

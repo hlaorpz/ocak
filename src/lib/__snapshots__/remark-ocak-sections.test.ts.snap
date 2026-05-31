@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`remark-ocak-sections > 1. hero — <section data-section="hero"> ile sarar, h1 içerir 1`] = `
+"<section data-section="hero">
+<div class="hero-fade-out" aria-hidden="true"></div>
+<h1><em>Ay döner, biz toplanırız.</em></h1>
+<p>Her ay bir kez. On iki kadın. Bir ateş.</p>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 2. bir-sonraki — section içinde blockquote, ocak-bir-sonraki class 1`] = `
+"<section data-section="bir-sonraki" class="ocak-bir-sonraki"><blockquote>
+<h3>Bir Sonraki Çember</h3>
+<p>Önümüzdeki dolunay. Cumartesi akşamı, on iki kadınla bir ateşin etrafında.</p>
+<p><a href="/cember#kayit">Yer ayırt →</a></p>
+</blockquote></section>"
+`;
+
+exports[`remark-ocak-sections > 4. siradaki-kapi — tam 3 ocak-kapi-kart 1`] = `
+"<section data-section="siradaki-kapi">
+<article class="ocak-kapi-kart">
+<h3>Hâlâ Merak Ediyorsan</h3>
+<p>Felsefemizi okumak istersen — neden böyle yaptığımızı.</p>
+<p><a href="/felsefe">OCAK'ın felsefesi →</a></p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Adım Atmaya Hazırsan</h3>
+<p>Açık Kapı'ya gel. Taahhütsüz. Sadece bir akşam.</p>
+<p><a href="/acik-kapi">Açık Kapı →</a></p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Daha Derin Bir Şey Arıyorsan</h3>
+<p>Mini retreat — bir hafta sonu, küçük bir kohort.</p>
+<p><a href="/mini-retreat">Mini Retreat →</a></p>
+</article>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 5. sss — bullet sorular details/summary + sss-cevap, h2 korunur 1`] = `
+"<section data-section="sss">
+<h2>Sorulanlar</h2>
+<details><summary>Daha önce hiç çembere katılmadım, olur mu?</summary><div class="sss-cevap">
+<p>Olur. Çoğu kadın ilk kez geliyor. Çember tanıdık olmayanı tanıdık yapan bir form.</p>
+<p>Sadece otur, kal, döndüğünde söz al ya da alma.</p>
+</div></details>
+<details><summary>Kayıt olduktan sonra gelmezsem ne olur?</summary><div class="sss-cevap">
+<p>Yeri başkasına açmadan haber ver yeterli. Para iadesi politikası ayrı bir konu.</p>
+</div></details>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 26. esik accordion — whitelist 10 isim details name="esikler", h2 strip → summary 1`] = `
+"<details name="esikler" data-section="esik-uyku"><summary>0 · UYKU</summary>
+<p>Hayatın işliyor. Dışarıdan bakanlar bir sorun göremez. İçinde bir kopukluk var.</p>
+<p>İkinci paragraf — dipnot gibi.</p>
+</details>
+<details name="esikler" data-section="esik-merak"><summary>1 · MERAK</summary>
+<p>OCAK'ı duydun. Bir arkadaş, bir Instagram, bir cümle takıldı.</p>
+</details>
+<section data-section="son-soz" class="ocak-son-soz">
+<h2>Son Söz</h2>
+<p>Bu harita bir test değil. Bir basamak şeması değil. Bir liste değil.</p>
+<p>Sen neredesin?</p>
+</section>"
+`;

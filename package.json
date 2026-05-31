@@ -1,0 +1,36 @@
+{
+  "name": "ocak-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "check": "astro check",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest run",
+    "test:ui": "vitest --ui"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/vercel": "^8.0.0",
+    "@notionhq/client": "^2.2.15",
+    "astro": "^5.0.0",
+    "notion-to-md": "^3.1.5",
+    "typescript": "^5.7.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@vitest/ui": "^4.1.7",
+    "rehype-stringify": "^10.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5",
+    "unist-util-is": "^6.0.1",
+    "unist-util-visit": "^5.1.0",
+    "vitest": "^4.1.7"
+  }
+}

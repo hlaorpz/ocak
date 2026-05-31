@@ -1,0 +1,147 @@
+---
+// SSS — native <details> accordion (KARAR 92, 93)
+// Plugin section etiketi: ## section: sss
+// Plugin H3+content çiftlerini <details><summary>H3</summary>content</details>'a çeviriyor + opsiyonel <h2>Sorulanlar</h2>
+// Bu component HEM prop'larla manuel kullanım HEM plugin output stilini destekler
+// Native <details> klavye erişilebilir, prefers-reduced-motion ile animation otomatik kapanır
+
+interface SoruCevap {
+  soru: string;
+  cevap: string;        // HTML string olabilir (markdown'dan gelen)
+}
+
+interface Props {
+  heading?: string;       // default "Sorulanlar"
+  showHeading?: boolean;  // default true
+  sorular?: SoruCevap[];  // verilmezse slot içeriği render edilir (plugin output)
+}
+
+const {
+  heading = 'Sorulanlar',
+  showHeading = true,
+  sorular,
+} = Astro.props;
+---
+<section class="sss" data-section="sss">
+  <div class="ocak-container ocak-container--prose">
+    {showHeading && (
+      <h2 class="sss__heading">{heading}</h2>
+    )}
+
+    {sorular && sorular.length > 0 ? (
+      <div class="sss__liste">
+        {sorular.map((sc) => (
+          <details>
+            <summary>{sc.soru}</summary>
+            <div class="sss__cevap" set:html={sc.cevap} />
+          </details>
+        ))}
+      </div>
+    ) : (
+      <div class="sss__liste">
+        <slot />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .sss {
+    padding: var(--space-8) 0;
+  }
+
+  .sss__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    color: var(--cream);
+    text-align: center;
+    margin: 0 0 var(--space-6);
+    font-weight: 400;
+  }
+
+  .sss__liste {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === DETAILS (plugin output + manuel kullanım için tek kaynak) === */
+  /* :global çünkü plugin <details> doğrudan üretir, component scope dışı */
+
+  :global(.sss details) {
+    border-bottom: 1px solid var(--ash);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  :global(.sss details[open]) {
+    border-bottom-color: var(--ember);
+  }
+
+  :global(.sss summary) {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-4) 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h4);
+    color: var(--cream);
+    font-weight: 400;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  :global(.sss summary::-webkit-details-marker) {
+    display: none;
+  }
+
+  :global(.sss summary:hover),
+  :global(.sss summary:focus-visible) {
+    color: var(--ember);
+    outline: none;
+  }
+
+  /* Chevron — sade dikey çubuk, açıkta dönüyor (60deg, alev/eğilme hissi) */
+  :global(.sss summary::after) {
+    content: '';
+    margin-left: auto;
+    width: 12px;
+    height: 12px;
+    border-right: 1px solid var(--ember);
+    border-bottom: 1px solid var(--ember);
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  :global(.sss details[open] summary::after) {
+    transform: rotate(-135deg);
+  }
+
+  :global(.sss .sss__cevap),
+  :global(.sss details > div),
+  :global(.sss details > p) {
+    padding: 0 0 var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    line-height: 1.7;
+  }
+
+  :global(.sss .sss__cevap p),
+  :global(.sss details > div p) {
+    margin: 0 0 var(--space-2);
+  }
+
+  :global(.sss .sss__cevap p:last-child),
+  :global(.sss details > div p:last-child) {
+    margin-bottom: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.sss summary),
+    :global(.sss summary::after),
+    :global(.sss details) {
+      transition: none;
+    }
+  }
+</style>

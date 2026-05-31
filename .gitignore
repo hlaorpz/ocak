@@ -1,0 +1,38 @@
+# build
+dist
+.astro
+.vercel
+
+# dependencies
+node_modules
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env — KARAR 97: token asla commit edilmez
+.env
+.env.local
+.env.production
+.env.*.local
+
+# editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.swp
+*.swo
+
+# vercel local cache
+.vercel
+
+# claude code — lokal operasyonel not (repo'ya gitmez)
+.claude/
+
+# notion envanter dump (geçici diff aracı, #29 Brief F.5 Adım 0)
+scripts/notion-section-envanter.json
+.env*
+!.env.example

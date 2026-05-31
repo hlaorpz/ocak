@@ -1,0 +1,10 @@
+# Lansman öncesi — Google indekslemiyor.
+# 21 Haziran sabahı Kaan bu dosyayı şu hale çevirecek:
+#
+# User-agent: *
+# Allow: /
+# Disallow: /test
+# Sitemap: https://ocak.biz/sitemap-index.xml
+
+User-agent: *
+Disallow: /

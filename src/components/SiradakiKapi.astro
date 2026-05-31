@@ -1,0 +1,145 @@
+---
+// SiradakiKapi — 3 sütun kart grid (KARAR 92, 93)
+// Plugin section etiketi: ## section: siradaki-kapi
+// Plugin H3+paragraph+(link) üçlülerini <article class="ocak-kapi-kart"> kartlarına çeviriyor
+// Bu component HEM prop'larla manuel kullanım HEM plugin output stilini destekler
+// :global() CSS plugin'in ürettiği sınıfları da stiller (tek kaynak, iki render yolu)
+// Default 3 kart (KARAR 102), 2/4 tolere, 1/5+ plugin tarafında console.warn
+
+interface Kapi {
+  baslik: string;
+  metin: string;
+  linkText?: string;
+  linkHref?: string;
+}
+
+interface Props {
+  heading?: string;       // opsiyonel section başlığı (örn. "Sıradaki Kapı")
+  kapilar?: Kapi[];       // verilmezse slot içeriği render edilir (plugin output)
+}
+
+const { heading, kapilar } = Astro.props;
+---
+<section class="siradaki-kapi" data-section="siradaki-kapi">
+  <div class="ocak-container">
+    {heading && (
+      <h2 class="siradaki-kapi__heading">{heading}</h2>
+    )}
+
+    {kapilar && kapilar.length > 0 ? (
+      <div class="siradaki-kapi__grid">
+        {kapilar.map((kapi) => (
+          <article class="ocak-kapi-kart">
+            <h3>{kapi.baslik}</h3>
+            <p>{kapi.metin}</p>
+            {kapi.linkText && kapi.linkHref && (
+              <a href={kapi.linkHref}>{kapi.linkText} →</a>
+            )}
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="siradaki-kapi__grid">
+        <slot />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .siradaki-kapi {
+    padding: var(--space-8) 0;
+  }
+
+  .siradaki-kapi__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    color: var(--cream);
+    text-align: center;
+    margin: 0 0 var(--space-6);
+    font-weight: 400;
+  }
+
+  .siradaki-kapi__grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .siradaki-kapi__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* === KART (plugin output + manuel kullanım için tek kaynak) === */
+  /* :global çünkü plugin tarafından üretilen <article class="ocak-kapi-kart"> de aynı sınıfı kullanır */
+
+  :global(.ocak-kapi-kart) {
+    position: relative;
+    padding: var(--space-5);
+    background: transparent;
+    border-top: 1px solid var(--smoke);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  /* Ember separator — kartın üst border'ı, hover'da ember'a döner ve "grow" eder */
+  :global(.ocak-kapi-kart::before) {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--ember);
+    transition: width var(--duration-slow) var(--ease-out);
+  }
+
+  :global(.ocak-kapi-kart:hover::before),
+  :global(.ocak-kapi-kart:focus-within::before) {
+    width: 100%;
+  }
+
+  :global(.ocak-kapi-kart h3) {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    color: var(--cream);
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  :global(.ocak-kapi-kart p) {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  :global(.ocak-kapi-kart a) {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    align-self: flex-start;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  :global(.ocak-kapi-kart a:hover),
+  :global(.ocak-kapi-kart a:focus-visible) {
+    border-bottom-color: var(--ember);
+  }
+
+  @media (max-width: 768px) {
+    :global(.ocak-kapi-kart) {
+      padding: var(--space-4);
+    }
+  }
+</style>
