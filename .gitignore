@@ -34,5 +34,11 @@ pnpm-debug.log*
 
 # notion envanter dump (geçici diff aracı, #29 Brief F.5 Adım 0)
 scripts/notion-section-envanter.json
+
+# scripts/*-dump.txt — dump çıktıları (Notion canlı, script yeniden üretir)
+scripts/*-dump.txt
+
+# ocak-site-icerik.md — site içerik snapshot (site-icerik-dump.mjs üretir, eskir)
+ocak-site-icerik.md
 .env*
 !.env.example

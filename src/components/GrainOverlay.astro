@@ -34,7 +34,12 @@
      sızıyor" algısı. CSS sizing HTML attribute interpretation'ını override
      eder, SVG parent grain-overlay'ı (100% viewport) doldurur. KARAR 102
      değerleri (baseFreq 0.9, opacity 0.035, octaves 4, stitchTiles stitch)
-     dokunulmadı — sadece sizing tamamlandı. */
+     dokunulmadı — sadece sizing tamamlandı.
+     KARAR 150 borç: SVG/IMG/IFRAME/VIDEO/CANVAS replaced element sizing
+     genel auditi yapılmamış. scripts/replaced-element-audit.mjs taslağı
+     yarım kaldığı için silindi (TAGS const declared-not-used warning).
+     Gerekirse sıfırdan yazılacak — parent rendered width karşılaştırması
+     + 300×150 / 390×150 fallback tespiti. */
   .grain-overlay svg {
     display: block;
     width: 100%;
