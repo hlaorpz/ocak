@@ -53,13 +53,14 @@ describe('Footer.astro — sabit manifesto imzası', () => {
     expect(manifestoBlock).toContain('font-style: italic');
   });
 
-  it('küçük punto (clamp 1-1.15rem, manifesto-vurgu ve ic-ses altı)', () => {
+  it('orta basamak punto (clamp 1.2-1.45rem, ic-ses 1.25-1.5 altında ama fark edilir)', () => {
     const manifestoBlock = source.match(
       /\.footer__manifesto\s*\{[\s\S]*?\}/,
     )?.[0];
-    // clamp(1rem, ..., 1.15rem) — manifesto-vurgu 1.35-1.6, ic-ses 1.25-1.5 altı
+    // clamp(1.2rem, 2vw, 1.45rem) — alt sınır ic-ses (1.25) altında, üst sınır
+    // ic-ses (1.5) altında. Hâlâ en sessiz basamak, sadece artık eyeball'da kayboluyor değil.
     expect(manifestoBlock).toMatch(
-      /font-size:\s*clamp\(1rem,\s*[^,]+,\s*1\.15rem\)/,
+      /font-size:\s*clamp\(1\.2rem,\s*[^,]+,\s*1\.45rem\)/,
     );
   });
 
