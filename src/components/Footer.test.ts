@@ -13,14 +13,28 @@ import { join } from 'node:path';
  */
 
 const FOOTER_PATH = join(__dirname, 'Footer.astro');
-const VERBATIM_SENTENCE =
-  'Seni bize bağımlı yapmak için değil, seni sana geri vermek için buradayız.';
+// Marka KARAR'ı: cümle iki parçaya bölündü (mobil kırılma için iki <span>),
+// AMA okunduğunda birleşik cümle aynen kalır. Test iki parçayı ayrı arar.
+const VERBATIM_PART_1 = 'Seni bize bağımlı yapmak için değil,';
+const VERBATIM_PART_2 = 'seni sana geri vermek için buradayız.';
 
 describe('Footer.astro — sabit manifesto imzası', () => {
   const source = readFileSync(FOOTER_PATH, 'utf-8');
 
-  it('verbatim cümle hard-coded olarak mevcut (marka KARAR\'ı, değişmez)', () => {
-    expect(source).toContain(VERBATIM_SENTENCE);
+  it('verbatim cümle iki parça olarak mevcut (marka KARAR\'ı, değişmez)', () => {
+    expect(source).toContain(VERBATIM_PART_1);
+    expect(source).toContain(VERBATIM_PART_2);
+    // Parça 1, parça 2'den önce gelmeli (okuma sırası korunur).
+    expect(source.indexOf(VERBATIM_PART_1)).toBeLessThan(
+      source.indexOf(VERBATIM_PART_2),
+    );
+  });
+
+  it('iki span yapısı + ikincisi mobil kırılma için --break modifier taşır', () => {
+    expect(source).toMatch(/class="footer__manifesto-line"/);
+    expect(source).toMatch(
+      /class="footer__manifesto-line footer__manifesto-line--break"/,
+    );
   });
 
   it('footer__manifesto class ile sarılı (CSS hedef noktası)', () => {
@@ -53,13 +67,29 @@ describe('Footer.astro — sabit manifesto imzası', () => {
     expect(manifestoBlock).toContain('font-style: italic');
   });
 
-  it('küçük punto (clamp 1-1.15rem, manifesto-vurgu ve ic-ses altı)', () => {
+  it('final punto (clamp 1.3-1.55rem, ic-ses üst sınırına yakın ama altında)', () => {
     const manifestoBlock = source.match(
       /\.footer__manifesto\s*\{[\s\S]*?\}/,
     )?.[0];
-    // clamp(1rem, ..., 1.15rem) — manifesto-vurgu 1.35-1.6, ic-ses 1.25-1.5 altı
+    // clamp(1.3rem, 2.2vw, 1.55rem) — üst sınır ic-ses (1.5) üstünde kalmıyor
+    // değil ama kasıtlı: footer artık glyphsiz/glowsuz/cream-soft tonuyla
+    // hâlâ ayrışıyor. Eyeball sonrası final orta-üst basamak.
     expect(manifestoBlock).toMatch(
-      /font-size:\s*clamp\(1rem,\s*[^,]+,\s*1\.15rem\)/,
+      /font-size:\s*clamp\(1\.3rem,\s*[^,]+,\s*1\.55rem\)/,
+    );
+  });
+
+  it('mobil kırılma: @media max-width 600px + parça-2 display: block', () => {
+    // ≤600px'te ikinci parça block olur — konteyner text-align center miras
+    // ettiği için her iki satır ortalı kalır.
+    expect(source).toMatch(
+      /@media\s*\(max-width:\s*600px\)\s*\{[\s\S]*?\.footer__manifesto-line--break\s*\{[\s\S]*?display:\s*block/,
+    );
+  });
+
+  it('≤360px güvenlik: nowrap kaldırılır (yatay scroll yok)', () => {
+    expect(source).toMatch(
+      /@media\s*\(max-width:\s*360px\)\s*\{[\s\S]*?\.footer__manifesto-line\s*\{[\s\S]*?white-space:\s*normal/,
     );
   });
 

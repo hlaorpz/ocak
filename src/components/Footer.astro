@@ -40,7 +40,8 @@ const year = new Date().getFullYear();
     </div>
 
     <p class="footer__manifesto">
-      Seni bize bağımlı yapmak için değil, seni sana geri vermek için buradayız.
+      <span class="footer__manifesto-line">Seni bize bağımlı yapmak için değil,</span>
+      <span class="footer__manifesto-line footer__manifesto-line--break">seni sana geri vermek için buradayız.</span>
     </p>
 
     <div class="footer__bottom">
@@ -111,14 +112,33 @@ const year = new Date().getFullYear();
    * YOK, glow YOK — sayfa-içi vurgu paletinden ayrı tutulur. */
   .footer__manifesto {
     margin: 0 auto;
-    max-width: 32rem;
+    max-width: 56rem;
     text-align: center;
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    font-size: clamp(1.3rem, 2.2vw, 1.55rem);
     line-height: 1.6;
     color: var(--cream-soft);
+  }
+
+  .footer__manifesto-line {
+    white-space: nowrap;
+  }
+
+  /* Mobil: virgülden sonra alt satıra. Konteyner text-align: center miras
+   * — block parça da ortalı kalır, sola yaslanmaz. */
+  @media (max-width: 600px) {
+    .footer__manifesto-line--break {
+      display: block;
+    }
+  }
+
+  /* ≤360px: parça 2 nowrap'i kaldır, doğal sarmaya izin ver — yatay scroll yok. */
+  @media (max-width: 360px) {
+    .footer__manifesto-line {
+      white-space: normal;
+    }
   }
 
   .footer__bottom {
