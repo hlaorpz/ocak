@@ -989,6 +989,39 @@ section[data-section="manifesto-vurgu"].ocak-manifesto-vurgu > p {
   color: var(--cream);
 }
 
+/* === ic-ses — glyphsiz krem italik nefes (10. kanonik) ====================
+ * Plugin output: <section data-section="ic-ses" class="ocak-ic-ses">
+ *   <p>{prose}</p>
+ * </section>
+ * Vurgu paleti üçüncü ayağı; kasıtlı imza ayrımı:
+ *   - buyuk-vurgu      → altın, glyphsiz, yüksek-enerji ilan (2-3rem)
+ *   - manifesto-vurgu  → krem + köz glyph, sayfa-sonu marka beyanı
+ *   - ic-ses           → krem, GLYPH YOK, GLOW YOK, prose-ortası nefes
+ * manifesto-vurgu ile aynı genişlik referansı (540px outer / 480px inner)
+ * ama bir tık daha küçük punto (paragraf-üstü, H3 civarı) — energy seviyesi
+ * düşük olmalı ki akan metni kesmesin, sadece bir duraklama yaratsın.
+ * Specificity disiplini KARAR 137/138: `.ocak-ic-ses` class hint'i baseline
+ * `section[data-section][class^="ocak-"]` (0,2,2)'yi eşitler, eşit
+ * specificity'de source order kazanır (manifesto-vurgu paterni). */
+
+section[data-section="ic-ses"].ocak-ic-ses {
+  max-width: 540px;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 5vw, 3.5rem) var(--space-6);
+  text-align: center;
+}
+
+section[data-section="ic-ses"].ocak-ic-ses > p {
+  margin: 0 auto;
+  max-width: 480px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);  /* ~20–24px — manifesto altı */
+  line-height: 1.55;
+  color: var(--cream);
+}
+
 /* === form-anchor — fragment-split sonrası bu marker görünmemeli, defansif hide === */
 section[data-section="form-anchor"][data-form-anchor]:empty {
   display: none;

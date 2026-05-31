@@ -18,15 +18,37 @@ export type SectionName =
   | 'hero'
   | 'bir-sonraki'
   | 'sonraki-bulusma'
+  | 'al-ol-ver'
   | 'siradaki-kapi'
-  | 'sss';
+  | 'sss'
+  | 'mini-cta'
+  | 'buyuk-vurgu'
+  | 'manifesto-vurgu'
+  | 'ic-ses';
 
+/**
+ * Kanonik 10 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
+ * 127/153 + ic-ses göçü). Component-render kanonik 5 (Hero/BirSonraki/
+ * SonrakiBulusma/SiradakiKapi/SSS, README #21) ile karıştırma: o sayım
+ * Astro component instance'larını tanımlar, bu sayım markdown→HTML transform
+ * setini tanımlar. Vurgu paleti (3 isim) bu listenin son üçlüsü:
+ *   - buyuk-vurgu  → altın, glyphsiz, yüksek-enerji ilan (clamp 2-3rem)
+ *   - manifesto-vurgu → krem italik + köz glyph, sayfa-sonu marka beyanı
+ *   - ic-ses → krem italik, glyphsiz, prose ortası düşük-enerji "nefes"
+ * Glyph farkı manifesto-vurgu ile ic-ses arasındaki imza ayrımıdır
+ * (manifesto ağırlık taşır, ic-ses hafiflik).
+ */
 export const CANONICAL_SECTIONS: SectionName[] = [
   'hero',
   'bir-sonraki',
   'sonraki-bulusma',
+  'al-ol-ver',
   'siradaki-kapi',
   'sss',
+  'mini-cta',
+  'buyuk-vurgu',
+  'manifesto-vurgu',
+  'ic-ses',
 ];
 
 /**
@@ -454,6 +476,39 @@ function transformManifestoVurgu(
 }
 
 /**
+ * ic-ses (10. kanonik): glyphsiz krem italik prose, akan metin ortasında
+ * "nefes/kontrast" duraklaması. manifesto-vurgu'nun kardeşi yapısal olarak
+ * (tek-paragraph vurgu, ortalı dar kolon, krem italik) — fark IMZA:
+ * manifesto-vurgu köz glyph taşır (ağırlık), ic-ses glyph EMIT ETMEZ
+ * (hafiflik). buyuk-vurgu altın/clamp 2-3rem yüksek-enerji ilan; ic-ses
+ * H3 civarı punto, düşük-enerji. Üç vurgu kardeş, görsel imzaları kasıtlı
+ * ayrı (paletin karışmaması için).
+ *
+ * Çıktı: <section data-section="ic-ses" class="ocak-ic-ses"><p>{prose}</p>
+ * </section>. Glyph span YOK — atmosfer.css ic-ses selector'ünde de glow
+ * yok. Birden fazla paragraph → warn (tek/kısa beklenir), hepsi yine
+ * render edilir (manifesto-vurgu/buyuk-vurgu paterni).
+ */
+function transformIcSes(
+  content: RootContent[],
+  options: OcakSectionsOptions,
+): RootContent[] {
+  const filename = options.filename ?? 'unknown';
+  const paraCount = content.filter((n) => n.type === 'paragraph').length;
+  if (paraCount > 1) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[remark-ocak-sections] ic-ses (${filename}): ${paraCount} paragraph (tek beklenir — çoklu paragraf esik-kadini işidir).`,
+    );
+  }
+  return [
+    html('<section data-section="ic-ses" class="ocak-ic-ses">'),
+    ...content,
+    html('</section>'),
+  ];
+}
+
+/**
  * esik-* (/sen-neredesin): exclusive accordion.
  * - Section'ın ilk h2'sini (depth=2) bulur, metnini summary'ye taşır, node'u content'ten çıkarır.
  * - `<details name="esikler" data-section="NAME">` ile wrap; `name` attribute exclusive
@@ -566,6 +621,9 @@ function transformSection(
 
     case 'manifesto-vurgu':
       return transformManifestoVurgu(content, options);
+
+    case 'ic-ses':
+      return transformIcSes(content, options);
 
     default: {
       // /sen-neredesin eşik accordion: 10-isimlik ESIK_SECTIONS whitelist (set match).

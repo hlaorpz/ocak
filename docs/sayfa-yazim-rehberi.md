@@ -15,8 +15,12 @@ Her section bir H2 paragrafıyla başlar:
 ```
 
 - `ad` snake-case / kebab-case, **TR karakter yok** (`cember-nedir`, `yillik-dongu`).
-- Kanonik section'lar özel render alır: `hero`, `bir-sonraki`, `sonraki-bulusma`,
-  `siradaki-kapi`, `sss`.
+- Kanonik component-render section: `hero`, `bir-sonraki`, `sonraki-bulusma`,
+  `siradaki-kapi`, `sss` (5 isim — Astro component instance ile basılır).
+- Kanonik plugin-transform section (10 isim toplam — yukarıdaki 5 + `al-ol-ver`,
+  `mini-cta`, ve üç-ayaklı **vurgu paleti**: `buyuk-vurgu`, `manifesto-vurgu`,
+  `ic-ses`). Aşağıdaki "Vurgu Paleti" bölümüne bak — üçü kasıtlı ayrı imza
+  taşır, karıştırma.
 - Geri kalan section'lar serbest isimli — `<section data-section="ad" class="ocak-ad">`
   içine prose olarak sarılır, içerik olduğu gibi kalır.
 
@@ -158,3 +162,33 @@ Online
 Her satır için **yeni paragraf (Enter)**, satır içi break (Shift+Enter) değil.
 Tarih + saat gibi ardışık kısa satırlar bile ayrı paragraf — plugin baseline
 ritmi (`margin-bottom: var(--space-6)`) bunu görsel olarak topluyor.
+
+## Vurgu Paleti (üç ayak, kasıtlı ayrı imza)
+
+Akan prose'u keserek dikkat çeken üç kanonik vurgu section'ı var. **Aynı sayfada
+karıştırma** — her birinin yeri ve görsel imzası farklı:
+
+| Section | Görsel | Glyph | Punto | Nerede |
+| ------- | ------ | ----- | ----- | ------ |
+| `buyuk-vurgu` | **Altın** italik, ortalı | Yok | Çok büyük (`clamp 1.75–2.5rem`) | Yüksek-enerji ilan — sayfa içi sahne çeken tek cümle |
+| `manifesto-vurgu` | Krem italik, ortalı | **Köz nokta** (●) | Büyük (`clamp 1.35–1.6rem`) | Sayfa-sonu marka beyanı — manifesto cümlesi |
+| `ic-ses` | Krem italik, ortalı | **Yok** | Orta (`clamp 1.25–1.5rem`) | Prose ortası "nefes" — düşük-enerji duraklama |
+
+**İmza kuralı:** `manifesto-vurgu` ile `ic-ses` aynı genişlik + krem + italik
+ailesini paylaşır; aralarındaki tek görsel fark **köz glyph**. Glyph =
+ağırlık (manifesto), glyph yokluğu = hafiflik (iç ses). Bu ayrımı bozma —
+ic-ses'e glyph eklenirse manifesto-vurgu ile karışır, ikisi de erir.
+
+**Form:**
+
+- Üçü de **tek cümle / kısa paragraf**. Çoklu paragraf yazma — o iş
+  `esik-kadini` gibi serbest prose section'larındır (plugin warn basar).
+- `buyuk-vurgu` cümlesini Cmd+I ile **italik** sar (Notion `*` yazma).
+  `manifesto-vurgu` ve `ic-ses` italik dekorasyonu CSS'ten gelir; markdown'da
+  düz yaz, plugin otomatik italik basar.
+
+```
+## section: ic-ses
+
+İçinden gelen sesi bastırma; o ses sana yolu söylüyor.
+```

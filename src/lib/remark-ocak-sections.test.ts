@@ -354,6 +354,42 @@ describe('remark-ocak-sections', () => {
     warn.mockRestore();
   });
 
+  it('32. ic-ses — krem prose paragraph, GLYPH YOK (manifesto-vurgu ile imza ayrımı)', () => {
+    const html = render('fixture-21-ic-ses.md');
+    // Section + class doğru
+    expect(html).toContain('<section data-section="ic-ses" class="ocak-ic-ses">');
+    // Prose paragraph içeride, içerik korunmuş
+    expect(html).toContain('İçinden gelen sesi bastırma');
+    expect(html).toContain('o ses sana yolu söylüyor');
+    // KRİTİK imza assert: ic-ses GLYPH EMIT ETMEZ
+    // manifesto-vurgu'dan farkı budur — palette'in karışmaması için.
+    expect(html).not.toContain('manifesto-vurgu__ember');
+    expect(html).not.toContain('ic-ses__ember');
+    expect(html).not.toMatch(/<span[^>]*aria-hidden="true"[^>]*><\/span>/);
+    // Açılış tag'inden hemen sonra <p> gelmeli (araya dekoratif span girmemiş)
+    const m = html.match(
+      /<section data-section="ic-ses" class="ocak-ic-ses">\s*<p>/,
+    );
+    expect(m).not.toBeNull();
+  });
+
+  it('33. ic-ses — 2+ paragraph warn, hepsi yine render edilir, glyph hâlâ YOK', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: ic-ses\n\nİlk nefes.\n\nİkinci nefes.',
+      { filename: 'multi-para-is.md' },
+    );
+    expect(html).toContain('<section data-section="ic-ses" class="ocak-ic-ses">');
+    expect(html).toContain('İlk nefes');
+    expect(html).toContain('İkinci nefes');
+    // Çoklu paragraf bile glyph getirmemeli (ic-ses imzası)
+    expect(html).not.toContain('__ember');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('2 paragraph');
+    expect(warn.mock.calls[0][0]).toContain('multi-para-is.md');
+    warn.mockRestore();
+  });
+
   it('18. listItem text başında asimetrik `*` artığı strip — KARAR 108 7. kural', () => {
     const html = render('fixture-12-listitem-asymmetric-star.md');
     // Asimetrik 4/3 yıldız → text node başında kalan `*` strip edilmiş, içerik bold+italik
