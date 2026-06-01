@@ -114,19 +114,30 @@ Tarayıcıda görünen:    *Bir geçişin içindesin        ← solda ham * sız
   Ama yeni içerikte de bu yazımı kullanma — defans yeni edge case'leri
   yakalayamayabilir.
 
-## Inline Ember Vurgu (Cmd+E) — Amber Kelime
+## Kelime-İçi Vurgu Renkleri (amber + altın)
 
-Paragraf içinde tek bir kelimeyi ember rengiyle (link gibi) öne çıkarmak için
-kelimeyi seç → **Cmd+E** (inline-code). Bold'dan (`**...**`, kalın krem) ayrıdır:
-**amber = renk, bold = kalınlık.** İki ayrı araç.
+Paragraf içinde tek bir kelimeyi öne çıkarmak için iki ayrı araç:
 
-- Notion inline-code → `<code>` olarak düşer; CSS monospace görünümünü iptal eder,
-  etrafındaki metnin font ve ağırlığını miras alır, sadece renk değişir (KARAR 199).
-- **`/site-rehber` ve `/test` istisna** — oralarda `<code>` teknik referans
-  (section adları, dosya yolları, klavye kısayolları) için kullanılır, monospace
-  + krem default kalır.
-- Ara ara, şık vurgu için kullan — her cümlede değil.
+| Kısayol | Notion biçimi | Tag | Renk | Kullanım |
+| ------- | ------------- | --- | ---- | -------- |
+| **Cmd+E** | inline-code | `<code>` | **Amber** (`--ember`, köz) | KARAR 199 |
+| **Cmd+Shift+S** | üstü-çizili | `<del>` | **Altın** (`--gold`) | KARAR 200 |
+| **Cmd+B** | bold | `<strong>` | Kalın **krem** | (değişmez) |
+
+Üçü ayrı araç: amber/altın = **renk**, bold = **kalınlık**. Aynı kelimeye iki
+renk uygulanmaz; iki vurgu rengi aynı paragrafta peş peşe fazla kaçar — **az
+kullan**, "ara ara" niyeti.
+
+**Davranış (her ikisi için ortak):**
+
+- CSS monospace/çizgi vb. dekoru iptal eder, etrafındaki metnin font/ağırlık/
+  boyutunu miras alır, **sadece renk değişir**.
 - Tıklanmaz; gerçek link istiyorsan Notion'un link aracını kullan.
+
+**`/site-rehber` ve `/test` istisnası (yalnız amber için):** oralarda `<code>`
+teknik referans (section adları, dosya yolları, klavye kısayolları) için
+kullanılır → monospace + krem default kalır. Üstü-çizili (altın) tüm sayfalarda
+çalışır (teknik referans olarak kullanılmıyor).
 
 ## Blockquote (`>` Notation) Disiplini
 

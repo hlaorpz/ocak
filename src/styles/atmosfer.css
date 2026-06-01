@@ -609,6 +609,17 @@ main[data-page]:not([data-page="site-rehber"]):not([data-page="test"]) section[d
   letter-spacing: inherit;
 }
 
+/* Inline altın vurgu — Notion üstü-çizili (Cmd+Shift+S) → gold kelime.
+   Amber'in (KARAR 199) kardeşi; üstü-çizgi iptal, sadece renk kalır. */
+section[data-section][class^="ocak-"] del,
+section[data-section][class^="ocak-"] s {
+  color: var(--gold);
+  text-decoration: none;
+  font-style: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
 /* Başlıklar — h2 italic kapanış vurgusu, h3 normal */
 
 section[data-section][class^="ocak-"] h2 {
