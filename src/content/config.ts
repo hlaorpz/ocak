@@ -118,6 +118,7 @@ const sayfalar = defineCollection({
     //   - sonraki-bulusma → SonrakiBulusma slug prop'lu (otomatik kategori/heading)
     //   - etkinlik-takvimi → EtkinlikTakvimi (tüm gelecek etkinlikler, /takvim — KARAR 153)
     //   - yolculuk-eksen → YolculukEksen (Beş Evre + Bir AÇILIŞ ısı şeridi, brief Yolculuk Ekseni v2)
+    //   - kanallar → Kanallar (üç kart vitrini, brief brief-kanallar-yerlesim-zemin.md)
     fragments: z.array(
       z.union([
         z.object({ kind: z.literal('markdown'), html: z.string() }),
@@ -132,6 +133,7 @@ const sayfalar = defineCollection({
         z.object({ kind: z.literal('sonraki-bulusma') }),
         z.object({ kind: z.literal('etkinlik-takvimi') }),
         z.object({ kind: z.literal('yolculuk-eksen') }),
+        z.object({ kind: z.literal('kanallar') }),
       ]),
     ),
   }),

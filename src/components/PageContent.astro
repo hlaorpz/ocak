@@ -10,6 +10,7 @@
 //   - sonraki-bulusma → <SonrakiBulusma slug={slug} /> (slug'tan otomatik kategori/heading)
 //   - etkinlik-takvimi → <EtkinlikTakvimi /> (tüm gelecek etkinlikler, /takvim — KARAR 153)
 //   - yolculuk-eksen → <YolculukEksen /> (Beş Evre + Bir AÇILIŞ ısı şeridi, brief Yolculuk Ekseni v2)
+//   - kanallar → <Kanallar /> (üç kart vitrini, brief brief-kanallar-yerlesim-zemin.md)
 //
 // Sıra korunur: marker'lar Notion'daki konumlarında basılır.
 // Defansif: slug registry'de yoksa veya index karşılığı component'i yoksa null basar.
@@ -18,6 +19,7 @@ import AlOlVer from './AlOlVer.astro';
 import SonrakiBulusma from './SonrakiBulusma.astro';
 import EtkinlikTakvimi from './EtkinlikTakvimi.astro';
 import YolculukEksen from './YolculukEksen.astro';
+import Kanallar from './Kanallar.astro';
 
 type Fragment =
   | { kind: 'markdown'; html: string }
@@ -25,7 +27,8 @@ type Fragment =
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
-  | { kind: 'yolculuk-eksen' };
+  | { kind: 'yolculuk-eksen' }
+  | { kind: 'kanallar' };
 
 interface Props {
   slug: string;
@@ -52,6 +55,9 @@ const propsList = formAnchorProps[slug] ?? [];
     }
     if (frag.kind === 'yolculuk-eksen') {
       return <YolculukEksen />;
+    }
+    if (frag.kind === 'kanallar') {
+      return <Kanallar />;
     }
     const Component = components[frag.index];
     if (!Component) {

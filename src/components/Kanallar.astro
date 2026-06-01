@@ -1,8 +1,9 @@
 ---
-// Kanallar — /iletisim orientasyon sayfası "üç kapı + mail alt satırı" vitrini.
-// Brief: brief-iletisim-form-tasima.md Bölüm 3 (Yol A: override component, kanonik
-// section'a terfi YOK). Üç tıklanabilir kart (Form / WhatsApp / Instagram) +
-// mail alt satırı; "ateşin üç mesafesi" konsepti.
+// Kanallar — /iletisim sayfası "üç kapı" vitrini (Bize Yaz / WhatsApp / Instagram).
+// Briefler:
+//   - brief-iletisim-form-tasima.md Bölüm 3 — kart içerikleri + "ateşin üç mesafesi"
+//   - brief-kanallar-yerlesim-zemin.md — yerleşim (Notion `## section: kanallar`
+//     marker'ı, Bize Yaz ↔ Yanıt arası), dış zemin şeffaf, mail alt satırı kaldırıldı.
 //
 // Tasarım kaynağı: Kanallar.astro tasarım dosyası — site tokenlarına uyarlandı
 // (--komur→coal, --koz→ember, --krem→cream, --kul→ash, --duman→smoke,
@@ -65,28 +66,18 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         </a>
       </div>
     </div>
-
-    <p class="kanallar__mail">
-      <em>Dilersen doğrudan:</em>
-      <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
-    </p>
   </div>
 </section>
 
 <style>
+  /* brief-kanallar-yerlesim-zemin.md — sarmalayıcı section şeffaf: sayfanın
+   * ana zemini (--coal, Layout main) görünür. Önceki --coal-deep + üst ambient
+   * çizgi kartları "ayrı form bloğu" gibi gösteriyordu; kaldırıldı.
+   * Kartların kendisi (kül zemin, köz kenarlık, hover glow) AYNEN kalır. */
   .kanallar {
-    padding: var(--space-9) var(--space-6);
-    background: var(--coal-deep);
+    padding: var(--space-7) var(--space-6);
+    background: transparent;
     position: relative;
-  }
-
-  /* Üst ambient çizgi — AtesMektuplari/IletisimForm kardeşi */
-  .kanallar::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--ash), transparent);
   }
 
   .kanallar__inner {
@@ -279,34 +270,11 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     padding: 0.2rem 0.55rem;
   }
 
-  /* Mail alt satırı */
-  .kanallar__mail {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--smoke);
-    margin: var(--space-7) 0 0;
-  }
-  .kanallar__mail em {
-    font-family: var(--font-display);
-    font-style: italic;
-    color: var(--cream-soft);
-    margin-right: var(--space-2);
-  }
-  .kanallar__mail a {
-    color: var(--ember);
-    text-decoration: underline;
-    text-decoration-color: rgba(196, 75, 47, 0.4);
-    text-underline-offset: 0.2em;
-    transition: color var(--duration-base) var(--ease-out);
-  }
-  .kanallar__mail a:hover { color: var(--ember-soft); }
-
   /* === A11y === */
   @media (prefers-reduced-motion: reduce) {
     .kanal,
     .kanal--instagram,
-    .kanal__yankapi,
-    .kanallar__mail a {
+    .kanal__yankapi {
       transition: border-color var(--duration-base) var(--ease-out);
     }
     .kanal:hover,

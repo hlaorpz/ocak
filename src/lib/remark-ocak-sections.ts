@@ -97,10 +97,11 @@ export const OMIT_SECTIONS = [
   'hero-anasayfa',
   'ates-mektuplari',
   'etkinlik-takvimi',
-  // brief-iletisim-form-tasima.md — form /iletisim/bize-yaz Hero'suna taşındı,
-  // kanal vitrini override'da Kanallar component'i ile render edilir (Yol A).
+  // brief-iletisim-form-tasima.md — form /iletisim/bize-yaz Hero'suna taşındı.
   'iletisim-form-davet',
-  'kanallar',
+  // 'kanallar' artık fragment-split marker'ı (brief-kanallar-yerlesim-zemin.md);
+  // loader keser, PageContent <Kanallar /> basar. Plugin defansif fallback case
+  // empty wrapper emit eder (marker bir şekilde loader'dan kaçarsa görünmez).
 ];
 
 /**
@@ -622,6 +623,14 @@ function transformSection(
         html(
           '<section data-section="yolculuk-eksen" class="ocak-yolculuk-eksen"></section>',
         ),
+      ];
+
+    case 'kanallar':
+      // Empty wrapper savunma fallback'i (al-ol-ver/yolculuk-eksen paralel,
+      // brief brief-kanallar-yerlesim-zemin.md). Asıl render fragment-split
+      // tarafında Kanallar component'iyle olur.
+      return [
+        html('<section data-section="kanallar" class="ocak-kanallar"></section>'),
       ];
 
     case 'siradaki-kapi':

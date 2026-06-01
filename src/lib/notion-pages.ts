@@ -58,7 +58,8 @@ export type BodyFragmentRaw =
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
-  | { kind: 'yolculuk-eksen' };
+  | { kind: 'yolculuk-eksen' }
+  | { kind: 'kanallar' };
 
 export type BodyFragment =
   | { kind: 'markdown'; html: string }
@@ -66,11 +67,12 @@ export type BodyFragment =
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
-  | { kind: 'yolculuk-eksen' };
+  | { kind: 'yolculuk-eksen' }
+  | { kind: 'kanallar' };
 
 /**
  * Body markdown'ını `## section: <name>` marker satırlarında parçalar.
- * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma, etkinlik-takvimi, yolculuk-eksen.
+ * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma, etkinlik-takvimi, yolculuk-eksen, kanallar.
  * Marker satırları çıkarılır; her marker uygun kind ile fragment olarak emit edilir.
  * Diğer `## section: NAME` markerları (manifesto, esik-kadini, vb.) markdown
  * chunk'ında kalır → plugin remarkOcakSections tarafından prose section'a sarılır.
@@ -147,6 +149,12 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
       // al-ol-ver paterni birebir — loader keser, PageContent <YolculukEksen /> basar.
       flush();
       fragments.push({ kind: 'yolculuk-eksen' });
+    } else if (/^##\s+section:\s+kanallar\s*$/.test(line)) {
+      // Brief brief-kanallar-yerlesim-zemin.md: marker konum sinyali, içerik
+      // component'te sabit. al-ol-ver/yolculuk-eksen paterni birebir — loader
+      // keser, PageContent <Kanallar /> basar. /iletisim: Bize Yaz ↔ Yanıt arası.
+      flush();
+      fragments.push({ kind: 'kanallar' });
     } else {
       chunk.push(line);
     }
