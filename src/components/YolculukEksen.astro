@@ -7,6 +7,10 @@
 // şerit kendi kendini anlatıyor); blok okuma kolonu (--max-w-prose 38rem) genişliğinde
 // ortalı — prose baseline'la (atmosfer.css `section[data-section][class^="ocak-"]`)
 // tutarlı. İç hizalama sola kalır (ısı şeridi sol kenarda).
+// v4: ara dönem etiketi "kor · 2–3 ay" → sadece "kor" (süre bilgisi alt satıra göçtü,
+// orada bir kez). Kor çizgisi opaklığı 0.85→1.0 ile az güçlendirildi — tek kelimeye
+// inince yalnız kalmasın, ama 6px dolu evre şeritleriyle yarışmasın. Alt satır metni
+// "yolculuk içselleşir" marka cümlesiyle güncellendi.
 // Isı renkleri tokens.css'te (--isi-*, --kor-cizgi). DURUŞ = --ember.
 
 const evreler = [
@@ -33,7 +37,7 @@ const evreler = [
           {i < evreler.length - 1 && (
             <li class="kor">
               <span class="kor__serit" aria-hidden="true"></span>
-              <span class="kor__etiket">kor · 2–3 ay</span>
+              <span class="kor__etiket">kor</span>
             </li>
           )}
         </>
@@ -41,7 +45,7 @@ const evreler = [
     </ol>
 
     <p class="yolculuk-eksen__icisler">
-      Her evre arası 2–3 ay: aylık çember, kız kardeş eşleşmesi, mevsim ritüeli, bireysel görüşme.
+      Evreler arası 2–3 ay sürer. Bu kor döneminde yolculuk içselleşir: aylık çember, kız kardeş eşleşmesi, mevsim ritüelleri, bireysel görüşme.
     </p>
   </div>
 </section>
@@ -137,7 +141,10 @@ const evreler = [
       var(--kor-cizgi) 0 6px,
       transparent 6px 12px
     );
-    opacity: 0.85;
+    /* v4: 0.85 → 1.0 (~+18%). "kor" tek kelimeye inince yalnız kalmasın; evre
+       şeritleri (6px dolu) hâlâ kahraman, çizgi sadece "var olduğu belli olsun"
+       düzeyinde. */
+    opacity: 1;
   }
 
   .kor__etiket {
