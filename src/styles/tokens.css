@@ -22,6 +22,19 @@
   --cream-soft: rgba(242, 234, 226, 0.85);       /* alt metin, ikincil */
   --gold-soft: rgba(212, 168, 85, 0.6);          /* ikincil vurgu */
 
+  /* ===== YOLCULUK ISI RAMPASI (brief Yolculuk Ekseni) =====
+   * Kömürden → tepe alev → dinlenen kor. DURUŞ = --ember (zaten palet tepe ısısı).
+   * UYANIŞ tepe (--ember'in bir tık parlak hali, --ember-soft yakını). Soğuk uç
+   * AÇILIŞ kömür grisi (warm-gray ailesinden); kor çizgisi (kesik şerit) ara dönem.
+   * Coal zeminde ayrışma pixel-teyit edildi (KARAR 150). */
+  --isi-acilis: #6B5D52;                         /* en soğuk — kömür grisi */
+  --isi-inis:   #9C5A36;                         /* ısınan kömür */
+  --isi-uyanis: #E1622C;                         /* tepe ısı (alev) */
+  --isi-durus:  var(--ember);                    /* tam ember — palet tepe ısısı */
+  --isi-gecis:  #A83A2A;                         /* dinlenmeye başlayan */
+  --isi-donus:  #7D4A3E;                         /* sıcak dinlenen kor */
+  --kor-cizgi:  #8A5A3A;                         /* ara dönem kesik kor şeridi */
+
   /* ===== SEMANTİK ===== */
   --bg:              var(--coal);
   --bg-elevated:     var(--ash);

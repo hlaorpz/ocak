@@ -1,0 +1,248 @@
+---
+// YolculukEksen — Beş Evre + Bir AÇILIŞ'ı kömürden aleve dikey ısı-eğrisi şeridi
+// olarak render eder (brief Yolculuk Ekseni; Seçenek B: plugin'e dokunulmaz).
+// İçerik sabit; Notion bind ikinci tur (11 aylık takvim oturunca). Isı renkleri
+// tokens.css'te (--isi-*, --kor-cizgi) — sabit hex burada bırakılmaz (KARAR 102).
+// DURUŞ = --ember bağlı; rampa onun etrafında soğuk→tepe→dinlenen kademe.
+
+const evreler = [
+  { num: 1, ad: 'AÇILIŞ', tema: 'Kohortun kuruluşu, niyet, ilk çember.', renk: 'var(--isi-acilis)' },
+  { num: 2, ad: 'İNİŞ',   tema: 'Köklere, bedene, atalara.',              renk: 'var(--isi-inis)' },
+  { num: 3, ad: 'UYANIŞ', tema: 'Bastırılmış güce, ateşe, bedensel uyanışa.', renk: 'var(--isi-uyanis)' },
+  { num: 4, ad: 'DURUŞ',  tema: 'Sessizliğe, boşluğa, durmaya.',          renk: 'var(--isi-durus)' },
+  { num: 5, ad: 'GEÇİŞ',  tema: 'Eşikten geçişe, bırakmaya, yeniden doğuşa.', renk: 'var(--isi-gecis)' },
+  { num: 6, ad: 'DÖNÜŞ',  tema: 'Kendine, bütünlüğe, eve.',               renk: 'var(--isi-donus)' },
+];
+
+const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüeli · bireysel görüşme';
+---
+<section class="yolculuk-eksen" aria-labelledby="yolculuk-eksen-baslik">
+  <div class="yolculuk-eksen__inner">
+    <p class="ocak-overline">Beş evre + bir açılış</p>
+    <h2 id="yolculuk-eksen-baslik" class="yolculuk-eksen__giris">
+      Soldan sağa ateş tutuşur. Kömürden alevin tepesine, oradan dinlenen kora. Renk, evrenin ısısıdır.
+    </h2>
+
+    <ol class="yolculuk-eksen__liste" role="list">
+      {evreler.map((evre, i) => (
+        <>
+          <li class="evre" style={`--isi-aktif: ${evre.renk};`}>
+            <span class="evre__serit" aria-hidden="true"></span>
+            <div class="evre__icerik">
+              <h3 class="evre__baslik">
+                <span class="evre__numara">EVRE {evre.num}</span>
+                <span class="evre__ad">{evre.ad}</span>
+              </h3>
+              <p class="evre__tema">{evre.tema}</p>
+            </div>
+          </li>
+          {i < evreler.length - 1 && (
+            <li class="kor" title={`kor dönemi — ${korIcIsler}`}>
+              <span class="kor__serit" aria-hidden="true"></span>
+              <div class="kor__icerik">
+                <span class="kor__etiket">kor · 2–3 ay</span>
+                <span class="kor__icisler">{korIcIsler}</span>
+              </div>
+            </li>
+          )}
+        </>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .yolculuk-eksen {
+    /* Üstte sayfa şeridi; altta PageContent prose'a doğal nefes. AlOlVer ritmiyle
+       paralel (padding-block cömert, padding-inline 0; container max-w-content). */
+    padding: var(--space-9) 0 var(--space-8);
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+  }
+
+  .yolculuk-eksen__inner {
+    /* Şerit sol kenarda; metin sola hizalı (liste karakteri). */
+    text-align: left;
+  }
+
+  .yolculuk-eksen__giris {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h3);
+    color: var(--cream);
+    line-height: var(--leading-snug);
+    margin: var(--space-4) 0 var(--space-8);
+    max-width: 38rem;
+  }
+
+  .yolculuk-eksen__liste {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== EVRE SATIR ===== */
+  .evre {
+    --isi-aktif: var(--ember);
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-5);
+    padding: var(--space-4) 0;
+  }
+
+  .evre__serit {
+    flex: 0 0 6px;
+    width: 6px;
+    min-width: 6px;
+    border-radius: 3px;
+    background: var(--isi-aktif);
+    align-self: stretch;
+    /* Coal zeminde soğuk uç için ince ısı halesi — ayrışma kapsülü. */
+    box-shadow: 0 0 12px color-mix(in oklab, var(--isi-aktif) 35%, transparent);
+  }
+
+  .evre__icerik {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .evre__baslik {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 400;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    white-space: nowrap;
+  }
+
+  .evre__numara {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--smoke);
+  }
+
+  .evre__ad {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h3);
+    color: var(--isi-aktif);
+    line-height: 1;
+  }
+
+  .evre__tema {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--cream-soft);
+    font-weight: 300;
+  }
+
+  /* ===== KOR ARA DÖNEM ===== */
+  .kor {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-5);
+    padding: var(--space-3) 0;
+  }
+
+  .kor__serit {
+    flex: 0 0 6px;
+    width: 6px;
+    min-width: 6px;
+    min-height: 36px;
+    /* Kesik kor şeridi — 6px açık / 6px boş tekrar, ince ısı çizgisi. */
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--kor-cizgi) 0 6px,
+      transparent 6px 12px
+    );
+    opacity: 0.85;
+  }
+
+  .kor__icerik {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3) var(--space-4);
+    color: var(--smoke);
+  }
+
+  .kor__etiket {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: color-mix(in oklab, var(--kor-cizgi) 80%, var(--cream) 20%);
+  }
+
+  .kor__icisler {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--smoke);
+    /* Desktop'ta gizli (title attr hover'da fallback); mobilde görünür metin. */
+    display: none;
+  }
+
+  /* Desktop hover: kor şeridi üstüne gelince iç-işler hafifçe belirir. */
+  @media (hover: hover) and (min-width: 769px) {
+    .kor:hover .kor__icisler {
+      display: inline;
+      animation: kor-fade var(--duration-base) var(--ease-out);
+    }
+    .kor:hover .kor__serit {
+      opacity: 1;
+    }
+  }
+
+  @keyframes kor-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ===== MOBİL — 768px ve altı (KARAR 187: horizontal overflow yok) ===== */
+  @media (max-width: 768px) {
+    .yolculuk-eksen {
+      padding: var(--space-8) 0 var(--space-7);
+    }
+
+    .evre__baslik {
+      white-space: normal;
+    }
+
+    .evre__icerik {
+      /* Tema cümlesi başlığın altına kayar (flex-wrap doğal yapar). */
+      gap: var(--space-2) var(--space-4);
+    }
+
+    .evre__tema {
+      font-size: var(--text-base);
+      flex: 1 0 100%;
+    }
+
+    .kor__icerik {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .kor__icisler {
+      /* Mobilde tooltip güvenilmez — iç-işler her zaman görünür metin. */
+      display: inline;
+      font-size: var(--text-xs);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kor:hover .kor__icisler {
+      animation: none;
+    }
+  }
+</style>
