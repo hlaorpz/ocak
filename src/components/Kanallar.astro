@@ -21,8 +21,11 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
 ---
 <section class="kanallar" data-section="kanallar">
   <div class="kanallar__inner">
-    <h2 class="kanallar__baslik"><em>Kanallar</em></h2>
-    <p class="kanallar__alt">Üç kapı. Hepsi aynı ateşe açılır.</p>
+    <h2 class="kanallar__baslik"><em>Üç Kapı</em></h2>
+    <p class="kanallar__alt">
+      Her kapı farklı bir hız: biri yavaş ve derin, biri anlık, biri uzaktan.
+      İçine en çok hangisi siniyorsa, ondan.
+    </p>
 
     <div class="kanallar__grid">
       <!-- FORM -->
@@ -31,7 +34,10 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <span class="kanal__etiket">en yavaş, en derin</span>
         <h3 class="kanal__ad"><em>Bize Yaz</em></h3>
         <span class="kanal__orta">Form →</span>
-        <p class="kanal__not">İsim, email, birkaç satır. Bir kız kardeş okur, yanıt yazar.</p>
+        <p class="kanal__not">
+          İsim, email, birkaç satır — uzun uzun da yazabilirsin. Bir konu seç,
+          derdini anlat; bir kız kardeş okur ve sana yazar.
+        </p>
       </a>
 
       <!-- WHATSAPP -->
@@ -291,6 +297,18 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     border: 1px solid rgba(212, 168, 85, 0.4);
     border-radius: 999px;
     padding: 0.2rem 0.55rem;
+  }
+
+  /* === Dokunmatik (hover: none) — köz nokta statik canlı (Varyant A) ===
+   * Mobilde :hover tetiklenmediği için köz noktası ölü duruyordu. Masaüstü-hover
+   * ile sabit-statik arası bir noktada sabit tut (animasyon YOK — sadece konum).
+   * Masaüstü hover (B: scale 1.5 + glow 0.95) tanımları yukarıda; (hover: none)
+   * ortamında zaten tetiklenmez — sadece base köz nokta görsel kaybolmuyor. */
+  @media (hover: none) {
+    .kanal__koz {
+      transform: scale(1.3);
+      box-shadow: 0 0 16px rgba(196, 75, 47, 0.8);
+    }
   }
 
   /* === A11y === */
