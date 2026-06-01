@@ -114,6 +114,20 @@ Tarayıcıda görünen:    *Bir geçişin içindesin        ← solda ham * sız
   Ama yeni içerikte de bu yazımı kullanma — defans yeni edge case'leri
   yakalayamayabilir.
 
+## Inline Ember Vurgu (Cmd+E) — Amber Kelime
+
+Paragraf içinde tek bir kelimeyi ember rengiyle (link gibi) öne çıkarmak için
+kelimeyi seç → **Cmd+E** (inline-code). Bold'dan (`**...**`, kalın krem) ayrıdır:
+**amber = renk, bold = kalınlık.** İki ayrı araç.
+
+- Notion inline-code → `<code>` olarak düşer; CSS monospace görünümünü iptal eder,
+  etrafındaki metnin font ve ağırlığını miras alır, sadece renk değişir (KARAR 199).
+- **`/site-rehber` ve `/test` istisna** — oralarda `<code>` teknik referans
+  (section adları, dosya yolları, klavye kısayolları) için kullanılır, monospace
+  + krem default kalır.
+- Ara ara, şık vurgu için kullan — her cümlede değil.
+- Tıklanmaz; gerçek link istiyorsan Notion'un link aracını kullan.
+
 ## Blockquote (`>` Notation) Disiplini
 
 Blockquote = **anlamlı vurgu**. Tek-satır CTA ("Sonraki adım: …"), kısa alıntı

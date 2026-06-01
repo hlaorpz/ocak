@@ -30,6 +30,9 @@ const fullTitle = title === 'OCAK' ? 'OCAK · Kadınların Kadim Ateşi' : `${ti
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://ocak.biz').toString();
 const ogImageUrl = new URL(ogImage, Astro.site ?? 'https://ocak.biz').toString();
 
+// Sayfa slug — main[data-page] üzerinden sayfa-özel CSS override (inline ember kuralı vb.)
+const pageSlug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home';
+
 // Brief I.1 — GTM container. Snippet sadece PROD'da emit (dev'de sessiz).
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
 const isProd = import.meta.env.PROD;
@@ -92,7 +95,7 @@ const isProd = import.meta.env.PROD;
       <noscript set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`} />
     )}
     <Nav />
-    <main id="main" data-oda={oda}>
+    <main id="main" data-oda={oda} data-page={pageSlug}>
       <slot />
     </main>
     <Footer />
