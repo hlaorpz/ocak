@@ -93,7 +93,15 @@ export const ESIK_SECTIONS = new Set([
  * kesilir; CANONICAL olmadığı için savunma OMIT ile yapılır (kaçarsa plugin hiç
  * emit etmez, serbest prose'a düşüp yanlışlıkla görünmez).
  */
-export const OMIT_SECTIONS = ['hero-anasayfa', 'ates-mektuplari', 'etkinlik-takvimi'];
+export const OMIT_SECTIONS = [
+  'hero-anasayfa',
+  'ates-mektuplari',
+  'etkinlik-takvimi',
+  // brief-iletisim-form-tasima.md — form /iletisim/bize-yaz Hero'suna taşındı,
+  // kanal vitrini override'da Kanallar component'i ile render edilir (Yol A).
+  'iletisim-form-davet',
+  'kanallar',
+];
 
 /**
  * INTERNAL_SLUGS — Site'in 18 sayfasının slug whitelist'i (#26 Brief F).

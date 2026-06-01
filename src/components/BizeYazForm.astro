@@ -1,41 +1,37 @@
 ---
-// IletisimForm — /iletisim sayfa-içi mesaj formu (#29 Brief F.5, KARAR 125+126).
-// Notion `## section: form-anchor` sıra 2 konumunda IletisimForm component'i basılır
-// (registry'den). Field'lar: isim + email + mesaj + KVKK onayı. Submit Apps Script
-// doPost unified router → handleIletisim → Notion Başvurular DB (Tip: İletişim).
-// MailerLite YOK (KARAR 126 — lansman sonrası transactional).
+// BizeYazForm — /iletisim/bize-yaz sayfasındaki niyet/selam formu (brief-iletisim-
+// form-tasima.md Bölüm 1). Eski IletisimForm'un göçmenidir: form artık /iletisim
+// içinde değil, kendi route'unda. AnadoluBasvuru pattern: Hero üstte, form altta,
+// success state form HTML'ini gizler + sayfa tepesine kayar.
 //
-// Pattern miras: AtesMektuplari (coal-deep arka + ember focus + üst ambient çizgi),
-// AnadoluBasvuru (KVKK details/summary + em-dash imza success state, KARAR 115 ton).
+// Field'lar: isim, email, konu (dropdown), mesaj, kvkk + honeypot (KARAR 194).
+// Endpoint: unified Apps Script doPost (api.ts), formType: 'iletisim' (backend
+// dokunulmadı — brief talebi: round-trip korunmalı). Konu seçimi mesaj content'inin
+// başına prepend edilir; Apps Script handler ek field görmez.
 //
-// introHtml (KARAR 151): loader form-anchor look-backward `bize-yaz` section'ını
-// consume edip render edilmiş HTML olarak buraya geçer. Form ile aynı scope'ta
-// basılır, success state'te form ile birlikte gizlenir.
+// Dropdown seçenekleri (eski 5'li set değişti): placeholder "Ne hakkında yazıyorsun?"
+// + 4 seçenek. Yolculuk çıktı (kendi başvuru sayfası var), işbirliği+basın+ortaklık
+// "Bir teklifim var" altında birleşti.
+//
+// Success state (KARAR 115 ton): "Mektubun bize ulaştı." + 48s/pazartesi nefesi.
 import { APPS_SCRIPT_URL } from '../lib/api';
-
-interface Props {
-  introHtml?: string;
-}
-
-const { introHtml } = Astro.props;
 ---
-<section data-section="iletisim-form" class="ocak-iletisim-form">
-  <div class="ocak-iletisim-form__container">
-    {introHtml && <div class="ocak-iletisim-form__intro" set:html={introHtml} />}
-    <form class="ocak-iletisim-form__form" data-endpoint={APPS_SCRIPT_URL}>
-      {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return. */}
+<section class="bize-yaz" data-section="bize-yaz">
+  <div class="bize-yaz__container">
+    <form class="bize-yaz__form" data-endpoint={APPS_SCRIPT_URL}>
+      {/* KARAR 194/152 honeypot — bot doldurur, Apps Script erken return. */}
       <div class="hp-field" aria-hidden="true">
-        <label for="if-website">Website</label>
-        <input type="text" name="website" id="if-website" tabindex="-1" autocomplete="off" />
+        <label for="by-website">Website</label>
+        <input type="text" name="website" id="by-website" tabindex="-1" autocomplete="off" />
       </div>
 
-      <div class="ocak-iletisim-form__group">
-        <label for="if-isim">İsim <span class="ocak-iletisim-form__required">*</span></label>
+      <div class="bize-yaz__group">
+        <label for="by-isim">İsim <span class="bize-yaz__required">*</span></label>
         <input
-          id="if-isim"
+          id="by-isim"
           type="text"
           name="isim"
-          class="ocak-iletisim-form__input"
+          class="bize-yaz__input"
           placeholder="Adın"
           required
           oninvalid="this.setCustomValidity('Bu alan zorunlu')"
@@ -43,13 +39,13 @@ const { introHtml } = Astro.props;
         />
       </div>
 
-      <div class="ocak-iletisim-form__group">
-        <label for="if-email">Email <span class="ocak-iletisim-form__required">*</span></label>
+      <div class="bize-yaz__group">
+        <label for="by-email">Email <span class="bize-yaz__required">*</span></label>
         <input
-          id="if-email"
+          id="by-email"
           type="email"
           name="email"
-          class="ocak-iletisim-form__input"
+          class="bize-yaz__input"
           placeholder="email@adresin.com"
           required
           pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
@@ -58,33 +54,51 @@ const { introHtml } = Astro.props;
         />
       </div>
 
-      <div class="ocak-iletisim-form__group">
-        <label for="if-mesaj">Mesajın <span class="ocak-iletisim-form__required">*</span></label>
+      <div class="bize-yaz__group">
+        <label for="by-konu">Konu <span class="bize-yaz__required">*</span></label>
+        <select
+          id="by-konu"
+          name="konu"
+          class="bize-yaz__select"
+          required
+          oninvalid="this.setCustomValidity('Bir konu seç')"
+          oninput="this.setCustomValidity('')"
+        >
+          <option value="" disabled selected>Ne hakkında yazıyorsun?</option>
+          <option value="İlk kez geliyorum">İlk kez geliyorum</option>
+          <option value="Bir buluşma sorusu">Bir buluşma sorusu</option>
+          <option value="Bir teklifim var">Bir teklifim var</option>
+          <option value="Sadece selam">Sadece selam</option>
+        </select>
+      </div>
+
+      <div class="bize-yaz__group">
+        <label for="by-mesaj">Mesajın <span class="bize-yaz__required">*</span></label>
         <textarea
-          id="if-mesaj"
+          id="by-mesaj"
           name="mesaj"
-          class="ocak-iletisim-form__textarea"
+          class="bize-yaz__textarea"
           rows="6"
-          placeholder="Aklındakini paylaş. Yedi gün içinde döneriz."
+          placeholder="Aklındakini paylaş. Bir kız kardeş okuyacak ve yanıt yazacak."
           required
           oninvalid="this.setCustomValidity('Bu alan zorunlu')"
           oninput="this.setCustomValidity('')"
         ></textarea>
       </div>
 
-      <div class="ocak-iletisim-form__group ocak-iletisim-form__kvkk">
-        <label class="ocak-iletisim-form__kvkk-onay">
+      <div class="bize-yaz__group bize-yaz__kvkk">
+        <label class="bize-yaz__kvkk-onay">
           <input type="checkbox" name="kvkk" required
             oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
             onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
-          <span class="ocak-iletisim-form__kvkk-text">
+          <span class="bize-yaz__kvkk-text">
             Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
-            <span class="ocak-iletisim-form__required">*</span>
+            <span class="bize-yaz__required">*</span>
           </span>
         </label>
-        <details class="ocak-iletisim-form__kvkk-detay">
+        <details class="bize-yaz__kvkk-detay">
           <summary>KVKK aydınlatma metnini oku</summary>
-          <div class="ocak-iletisim-form__kvkk-icerik">
+          <div class="bize-yaz__kvkk-icerik">
             <p>
               OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
               yalnızca aşağıdaki amaçlarla kullanırız:
@@ -101,30 +115,32 @@ const { introHtml } = Astro.props;
         </details>
       </div>
 
-      <button type="submit" class="ocak-iletisim-form__submit">GÖNDER</button>
+      <button type="submit" class="bize-yaz__submit">GÖNDER</button>
 
-      <p class="ocak-iletisim-form__error" role="alert" hidden></p>
+      <p class="bize-yaz__error" role="alert" hidden></p>
     </form>
 
-    <div class="ocak-iletisim-form__success" hidden>
-      <div class="ocak-iletisim-form__success-ember" aria-hidden="true"></div>
-      <h3 class="ocak-iletisim-form__success-title">Mesajın bize ulaştı.</h3>
-      <p class="ocak-iletisim-form__success-text">Yakında kız kardeş gibi cevaplayacağız.</p>
-      <p class="ocak-iletisim-form__success-imza">— OCAK</p>
+    <div class="bize-yaz__success" hidden>
+      <div class="bize-yaz__success-ember" aria-hidden="true"></div>
+      <h3 class="bize-yaz__success-title">Mektubun bize ulaştı.</h3>
+      <p class="bize-yaz__success-text">
+        Bir kız kardeş okuyacak ve yanıt yazacak — 48 saat içinde, hafta sonu
+        denk düştüyse pazartesi.
+      </p>
+      <p class="bize-yaz__success-imza">— OCAK</p>
+      <a href="/iletisim" class="bize-yaz__success-back">← İletişim'e dön</a>
     </div>
   </div>
 </section>
 
 <style>
-  /* Section — coal-deep + üst ambient çizgi (AtesMektuplari kardeşi).
-   * #31 Brief G.3 P3: dikey padding daraltma (space-9 6rem → space-7 3rem). */
-  .ocak-iletisim-form {
+  .bize-yaz {
     padding: var(--space-7) var(--space-6);
     background: var(--coal-deep);
     position: relative;
   }
 
-  .ocak-iletisim-form::before {
+  .bize-yaz::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -132,26 +148,22 @@ const { introHtml } = Astro.props;
     background: linear-gradient(90deg, transparent, var(--ash), transparent);
   }
 
-  .ocak-iletisim-form__container {
+  .bize-yaz__container {
     max-width: 560px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
   }
 
-  /* KARAR 151 A.2 — __intro scope atmosfer.css'e taşındı (Astro scoped CSS +
-   * set:html DOM uyumsuzluğu). Bkz. atmosfer.css "Form-içi __intro" bölümü. */
-
-  /* === Form group === */
-  .ocak-iletisim-form__group {
+  .bize-yaz__group {
     margin-bottom: var(--space-5);
   }
 
-  .ocak-iletisim-form__group:last-of-type {
+  .bize-yaz__group:last-of-type {
     margin-bottom: 0;
   }
 
-  .ocak-iletisim-form__group > label {
+  .bize-yaz__group > label {
     display: block;
     font-family: var(--font-body);
     font-size: 0.85rem;
@@ -160,14 +172,15 @@ const { introHtml } = Astro.props;
     margin-bottom: 0.55rem;
   }
 
-  .ocak-iletisim-form__required {
+  .bize-yaz__required {
     color: var(--ember);
     margin-left: 0.15rem;
   }
 
-  /* === Input + textarea — ash bg, ember focus === */
-  .ocak-iletisim-form__input,
-  .ocak-iletisim-form__textarea {
+  /* === Input + textarea + select — ash bg, ember focus === */
+  .bize-yaz__input,
+  .bize-yaz__textarea,
+  .bize-yaz__select {
     width: 100%;
     font-family: var(--font-body);
     font-size: 0.92rem;
@@ -182,29 +195,48 @@ const { introHtml } = Astro.props;
     border-radius: 0;
   }
 
-  .ocak-iletisim-form__input::placeholder,
-  .ocak-iletisim-form__textarea::placeholder {
+  .bize-yaz__input::placeholder,
+  .bize-yaz__textarea::placeholder {
     color: var(--smoke);
   }
 
-  .ocak-iletisim-form__input:focus,
-  .ocak-iletisim-form__textarea:focus {
+  .bize-yaz__input:focus,
+  .bize-yaz__textarea:focus,
+  .bize-yaz__select:focus {
     border-color: var(--ember);
   }
 
-  .ocak-iletisim-form__textarea {
+  .bize-yaz__textarea {
     min-height: 140px;
     resize: vertical;
     line-height: 1.7;
   }
 
+  /* Native select arrow (smoke chevron, ember focus) — appearance: none ile özelleştir */
+  .bize-yaz__select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%235C5350' stroke-width='1' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1.2rem center;
+    padding-right: 2.8rem;
+    cursor: pointer;
+  }
+
+  .bize-yaz__select:invalid {
+    color: var(--smoke); /* placeholder option seçiliyken smoke */
+  }
+
+  .bize-yaz__select option {
+    color: var(--cream);
+    background: var(--ash);
+  }
+
   /* === KVKK === */
-  .ocak-iletisim-form__kvkk {
+  .bize-yaz__kvkk {
     padding-top: var(--space-4);
     border-top: 1px solid var(--ash);
   }
 
-  .ocak-iletisim-form__kvkk-onay {
+  .bize-yaz__kvkk-onay {
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
@@ -212,7 +244,7 @@ const { introHtml } = Astro.props;
     margin-bottom: var(--space-3);
   }
 
-  .ocak-iletisim-form__kvkk-onay input[type='checkbox'] {
+  .bize-yaz__kvkk-onay input[type='checkbox'] {
     width: 18px;
     height: 18px;
     margin-top: 2px;
@@ -221,14 +253,14 @@ const { introHtml } = Astro.props;
     cursor: pointer;
   }
 
-  .ocak-iletisim-form__kvkk-text {
+  .bize-yaz__kvkk-text {
     font-family: var(--font-body);
     font-size: 0.75rem;
     color: var(--cream-soft);
     line-height: 1.6;
   }
 
-  .ocak-iletisim-form__kvkk-detay summary {
+  .bize-yaz__kvkk-detay summary {
     list-style: none;
     cursor: pointer;
     font-family: var(--font-body);
@@ -241,17 +273,15 @@ const { introHtml } = Astro.props;
     gap: var(--space-2);
   }
 
-  .ocak-iletisim-form__kvkk-detay summary::-webkit-details-marker {
-    display: none;
-  }
+  .bize-yaz__kvkk-detay summary::-webkit-details-marker { display: none; }
 
-  .ocak-iletisim-form__kvkk-detay summary:hover,
-  .ocak-iletisim-form__kvkk-detay summary:focus-visible {
+  .bize-yaz__kvkk-detay summary:hover,
+  .bize-yaz__kvkk-detay summary:focus-visible {
     color: var(--ember);
     outline: none;
   }
 
-  .ocak-iletisim-form__kvkk-detay summary::after {
+  .bize-yaz__kvkk-detay summary::after {
     content: '';
     width: 8px;
     height: 8px;
@@ -261,11 +291,11 @@ const { introHtml } = Astro.props;
     transition: transform var(--duration-base) var(--ease-out);
   }
 
-  .ocak-iletisim-form__kvkk-detay[open] summary::after {
+  .bize-yaz__kvkk-detay[open] summary::after {
     transform: rotate(-135deg);
   }
 
-  .ocak-iletisim-form__kvkk-icerik {
+  .bize-yaz__kvkk-icerik {
     font-family: var(--font-body);
     font-size: 0.75rem;
     color: var(--cream-soft);
@@ -273,28 +303,24 @@ const { introHtml } = Astro.props;
     padding: var(--space-2) 0;
   }
 
-  /* #31 Brief G.4 P2 — baseline section[data-section][class^="ocak-"] p
-   * (text-base 1rem) panel içindeki p/ul/li'yi override ediyordu (kvkk-icerik
-   * font-size container'a 0.75rem inherit etmiyordu). !important + maximum
-   * specificity ile pekiştir. */
-  .ocak-iletisim-form__kvkk-icerik p,
-  .ocak-iletisim-form__kvkk-icerik ul,
-  .ocak-iletisim-form__kvkk-icerik li {
+  .bize-yaz__kvkk-icerik p,
+  .bize-yaz__kvkk-icerik ul,
+  .bize-yaz__kvkk-icerik li {
     font-size: 0.75rem !important;
     line-height: 1.7;
   }
 
-  .ocak-iletisim-form__kvkk-icerik p {
+  .bize-yaz__kvkk-icerik p {
     margin: 0 0 var(--space-2);
   }
 
-  .ocak-iletisim-form__kvkk-icerik ul {
+  .bize-yaz__kvkk-icerik ul {
     margin: 0 0 var(--space-2);
     padding-left: 1.2rem;
   }
 
-  /* === Submit (AtesMektuplari KATIL paterni — uppercase letter-spacing) === */
-  .ocak-iletisim-form__submit {
+  /* === Submit === */
+  .bize-yaz__submit {
     width: 100%;
     padding: 1.1rem 2rem;
     margin-top: var(--space-6);
@@ -312,17 +338,17 @@ const { introHtml } = Astro.props;
                 box-shadow var(--duration-base) var(--ease-out);
   }
 
-  .ocak-iletisim-form__submit:hover:not(:disabled) {
+  .bize-yaz__submit:hover:not(:disabled) {
     background: var(--ember-soft);
     box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   }
 
-  .ocak-iletisim-form__submit:disabled {
+  .bize-yaz__submit:disabled {
     opacity: 0.5;
     cursor: default;
   }
 
-  .ocak-iletisim-form__error {
+  .bize-yaz__error {
     font-family: var(--font-body);
     font-size: var(--text-sm);
     color: var(--ember);
@@ -330,19 +356,18 @@ const { introHtml } = Astro.props;
     margin: var(--space-3) 0 0;
   }
 
-  .ocak-iletisim-form__form[hidden] { display: none; }
-  .ocak-iletisim-form__success[hidden] { display: none; }
+  .bize-yaz__form[hidden] { display: none; }
+  .bize-yaz__success[hidden] { display: none; }
 
-  /* === Success — em-dash imza (AnadoluBasvuru pattern, KARAR 115 ton).
-   * #31 Brief G.3 P3: success padding daralt (space-7 → space-5). */
-  .ocak-iletisim-form__success {
+  /* === Success state — AnadoluBasvuru pattern + em-dash imza (KARAR 115) === */
+  .bize-yaz__success {
     scroll-margin-top: var(--nav-height);
     text-align: center;
-    padding: var(--space-5) 0;
-    animation: ocak-iletisim-fade 0.8s var(--ease-out) forwards;
+    padding: var(--space-7) 0;
+    animation: bize-yaz-fade 0.8s var(--ease-out) forwards;
   }
 
-  .ocak-iletisim-form__success-ember {
+  .bize-yaz__success-ember {
     width: 10px;
     height: 10px;
     background: var(--ember);
@@ -351,7 +376,7 @@ const { introHtml } = Astro.props;
     margin: 0 auto var(--space-6);
   }
 
-  .ocak-iletisim-form__success-title {
+  .bize-yaz__success-title {
     font-family: var(--font-display);
     font-style: italic;
     font-size: var(--text-h2);
@@ -360,11 +385,7 @@ const { introHtml } = Astro.props;
     margin: 0 0 var(--space-4);
   }
 
-  /* #31 Brief G.4 P3 — success-text margin baseline section[data-section]
-   * [class^="ocak-"] p (0,2,2) component (0,1,0)'i yutuyordu → p block kutusu
-   * sola yaslı kalıyordu (text-align center sadece içerideki text'i ortalıyor
-   * ama 42ch kutu kendisi sol). !important + margin auto ile pekiştir. */
-  .ocak-iletisim-form__success-text {
+  .bize-yaz__success-text {
     font-family: var(--font-body);
     font-size: var(--text-base);
     color: var(--cream-soft);
@@ -374,37 +395,56 @@ const { introHtml } = Astro.props;
     text-align: center !important;
   }
 
-  .ocak-iletisim-form__success-imza {
+  .bize-yaz__success-imza {
     font-family: var(--font-display);
     font-style: italic;
     font-size: 1.05rem;
     color: var(--cream-soft);
-    margin: 0 auto !important;             /* #31 Brief G.4 P3 — kutu ortalı */
+    margin: 0 auto var(--space-7) !important;
     text-align: center !important;
   }
 
-  @keyframes ocak-iletisim-fade {
+  .bize-yaz__success-back {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+    padding: 0.9rem 2rem;
+    border: 1px solid var(--smoke);
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+  }
+
+  .bize-yaz__success-back:hover {
+    border-color: var(--ember);
+    background: rgba(196, 75, 47, 0.1);
+  }
+
+  @keyframes bize-yaz-fade {
     from { opacity: 0; transform: translateY(25px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   /* === Mobil === */
   @media (max-width: 480px) {
-    .ocak-iletisim-form {
+    .bize-yaz {
       padding: var(--space-7) var(--space-5);
     }
-    .ocak-iletisim-form__group {
+    .bize-yaz__group {
       margin-bottom: var(--space-4);
     }
   }
 
-  /* === A11y === */
   @media (prefers-reduced-motion: reduce) {
-    .ocak-iletisim-form__input,
-    .ocak-iletisim-form__textarea,
-    .ocak-iletisim-form__submit,
-    .ocak-iletisim-form__kvkk-detay summary::after,
-    .ocak-iletisim-form__success {
+    .bize-yaz__input,
+    .bize-yaz__textarea,
+    .bize-yaz__select,
+    .bize-yaz__submit,
+    .bize-yaz__kvkk-detay summary::after,
+    .bize-yaz__success {
       transition: none;
       animation: none;
     }
@@ -414,16 +454,15 @@ const { introHtml } = Astro.props;
 <script>
   import { scrollToSuccess } from '../lib/scroll-to-success';
 
-  // Submit pattern AtesMektuplari/AnadoluBasvuru verbatim — text/plain POST,
-  // result.status === 'success' → success state; aksi → error, form aktif kalır.
-  // KARAR 116 status disiplini.
-  const form = document.querySelector<HTMLFormElement>('.ocak-iletisim-form__form');
+  // Submit pattern AnadoluBasvuru/IletisimForm verbatim — text/plain POST,
+  // result.status === 'success' → success state. Konu mesaja prepend: backend
+  // (Apps Script handleIletisim) ek field görmez, round-trip korunur.
+  const form = document.querySelector<HTMLFormElement>('.bize-yaz__form');
   if (form) {
-    const section = form.closest('.ocak-iletisim-form') as HTMLElement;
-    const submit = form.querySelector<HTMLButtonElement>('.ocak-iletisim-form__submit')!;
-    const errorEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__error')!;
-    const successEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__success')!;
-    const introEl = section.querySelector<HTMLElement>('.ocak-iletisim-form__intro');
+    const section = form.closest('.bize-yaz') as HTMLElement;
+    const submit = form.querySelector<HTMLButtonElement>('.bize-yaz__submit')!;
+    const errorEl = section.querySelector<HTMLElement>('.bize-yaz__error')!;
+    const successEl = section.querySelector<HTMLElement>('.bize-yaz__success')!;
     const endpoint = form.dataset.endpoint!;
     const oldText = submit.textContent ?? 'GÖNDER';
 
@@ -434,16 +473,23 @@ const { introHtml } = Astro.props;
       submit.textContent = 'Gönderiliyor…';
 
       const data = new FormData(form);
+      const isim = (data.get('isim') ?? '').toString().trim();
+      const email = (data.get('email') ?? '').toString().trim();
+      const konu = (data.get('konu') ?? '').toString();
+      const mesajText = (data.get('mesaj') ?? '').toString().trim();
+      // Konu mesaj başına prepend — backend ek field görmez (round-trip korunur).
+      const mesaj = konu ? `[${konu}]\n\n${mesajText}` : mesajText;
+
       const payload = {
         formType: 'iletisim',
-        isim: (data.get('isim') ?? '').toString().trim(),
-        email: (data.get('email') ?? '').toString().trim(),
-        mesaj: (data.get('mesaj') ?? '').toString().trim(),
-        // KARAR 152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
+        isim,
+        email,
+        mesaj,
+        // KARAR 194/152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
         website: (data.get('website') ?? '').toString(),
       };
 
-      if (!payload.isim || !payload.email || !payload.mesaj) {
+      if (!isim || !email || !konu || !mesajText) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
         errorEl.hidden = false;
         submit.disabled = false;
@@ -461,8 +507,6 @@ const { introHtml } = Astro.props;
 
         if (result.status === 'success') {
           form.hidden = true;
-          // KARAR 151 — Notion intro form ile birlikte gizlenir.
-          if (introEl) introEl.hidden = true;
           successEl.hidden = false;
           scrollToSuccess(successEl);
           if (typeof window !== 'undefined' && window.dataLayer) {
@@ -475,7 +519,7 @@ const { introHtml } = Astro.props;
           throw new Error(result.message || 'API error');
         }
       } catch (err) {
-        console.error('İletişim form error:', err);
+        console.error('Bize Yaz form error:', err);
         errorEl.textContent =
           'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
         errorEl.hidden = false;

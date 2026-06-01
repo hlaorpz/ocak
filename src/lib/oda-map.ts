@@ -36,6 +36,7 @@ export const ODA_MAP: Record<string, Oda> = {
   '/ekip': 'Biz',
   // İletişim
   '/iletisim': 'İletişim',
+  '/iletisim/bize-yaz': 'İletişim',   // brief-iletisim-form-tasima.md (form ayrı route)
 };
 
 /**

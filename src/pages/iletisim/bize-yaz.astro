@@ -1,0 +1,23 @@
+---
+// /iletisim/bize-yaz — Brief brief-iletisim-form-tasima.md Bölüm 1.
+// İletişim formu /iletisim sayfasından kendi route'una taşındı (AnadoluBasvuru
+// deseni: Layout + Hero + form, success state form HTML'ini gizler, tepeye scroll).
+// ODA_MAP'e eklendi: '/iletisim/bize-yaz' → 'İletişim'.
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import BizeYazForm from '../../components/BizeYazForm.astro';
+---
+<Layout
+  title="Bize Yaz"
+  description="İsim, email, birkaç satır. Bir kız kardeş okur, bir kız kardeş yanıt yazar."
+  oda="İletişim"
+>
+  <Hero
+    oda="İletişim"
+    overline="BİZE YAZ"
+    title="Sen yaz, biz okuyalım"
+    subtitle="İsim, email, birkaç satır. Otomatik filtre yok — bir kız kardeş okur, bir kız kardeş yanıt yazar."
+    showScroll={false}
+  />
+  <BizeYazForm />
+</Layout>

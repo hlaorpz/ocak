@@ -1,0 +1,35 @@
+---
+// /iletisim — orientasyon sayfası override (brief-iletisim-form-tasima.md Bölüm 2).
+// Statik route, dinamik [...slug]'a önceliklidir. Form artık burada değil;
+// /iletisim/bize-yaz'a taşındı. Bu sayfa: Notion content (form-anchor sıra 1 →
+// AtesMektuplariCTA + diğer prose section'lar) + Kanallar component vitrini.
+//
+// `iletisim-form-davet` ve `kanallar` section'ları OMIT_SECTIONS'a alındı
+// (plugin emit etmez, override'da Kanallar component basar).
+//
+// /iletisim sayfasında HİÇ form-anchor yok (kullanıcı kararı): form
+// /iletisim/bize-yaz'a taşındı, Ateş Mektupları CTA da kaldırıldı. Notion'daki
+// iki `## section: form-anchor` marker'ı silindi; form-anchor-registry'de
+// '/iletisim' entry yok (defansif `?? []`).
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import Kanallar from '../components/Kanallar.astro';
+
+const sayfalar = await getCollection('sayfalar');
+const sayfa = sayfalar.find((s) => s.data.slug === '/iletisim');
+if (!sayfa) {
+  throw new Error(
+    "/iletisim override: Notion'dan 'iletisim' sayfası bulunamadı — getCollection('sayfalar') boş.",
+  );
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda="İletişim"
+>
+  <PageContent slug="/iletisim" fragments={sayfa.data.fragments} />
+  <Kanallar />
+</Layout>

@@ -1,0 +1,327 @@
+---
+// Kanallar — /iletisim orientasyon sayfası "üç kapı + mail alt satırı" vitrini.
+// Brief: brief-iletisim-form-tasima.md Bölüm 3 (Yol A: override component, kanonik
+// section'a terfi YOK). Üç tıklanabilir kart (Form / WhatsApp / Instagram) +
+// mail alt satırı; "ateşin üç mesafesi" konsepti.
+//
+// Tasarım kaynağı: Kanallar.astro tasarım dosyası — site tokenlarına uyarlandı
+// (--komur→coal, --koz→ember, --krem→cream, --kul→ash, --duman→smoke,
+// --sicakgri→warm-gray, --altin→gold). KIRPMA YASAĞI (KARAR 61/88): metinler
+// brief'ten birebir taşındı.
+//
+// Instagram kartı için yan kapı (Advaita) ince köz çizgisiyle ayrılır; ayrı
+// tıklanabilir (a > a HTML'de yasak, parent div + iki a child).
+
+const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
+---
+<section class="kanallar" data-section="kanallar">
+  <div class="kanallar__inner">
+    <h2 class="kanallar__baslik"><em>Kanallar</em></h2>
+    <p class="kanallar__alt">Üç kapı. Hepsi aynı ateşe açılır.</p>
+
+    <div class="kanallar__grid">
+      <!-- FORM -->
+      <a class="kanal" href="/iletisim/bize-yaz">
+        <span class="kanal__koz" aria-hidden="true"></span>
+        <span class="kanal__etiket">en yavaş, en derin</span>
+        <h3 class="kanal__ad"><em>Bize Yaz</em></h3>
+        <p class="kanal__not">İsim, email, birkaç satır. Bir kız kardeş okur, yanıt yazar.</p>
+      </a>
+
+      <!-- WHATSAPP -->
+      <a class="kanal kanal--anlik" href={wa}>
+        <span class="kanal__koz" aria-hidden="true"></span>
+        <span class="kanal__rozet">yapay zekâ</span>
+        <span class="kanal__etiket">anlık kıvılcım</span>
+        <h3 class="kanal__ad"><em>WhatsApp</em></h3>
+        <p class="kanal__adres">Asistan</p>
+        <p class="kanal__not">
+          Format, takvim, kayıt, ücret — anında yanıt. OCAK'ın bilgi tabanından
+          konuşur: uydurmaz, sapmaz, satış yapmaz. Bot olduğunu saklamaz.
+          Kişisel bir konu geldiğinde durur, bir kız kardeşe yönlendirir.
+        </p>
+        <p class="kanal__fisilti">
+          Çember kutsaldır — paylaşılan an asla yapay zekâya taşınmaz.
+          Asistan sadece dışarıdaki bilgi kapısı.
+        </p>
+      </a>
+
+      <!-- INSTAGRAM -->
+      <div class="kanal kanal--instagram">
+        <span class="kanal__koz" aria-hidden="true"></span>
+        <span class="kanal__etiket">uzaktan görünen ışıltı</span>
+        <h3 class="kanal__ad"><em>Instagram</em></h3>
+        <a class="kanal__hesap" href="https://instagram.com/ocak.biz">
+          <span class="kanal__adres">@ocak.biz</span>
+          <span class="kanal__not">Günlük dokunuş, çember duyurusu, atmosfer.</span>
+        </a>
+
+        <!-- yan kapı: Advaita — ayrı ama akraba -->
+        <a class="kanal__yankapi" href="https://instagram.com/advaita_hayatladans">
+          <span class="kanal__alt-hesap">@advaita_hayatladans</span>
+          <span class="kanal__not kanal__not--ikincil">
+            Advaita'nın birinci tekil sesi. OCAK'tan ayrı, ama akraba.
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <p class="kanallar__mail">
+      <em>Dilersen doğrudan:</em>
+      <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .kanallar {
+    padding: var(--space-9) var(--space-6);
+    background: var(--coal-deep);
+    position: relative;
+  }
+
+  /* Üst ambient çizgi — AtesMektuplari/IletisimForm kardeşi */
+  .kanallar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ash), transparent);
+  }
+
+  .kanallar__inner {
+    max-width: var(--max-w-content);
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .kanallar__baslik {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    color: var(--cream);
+    font-weight: 400;
+    margin: 0;
+  }
+  .kanallar__baslik em { font-style: italic; }
+
+  .kanallar__alt {
+    font-family: var(--font-body);
+    color: var(--smoke);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
+    margin: var(--space-3) 0 var(--space-8);
+  }
+
+  .kanallar__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    text-align: left;
+  }
+  @media (max-width: 760px) {
+    .kanallar__grid { grid-template-columns: 1fr; gap: var(--space-4); }
+  }
+
+  /* === KART === */
+  .kanal {
+    position: relative;
+    display: block;
+    padding: var(--space-6) var(--space-5) var(--space-7);
+    background: var(--ash);
+    border: 1px solid color-mix(in oklab, var(--cream) 6%, transparent);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform var(--duration-slow) var(--ease-out),
+                border-color var(--duration-slow) var(--ease-out);
+  }
+
+  /* İçeriden sızan köz parıltısı — atmosfer prensibi (radial glow) */
+  .kanal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      120% 80% at 50% 0%,
+      rgba(196, 75, 47, 0.10),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out);
+    pointer-events: none;
+  }
+  .kanal:hover {
+    transform: translateY(-4px);
+    border-color: rgba(196, 75, 47, 0.4);
+  }
+  .kanal:hover::before { opacity: 1; }
+  .kanal:focus-visible {
+    outline: 1px solid var(--ember);
+    outline-offset: 3px;
+  }
+
+  /* Köz nokta — manifesto-vurgu glyph diliyle akraba */
+  .kanal__koz {
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 12px rgba(196, 75, 47, 0.6);
+    margin-bottom: var(--space-5);
+  }
+
+  .kanal__etiket {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--smoke);
+    margin-bottom: var(--space-2);
+  }
+
+  .kanal__ad {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.6rem, 3.5vw, 1.9rem);
+    font-weight: 400;
+    color: var(--cream);
+    margin: 0 0 var(--space-3);
+    line-height: var(--leading-tight);
+  }
+  .kanal__ad em { font-style: italic; }
+
+  .kanal__adres {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--ember);
+    margin: 0 0 var(--space-4);
+    word-break: break-word;
+  }
+
+  .kanal__not {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    color: var(--warm-gray);
+    margin: 0 0 var(--space-3);
+  }
+  .kanal__not--ikincil {
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  /* Instagram kartı: iç hesap blokları tıklanabilir, alt çizgisiz */
+  .kanal--instagram .kanal__hesap,
+  .kanal--instagram .kanal__yankapi {
+    display: block;
+    text-decoration: none;
+  }
+  .kanal--instagram .kanal__hesap .kanal__adres {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+  .kanal--instagram .kanal__hesap .kanal__not { margin: 0; }
+
+  /* Yan kapı: ince köz çizgisiyle OCAK hesabından ayrılır */
+  .kanal__yankapi {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid rgba(196, 75, 47, 0.18);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .kanal__yankapi:hover { border-top-color: rgba(212, 168, 85, 0.5); }
+  .kanal__yankapi .kanal__alt-hesap {
+    display: block;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--gold);
+    margin-bottom: var(--space-2);
+  }
+  .kanal__yankapi .kanal__not { margin: 0; }
+
+  /* Instagram kart hover'a yan kapı a > a HTML'de yasak; div parent + 2 a child.
+   * Kart kendisi <a> değil, bu yüzden div'e transform/border-color hover ekle. */
+  .kanal--instagram:hover {
+    transform: translateY(-4px);
+    border-color: rgba(196, 75, 47, 0.4);
+  }
+  .kanal--instagram:hover::before { opacity: 1; }
+
+  .kanal__fisilti {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--smoke);
+    border-left: 2px solid rgba(196, 75, 47, 0.35);
+    padding-left: var(--space-3);
+    margin: var(--space-4) 0 0;
+  }
+
+  /* WhatsApp dürüstlük rozeti — şeffaflık ilkesi (KARAR 57.3) görsele taşınır */
+  .kanal__rozet {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(212, 168, 85, 0.4);
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+  }
+
+  /* Mail alt satırı */
+  .kanallar__mail {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--smoke);
+    margin: var(--space-7) 0 0;
+  }
+  .kanallar__mail em {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--cream-soft);
+    margin-right: var(--space-2);
+  }
+  .kanallar__mail a {
+    color: var(--ember);
+    text-decoration: underline;
+    text-decoration-color: rgba(196, 75, 47, 0.4);
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .kanallar__mail a:hover { color: var(--ember-soft); }
+
+  /* === A11y === */
+  @media (prefers-reduced-motion: reduce) {
+    .kanal,
+    .kanal--instagram,
+    .kanal__yankapi,
+    .kanallar__mail a {
+      transition: border-color var(--duration-base) var(--ease-out);
+    }
+    .kanal:hover,
+    .kanal--instagram:hover {
+      transform: none;
+    }
+  }
+
+  /* === Mobil === */
+  @media (max-width: 480px) {
+    .kanallar {
+      padding: var(--space-7) var(--space-5);
+    }
+    .kanal {
+      padding: var(--space-5) var(--space-4) var(--space-6);
+    }
+  }
+</style>
