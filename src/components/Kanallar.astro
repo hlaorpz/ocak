@@ -4,6 +4,10 @@
 //   - brief-iletisim-form-tasima.md Bölüm 3 — kart içerikleri + "ateşin üç mesafesi"
 //   - brief-kanallar-yerlesim-zemin.md — yerleşim (Notion `## section: kanallar`
 //     marker'ı, Bize Yaz ↔ Yanıt arası), dış zemin şeffaf, mail alt satırı kaldırıldı.
+//   - brief-kartlar-rafine.md — üç kart aynı iskelet (kanal__orta orta katmanı:
+//     Bize Yaz "Form →", WhatsApp "Asistan", Instagram "@ocak.biz"), hover Varyant B
+//     (kenarlık 0.55 + glow 0.14 + köz nokta scale 1.5 + glow 0.95), Instagram
+//     metinleri genişletildi.
 //
 // Tasarım kaynağı: Kanallar.astro tasarım dosyası — site tokenlarına uyarlandı
 // (--komur→coal, --koz→ember, --krem→cream, --kul→ash, --duman→smoke,
@@ -26,6 +30,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <span class="kanal__koz" aria-hidden="true"></span>
         <span class="kanal__etiket">en yavaş, en derin</span>
         <h3 class="kanal__ad"><em>Bize Yaz</em></h3>
+        <span class="kanal__orta">Form →</span>
         <p class="kanal__not">İsim, email, birkaç satır. Bir kız kardeş okur, yanıt yazar.</p>
       </a>
 
@@ -35,7 +40,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <span class="kanal__rozet">yapay zekâ</span>
         <span class="kanal__etiket">anlık kıvılcım</span>
         <h3 class="kanal__ad"><em>WhatsApp</em></h3>
-        <p class="kanal__adres">Asistan</p>
+        <span class="kanal__orta">Asistan</span>
         <p class="kanal__not">
           Format, takvim, kayıt, ücret — anında yanıt. OCAK'ın bilgi tabanından
           konuşur: uydurmaz, sapmaz, satış yapmaz. Bot olduğunu saklamaz.
@@ -53,15 +58,19 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <span class="kanal__etiket">uzaktan görünen ışıltı</span>
         <h3 class="kanal__ad"><em>Instagram</em></h3>
         <a class="kanal__hesap" href="https://instagram.com/ocak.biz">
-          <span class="kanal__adres">@ocak.biz</span>
-          <span class="kanal__not">Günlük dokunuş, çember duyurusu, atmosfer.</span>
+          <span class="kanal__orta">@ocak.biz</span>
+          <span class="kanal__not">
+            Günlük dokunuş, çember duyuruları, perde arkası. OCAK'ın atmosferini
+            en sık burada solursun — bir kart açılmadan önce sezdiğin yer.
+          </span>
         </a>
 
         <!-- yan kapı: Advaita — ayrı ama akraba -->
         <a class="kanal__yankapi" href="https://instagram.com/advaita_hayatladans">
           <span class="kanal__alt-hesap">@advaita_hayatladans</span>
           <span class="kanal__not kanal__not--ikincil">
-            Advaita'nın birinci tekil sesi. OCAK'tan ayrı, ama akraba.
+            Advaita'nın birinci tekil sesi — kendi dansı, kendi sözü.
+            OCAK'tan ayrı, ama aynı ateşten.
           </span>
         </a>
       </div>
@@ -130,23 +139,25 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
                 border-color var(--duration-slow) var(--ease-out);
   }
 
-  /* İçeriden sızan köz parıltısı — atmosfer prensibi (radial glow) */
+  /* İçeriden sızan köz parıltısı — atmosfer prensibi (radial glow).
+   * Hover Varyant B (brief-kartlar-rafine.md): opacity 0.10 → 0.14. */
   .kanal::before {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(
       120% 80% at 50% 0%,
-      rgba(196, 75, 47, 0.10),
+      rgba(196, 75, 47, 0.14),
       transparent 60%
     );
     opacity: 0;
     transition: opacity var(--duration-slow) var(--ease-out);
     pointer-events: none;
   }
+  /* Hover Varyant B: kenarlık 0.4 → 0.55 (daha belirgin köz çizgi). */
   .kanal:hover {
     transform: translateY(-4px);
-    border-color: rgba(196, 75, 47, 0.4);
+    border-color: rgba(196, 75, 47, 0.55);
   }
   .kanal:hover::before { opacity: 1; }
   .kanal:focus-visible {
@@ -154,7 +165,9 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     outline-offset: 3px;
   }
 
-  /* Köz nokta — manifesto-vurgu glyph diliyle akraba */
+  /* Köz nokta — manifesto-vurgu glyph diliyle akraba.
+   * Hover Varyant B: scale(1.5) + glow 0.95 — kart sakin, göz tek ateş
+   * noktasına gider ("iddialı değil ama çekici"). */
   .kanal__koz {
     display: block;
     width: 7px;
@@ -163,6 +176,12 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     background: var(--ember);
     box-shadow: 0 0 12px rgba(196, 75, 47, 0.6);
     margin-bottom: var(--space-5);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+  }
+  .kanal:hover .kanal__koz,
+  .kanal--instagram:hover .kanal__koz {
+    transform: scale(1.5);
+    box-shadow: 0 0 20px rgba(196, 75, 47, 0.95);
   }
 
   .kanal__etiket {
@@ -186,7 +205,10 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   }
   .kanal__ad em { font-style: italic; }
 
-  .kanal__adres {
+  /* Orta katman (kanal__orta) — üç kart aynı dikey iskelet:
+   * etiket / başlık / orta katman / not. Köz renginde, küçük (text-base),
+   * WhatsApp "Asistan" hizası (brief-kartlar-rafine.md Bölüm 1). */
+  .kanal__orta {
     display: block;
     font-family: var(--font-body);
     font-size: var(--text-base);
@@ -213,7 +235,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     display: block;
     text-decoration: none;
   }
-  .kanal--instagram .kanal__hesap .kanal__adres {
+  .kanal--instagram .kanal__hesap .kanal__orta {
     display: block;
     margin-bottom: var(--space-2);
   }
@@ -238,9 +260,10 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
 
   /* Instagram kart hover'a yan kapı a > a HTML'de yasak; div parent + 2 a child.
    * Kart kendisi <a> değil, bu yüzden div'e transform/border-color hover ekle. */
+  /* Hover Varyant B (brief-kartlar-rafine.md): kenarlık 0.4 → 0.55. */
   .kanal--instagram:hover {
     transform: translateY(-4px);
-    border-color: rgba(196, 75, 47, 0.4);
+    border-color: rgba(196, 75, 47, 0.55);
   }
   .kanal--instagram:hover::before { opacity: 1; }
 
@@ -274,12 +297,18 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   @media (prefers-reduced-motion: reduce) {
     .kanal,
     .kanal--instagram,
-    .kanal__yankapi {
+    .kanal__yankapi,
+    .kanal__koz {
       transition: border-color var(--duration-base) var(--ease-out);
     }
     .kanal:hover,
     .kanal--instagram:hover {
       transform: none;
+    }
+    .kanal:hover .kanal__koz,
+    .kanal--instagram:hover .kanal__koz {
+      transform: none;
+      box-shadow: 0 0 12px rgba(196, 75, 47, 0.6);
     }
   }
 
