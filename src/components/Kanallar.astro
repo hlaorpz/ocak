@@ -8,6 +8,11 @@
 //     Bize Yaz "Form →", WhatsApp "Asistan", Instagram "@ocak.biz"), hover Varyant B
 //     (kenarlık 0.55 + glow 0.14 + köz nokta scale 1.5 + glow 0.95), Instagram
 //     metinleri genişletildi.
+//   - brief-kanallar-baslik-sok.md — "Üç Kapı" başlığı + alt metni Notion'da
+//     `## section: uc-kapi` prose section'ına taşındı (Bize Yaz tipografisiyle
+//     birebir, kopukluk çözüldü). Component artık SADECE üç kartı basar.
+//     Sarmalayıcı üst padding küçültüldü (Notion paragrafı ↔ kartlar arası doğal
+//     akış); alt padding korundu (Yanıt section'ı ayrımı).
 //
 // Tasarım kaynağı: Kanallar.astro tasarım dosyası — site tokenlarına uyarlandı
 // (--komur→coal, --koz→ember, --krem→cream, --kul→ash, --duman→smoke,
@@ -21,12 +26,6 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
 ---
 <section class="kanallar" data-section="kanallar">
   <div class="kanallar__inner">
-    <h2 class="kanallar__baslik"><em>Üç Kapı</em></h2>
-    <p class="kanallar__alt">
-      Her kapı farklı bir hız: biri yavaş ve derin, biri anlık, biri uzaktan.
-      İçine en çok hangisi siniyorsa, ondan.
-    </p>
-
     <div class="kanallar__grid">
       <!-- FORM -->
       <a class="kanal" href="/iletisim/bize-yaz">
@@ -88,9 +87,14 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   /* brief-kanallar-yerlesim-zemin.md — sarmalayıcı section şeffaf: sayfanın
    * ana zemini (--coal, Layout main) görünür. Önceki --coal-deep + üst ambient
    * çizgi kartları "ayrı form bloğu" gibi gösteriyordu; kaldırıldı.
-   * Kartların kendisi (kül zemin, köz kenarlık, hover glow) AYNEN kalır. */
+   * Kartların kendisi (kül zemin, köz kenarlık, hover glow) AYNEN kalır.
+   *
+   * brief-kanallar-baslik-sok.md — başlık + alt metin Notion'a göçtü
+   * (`## section: uc-kapi`). Üst padding space-7 → space-4: Notion paragrafı
+   * ↔ kartlar arası doğal akış (ayrı blok kopukluğu YOK). Alt padding space-7
+   * korundu — Yanıt section'ı ayrımı. */
   .kanallar {
-    padding: var(--space-7) var(--space-6);
+    padding: var(--space-4) var(--space-6) var(--space-7);
     background: transparent;
     position: relative;
   }
@@ -98,27 +102,8 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   .kanallar__inner {
     max-width: var(--max-w-content);
     margin: 0 auto;
-    text-align: center;
     position: relative;
     z-index: 1;
-  }
-
-  .kanallar__baslik {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-h2);
-    color: var(--cream);
-    font-weight: 400;
-    margin: 0;
-  }
-  .kanallar__baslik em { font-style: italic; }
-
-  .kanallar__alt {
-    font-family: var(--font-body);
-    color: var(--smoke);
-    font-size: var(--text-sm);
-    letter-spacing: var(--tracking-wide);
-    margin: var(--space-3) 0 var(--space-8);
   }
 
   .kanallar__grid {
@@ -333,7 +318,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   /* === Mobil === */
   @media (max-width: 480px) {
     .kanallar {
-      padding: var(--space-7) var(--space-5);
+      padding: var(--space-4) var(--space-5) var(--space-7);
     }
     .kanal {
       padding: var(--space-5) var(--space-4) var(--space-6);
