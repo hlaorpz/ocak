@@ -1,10 +1,12 @@
 ---
 // YolculukEksen — Beş Evre + Bir AÇILIŞ'ı kömürden aleve dikey ısı-eğrisi şeridi
-// olarak render eder (brief Yolculuk Ekseni v1 + v2; Seçenek A: loader fragment-split,
+// olarak render eder (brief Yolculuk Ekseni v1/v2/v3; Seçenek A: loader fragment-split,
 // /yolculuk Notion'da `## section: yolculuk-eksen` marker'ına yapışır).
-// v2 değişiklikleri: (a) EVRE N etiketi kaldırıldı — yukarıdan aşağı sıra evre
-// numarasını ima ediyor; (b) evre adı (AÇILIŞ vb.) büyütüldü, kahraman; (c) ara
-// dönem iç-işler tekrarı (5×) tek satır footer'a indi (1×).
+// v2: EVRE N kaldırıldı, evre adı kahraman, iç-iş tekrarı tek satıra indi.
+// v3: üstteki overline + giriş cümlesi kaldırıldı (yatay metaforu yanıltıcıydı,
+// şerit kendi kendini anlatıyor); blok okuma kolonu (--max-w-prose 38rem) genişliğinde
+// ortalı — prose baseline'la (atmosfer.css `section[data-section][class^="ocak-"]`)
+// tutarlı. İç hizalama sola kalır (ısı şeridi sol kenarda).
 // Isı renkleri tokens.css'te (--isi-*, --kor-cizgi). DURUŞ = --ember.
 
 const evreler = [
@@ -16,13 +18,8 @@ const evreler = [
   { ad: 'DÖNÜŞ',  tema: 'Kendine, bütünlüğe, eve.',               renk: 'var(--isi-donus)' },
 ];
 ---
-<section class="yolculuk-eksen" aria-labelledby="yolculuk-eksen-baslik">
+<section class="yolculuk-eksen" aria-label="Beş evre + bir açılış — yolculuk ekseni">
   <div class="yolculuk-eksen__inner">
-    <p class="ocak-overline">Beş evre + bir açılış</p>
-    <h2 id="yolculuk-eksen-baslik" class="yolculuk-eksen__giris">
-      Soldan sağa ateş tutuşur. Kömürden alevin tepesine, oradan dinlenen kora. Renk, evrenin ısısıdır.
-    </h2>
-
     <ol class="yolculuk-eksen__liste" role="list">
       {evreler.map((evre, i) => (
         <>
@@ -51,23 +48,17 @@ const evreler = [
 
 <style>
   .yolculuk-eksen {
-    padding: var(--space-9) 0 var(--space-8);
-    max-width: var(--max-w-content);
+    /* v3: prose okuma kolonu genişliği (atmosfer.css baseline ile paralel,
+       --max-w-prose = 38rem ≈ 608px). Yatay merkez; padding prose baseline'a
+       eşli (space-8 / space-6 / space-9) ama component dikey ritmiyle hafif
+       sıkıştırıldı — şerit zaten kendi nefesini taşıyor. */
+    max-width: var(--max-w-prose);
     margin: 0 auto;
+    padding: var(--space-8) var(--space-6) var(--space-8);
   }
 
   .yolculuk-eksen__inner {
     text-align: left;
-  }
-
-  .yolculuk-eksen__giris {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-h3);
-    color: var(--cream);
-    line-height: var(--leading-snug);
-    margin: var(--space-4) 0 var(--space-8);
-    max-width: 38rem;
   }
 
   .yolculuk-eksen__liste {
@@ -165,13 +156,15 @@ const evreler = [
     font-size: var(--text-sm);
     color: var(--smoke);
     line-height: var(--leading-snug);
-    max-width: 38rem;
   }
 
   /* ===== MOBİL (KARAR 187 horizontal overflow=0) ===== */
   @media (max-width: 768px) {
     .yolculuk-eksen {
-      padding: var(--space-8) 0 var(--space-7);
+      /* max-width: --max-w-prose 38rem mobil viewport'tan büyük olabilir
+         (örn. 320-360px ekran). 100% düşürerek taşma riskini kapatıyoruz. */
+      max-width: 100%;
+      padding: var(--space-7) var(--space-5) var(--space-7);
     }
 
     .evre__icerik {
