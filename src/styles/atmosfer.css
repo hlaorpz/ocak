@@ -836,6 +836,18 @@ section[data-section="esik-kadini"][class^="ocak-"] > p:last-of-type {
   text-align: center;
 }
 
+/* uc-kapi (brief-kart-hiza.md) — /iletisim sayfasında "Üç Kapı" başlığı +
+ * "Her kapı farklı bir hız..." paragrafı; hemen ardından Kanallar component
+ * (üç kart marker'ı) geliyor. Generic prose baseline padding-bottom space-9
+ * (6rem) buraya fazla nefes basıyordu (paragraf ile kartlar arasında neredeyse
+ * bir ekran). Spesifik override: padding-bottom 0; üst space-8 (4rem) korunur
+ * (önceki Bize Yaz section'ından ayrım). Kanallar component padding-top space-2
+ * (0.5rem) ile toplam ~0.5rem nefes — başlık+paragraf+kartlar tek ekranda.
+ * Negatif margin'den kaçındık (KARAR pattern: kaynağı bul, kırılgan değil). */
+section[data-section="uc-kapi"][class^="ocak-"] {
+  padding-bottom: 0;
+}
+
 /* ─────────────────────────────────────────────────────────────────────
    STANDALONE VURGU PARAGRAFI — Manifesto hierarchy (#25 Brief A item 9,
    #26 Brief 0 KARAR 118 devam: bold varyant)

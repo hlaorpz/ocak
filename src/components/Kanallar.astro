@@ -64,19 +64,19 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <h3 class="kanal__ad"><em>Instagram</em></h3>
         <a class="kanal__hesap" href="https://instagram.com/ocak.biz">
           <span class="kanal__orta">@ocak.biz</span>
-          <span class="kanal__not">
+          <p class="kanal__not">
             Günlük dokunuş, çember duyuruları, perde arkası. OCAK'ın atmosferini
             en sık burada solursun — bir kart açılmadan önce sezdiğin yer.
-          </span>
+          </p>
         </a>
 
         <!-- yan kapı: Advaita — ayrı ama akraba -->
         <a class="kanal__yankapi" href="https://instagram.com/advaita_hayatladans">
           <span class="kanal__alt-hesap">@advaita_hayatladans</span>
-          <span class="kanal__not kanal__not--ikincil">
+          <p class="kanal__not kanal__not--ikincil">
             Advaita'nın birinci tekil sesi — kendi dansı, kendi sözü.
             OCAK'tan ayrı, ama aynı ateşten.
-          </span>
+          </p>
         </a>
       </div>
     </div>
@@ -90,11 +90,15 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
    * Kartların kendisi (kül zemin, köz kenarlık, hover glow) AYNEN kalır.
    *
    * brief-kanallar-baslik-sok.md — başlık + alt metin Notion'a göçtü
-   * (`## section: uc-kapi`). Üst padding space-7 → space-4: Notion paragrafı
-   * ↔ kartlar arası doğal akış (ayrı blok kopukluğu YOK). Alt padding space-7
-   * korundu — Yanıt section'ı ayrımı. */
+   * (`## section: uc-kapi`). Üst padding küçük (Notion paragrafı ↔ kartlar
+   * arası doğal akış). Alt padding space-7 korundu — Yanıt section'ı ayrımı.
+   *
+   * brief-kart-hiza.md — paragraf↔kartlar boşluğu büyüktü: uc-kapi prose
+   * baseline padding-bottom space-9 (6rem) atmosfer.css'te 0'a indirildi
+   * (kaynak çözüm); Kanallar üst padding space-4 → space-2 (~0.5rem).
+   * Toplam ~0.5rem nefes — başlık+paragraf+kartlar tek ekranda. */
   .kanallar {
-    padding: var(--space-4) var(--space-6) var(--space-7);
+    padding: var(--space-2) var(--space-6) var(--space-7);
     background: transparent;
     position: relative;
   }
@@ -220,17 +224,17 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     font-size: var(--text-sm);
   }
 
-  /* Instagram kartı: iç hesap blokları tıklanabilir, alt çizgisiz */
+  /* Instagram kartı: iç hesap blokları tıklanabilir, alt çizgisiz.
+   * brief-kart-hiza.md — wrapper içindeki .kanal__orta + .kanal__not
+   * margin override'ları KALDIRILDI: base rule'lar (orta margin-bottom
+   * space-4, not margin-bottom space-3) uygulanır → üç kartın orta-katman
+   * + uzun-yazı satırları aynı y-hizasında başlar. Yan-kapı'nın
+   * margin-top space-5 yine de geçerli (not margin-bottom ile collapse). */
   .kanal--instagram .kanal__hesap,
   .kanal--instagram .kanal__yankapi {
     display: block;
     text-decoration: none;
   }
-  .kanal--instagram .kanal__hesap .kanal__orta {
-    display: block;
-    margin-bottom: var(--space-2);
-  }
-  .kanal--instagram .kanal__hesap .kanal__not { margin: 0; }
 
   /* Yan kapı: ince köz çizgisiyle OCAK hesabından ayrılır */
   .kanal__yankapi {
@@ -318,7 +322,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   /* === Mobil === */
   @media (max-width: 480px) {
     .kanallar {
-      padding: var(--space-4) var(--space-5) var(--space-7);
+      padding: var(--space-2) var(--space-5) var(--space-7);
     }
     .kanal {
       padding: var(--space-5) var(--space-4) var(--space-6);
