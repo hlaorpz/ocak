@@ -5,7 +5,7 @@
 //   - brief-kanallar-yerlesim-zemin.md — yerleşim (Notion `## section: kanallar`
 //     marker'ı, Bize Yaz ↔ Yanıt arası), dış zemin şeffaf, mail alt satırı kaldırıldı.
 //   - brief-kartlar-rafine.md — üç kart aynı iskelet (kanal__orta orta katmanı:
-//     Bize Yaz "Form →", WhatsApp "Asistan", Instagram "@ocak.biz"), hover Varyant B
+//     Bize Yaz "Form", WhatsApp "Asistan", Instagram "@ocak.biz"), hover Varyant B
 //     (kenarlık 0.55 + glow 0.14 + köz nokta scale 1.5 + glow 0.95), Instagram
 //     metinleri genişletildi.
 //   - brief-kanallar-baslik-sok.md — "Üç Kapı" başlığı + alt metni Notion'da
@@ -13,11 +13,15 @@
 //     birebir, kopukluk çözüldü). Component artık SADECE üç kartı basar.
 //     Sarmalayıcı üst padding küçültüldü (Notion paragrafı ↔ kartlar arası doğal
 //     akış); alt padding korundu (Yanıt section'ı ayrımı).
+//   - brief-kart-rotus.md — Bize Yaz orta katman "Form →" → "Form" (ok sök),
+//     paragraf↔kart nefesi rahat orta değere (~2rem), altın (--gold) TAMAMEN
+//     kalktı: rozet smoke kenarlık + cream-soft metin, Advaita yan kapı
+//     cream-soft (köz YOK). WhatsApp fısıltı metni güncellendi.
 //
-// Tasarım kaynağı: Kanallar.astro tasarım dosyası — site tokenlarına uyarlandı
-// (--komur→coal, --koz→ember, --krem→cream, --kul→ash, --duman→smoke,
-// --sicakgri→warm-gray, --altin→gold). KIRPMA YASAĞI (KARAR 61/88): metinler
-// brief'ten birebir taşındı.
+// Palet: kömür + köz + krem/gri (altın yok). Tasarım kaynağı: Kanallar.astro
+// tasarım dosyası — site tokenlarına uyarlandı (--komur→coal, --koz→ember,
+// --krem→cream, --kul→ash, --duman→smoke, --sicakgri→warm-gray). KIRPMA
+// YASAĞI (KARAR 61/88): metinler brief'ten birebir taşındı.
 //
 // Instagram kartı için yan kapı (Advaita) ince köz çizgisiyle ayrılır; ayrı
 // tıklanabilir (a > a HTML'de yasak, parent div + iki a child).
@@ -32,7 +36,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
         <span class="kanal__koz" aria-hidden="true"></span>
         <span class="kanal__etiket">en yavaş, en derin</span>
         <h3 class="kanal__ad"><em>Bize Yaz</em></h3>
-        <span class="kanal__orta">Form →</span>
+        <span class="kanal__orta">Form</span>
         <p class="kanal__not">
           İsim, email, birkaç satır — uzun uzun da yazabilirsin. Bir konu seç,
           derdini anlat; bir kız kardeş okur ve sana yazar.
@@ -52,8 +56,8 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
           Kişisel bir konu geldiğinde durur, bir kız kardeşe yönlendirir.
         </p>
         <p class="kanal__fisilti">
-          Çember kutsaldır — paylaşılan an asla yapay zekâya taşınmaz.
-          Asistan sadece dışarıdaki bilgi kapısı.
+          Derin olan hiçbir şey buradan geçmez — asistan yalnızca dışarıdaki
+          bilgi kapısı.
         </p>
       </a>
 
@@ -95,10 +99,13 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
    *
    * brief-kart-hiza.md — paragraf↔kartlar boşluğu büyüktü: uc-kapi prose
    * baseline padding-bottom space-9 (6rem) atmosfer.css'te 0'a indirildi
-   * (kaynak çözüm); Kanallar üst padding space-4 → space-2 (~0.5rem).
-   * Toplam ~0.5rem nefes — başlık+paragraf+kartlar tek ekranda. */
+   * (kaynak çözüm).
+   *
+   * brief-kart-rotus.md — önceki düzeltme (space-2) fazla kapattı; orta
+   * değere açıldı: Kanallar üst padding space-2 → space-6 (~2rem). Toplam
+   * (uc-kapi padding-bottom 0 + space-6) = ~2rem rahat nefes. */
   .kanallar {
-    padding: var(--space-2) var(--space-6) var(--space-7);
+    padding: var(--space-6) var(--space-6) var(--space-7);
     background: transparent;
     position: relative;
   }
@@ -236,19 +243,20 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     text-decoration: none;
   }
 
-  /* Yan kapı: ince köz çizgisiyle OCAK hesabından ayrılır */
+  /* Yan kapı: ince köz çizgisiyle OCAK hesabından ayrılır.
+   * brief-kart-rotus.md: altın tamamen kalktı — @advaita_hayatladans
+   * cream-soft (sessiz, paletin içinde). Yan kapı hover border-top altına
+   * dönmesin (köz'de kalır), tamamen sakin geçiş. */
   .kanal__yankapi {
     margin-top: var(--space-5);
     padding-top: var(--space-4);
     border-top: 1px solid rgba(196, 75, 47, 0.18);
-    transition: border-color var(--duration-base) var(--ease-out);
   }
-  .kanal__yankapi:hover { border-top-color: rgba(212, 168, 85, 0.5); }
   .kanal__yankapi .kanal__alt-hesap {
     display: block;
     font-family: var(--font-body);
     font-size: var(--text-base);
-    color: var(--gold);
+    color: var(--cream-soft);
     margin-bottom: var(--space-2);
   }
   .kanal__yankapi .kanal__not { margin: 0; }
@@ -273,7 +281,9 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     margin: var(--space-4) 0 0;
   }
 
-  /* WhatsApp dürüstlük rozeti — şeffaflık ilkesi (KARAR 57.3) görsele taşınır */
+  /* WhatsApp dürüstlük rozeti — şeffaflık ilkesi (KARAR 57.3) görsele taşınır.
+   * brief-kart-rotus.md: altın → nötr (smoke kenarlık + cream-soft metin). Rozet
+   * bir uyarı değil, dürüstlük notu — sakin, paletten kopmayan ton. */
   .kanal__rozet {
     position: absolute;
     top: var(--space-4);
@@ -282,8 +292,8 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
     font-size: 0.62rem;
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid rgba(212, 168, 85, 0.4);
+    color: var(--cream-soft);
+    border: 1px solid color-mix(in oklab, var(--smoke) 60%, transparent);
     border-radius: 999px;
     padding: 0.2rem 0.55rem;
   }
@@ -322,7 +332,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
   /* === Mobil === */
   @media (max-width: 480px) {
     .kanallar {
-      padding: var(--space-2) var(--space-5) var(--space-7);
+      padding: var(--space-6) var(--space-5) var(--space-7);
     }
     .kanal {
       padding: var(--space-5) var(--space-4) var(--space-6);
