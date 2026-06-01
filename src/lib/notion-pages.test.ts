@@ -57,6 +57,20 @@ describe('splitBodyByMarkers', () => {
     expect(out[1]).toEqual({ kind: 'etkinlik-takvimi' });
   });
 
+  it('yolculuk-eksen marker satırı kesilir, fragment kind döner (brief Yolculuk Ekseni v2)', () => {
+    // /yolculuk: prose intro → şerit konumu → kalan prose. al-ol-ver paterni birebir.
+    const body =
+      'Yolculuk neye benziyor?\n\n## section: yolculuk-eksen\n\nYolculuk kimin için.\n';
+    const out = splitBodyByMarkers(body);
+    expect(out).toHaveLength(3);
+    expect(out.map((f) => f.kind)).toEqual([
+      'markdown',
+      'yolculuk-eksen',
+      'markdown',
+    ]);
+    expect(out[1]).toEqual({ kind: 'yolculuk-eksen' });
+  });
+
   it('çoklu form-anchor index artırarak emit edilir (iletisim paterni)', () => {
     const body = '## section: form-anchor\n\nOrta.\n\n## section: form-anchor\n';
     const out = splitBodyByMarkers(body);

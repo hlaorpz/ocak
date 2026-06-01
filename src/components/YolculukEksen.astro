@@ -1,20 +1,20 @@
 ---
 // YolculukEksen — Beş Evre + Bir AÇILIŞ'ı kömürden aleve dikey ısı-eğrisi şeridi
-// olarak render eder (brief Yolculuk Ekseni; Seçenek B: plugin'e dokunulmaz).
-// İçerik sabit; Notion bind ikinci tur (11 aylık takvim oturunca). Isı renkleri
-// tokens.css'te (--isi-*, --kor-cizgi) — sabit hex burada bırakılmaz (KARAR 102).
-// DURUŞ = --ember bağlı; rampa onun etrafında soğuk→tepe→dinlenen kademe.
+// olarak render eder (brief Yolculuk Ekseni v1 + v2; Seçenek A: loader fragment-split,
+// /yolculuk Notion'da `## section: yolculuk-eksen` marker'ına yapışır).
+// v2 değişiklikleri: (a) EVRE N etiketi kaldırıldı — yukarıdan aşağı sıra evre
+// numarasını ima ediyor; (b) evre adı (AÇILIŞ vb.) büyütüldü, kahraman; (c) ara
+// dönem iç-işler tekrarı (5×) tek satır footer'a indi (1×).
+// Isı renkleri tokens.css'te (--isi-*, --kor-cizgi). DURUŞ = --ember.
 
 const evreler = [
-  { num: 1, ad: 'AÇILIŞ', tema: 'Kohortun kuruluşu, niyet, ilk çember.', renk: 'var(--isi-acilis)' },
-  { num: 2, ad: 'İNİŞ',   tema: 'Köklere, bedene, atalara.',              renk: 'var(--isi-inis)' },
-  { num: 3, ad: 'UYANIŞ', tema: 'Bastırılmış güce, ateşe, bedensel uyanışa.', renk: 'var(--isi-uyanis)' },
-  { num: 4, ad: 'DURUŞ',  tema: 'Sessizliğe, boşluğa, durmaya.',          renk: 'var(--isi-durus)' },
-  { num: 5, ad: 'GEÇİŞ',  tema: 'Eşikten geçişe, bırakmaya, yeniden doğuşa.', renk: 'var(--isi-gecis)' },
-  { num: 6, ad: 'DÖNÜŞ',  tema: 'Kendine, bütünlüğe, eve.',               renk: 'var(--isi-donus)' },
+  { ad: 'AÇILIŞ', tema: 'Kohortun kuruluşu, niyet, ilk çember.', renk: 'var(--isi-acilis)' },
+  { ad: 'İNİŞ',   tema: 'Köklere, bedene, atalara.',              renk: 'var(--isi-inis)' },
+  { ad: 'UYANIŞ', tema: 'Bastırılmış güce, ateşe, bedensel uyanışa.', renk: 'var(--isi-uyanis)' },
+  { ad: 'DURUŞ',  tema: 'Sessizliğe, boşluğa, durmaya.',          renk: 'var(--isi-durus)' },
+  { ad: 'GEÇİŞ',  tema: 'Eşikten geçişe, bırakmaya, yeniden doğuşa.', renk: 'var(--isi-gecis)' },
+  { ad: 'DÖNÜŞ',  tema: 'Kendine, bütünlüğe, eve.',               renk: 'var(--isi-donus)' },
 ];
-
-const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüeli · bireysel görüşme';
 ---
 <section class="yolculuk-eksen" aria-labelledby="yolculuk-eksen-baslik">
   <div class="yolculuk-eksen__inner">
@@ -29,39 +29,34 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
           <li class="evre" style={`--isi-aktif: ${evre.renk};`}>
             <span class="evre__serit" aria-hidden="true"></span>
             <div class="evre__icerik">
-              <h3 class="evre__baslik">
-                <span class="evre__numara">EVRE {evre.num}</span>
-                <span class="evre__ad">{evre.ad}</span>
-              </h3>
+              <h3 class="evre__ad">{evre.ad}</h3>
               <p class="evre__tema">{evre.tema}</p>
             </div>
           </li>
           {i < evreler.length - 1 && (
-            <li class="kor" title={`kor dönemi — ${korIcIsler}`}>
+            <li class="kor">
               <span class="kor__serit" aria-hidden="true"></span>
-              <div class="kor__icerik">
-                <span class="kor__etiket">kor · 2–3 ay</span>
-                <span class="kor__icisler">{korIcIsler}</span>
-              </div>
+              <span class="kor__etiket">kor · 2–3 ay</span>
             </li>
           )}
         </>
       ))}
     </ol>
+
+    <p class="yolculuk-eksen__icisler">
+      Her evre arası 2–3 ay: aylık çember, kız kardeş eşleşmesi, mevsim ritüeli, bireysel görüşme.
+    </p>
   </div>
 </section>
 
 <style>
   .yolculuk-eksen {
-    /* Üstte sayfa şeridi; altta PageContent prose'a doğal nefes. AlOlVer ritmiyle
-       paralel (padding-block cömert, padding-inline 0; container max-w-content). */
     padding: var(--space-9) 0 var(--space-8);
     max-width: var(--max-w-content);
     margin: 0 auto;
   }
 
   .yolculuk-eksen__inner {
-    /* Şerit sol kenarda; metin sola hizalı (liste karakteri). */
     text-align: left;
   }
 
@@ -83,7 +78,7 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     flex-direction: column;
   }
 
-  /* ===== EVRE SATIR ===== */
+  /* ===== EVRE SATIR (v2: ad kahraman, EVRE N yok) ===== */
   .evre {
     --isi-aktif: var(--ember);
     display: flex;
@@ -99,7 +94,7 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     border-radius: 3px;
     background: var(--isi-aktif);
     align-self: stretch;
-    /* Coal zeminde soğuk uç için ince ısı halesi — ayrışma kapsülü. */
+    /* Coal zeminde soğuk uç için ince ısı halesi — ayrışma kapsülü (KARAR 150). */
     box-shadow: 0 0 12px color-mix(in oklab, var(--isi-aktif) 35%, transparent);
   }
 
@@ -109,33 +104,19 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: var(--space-3) var(--space-5);
-  }
-
-  .evre__baslik {
-    margin: 0;
-    font-family: var(--font-body);
-    font-weight: 400;
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-3);
-    white-space: nowrap;
-  }
-
-  .evre__numara {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-    color: var(--smoke);
+    gap: var(--space-3) var(--space-6);
   }
 
   .evre__ad {
+    /* v2: kahraman — daha iri Cormorant italik, kendi ısı rengiyle. */
+    margin: 0;
     font-family: var(--font-display);
     font-style: italic;
-    font-size: var(--text-h3);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
     color: var(--isi-aktif);
     line-height: 1;
+    letter-spacing: var(--tracking-tight);
   }
 
   .evre__tema {
@@ -147,10 +128,10 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     font-weight: 300;
   }
 
-  /* ===== KOR ARA DÖNEM ===== */
+  /* ===== KOR ARA DÖNEM (v2: sadece "kor · 2–3 ay", iç-işler footer'a göçtü) ===== */
   .kor {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: var(--space-5);
     padding: var(--space-3) 0;
   }
@@ -159,22 +140,13 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     flex: 0 0 6px;
     width: 6px;
     min-width: 6px;
-    min-height: 36px;
-    /* Kesik kor şeridi — 6px açık / 6px boş tekrar, ince ısı çizgisi. */
+    min-height: 32px;
     background-image: repeating-linear-gradient(
       to bottom,
       var(--kor-cizgi) 0 6px,
       transparent 6px 12px
     );
     opacity: 0.85;
-  }
-
-  .kor__icerik {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-3) var(--space-4);
-    color: var(--smoke);
   }
 
   .kor__etiket {
@@ -184,43 +156,26 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
     color: color-mix(in oklab, var(--kor-cizgi) 80%, var(--cream) 20%);
   }
 
-  .kor__icisler {
-    font-family: var(--font-body);
+  /* ===== IÇ-İŞLER FOOTER — tek satır, 1× (v2: 5× tekrar yerine) ===== */
+  .yolculuk-eksen__icisler {
+    margin: var(--space-6) 0 0;
+    padding-left: calc(6px + var(--space-5));
+    font-family: var(--font-display);
+    font-style: italic;
     font-size: var(--text-sm);
     color: var(--smoke);
-    /* Desktop'ta gizli (title attr hover'da fallback); mobilde görünür metin. */
-    display: none;
+    line-height: var(--leading-snug);
+    max-width: 38rem;
   }
 
-  /* Desktop hover: kor şeridi üstüne gelince iç-işler hafifçe belirir. */
-  @media (hover: hover) and (min-width: 769px) {
-    .kor:hover .kor__icisler {
-      display: inline;
-      animation: kor-fade var(--duration-base) var(--ease-out);
-    }
-    .kor:hover .kor__serit {
-      opacity: 1;
-    }
-  }
-
-  @keyframes kor-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  /* ===== MOBİL — 768px ve altı (KARAR 187: horizontal overflow yok) ===== */
+  /* ===== MOBİL (KARAR 187 horizontal overflow=0) ===== */
   @media (max-width: 768px) {
     .yolculuk-eksen {
       padding: var(--space-8) 0 var(--space-7);
     }
 
-    .evre__baslik {
-      white-space: normal;
-    }
-
     .evre__icerik {
-      /* Tema cümlesi başlığın altına kayar (flex-wrap doğal yapar). */
-      gap: var(--space-2) var(--space-4);
+      gap: var(--space-2) var(--space-5);
     }
 
     .evre__tema {
@@ -228,21 +183,9 @@ const korIcIsler = 'aylık çember · kız kardeş eşleşmesi · mevsim ritüel
       flex: 1 0 100%;
     }
 
-    .kor__icerik {
-      flex-direction: column;
-      gap: var(--space-1);
-    }
-
-    .kor__icisler {
-      /* Mobilde tooltip güvenilmez — iç-işler her zaman görünür metin. */
-      display: inline;
+    .yolculuk-eksen__icisler {
       font-size: var(--text-xs);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .kor:hover .kor__icisler {
-      animation: none;
+      padding-left: calc(6px + var(--space-4));
     }
   }
 </style>

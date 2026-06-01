@@ -9,6 +9,7 @@
 //   - al-ol-ver       → <AlOlVer /> (sabit içerikli pillar grid, prop yok)
 //   - sonraki-bulusma → <SonrakiBulusma slug={slug} /> (slug'tan otomatik kategori/heading)
 //   - etkinlik-takvimi → <EtkinlikTakvimi /> (tüm gelecek etkinlikler, /takvim — KARAR 153)
+//   - yolculuk-eksen → <YolculukEksen /> (Beş Evre + Bir AÇILIŞ ısı şeridi, brief Yolculuk Ekseni v2)
 //
 // Sıra korunur: marker'lar Notion'daki konumlarında basılır.
 // Defansif: slug registry'de yoksa veya index karşılığı component'i yoksa null basar.
@@ -16,13 +17,15 @@ import { formAnchorRegistry, formAnchorProps } from '../lib/form-anchor-registry
 import AlOlVer from './AlOlVer.astro';
 import SonrakiBulusma from './SonrakiBulusma.astro';
 import EtkinlikTakvimi from './EtkinlikTakvimi.astro';
+import YolculukEksen from './YolculukEksen.astro';
 
 type Fragment =
   | { kind: 'markdown'; html: string }
   | { kind: 'form-anchor'; index: number; introHtml?: string }
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
-  | { kind: 'etkinlik-takvimi' };
+  | { kind: 'etkinlik-takvimi' }
+  | { kind: 'yolculuk-eksen' };
 
 interface Props {
   slug: string;
@@ -46,6 +49,9 @@ const propsList = formAnchorProps[slug] ?? [];
     }
     if (frag.kind === 'etkinlik-takvimi') {
       return <EtkinlikTakvimi />;
+    }
+    if (frag.kind === 'yolculuk-eksen') {
+      return <YolculukEksen />;
     }
     const Component = components[frag.index];
     if (!Component) {

@@ -117,6 +117,7 @@ const sayfalar = defineCollection({
     //   - al-ol-ver → AlOlVer component
     //   - sonraki-bulusma → SonrakiBulusma slug prop'lu (otomatik kategori/heading)
     //   - etkinlik-takvimi → EtkinlikTakvimi (tüm gelecek etkinlikler, /takvim — KARAR 153)
+    //   - yolculuk-eksen → YolculukEksen (Beş Evre + Bir AÇILIŞ ısı şeridi, brief Yolculuk Ekseni v2)
     fragments: z.array(
       z.union([
         z.object({ kind: z.literal('markdown'), html: z.string() }),
@@ -130,6 +131,7 @@ const sayfalar = defineCollection({
         z.object({ kind: z.literal('al-ol-ver') }),
         z.object({ kind: z.literal('sonraki-bulusma') }),
         z.object({ kind: z.literal('etkinlik-takvimi') }),
+        z.object({ kind: z.literal('yolculuk-eksen') }),
       ]),
     ),
   }),

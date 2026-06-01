@@ -607,6 +607,15 @@ function transformSection(
         ),
       ];
 
+    case 'yolculuk-eksen':
+      // Empty wrapper savunma fallback'i (al-ol-ver paralel, brief Yolculuk Ekseni v2).
+      // Asıl render fragment-split tarafında YolculukEksen component'iyle olur.
+      return [
+        html(
+          '<section data-section="yolculuk-eksen" class="ocak-yolculuk-eksen"></section>',
+        ),
+      ];
+
     case 'siradaki-kapi':
       return transformKapi(content, options);
 

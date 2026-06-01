@@ -57,18 +57,20 @@ export type BodyFragmentRaw =
   | { kind: 'form-anchor'; index: number; intro?: string }
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
-  | { kind: 'etkinlik-takvimi' };
+  | { kind: 'etkinlik-takvimi' }
+  | { kind: 'yolculuk-eksen' };
 
 export type BodyFragment =
   | { kind: 'markdown'; html: string }
   | { kind: 'form-anchor'; index: number; introHtml?: string }
   | { kind: 'al-ol-ver' }
   | { kind: 'sonraki-bulusma' }
-  | { kind: 'etkinlik-takvimi' };
+  | { kind: 'etkinlik-takvimi' }
+  | { kind: 'yolculuk-eksen' };
 
 /**
  * Body markdown'ını `## section: <name>` marker satırlarında parçalar.
- * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma, etkinlik-takvimi.
+ * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma, etkinlik-takvimi, yolculuk-eksen.
  * Marker satırları çıkarılır; her marker uygun kind ile fragment olarak emit edilir.
  * Diğer `## section: NAME` markerları (manifesto, esik-kadini, vb.) markdown
  * chunk'ında kalır → plugin remarkOcakSections tarafından prose section'a sarılır.
@@ -140,6 +142,11 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
     } else if (/^##\s+section:\s+etkinlik-takvimi\s*$/.test(line)) {
       flush();
       fragments.push({ kind: 'etkinlik-takvimi' });
+    } else if (/^##\s+section:\s+yolculuk-eksen\s*$/.test(line)) {
+      // Brief Yolculuk Ekseni v2: marker konum sinyali, içerik component'te sabit.
+      // al-ol-ver paterni birebir — loader keser, PageContent <YolculukEksen /> basar.
+      flush();
+      fragments.push({ kind: 'yolculuk-eksen' });
     } else {
       chunk.push(line);
     }
