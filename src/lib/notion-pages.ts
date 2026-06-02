@@ -59,7 +59,8 @@ export type BodyFragmentRaw =
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
-  | { kind: 'kanallar' };
+  | { kind: 'kanallar' }
+  | { kind: 'harita-anadolu' };
 
 export type BodyFragment =
   | { kind: 'markdown'; html: string }
@@ -68,7 +69,8 @@ export type BodyFragment =
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
-  | { kind: 'kanallar' };
+  | { kind: 'kanallar' }
+  | { kind: 'harita-anadolu' };
 
 /**
  * Body markdown'ını `## section: <name>` marker satırlarında parçalar.
@@ -155,6 +157,12 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
       // keser, PageContent <Kanallar /> basar. /iletisim: Bize Yaz ↔ Yanıt arası.
       flush();
       fragments.push({ kind: 'kanallar' });
+    } else if (/^##\s+section:\s+harita-anadolu\s*$/.test(line)) {
+      // Brief brief-anadolu-yolculuk.md: /anadolu sabit Türkiye haritası — altı
+      // evre noktası kronolojik sırada bağlı (AÇILIŞ→…→DÖNÜŞ). al-ol-ver/yolculuk-
+      // eksen paterni birebir — loader keser, PageContent <AnadoluHarita /> basar.
+      flush();
+      fragments.push({ kind: 'harita-anadolu' });
     } else {
       chunk.push(line);
     }

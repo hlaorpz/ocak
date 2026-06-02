@@ -79,6 +79,41 @@ export const ESIK_SECTIONS = new Set([
 ]);
 
 /**
+ * EVRE_SECTIONS — /anadolu Anadolu Yolculuğu altı evre kartı (brief-anadolu-yolculuk.md).
+ * Plugin bu set'teki section'ları `<article class="ocak-evre ocak-evre-NAME">` Varyant C
+ * dolu kart markup'ına çevirir (ESIK paterni KARAR 154 paralel — whitelist + parse +
+ * emit, ama accordion DEĞİL: hepsi açık, görünür, SEO için düz metin HTML'de).
+ *
+ * Sıra YOLCULUK kronolojisi (AÇILIŞ→İNİŞ→UYANIŞ→DURUŞ→GEÇİŞ→DÖNÜŞ) — coğrafi
+ * yakınlık değil. tokens.css --isi-* rampası bu sırayla eşli (DURUŞ tepe ısı = --ember).
+ *
+ * Whitelist neden regex değil: ESIK paterniyle aynı gerekçe — gelecekteki "evre-*"
+ * ön ekli prose section'ları (örn. bir başka sayfada "evre-rehber") yanlışlıkla
+ * kart wrap'ına düşmesin. Yeni evre eklenmesi felsefi karar; bu altılı kanonik.
+ */
+export const EVRE_SECTIONS = new Set([
+  'evre-acilis',
+  'evre-inis',
+  'evre-uyanis',
+  'evre-durus',
+  'evre-gecis',
+  'evre-donus',
+]);
+
+/**
+ * Evre adı → ısı token eşleşmesi (tokens.css `--isi-*`).
+ * Yolculuk-eksen ile akraba rampa (KARAR 198 ailesi). DURUŞ = --ember (tepe ısı).
+ */
+const EVRE_ISI_TOKEN: Record<string, string> = {
+  'evre-acilis': '--isi-acilis',
+  'evre-inis': '--isi-inis',
+  'evre-uyanis': '--isi-uyanis',
+  'evre-durus': '--isi-durus',
+  'evre-gecis': '--isi-gecis',
+  'evre-donus': '--isi-donus',
+};
+
+/**
  * OMIT_SECTIONS — plugin bu section'ları HİÇ emit ETMEZ.
  * Sayfa override'ında veya fragment-split registry'sinde component instance ile
  * render edilirler:
@@ -526,6 +561,200 @@ function transformIcSes(
  * - h2 bulunmazsa fallback: summary section-name'den türetilir + warn. Brief Pattern A
  *   varsayıyor (esik-dump teyit etti); B durumu defansif fallback olarak yaşıyor.
  */
+/**
+ * evreler-intro (brief-anadolu-yolculuk.md): "Altı Evre" başlığı + opsiyonel
+ * giriş cümlesi. Default case'den ayrı çünkü kart bloğunun açılış başlığı —
+ * kendine has class hierarchy gerekir (atmosfer.css ölçek + boşluk).
+ */
+function transformEvrelerIntro(content: RootContent[]): RootContent[] {
+  return [
+    html('<section data-section="evreler-intro" class="ocak-evreler-intro">'),
+    ...content,
+    html('</section>'),
+  ];
+}
+
+/**
+ * Minimal HTML attribute escape — Notion düz metin için pratikte gereksiz ama
+ * `&`/`"`/`<`/`>` sızarsa kart markup'ı bozulmasın diye savunma. ESIK summary'de
+ * yapılmıyor (KARAR 154); burada arketip/soru/meta inline metni kart içine "attr
+ * benzeri" pozisyonlarda akıyor, çakışma bedeli düşük.
+ */
+function escapeHtmlText(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * evre-* (brief-anadolu-yolculuk.md): Anadolu Yolculuğu altı evre kartı (Varyant C).
+ *
+ * Parse:
+ *   - İlk H3 "NAME — LOKASYON" → evre adı + lokasyon. " — " (em-dash etrafı space)
+ *     üzerinde split; bulunmazsa H3 metni adı, lokasyon boş (defansif).
+ *   - Lokasyon ayraç normalize: " + " → " · " (brief: Notion "·" yazar, plugin "+"
+ *     gördüyse defansif çevirir; tek-fail-noktası Notion-side temizlik).
+ *   - İlk paragraph → meta satırı ("tarih · süre · yer").
+ *   - Sonraki paragraph'lar → açıklama (description prose); description'a düşmeden
+ *     ÖNCE `Arketip:` / `Soru:` prefix'li paragraph + bullet item'ları ayıklanır.
+ *   - Arketip + Soru: bullet list (`- Arketip: X`, `- Soru: Y`) VEYA standalone
+ *     `Soru: X` paragraph (AÇILIŞ'ta arketip YOK).
+ *
+ * Output Varyant C dolu kart:
+ *   <article class="ocak-evre ocak-evre-acilis" id="evre-acilis" data-evre="acilis"
+ *            style="--isi-aktif: var(--isi-acilis);">
+ *     <span class="ocak-evre__serit"></span>
+ *     <div class="ocak-evre__icerik">
+ *       <h3 class="ocak-evre__baslik">
+ *         <span class="ocak-evre__ad">AÇILIŞ</span>
+ *         <span class="ocak-evre__dash"> — </span>
+ *         <span class="ocak-evre__lokasyon">Ege</span>
+ *       </h3>
+ *       <p class="ocak-evre__meta">…</p>
+ *       <div class="ocak-evre__aciklama">…</div>
+ *       <div class="ocak-evre__alt">
+ *         <span class="ocak-evre__arketip">Kök Kadın</span>
+ *         <span class="ocak-evre__ayrac">·</span>
+ *         <span class="ocak-evre__soru">…</span>
+ *       </div>
+ *     </div>
+ *   </article>
+ *
+ * AÇILIŞ'ta arketip yoksa alt şeritte sadece soru basılır (ayraç ve span da yok).
+ * H3 yoksa fallback: section-name'den evre adı türetilir + warn.
+ */
+function transformEvre(
+  content: RootContent[],
+  name: string,
+  options: OcakSectionsOptions,
+): RootContent[] {
+  const filename = options.filename ?? 'unknown';
+  const slug = name.replace(/^evre-/, '');
+  const isiToken = EVRE_ISI_TOKEN[name] ?? '--isi-acilis';
+
+  // H3 başlığı (depth=3)
+  let h3Index = -1;
+  let h3Text = '';
+  for (let i = 0; i < content.length; i++) {
+    const node = content[i];
+    if (node.type === 'heading' && node.depth === 3) {
+      h3Index = i;
+      h3Text = getText(node).trim();
+      break;
+    }
+  }
+
+  let evreAdi = slug.toUpperCase();
+  let lokasyon = '';
+  if (h3Text) {
+    const parts = h3Text.split(/\s+—\s+/);
+    if (parts.length >= 2) {
+      evreAdi = parts[0].trim();
+      lokasyon = parts.slice(1).join(' — ').trim();
+    } else {
+      evreAdi = h3Text;
+    }
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[remark-ocak-sections] evre (${filename}) ${name}: H3 bulunamadı, evre adı section-name'den türetildi.`,
+    );
+  }
+  // Lokasyon ayraç normalize: " + " → " · "
+  lokasyon = lokasyon.replace(/\s*\+\s*/g, ' · ');
+
+  // H3 sonrası içerik — meta, açıklama, arketip+soru ayıkla
+  const rest = h3Index === -1 ? content : content.slice(h3Index + 1);
+  let meta = '';
+  let metaConsumed = false;
+  let arketip = '';
+  let soru = '';
+  const descriptionNodes: RootContent[] = [];
+
+  for (const node of rest) {
+    if (node.type === 'list') {
+      const items = (node as { children?: RootContent[] }).children ?? [];
+      let consumedAny = false;
+      for (const item of items) {
+        const txt = getText(item).trim();
+        const arkM = txt.match(/^Arketip:\s*(.+)$/);
+        const soruM = txt.match(/^Soru:\s*(.+)$/);
+        if (arkM && !arketip) {
+          arketip = arkM[1].trim();
+          consumedAny = true;
+        } else if (soruM && !soru) {
+          soru = soruM[1].trim();
+          consumedAny = true;
+        }
+      }
+      // Tüm item'lar arketip/soru ise list'i description'a düşürme; aksi halde aynen geçir
+      if (!consumedAny) descriptionNodes.push(node);
+      continue;
+    }
+    if (node.type === 'paragraph') {
+      const txt = getText(node).trim();
+      const arkM = txt.match(/^Arketip:\s*(.+)$/);
+      const soruM = txt.match(/^Soru:\s*(.+)$/);
+      if (arkM && !arketip) {
+        arketip = arkM[1].trim();
+        continue;
+      }
+      if (soruM && !soru) {
+        soru = soruM[1].trim();
+        continue;
+      }
+      if (!metaConsumed) {
+        meta = txt;
+        metaConsumed = true;
+        continue;
+      }
+      descriptionNodes.push(node);
+      continue;
+    }
+    descriptionNodes.push(node);
+  }
+
+  if (!soru) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[remark-ocak-sections] evre (${filename}) ${name}: Soru bulunamadı — alt şerit boş kalacak.`,
+    );
+  }
+
+  const headingHtml = lokasyon
+    ? `<h3 class="ocak-evre__baslik"><span class="ocak-evre__ad">${escapeHtmlText(evreAdi)}</span><span class="ocak-evre__dash" aria-hidden="true"> — </span><span class="ocak-evre__lokasyon">${escapeHtmlText(lokasyon)}</span></h3>`
+    : `<h3 class="ocak-evre__baslik"><span class="ocak-evre__ad">${escapeHtmlText(evreAdi)}</span></h3>`;
+
+  const metaHtml = meta
+    ? `<p class="ocak-evre__meta">${escapeHtmlText(meta)}</p>`
+    : '';
+
+  let altHtml = '';
+  if (arketip && soru) {
+    altHtml = `<div class="ocak-evre__alt"><span class="ocak-evre__arketip">${escapeHtmlText(arketip)}</span><span class="ocak-evre__ayrac" aria-hidden="true">·</span><span class="ocak-evre__soru">${escapeHtmlText(soru)}</span></div>`;
+  } else if (soru) {
+    altHtml = `<div class="ocak-evre__alt ocak-evre__alt--soru-only"><span class="ocak-evre__soru">${escapeHtmlText(soru)}</span></div>`;
+  } else if (arketip) {
+    altHtml = `<div class="ocak-evre__alt ocak-evre__alt--arketip-only"><span class="ocak-evre__arketip">${escapeHtmlText(arketip)}</span></div>`;
+  }
+
+  return [
+    html(
+      `<article class="ocak-evre ocak-evre-${slug}" id="evre-${slug}" data-evre="${slug}" style="--isi-aktif: var(${isiToken});">`,
+    ),
+    html('<span class="ocak-evre__serit" aria-hidden="true"></span>'),
+    html('<div class="ocak-evre__icerik">'),
+    html(headingHtml),
+    ...(metaHtml ? [html(metaHtml)] : []),
+    html('<div class="ocak-evre__aciklama">'),
+    ...descriptionNodes,
+    html('</div>'),
+    ...(altHtml ? [html(altHtml)] : []),
+    html('</div></article>'),
+  ];
+}
+
 function transformEsik(
   content: RootContent[],
   name: string,
@@ -633,6 +862,14 @@ function transformSection(
         html('<section data-section="kanallar" class="ocak-kanallar"></section>'),
       ];
 
+    case 'harita-anadolu':
+      // Empty wrapper savunma fallback'i (kanallar/yolculuk-eksen paralel, brief
+      // brief-anadolu-yolculuk.md). Asıl render fragment-split tarafında
+      // AnadoluHarita component'iyle olur.
+      return [
+        html('<section data-section="harita-anadolu" class="ocak-harita-anadolu"></section>'),
+      ];
+
     case 'siradaki-kapi':
       return transformKapi(content, options);
 
@@ -651,7 +888,18 @@ function transformSection(
     case 'ic-ses':
       return transformIcSes(content, options);
 
+    case 'evreler-intro':
+      // /anadolu: "Altı Evre" başlığı + opsiyonel giriş, kart bloğunun
+      // açılış başlığı. Default prose'tan ayrı çünkü kendine has class.
+      return transformEvrelerIntro(content);
+
     default: {
+      // /anadolu evre kartları: 6-isimlik EVRE_SECTIONS whitelist (set match).
+      // Default'tan önce check; brief brief-anadolu-yolculuk.md Varyant C.
+      if (EVRE_SECTIONS.has(name)) {
+        return transformEvre(content, name, options);
+      }
+
       // /sen-neredesin eşik accordion: 10-isimlik ESIK_SECTIONS whitelist (set match).
       // `esik-kadini` whitelist dışında → bu dalı atlar, baseline prose'a düşer (mevcut
       // davranış korunur — /, /hikaye, /site-rehber sayfaları etkilenmez).

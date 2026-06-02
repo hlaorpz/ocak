@@ -1,0 +1,153 @@
+---
+// AnadoluHarita — /anadolu sayfasındaki sabit Türkiye haritası (brief-anadolu-yolculuk.md).
+//
+// Yapı:
+//   - Türkiye sınırı: Natural Earth → Douglas-Peucker → Mercator viewBox 1000×420
+//     (anadolu-harita-data.ts; üretim scripts/build-anadolu-harita.mjs). 3 ring:
+//     Anadolu ana kütlesi (~428 pt), Trakya/Avrupa yakası (~61 pt), kuzey Ege adacığı.
+//   - 6 evre noktası: gerçek lat/lng → aynı projeksiyon ile viewBox koordinatına
+//     çevrildi (build-time, harita-data'ya gömülü değil; sabit nokta listesi burada).
+//   - Yolculuk hattı: noktaları kronolojik sırada birleştiren dashed ember çizgi
+//     (AÇILIŞ→İNİŞ→UYANIŞ→DURUŞ→GEÇİŞ→DÖNÜŞ). Brief default: hat KALIR.
+//   - Etiketler: evre adı (serif italik, ısı renginde) + yer adı (küçük, smoke).
+//     DURUŞ üstte, DÖNÜŞ sağda (Tuz Gölü ↔ Kapadokya çakışmasını eler).
+//
+// Etkileşim: nokta tıklanınca kart id="evre-NAME"'e scroll + vurgu (client JS).
+// SEO: SVG <title>/<desc> + her noktada <title> tooltip + etiketlerde gerçek metin.
+//
+// Stil: atmosfer.css `.anadolu-harita` ailesi (sınır color = --ash, noktalar/hat ısı,
+// etiket --cream / --smoke). prefers-reduced-motion respect.
+import { TURKEY_VIEWBOX, TURKEY_PATHS } from './anadolu-harita-data';
+
+// Evre noktaları — gerçek lat/lng (brief), build-anadolu-harita.mjs projeksiyonu
+// ile birebir aynı dönüşümden geçti. Konum bu satırlarda sabit; harita-data.ts
+// regenerate edilirse buradaki x/y'ler de güncellenmeli (manuel sync).
+type Evre = {
+  slug: string;        // 'acilis' (kart id'siyle eşli: evre-acilis)
+  ad: string;          // 'AÇILIŞ' — etiket
+  yer: string;         // 'Ege (Urla)' — alt etiket
+  x: number; y: number;
+  isiToken: string;    // tokens.css --isi-*
+  // Etiket konum: nokta merkezinden ofset (dx, dy), text-anchor
+  labelDx: number; labelDy: number; labelAnchor: 'start' | 'middle' | 'end';
+};
+
+const evreler: Evre[] = [
+  { slug: 'acilis', ad: 'AÇILIŞ', yer: 'Ege',
+    x: 64.0, y: 258.2, isiToken: '--isi-acilis',
+    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+  { slug: 'inis', ad: 'İNİŞ', yer: 'Göbeklitepe · Harran',
+    x: 681.2, y: 322.0, isiToken: '--isi-inis',
+    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+  { slug: 'uyanis', ad: 'UYANIŞ', yer: 'Aphrodisias · Pamukkale',
+    x: 183.8, y: 281.5, isiToken: '--isi-uyanis',
+    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+  // DURUŞ: Tuz Gölü → etiket ÜSTTE (DÖNÜŞ ve Kapadokya yakın, çakışma elemi).
+  { slug: 'durus', ad: 'DURUŞ', yer: 'Tuz Gölü',
+    x: 399.5, y: 234.7, isiToken: '--isi-durus',
+    labelDx: 0, labelDy: -14, labelAnchor: 'middle' },
+  { slug: 'gecis', ad: 'GEÇİŞ', yer: 'Yanartaş · Myra',
+    x: 252.3, y: 367.3, isiToken: '--isi-gecis',
+    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+  // DÖNÜŞ: Kapadokya → etiket SAĞDA (DURUŞ üstte olduğu için aşağı serbest ama
+  // brief: text-anchor:start sağa kaydır → daha temiz blok).
+  { slug: 'donus', ad: 'DÖNÜŞ', yer: 'Konya · Kapadokya',
+    x: 473.6, y: 239.4, isiToken: '--isi-donus',
+    labelDx: 12, labelDy: 5, labelAnchor: 'start' },
+];
+
+// Yolculuk hattı — kronolojik sırada noktaları bağlayan kesik çizgi.
+const hatPath = evreler.map((e, i) => `${i === 0 ? 'M' : 'L'}${e.x},${e.y}`).join(' ');
+---
+<section class="anadolu-harita" aria-labelledby="anadolu-harita-baslik">
+  <h2 id="anadolu-harita-baslik" class="anadolu-harita__baslik">Yolculuğun Haritası</h2>
+  <p class="anadolu-harita__altmetin">Altı evre, kronolojik sırada — noktaya dokun, evre kartına in.</p>
+
+  <div class="anadolu-harita__cerceve">
+    <svg
+      class="anadolu-harita__svg"
+      viewBox={TURKEY_VIEWBOX}
+      role="img"
+      aria-describedby="anadolu-harita-desc"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <title>Anadolu Yolculuğu — altı evrenin Türkiye haritasında konumu</title>
+      <desc id="anadolu-harita-desc">
+        Türkiye sınırı üzerinde altı evre noktası kronolojik sırada bağlanmış:
+        AÇILIŞ Ege (Urla), İNİŞ Göbeklitepe ve Harran (Şanlıurfa), UYANIŞ Aphrodisias
+        ve Pamukkale (Denizli), DURUŞ Tuz Gölü (Aksaray), GEÇİŞ Yanartaş ve Myra (Antalya),
+        DÖNÜŞ Konya ve Kapadokya (İç Anadolu).
+      </desc>
+
+      <g class="anadolu-harita__sinir" aria-hidden="true">
+        {TURKEY_PATHS.map((d) => <path d={d} />)}
+      </g>
+
+      {/* Yolculuk hattı — kronolojik kesik çizgi (brief default: KALIR) */}
+      <path class="anadolu-harita__hat" d={hatPath} aria-hidden="true" />
+
+      <g class="anadolu-harita__noktalar">
+        {evreler.map((e) => (
+          <g
+            class="anadolu-harita__nokta"
+            data-evre={e.slug}
+            style={`--isi-aktif: var(${e.isiToken});`}
+            transform={`translate(${e.x}, ${e.y})`}
+          >
+            <circle class="anadolu-harita__nokta-halka" r="14" aria-hidden="true" />
+            <circle class="anadolu-harita__nokta-dot" r="6" />
+            <title>{e.ad} — {e.yer}</title>
+            <g
+              class="anadolu-harita__etiket"
+              transform={`translate(${e.labelDx}, ${e.labelDy})`}
+              text-anchor={e.labelAnchor}
+            >
+              <text class="anadolu-harita__etiket-ad" y="0">{e.ad}</text>
+              <text class="anadolu-harita__etiket-yer" y="14">{e.yer}</text>
+            </g>
+          </g>
+        ))}
+      </g>
+    </svg>
+  </div>
+</section>
+
+<script>
+  // Harita ↔ kart bağı (brief-anadolu-yolculuk.md): nokta tıklanınca ilgili evre
+  // kartına smooth scroll + geçici vurgu (border ısı + box-shadow). ESIK paterni
+  // sade JS — Astro client island değil, basit DOMContentLoaded.
+  const noktalar = document.querySelectorAll<SVGGElement>('.anadolu-harita__nokta');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  noktalar.forEach((nokta) => {
+    nokta.style.cursor = 'pointer';
+    nokta.setAttribute('role', 'button');
+    nokta.setAttribute('tabindex', '0');
+    const slug = nokta.dataset.evre;
+    const label = nokta.querySelector('title')?.textContent ?? slug ?? '';
+    nokta.setAttribute('aria-label', `${label} kartına git`);
+
+    const activate = () => {
+      if (!slug) return;
+      const kart = document.getElementById(`evre-${slug}`);
+      if (!kart) return;
+      kart.scrollIntoView({
+        behavior: reducedMotion ? 'auto' : 'smooth',
+        block: 'center',
+      });
+      // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
+      kart.classList.remove('ocak-evre--vurgu');
+      // reflow tetikle ki re-add animasyonu sıfırdan başlasın
+      void (kart as HTMLElement).offsetWidth;
+      kart.classList.add('ocak-evre--vurgu');
+    };
+
+    nokta.addEventListener('click', activate);
+    nokta.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate();
+      }
+    });
+  });
+</script>

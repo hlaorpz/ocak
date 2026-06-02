@@ -63,3 +63,43 @@ exports[`remark-ocak-sections > 26. esik accordion — whitelist 10 isim details
 <p>Sen neredesin?</p>
 </section>"
 `;
+
+exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C dolu kart, ısı token + arketip/soru çifti 1`] = `
+"<section data-section="evreler-intro" class="ocak-evreler-intro">
+<h2>Altı Evre</h2>
+</section>
+<article class="ocak-evre ocak-evre-acilis" id="evre-acilis" data-evre="acilis" style="--isi-aktif: var(--isi-acilis);">
+<span class="ocak-evre__serit" aria-hidden="true"></span>
+<div class="ocak-evre__icerik">
+<h3 class="ocak-evre__baslik"><span class="ocak-evre__ad">AÇILIŞ</span><span class="ocak-evre__dash" aria-hidden="true"> — </span><span class="ocak-evre__lokasyon">Ege</span></h3>
+<p class="ocak-evre__meta">Eylül 2026 · 3 gece 4 gün · Urla / Alaçatı</p>
+<div class="ocak-evre__aciklama">
+<p>Kohortun kuruluşu. Birbirimizi tanıyor, niyetlerimizi koyuyor, bir yıllık ortak çemberin temelini atıyoruz.</p>
+</div>
+<div class="ocak-evre__alt ocak-evre__alt--soru-only"><span class="ocak-evre__soru">Bu yıl boyunca neyi taşıyacağım?</span></div>
+</div></article>
+<article class="ocak-evre ocak-evre-inis" id="evre-inis" data-evre="inis" style="--isi-aktif: var(--isi-inis);">
+<span class="ocak-evre__serit" aria-hidden="true"></span>
+<div class="ocak-evre__icerik">
+<h3 class="ocak-evre__baslik"><span class="ocak-evre__ad">İNİŞ</span><span class="ocak-evre__dash" aria-hidden="true"> — </span><span class="ocak-evre__lokasyon">Göbeklitepe · Harran</span></h3>
+<p class="ocak-evre__meta">Kasım 2026 · 5 gece 6 gün · Şanlıurfa</p>
+<div class="ocak-evre__aciklama">
+<p>İlk eşik: aşağıya, köklere. On iki bin yıllık Göbeklitepe'de durup Harran'ın kadim bilgeliğinde toprağa diz çöküyoruz.</p>
+</div>
+<div class="ocak-evre__alt"><span class="ocak-evre__arketip">Kök Kadın</span><span class="ocak-evre__ayrac" aria-hidden="true">·</span><span class="ocak-evre__soru">Nereden geliyorum? Hangi soydan?</span></div>
+</div></article>
+<article class="ocak-evre ocak-evre-durus" id="evre-durus" data-evre="durus" style="--isi-aktif: var(--isi-durus);">
+<span class="ocak-evre__serit" aria-hidden="true"></span>
+<div class="ocak-evre__icerik">
+<h3 class="ocak-evre__baslik"><span class="ocak-evre__ad">DURUŞ</span><span class="ocak-evre__dash" aria-hidden="true"> — </span><span class="ocak-evre__lokasyon">Tuz Gölü</span></h3>
+<p class="ocak-evre__meta">Nisan 2027 · 5 gece 6 gün · Aksaray</p>
+<div class="ocak-evre__aciklama">
+<p>Türkiye'nin en geniş sessizliği.</p>
+</div>
+<div class="ocak-evre__alt"><span class="ocak-evre__arketip">Sessiz Kadın</span><span class="ocak-evre__ayrac" aria-hidden="true">·</span><span class="ocak-evre__soru">Boşluğa girebilir miyim?</span></div>
+</div></article>
+<section data-section="son-soz" class="ocak-son-soz">
+<h2>Son Söz</h2>
+<p>Yolculuk başlıyor.</p>
+</section>"
+`;

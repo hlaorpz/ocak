@@ -119,6 +119,7 @@ const sayfalar = defineCollection({
     //   - etkinlik-takvimi → EtkinlikTakvimi (tüm gelecek etkinlikler, /takvim — KARAR 153)
     //   - yolculuk-eksen → YolculukEksen (Beş Evre + Bir AÇILIŞ ısı şeridi, brief Yolculuk Ekseni v2)
     //   - kanallar → Kanallar (üç kart vitrini, brief brief-kanallar-yerlesim-zemin.md)
+    //   - harita-anadolu → AnadoluHarita (sabit Türkiye SVG + 6 evre noktası, brief brief-anadolu-yolculuk.md)
     fragments: z.array(
       z.union([
         z.object({ kind: z.literal('markdown'), html: z.string() }),
@@ -134,6 +135,7 @@ const sayfalar = defineCollection({
         z.object({ kind: z.literal('etkinlik-takvimi') }),
         z.object({ kind: z.literal('yolculuk-eksen') }),
         z.object({ kind: z.literal('kanallar') }),
+        z.object({ kind: z.literal('harita-anadolu') }),
       ]),
     ),
   }),

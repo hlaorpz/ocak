@@ -465,6 +465,93 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toMatch(/<details[^>]*data-section="esik-kadini"/);
   });
 
+  it('34. evre — EVRE_SECTIONS whitelist Varyant C dolu kart, ısı token + arketip/soru çifti', () => {
+    const html = render('fixture-22-evre-kartlari.md');
+    // 3 evre kartı article olarak basılır
+    expect(html.match(/<article class="ocak-evre ocak-evre-/g)?.length).toBe(3);
+    // Her kartın id'si + data-evre + ısı token style (cross-evre rampası)
+    expect(html).toContain('id="evre-acilis"');
+    expect(html).toContain('data-evre="acilis"');
+    expect(html).toContain('--isi-aktif: var(--isi-acilis)');
+    expect(html).toContain('id="evre-inis"');
+    expect(html).toContain('--isi-aktif: var(--isi-inis)');
+    expect(html).toContain('id="evre-durus"');
+    expect(html).toContain('--isi-aktif: var(--isi-durus)');
+    // Başlık: ad + dash + lokasyon ayrımı (H3 parse)
+    expect(html).toContain('<span class="ocak-evre__ad">AÇILIŞ</span>');
+    expect(html).toContain('<span class="ocak-evre__lokasyon">Ege</span>');
+    // Lokasyon ayraç normalize: " + " → " · " (Notion defansif)
+    expect(html).toContain('<span class="ocak-evre__lokasyon">Göbeklitepe · Harran</span>');
+    expect(html).not.toContain('Göbeklitepe + Harran');
+    // Meta paragraph
+    expect(html).toContain('<p class="ocak-evre__meta">Eylül 2026 · 3 gece 4 gün · Urla / Alaçatı</p>');
+    // Açıklama prose içeride
+    expect(html).toContain('Kohortun kuruluşu.');
+    expect(html).toContain('İlk eşik: aşağıya');
+    // AÇILIŞ: arketip YOK, sadece soru alt şeritte
+    const acilisCard = html.match(/<article[^>]*id="evre-acilis"[\s\S]*?<\/article>/)?.[0] ?? '';
+    expect(acilisCard).toContain('ocak-evre__alt--soru-only');
+    expect(acilisCard).toContain('Bu yıl boyunca neyi taşıyacağım?');
+    expect(acilisCard).not.toContain('ocak-evre__arketip');
+    // İNİŞ: arketip + soru çifti, ayraç dahil
+    const inisCard = html.match(/<article[^>]*id="evre-inis"[\s\S]*?<\/article>/)?.[0] ?? '';
+    expect(inisCard).toContain('<span class="ocak-evre__arketip">Kök Kadın</span>');
+    expect(inisCard).toContain('<span class="ocak-evre__ayrac" aria-hidden="true">·</span>');
+    expect(inisCard).toContain('<span class="ocak-evre__soru">Nereden geliyorum? Hangi soydan?</span>');
+    // Arketip/Soru bullet list açıklamaya sızmamalı
+    expect(inisCard).not.toMatch(/<li>Arketip:/);
+    expect(inisCard).not.toMatch(/<li>Soru:/);
+    // evreler-intro "Altı Evre" başlığı korunur
+    expect(html).toContain('<section data-section="evreler-intro" class="ocak-evreler-intro">');
+    expect(html).toContain('<h2>Altı Evre</h2>');
+    // Kanonik dışı son-soz baseline prose'da kalır (regression check)
+    expect(html).toContain('<section data-section="son-soz" class="ocak-son-soz">');
+    expect(html).toContain('<h2>Son Söz</h2>');
+    expect(html).toMatchSnapshot();
+  });
+
+  it('35. evre — Soru yoksa warn + alt şerit boş', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: evre-acilis\n\n### AÇILIŞ — Ege\n\nMeta paragraf.\n\nAçıklama.',
+      { filename: 'no-soru.md' },
+    );
+    expect(html).toContain('id="evre-acilis"');
+    // Alt şerit hiç emit edilmez
+    expect(html).not.toContain('ocak-evre__alt');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls.some((c) => String(c[0]).includes('Soru bulunamadı'))).toBe(true);
+    expect(warn.mock.calls.some((c) => String(c[0]).includes('no-soru.md'))).toBe(true);
+    warn.mockRestore();
+  });
+
+  it('36. evre — H3 yoksa fallback ad section-name türetilir + warn', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: evre-uyanis\n\nMeta paragraf.\n\nSoru: Test soru?',
+      { filename: 'no-h3.md' },
+    );
+    expect(html).toContain('id="evre-uyanis"');
+    // Fallback: ad = "UYANIS" (slug büyük harf)
+    expect(html).toContain('<span class="ocak-evre__ad">UYANIS</span>');
+    // Lokasyon span emit edilmez (h3 yok → lokasyon boş)
+    expect(html).not.toContain('ocak-evre__lokasyon');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls.some((c) => String(c[0]).includes('H3 bulunamadı'))).toBe(true);
+    warn.mockRestore();
+  });
+
+  it('37. harita-anadolu marker — empty wrapper savunma fallback (loader bypass durumu)', () => {
+    // KARAR 127 paterni: marker normalde loader splitBodyByMarkers tarafından kesilir
+    // ve PageContent <AnadoluHarita /> basar. Plugin marker'ı görmez. Bu test plugin
+    // savunma fallback'ini doğruluyor (marker bir şekilde loader'dan kaçarsa
+    // empty wrapper emit edilir, CSS suppress eder).
+    const html = process('## section: harita-anadolu\n\n## section: hero\n\n# Başlık');
+    expect(html).toContain('data-section="harita-anadolu"');
+    expect(html).toContain('class="ocak-harita-anadolu"');
+    expect(html).toContain('data-section="hero"');
+  });
+
   it('29. esik h2 fallback — h2 yoksa warn + summary section-name', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const html = process('## section: esik-uyku\n\nDoğrudan paragraf, h2 yok.', {

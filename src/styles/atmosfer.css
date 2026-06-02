@@ -1420,3 +1420,332 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
     transition: none;
   }
 }
+
+/* ===== ANADOLU YOLCULUĞU — HARİTA + EVRE KARTLAR (brief-anadolu-yolculuk.md) =====
+ * /anadolu sayfası iki katmanlı: üstte sabit Türkiye haritası (AnadoluHarita.astro,
+ * fragment-split marker `harita-anadolu`), altta altı evre kartı (transformEvre,
+ * EVRE_SECTIONS whitelist, Varyant C). Renkler tokens.css `--isi-*` rampasından
+ * (yolculuk-eksen ile akraba, KARAR 198 ailesi). DURUŞ = --ember tepe ısı.
+ * --------------------------------------------------------------------------- */
+
+/* ---- evreler-intro: "Altı Evre" başlığı (kart bloğunun açılışı) ---- */
+.ocak-evreler-intro {
+  max-width: var(--max-w-prose);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-6) var(--space-3);
+  text-align: left;
+}
+
+.ocak-evreler-intro h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-h2);
+  color: var(--cream);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ocak-evreler-intro p {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-snug);
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+/* ---- ocak-evre: dolu kart (Varyant C) ---- */
+.ocak-evre {
+  --isi-aktif: var(--ember);
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-5);
+  max-width: var(--max-w-prose);
+  margin: var(--space-5) auto;
+  padding: var(--space-5) var(--space-6);
+  background: var(--ash);
+  border: 0.5px solid var(--ash-warm);
+  border-radius: var(--radius-lg);
+  position: relative;
+  scroll-margin-top: calc(var(--nav-height) + var(--space-5));
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.ocak-evre__serit {
+  flex: 0 0 5px;
+  width: 5px;
+  min-width: 5px;
+  border-radius: 3px;
+  background: var(--isi-aktif);
+  align-self: stretch;
+  box-shadow: 0 0 10px color-mix(in oklab, var(--isi-aktif) 30%, transparent);
+}
+
+.ocak-evre__icerik {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ocak-evre__baslik {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+}
+
+.ocak-evre__ad {
+  color: var(--isi-aktif);
+}
+
+.ocak-evre__dash {
+  color: var(--smoke);
+  margin: 0 0.25em;
+}
+
+.ocak-evre__lokasyon {
+  color: var(--cream);
+}
+
+.ocak-evre__meta {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--smoke);
+  letter-spacing: var(--tracking-wide);
+  text-transform: none;
+}
+
+.ocak-evre__aciklama {
+  margin: 0;
+}
+
+.ocak-evre__aciklama p {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+.ocak-evre__aciklama p:last-child {
+  margin-bottom: 0;
+}
+
+/* Alt şerit — arketip + soru çifti, üst border'la ayrılmış */
+.ocak-evre__alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 0.5px solid var(--ash-warm);
+}
+
+.ocak-evre__arketip {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.0625rem; /* ~17px */
+  color: var(--isi-aktif);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ocak-evre__ayrac {
+  color: var(--smoke);
+  font-size: 0.875rem;
+}
+
+.ocak-evre__soru {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.875rem; /* ~14px */
+  line-height: 1.4;
+  color: var(--cream-soft);
+}
+
+/* Vurgu animasyonu — haritadan tıklandığında 1.6s yumuşak ısı pulsasyonu */
+.ocak-evre--vurgu {
+  animation: ocak-evre-vurgu 1.6s var(--ease-out);
+}
+
+@keyframes ocak-evre-vurgu {
+  0%   { border-color: var(--ash-warm); box-shadow: none; }
+  20%  { border-color: var(--isi-aktif);
+         box-shadow: 0 0 0 2px color-mix(in oklab, var(--isi-aktif) 40%, transparent),
+                     0 0 30px color-mix(in oklab, var(--isi-aktif) 25%, transparent); }
+  100% { border-color: var(--ash-warm); box-shadow: none; }
+}
+
+/* ---- AnadoluHarita: sabit Türkiye SVG ---- */
+.anadolu-harita {
+  max-width: var(--max-w-content);
+  margin: var(--space-6) auto 0;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  text-align: center;
+}
+
+.anadolu-harita__baslik {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-h3);
+  color: var(--cream);
+  letter-spacing: var(--tracking-tight);
+}
+
+.anadolu-harita__altmetin {
+  margin: var(--space-2) 0 var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--smoke);
+  font-style: italic;
+}
+
+.anadolu-harita__cerceve {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.anadolu-harita__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Türkiye sınırı — ash dolgusu (coal'dan az ayrışan duman), ember-soft kenar */
+.anadolu-harita__sinir path {
+  fill: color-mix(in oklab, var(--ash) 80%, var(--coal) 20%);
+  stroke: color-mix(in oklab, var(--ember) 35%, transparent);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+/* Yolculuk hattı — kronolojik kesik çizgi, ember, yumuşak köşeli */
+.anadolu-harita__hat {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.5;
+}
+
+/* Nokta — ısı renginde dolu daire, coal halka stroke */
+.anadolu-harita__nokta {
+  --isi-aktif: var(--ember);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.anadolu-harita__nokta:hover,
+.anadolu-harita__nokta:focus-visible {
+  transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.15);
+  outline: none;
+}
+
+.anadolu-harita__nokta-halka {
+  fill: color-mix(in oklab, var(--isi-aktif) 20%, transparent);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.anadolu-harita__nokta:hover .anadolu-harita__nokta-halka,
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-halka {
+  opacity: 1;
+}
+
+.anadolu-harita__nokta-dot {
+  fill: var(--isi-aktif);
+  stroke: var(--coal);
+  stroke-width: 1.5;
+}
+
+.anadolu-harita__etiket {
+  pointer-events: none;
+}
+
+.anadolu-harita__etiket-ad {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  fill: var(--isi-aktif);
+  letter-spacing: -0.01em;
+}
+
+.anadolu-harita__etiket-yer {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 11px;
+  fill: var(--cream-soft);
+}
+
+/* Empty wrapper savunma fallback'inin görsel suppress'i (plugin marker bir
+ * şekilde loader'dan kaçarsa) — kanallar/al-ol-ver/yolculuk-eksen paralel. */
+.ocak-harita-anadolu:empty {
+  display: none;
+}
+
+/* ---- Mobil (KARAR 187 horizontal overflow=0) ---- */
+@media (max-width: 768px) {
+  .ocak-evreler-intro {
+    padding: var(--space-6) var(--space-5) var(--space-2);
+  }
+
+  .ocak-evre {
+    max-width: 100%;
+    margin: var(--space-4) var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-4);
+  }
+
+  .ocak-evre__baslik {
+    font-size: 1.4rem;
+  }
+
+  .ocak-evre__alt {
+    gap: var(--space-2);
+  }
+
+  .ocak-evre__arketip {
+    flex: 1 0 100%;
+  }
+
+  .ocak-evre__ayrac {
+    display: none;
+  }
+
+  .anadolu-harita {
+    padding: var(--space-5) var(--space-3) var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .anadolu-harita__etiket-ad {
+    font-size: 14px;
+  }
+
+  .anadolu-harita__etiket-yer {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocak-evre,
+  .anadolu-harita__nokta,
+  .anadolu-harita__nokta-halka {
+    transition: none;
+  }
+  .ocak-evre--vurgu {
+    animation: none;
+    border-color: var(--isi-aktif);
+  }
+}

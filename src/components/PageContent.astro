@@ -20,6 +20,7 @@ import SonrakiBulusma from './SonrakiBulusma.astro';
 import EtkinlikTakvimi from './EtkinlikTakvimi.astro';
 import YolculukEksen from './YolculukEksen.astro';
 import Kanallar from './Kanallar.astro';
+import AnadoluHarita from './AnadoluHarita.astro';
 
 type Fragment =
   | { kind: 'markdown'; html: string }
@@ -28,7 +29,8 @@ type Fragment =
   | { kind: 'sonraki-bulusma' }
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
-  | { kind: 'kanallar' };
+  | { kind: 'kanallar' }
+  | { kind: 'harita-anadolu' };
 
 interface Props {
   slug: string;
@@ -58,6 +60,9 @@ const propsList = formAnchorProps[slug] ?? [];
     }
     if (frag.kind === 'kanallar') {
       return <Kanallar />;
+    }
+    if (frag.kind === 'harita-anadolu') {
+      return <AnadoluHarita />;
     }
     const Component = components[frag.index];
     if (!Component) {
