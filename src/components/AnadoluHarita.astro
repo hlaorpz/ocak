@@ -133,7 +133,10 @@ const hatPath = evreler.map((e, i) => `${i === 0 ? 'M' : 'L'}${e.x},${e.y}`).joi
       if (!kart) return;
       kart.scrollIntoView({
         behavior: reducedMotion ? 'auto' : 'smooth',
-        block: 'center',
+        // brief v2 Bug 2: nav'ın HEMEN altına hizalansın (önce 'center' idi,
+        // kartı ekran ortasına itiyordu). 'start' + CSS scroll-margin-top
+        // var(--nav-height) ile kart nav'ın arkasına kaymaz.
+        block: 'start',
       });
       // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
       kart.classList.remove('ocak-evre--vurgu');

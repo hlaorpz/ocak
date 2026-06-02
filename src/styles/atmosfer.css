@@ -1467,28 +1467,53 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   border: 0.5px solid var(--ash-warm);
   border-radius: var(--radius-lg);
   position: relative;
-  scroll-margin-top: calc(var(--nav-height) + var(--space-5));
+  /* brief v2 Bug 2: nav'ın HEMEN altına hizalan. Önceki calc(+ space-5)
+   * extra boşluk üretiyordu; brief sade --nav-height token'ı istiyor. */
+  scroll-margin-top: var(--nav-height);
   transition:
     border-color var(--duration-base) var(--ease-out),
-    box-shadow var(--duration-base) var(--ease-out);
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
 }
 
+/* brief v2 R1: hover yükselme (AlOlVer dili — translateY -2px + duration-base
+ * ease-out). Sol şerit ısı renginde zaten parlayan dil — hover'da kartın hafif
+ * kalkması + ısı şeridi etrafında subtle ember halo bunun devamı. */
+.ocak-evre:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--isi-aktif) 25%, var(--ash-warm) 75%);
+  box-shadow: 0 4px 16px color-mix(in oklab, var(--isi-aktif) 8%, transparent);
+}
+
+/* brief v2 R2: sol şerit derinlik — düz renk yerine üstten alta hafif açıktan
+ * koyuya gradient. --isi-aktif token'ından türetilmiş (sabit hex yok), tüm
+ * evrelere otomatik uygulanır. Çok hafif: %15 cream / %15 coal mix uçlar —
+ * şerit hâlâ "ısı çizgisi" gibi okunur, neon olmaz. Glow zaten box-shadow ile. */
 .ocak-evre__serit {
   flex: 0 0 5px;
   width: 5px;
   min-width: 5px;
   border-radius: 3px;
-  background: var(--isi-aktif);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--isi-aktif) 85%, var(--cream) 15%) 0%,
+    var(--isi-aktif) 60%,
+    color-mix(in oklab, var(--isi-aktif) 85%, var(--coal) 15%) 100%
+  );
   align-self: stretch;
   box-shadow: 0 0 10px color-mix(in oklab, var(--isi-aktif) 30%, transparent);
 }
 
+/* brief v2 R3: kart içi ritim — meta↔açıklama, açıklama↔alt arası nefes
+ * artırıldı. gap space-3 (12px) → space-4 (16px). alt şeritin üst padding'i
+ * space-4 → space-5 (border-top'tan sonraki nefes). Kart kompaktlığı korunur
+ * (dış padding değişmedi). */
 .ocak-evre__icerik {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .ocak-evre__baslik {
@@ -1538,13 +1563,14 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   margin-bottom: 0;
 }
 
-/* Alt şerit — arketip + soru çifti, üst border'la ayrılmış */
+/* Alt şerit — arketip + soru çifti, üst border'la ayrılmış.
+ * brief v2 R3: padding-top space-4 → space-5 (border-top'tan sonraki nefes). */
 .ocak-evre__alt {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-3);
-  padding-top: var(--space-4);
+  padding-top: var(--space-5);
   border-top: 0.5px solid var(--ash-warm);
 }
 
@@ -1640,20 +1666,18 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   opacity: 0.5;
 }
 
-/* Nokta — ısı renginde dolu daire, coal halka stroke */
+/* Nokta — ısı renginde dolu daire, coal halka stroke.
+ * NOT: <g> SVG attribute transform="translate(x,y)" nokta konumunu taşıyor.
+ * CSS hover'da transform UYGULANMAZ — attribute transform'u override edip
+ * noktayı (0,0)'a fırlatır (v1 titreme bug'ı KARAR 201 fix). Hover ısı sinyali
+ * sadece halka opacity + dot stroke güçlendirme — geometri sabit kalır. */
 .anadolu-harita__nokta {
   --isi-aktif: var(--ember);
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-.anadolu-harita__nokta:hover,
-.anadolu-harita__nokta:focus-visible {
-  transform: translate(var(--tx, 0), var(--ty, 0)) scale(1.15);
   outline: none;
 }
 
 .anadolu-harita__nokta-halka {
-  fill: color-mix(in oklab, var(--isi-aktif) 20%, transparent);
+  fill: color-mix(in oklab, var(--isi-aktif) 22%, transparent);
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease-out);
 }
@@ -1667,6 +1691,14 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   fill: var(--isi-aktif);
   stroke: var(--coal);
   stroke-width: 1.5;
+  transition: stroke var(--duration-fast) var(--ease-out),
+              stroke-width var(--duration-fast) var(--ease-out);
+}
+
+.anadolu-harita__nokta:hover .anadolu-harita__nokta-dot,
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot {
+  stroke: color-mix(in oklab, var(--isi-aktif) 70%, var(--cream) 30%);
+  stroke-width: 2;
 }
 
 .anadolu-harita__etiket {
@@ -1741,8 +1773,13 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 @media (prefers-reduced-motion: reduce) {
   .ocak-evre,
   .anadolu-harita__nokta,
-  .anadolu-harita__nokta-halka {
+  .anadolu-harita__nokta-halka,
+  .anadolu-harita__nokta-dot {
     transition: none;
+  }
+  /* brief v2 R1: hover translateY de reduced-motion'da iptal (AlOlVer paterni). */
+  .ocak-evre:hover {
+    transform: none;
   }
   .ocak-evre--vurgu {
     animation: none;
