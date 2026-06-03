@@ -7,9 +7,13 @@
  * form-anchor'da `formAnchorRegistry[slug][index]` component'ini basar — sıra ve prop
  * default'ları tek otorite burada (KARAR 126 ruhu, KARAR 125 sıra niyeti).
  *
+ * KARAR 206 (Brief 3): 5 format sayfasında AtesMektuplariCTA/AcikKapiKayit →
+ * KayitCTA (ayrı /[format]/kayit route'una link). Kayıt aksiyonu sade — Ateş
+ * Mektupları aboneliği bu sayfalardan kalktı (ana sayfa + footer'da kalır).
+ * /takvim + /yolculuk hâlâ AtesMektuplariCTA (kayıt sayfaları yok).
+ *
  * /iletisim — eski çoklu anchor (sıra 2 IletisimForm + sıra 7 CTA), form göçü
- * (brief-iletisim-form-tasima.md) sonrası SIFIR anchor: form /iletisim/bize-yaz'a
- * taşındı, Ateş Mektupları CTA da kaldırıldı. Registry'de entry yok.
+ * (brief-iletisim-form-tasima.md) sonrası SIFIR anchor.
  *
  * Defansif: slug yoksa registry'de → boş array → fragment null basar, sayfa çökmez.
  */
@@ -18,6 +22,12 @@ import AtesMektuplari from '../components/AtesMektuplari.astro';
 import CemberBasvuru from '../components/CemberBasvuru.astro';
 import AcikKapiKayit from '../components/AcikKapiKayit.astro';
 import AtesMektuplariCTA from '../components/AtesMektuplariCTA.astro';
+import KayitCTA from '../components/KayitCTA.astro';
+
+// CemberBasvuru + AcikKapiKayit ölü component'ler (KARAR 204-206) — silme
+// toplu temizliği ayrı bir brief'te.
+void CemberBasvuru;
+void AcikKapiKayit;
 
 // Astro component factory — Astro'nun runtime tip exportları internal API'de yaşıyor.
 // Registry consumer (PageContent.astro) bu değerleri `<Component />` olarak render eder;
@@ -27,28 +37,36 @@ type AstroComponent = any;
 
 export const formAnchorRegistry: Record<string, AstroComponent[]> = {
   '/': [AtesMektuplari],
-  '/cember': [CemberBasvuru],
-  '/acik-kapi': [AcikKapiKayit],
-  // /iletisim — form göçü (brief-iletisim-form-tasima.md) sonrası Ateş Mektupları
-  // CTA da kaldırıldı (kullanıcı kararı): /iletisim orientasyon sayfasında hiç
-  // form-anchor olmamalı. Notion'da iki `## section: form-anchor` marker'ı da
-  // silinmeli — sayfa form-anchor'sız. Registry'de entry yok → defansif `?? []`.
-  '/mini-retreat': [AtesMektuplariCTA],
-  '/seremoni': [AtesMektuplariCTA],
-  '/istanbul': [AtesMektuplariCTA],
-  '/workshop': [AtesMektuplariCTA],
+  // 6 format sayfası → KayitCTA (ayrı /[format]/kayit route'una link).
+  '/cember': [KayitCTA],
+  '/acik-kapi': [KayitCTA],
+  '/mini-retreat': [KayitCTA],
+  '/seremoni': [KayitCTA],
+  '/istanbul': [KayitCTA],
+  '/workshop': [KayitCTA],
+  // /takvim + /yolculuk: kayıt sayfası yok, AtesMektuplariCTA kalır.
   '/takvim': [AtesMektuplariCTA],
   '/yolculuk': [AtesMektuplariCTA],
 };
 
 /**
- * Slug → anchor index → default prop. AtesMektuplariCTA `kategoriAdi` zorunlu.
+ * Slug → anchor index → default prop'lar.
+ *
+ * KayitCTA prop'ları: { href, kategoriAdi } — cümle "Sıradaki <kategoriAdi> için
+ * tarih seç...". kategoriAdi nominative; cümle akışı için isim sırasına dikkat
+ * edilmeli (örn. 'çembere' YANLIŞ — "Sıradaki çembere için" kırılır).
+ *
+ * AtesMektuplariCTA prop'u: kategoriAdi (insan-okur format adı, küçük harf).
  */
 export const formAnchorProps: Record<string, Array<Record<string, unknown>>> = {
-  '/mini-retreat': [{ kategoriAdi: 'mini retreat' }],
-  '/seremoni': [{ kategoriAdi: 'mevsim seremonisi' }],
-  '/istanbul': [{ kategoriAdi: 'İstanbul akşamı' }],
-  '/workshop': [{ kategoriAdi: 'workshop' }],
+  // 6 format sayfası — KayitCTA
+  '/cember': [{ href: '/cember/kayit', kategoriAdi: 'Çember' }],
+  '/acik-kapi': [{ href: '/acik-kapi/kayit', kategoriAdi: 'Açık Kapı' }],
+  '/mini-retreat': [{ href: '/mini-retreat/kayit', kategoriAdi: 'mini retreat' }],
+  '/seremoni': [{ href: '/seremoni/kayit', kategoriAdi: 'mevsim seremonisi' }],
+  '/istanbul': [{ href: '/istanbul/kayit', kategoriAdi: 'İstanbul akşamı' }],
+  '/workshop': [{ href: '/workshop/kayit', kategoriAdi: 'workshop' }],
+  // Kayıt sayfası olmayanlar — AtesMektuplariCTA
   '/takvim': [{ kategoriAdi: 'OCAK buluşması' }],
   '/yolculuk': [{ kategoriAdi: 'Anadolu Yolculuğu' }],
 };

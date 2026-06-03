@@ -24,19 +24,22 @@ export type SectionName =
   | 'mini-cta'
   | 'buyuk-vurgu'
   | 'manifesto-vurgu'
-  | 'ic-ses';
+  | 'ic-ses'
+  | 'kayit-cta';
 
 /**
- * Kanonik 10 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
- * 127/153 + ic-ses göçü). Component-render kanonik 5 (Hero/BirSonraki/
- * SonrakiBulusma/SiradakiKapi/SSS, README #21) ile karıştırma: o sayım
- * Astro component instance'larını tanımlar, bu sayım markdown→HTML transform
- * setini tanımlar. Vurgu paleti (3 isim) bu listenin son üçlüsü:
+ * Kanonik 11 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
+ * 127/153/207 + ic-ses göçü + kayit-cta Brief 4). Component-render kanonik 5
+ * (Hero/BirSonraki/SonrakiBulusma/SiradakiKapi/SSS, README #21) ile karıştırma:
+ * o sayım Astro component instance'larını tanımlar, bu sayım markdown→HTML
+ * transform setini tanımlar. Vurgu paleti (3 isim) listenin orta üçlüsü:
  *   - buyuk-vurgu  → altın, glyphsiz, yüksek-enerji ilan (clamp 2-3rem)
  *   - manifesto-vurgu → krem italik + köz glyph, sayfa-sonu marka beyanı
  *   - ic-ses → krem italik, glyphsiz, prose ortası düşük-enerji "nefes"
  * Glyph farkı manifesto-vurgu ile ic-ses arasındaki imza ayrımıdır
- * (manifesto ağırlık taşır, ic-ses hafiflik).
+ * (manifesto ağırlık taşır, ic-ses hafiflik). kayit-cta (KARAR 207): köz
+ * dolu vurgu butonu, sayfa slug'ından otomatik /[format]/kayit hedefi
+ * türetir (notion-pages.ts resolveKayitCtaHref post-render adımı).
  */
 export const CANONICAL_SECTIONS: SectionName[] = [
   'hero',
@@ -49,6 +52,7 @@ export const CANONICAL_SECTIONS: SectionName[] = [
   'buyuk-vurgu',
   'manifesto-vurgu',
   'ic-ses',
+  'kayit-cta',
 ];
 
 /**
@@ -553,6 +557,35 @@ function transformIcSes(
 }
 
 /**
+ * kayit-cta (KARAR 207 / Brief 4): köz dolu vurgu butonu + opsiyonel üst metin.
+ *
+ * Plugin sayfa slug'ını bilmez (global instance, options'sız wiring). href'i
+ * placeholder olarak yazar; notion-pages.ts'deki resolveKayitCtaHref
+ * post-render adımı 6 format slug'u ise placeholder'ı `/${slug}/kayit` ile
+ * değiştirir; değilse `<section data-section="kayit-cta">...</section>`
+ * regex'iyle tüm section'ı kaldırır + console.warn yazar (6-format-dışı
+ * sayfada sessiz atla davranışı, Adım 0 karar A).
+ *
+ * Üst metin opsiyonel: `## section: kayit-cta` altına prose yazılırsa buton
+ * üstünde çağrı cümlesi; yazılmazsa çıplak buton.
+ *
+ * Buton metni sabit: "Kayıt ol →".
+ */
+function transformKayitCta(content: RootContent[]): RootContent[] {
+  // data-kayit-cta-button attribute test'lerde + CSS scope'ta marker görevi görür.
+  // href __KAYIT_CTA_HREF__ placeholder — loader resolveKayitCtaHref doldurur.
+  const buton = html(
+    '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>Kayıt ol →</a>',
+  );
+  return [
+    html('<section data-section="kayit-cta" class="ocak-kayit-cta">'),
+    ...content,
+    buton,
+    html('</section>'),
+  ];
+}
+
+/**
  * esik-* (/sen-neredesin): exclusive accordion.
  * - Section'ın ilk h2'sini (depth=2) bulur, metnini summary'ye taşır, node'u content'ten çıkarır.
  * - `<details name="esikler" data-section="NAME">` ile wrap; `name` attribute exclusive
@@ -887,6 +920,9 @@ function transformSection(
 
     case 'ic-ses':
       return transformIcSes(content, options);
+
+    case 'kayit-cta':
+      return transformKayitCta(content);
 
     case 'evreler-intro':
       // /anadolu: "Altı Evre" başlığı + opsiyonel giriş, kart bloğunun

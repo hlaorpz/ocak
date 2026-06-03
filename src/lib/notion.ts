@@ -30,6 +30,7 @@ export const notion = new Client({ auth: NOTION_TOKEN });
 
 export const NOTION_PAGES_DB = import.meta.env.NOTION_PAGES_DB_ID ?? '';
 export const NOTION_EVENTS_DB = import.meta.env.NOTION_EVENTS_DB_ID ?? '';
+export const NOTION_BASVURULAR_DB = import.meta.env.NOTION_BASVURULAR_DB_ID ?? '';
 
 /**
  * Bir Notion database'ini sorgular ve pagination'ı handle ederek tüm sonuçları döner.

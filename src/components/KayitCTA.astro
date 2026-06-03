@@ -1,0 +1,54 @@
+---
+// KayitCTA — /cember (ve Brief 3'te diğer 5 format) için form-anchor noktasında
+// formun yerine basılan kısa CTA (Brief 2B Adım 4). Form artık ayrı route'ta
+// (/cember/kayit) — bu component sadece "Kayıt ol →" linki + bir cümle.
+//
+// AtesMektuplariCTA kardeşi: aynı sade pattern, sadece href + cumle prop'a açık.
+// CemberBasvuru ölü kalır (silme Brief 3 toplu temizliği) — registry yönlendirmesi
+// burada (form-anchor-registry.ts /cember entry'si KayitCTA'ya çevrildi).
+//
+// introHtml (KARAR 151): Notion'dan form-anchor look-backward intro varsa
+// pasif olarak CTA üstünde render edilir.
+interface Props {
+  /** Hedef kayıt sayfası — örn '/cember/kayit'. */
+  href: string;
+  /** Görünen kategori ("çembere", "açık kapıya"...) — cümle içine gömülür. */
+  kategoriAdi: string;
+  /** Notion form-anchor look-backward intro HTML. */
+  introHtml?: string;
+}
+const { href, kategoriAdi, introHtml } = Astro.props;
+---
+<section data-section="kayit-cta" class="ocak-kayit-cta">
+  {introHtml && <div class="ocak-kayit-cta__intro" set:html={introHtml} />}
+  <p>
+    Sıradaki <strong>{kategoriAdi}</strong> için tarih seç, katılım payını ilet —
+    yerini ayıralım.
+  </p>
+  <a class="ocak-kayit-cta__link" href={href}>
+    Kayıt ol →
+  </a>
+</section>
+
+<style>
+  .ocak-kayit-cta {
+    text-align: center;
+  }
+  .ocak-kayit-cta__link {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .ocak-kayit-cta__link:hover,
+  .ocak-kayit-cta__link:focus-visible {
+    border-bottom-color: var(--ember);
+  }
+</style>

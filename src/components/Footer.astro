@@ -1,4 +1,8 @@
 ---
+// WhatsApp linki tek kaynak: src/lib/api.ts → WHATSAPP_URL. Eski hatalı format
+// (05325555226) yerine wa.me/15551911472 — numara değişirse api.ts tek yer.
+import { WHATSAPP_URL } from '../lib/api';
+
 const year = new Date().getFullYear();
 ---
 
@@ -35,7 +39,7 @@ const year = new Date().getFullYear();
             </a>
           </li>
           <li>
-            <a href="https://wa.me/05325555226" target="_blank" rel="noopener noreferrer">
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
               WhatsApp
             </a>
           </li>

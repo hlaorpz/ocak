@@ -1,0 +1,31 @@
+---
+// /cember/kayit — Çember ödemeli kayıt formu (Brief 2B pilot, KARAR 204).
+// Brief 3 (KARAR 206): ortak loadKayitData helper'ına refactor — 5 yeni format
+// rotası ile DRY. 6 route tek kalıba uydu.
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import KayitFormu from '../../components/KayitFormu.astro';
+import { loadKayitData } from '../../lib/kayit-sayfa';
+
+const data = await loadKayitData('cember');
+---
+<Layout
+  title="Çember Kaydı"
+  description="Sıradaki çembere kaydını yap. Tarih seç, kısa bir niyet yaz, katılım payını ilet."
+  oda="Buluşmalar"
+>
+  <Hero
+    oda="Buluşmalar"
+    overline="ÇEMBER"
+    title="Bir çembere katıl."
+    subtitle="Tarih seç, kısa bir niyet yaz, katılım payını ilet — ateşin yanında sana yer ayıralım."
+    showScroll={false}
+  />
+  <KayitFormu
+    format="cember"
+    etkinlikler={data.etkinlikler}
+    kayitSorulari={data.kayitSorulari}
+    havaleIban={data.havaleIban}
+    havaleAd={data.havaleAd}
+  />
+</Layout>

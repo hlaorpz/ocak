@@ -31,6 +31,12 @@ export type EtkinlikFrontmatter = {
   siteGoster: boolean;
   oneCikar: boolean;
   notion_id: string;
+  /** Notion "Ücret" number property — null/0 = ücretsiz; >0 = ödemeli (Brief 2A). */
+  ucret?: number;
+  /** Notion "Para Birimi" select — TRY/USD/EUR. Default 'TRY' Brief 2A endpoint'inde. */
+  paraBirimi?: string;
+  /** Notion "Kayıt Soruları" rich_text — Shift+Enter ile \n ayraçlı. Parse: split('\n').filter(Boolean). */
+  kayitSorulari?: string;
 };
 
 // ── Property okuyucular (Node-safe, bağımsız) ──
@@ -52,6 +58,11 @@ function selectVal(page: PageObjectResponse, name: string): string {
 function checkboxVal(page: PageObjectResponse, name: string): boolean {
   const p = page.properties[name];
   return p?.type === 'checkbox' ? p.checkbox : false;
+}
+
+function numberVal(page: PageObjectResponse, name: string): number | undefined {
+  const p = page.properties[name];
+  return p?.type === 'number' ? (p.number ?? undefined) : undefined;
 }
 
 function urlVal(page: PageObjectResponse, name: string): string {
@@ -93,6 +104,9 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
   const mekanDetay = richText(page, 'Konum Detay').trim();
   const kayitUrl = urlVal(page, 'Kayıt Linki').trim();
   const aciklama = richText(page, 'Kısa Açıklama').trim();
+  const ucret = numberVal(page, 'Ücret');
+  const paraBirimi = selectVal(page, 'Para Birimi');
+  const kayitSorulari = richText(page, 'Kayıt Soruları');
 
   return {
     baslik: richText(page, 'Başlık').trim(),
@@ -108,5 +122,8 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     ...(mekanDetay ? { mekanDetay } : {}),
     ...(kayitUrl ? { kayitUrl } : {}),
     ...(aciklama ? { aciklama } : {}),
+    ...(ucret !== undefined ? { ucret } : {}),
+    ...(paraBirimi ? { paraBirimi } : {}),
+    ...(kayitSorulari ? { kayitSorulari } : {}),
   };
 }

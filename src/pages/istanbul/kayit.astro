@@ -1,0 +1,29 @@
+---
+// /istanbul/kayit — İstanbul Akşamı ödemeli kayıt (Brief 3 KARAR 206).
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import KayitFormu from '../../components/KayitFormu.astro';
+import { loadKayitData } from '../../lib/kayit-sayfa';
+
+const data = await loadKayitData('istanbul');
+---
+<Layout
+  title="İstanbul Akşamı Kaydı"
+  description="Sıradaki İstanbul akşamına kaydını yap. Tarih seç, kısa bir niyet yaz, katılım payını ilet."
+  oda="Buluşmalar"
+>
+  <Hero
+    oda="Buluşmalar"
+    overline="İSTANBUL"
+    title="Bir İstanbul akşamına gel."
+    subtitle="Tarih seç, kısa bir niyet yaz, katılım payını ilet — ateşin yanında sana yer ayıralım."
+    showScroll={false}
+  />
+  <KayitFormu
+    format="istanbul"
+    etkinlikler={data.etkinlikler}
+    kayitSorulari={data.kayitSorulari}
+    havaleIban={data.havaleIban}
+    havaleAd={data.havaleAd}
+  />
+</Layout>

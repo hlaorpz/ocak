@@ -1058,6 +1058,67 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
   color: var(--cream);
 }
 
+/* === kayit-cta — köz dolu vurgu butonu + opsiyonel üst metin (KARAR 207, Brief 4)
+ * Plugin output: <section data-section="kayit-cta" class="ocak-kayit-cta">
+ *   {opsiyonel üst metin p}
+ *   <a class="ocak-kayit-cta__buton" href="/[slug]/kayit" data-kayit-cta-button>
+ *     Kayıt ol →
+ *   </a>
+ * </section>
+ *
+ * Sıkışık dikey boşluk — mini-cta'dan dar (Kaan "az boşluklu section" istedi):
+ * mini-cta margin clamp(2-3rem); burada clamp(0.75-1.5rem) yarısından az.
+ * Arkaplan/border YOK — sade akış, dolu buton tek vurgu noktası.
+ *
+ * Buton görsel ağırlığı AtesMektuplari KATIL kardeşi (ember dolu + coal text +
+ * uppercase letter-spacing); Brief 4 "dolu vurgu butonu (#C44B2F)" notu birebir
+ * --ember (#C44B2F = rgba(196,75,47,1)).
+ * ============================================================================ */
+section[data-section="kayit-cta"] {
+  text-align: center;
+  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
+  max-width: var(--max-w-prose);
+}
+
+section[data-section="kayit-cta"] > p {
+  color: var(--cream-soft);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  margin: 0 0 var(--space-4);
+}
+
+section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
+  display: inline-block;
+  padding: 0.9rem 2rem;
+  background: var(--ember);
+  border: 1px solid var(--ember);
+  color: var(--coal);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out);
+}
+
+section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:hover,
+section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:focus-visible {
+  background: var(--ember-soft);
+  box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
+    transition: none;
+  }
+}
+
 /* === form-anchor — fragment-split sonrası bu marker görünmemeli, defansif hide === */
 section[data-section="form-anchor"][data-form-anchor]:empty {
   display: none;

@@ -1,0 +1,1026 @@
+---
+// KayitFormu — Ödemeli kayıt formları için ortak component (Brief 2B pilot).
+// Tek component 6 formatı besler (cember/acik-kapi/mini-retreat/istanbul/seremoni/
+// workshop) — şu an sadece /cember pilotu canlı, kalan 5 format Brief 3'te.
+//
+// Tasarım: Anadolu deseni (3 native <details> bölüm) ama hafif: Sen / Niyet / Katılım & Ödeme.
+// Notion-driven: tarih + ücret + ek sorular hepsi Notion build-time çekilir; component
+// hard-coded sayfa-özel sapma içermez (Anadolu hard-coded mirası MİRAS ALMAZ).
+//
+// Bölüm 2 "Niyet" dinamik: kayitSorulari boşsa <details> hiç render edilmez.
+// Bölüm 3 ödeme bloğu koşullu: seçilen etkinliğin ücreti varsa görünür, ücretsiz
+// seçilince gizlenir (JS, change listener).
+//
+// Honeypot KARAR 194 (gizli `website` alanı), KVKK KARAR 144 (checkbox + expander),
+// scrollToSuccess KARAR 156, success'te form HTML gizleme KARAR 116.
+import type { CollectionEntry } from 'astro:content';
+import type { KayitFormat } from '../lib/kayit';
+import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+
+interface Props {
+  format: KayitFormat;
+  etkinlikler: CollectionEntry<'etkinlikler'>[];
+  kayitSorulari: string[];
+  havaleIban: string;
+  havaleAd: string;
+}
+
+const { format, etkinlikler, kayitSorulari, havaleIban, havaleAd } = Astro.props;
+const bosForm = etkinlikler.length === 0;
+
+// Etkinliğe ait fiyat bilgisi data-attribute'lerle option'a basılır; JS değişiklikte
+// ödeme bloğunu açar/kapatır (build-time karar veremiyoruz çünkü kullanıcı seçimi).
+function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
+  return {
+    tarih: formatEtkinlikTarihi(e.data.tarihBaslangic, e.data.tarihBitis, e.data.saat),
+    ucret: e.data.ucret ?? 0,
+    paraBirimi: e.data.paraBirimi ?? 'TRY',
+    dolu: e.data.durum === 'Dolu',
+  };
+}
+---
+<section class="kayit-formu" data-format={format} data-section="kayit-formu">
+  <div class="kayit-formu__container">
+    {bosForm ? (
+    <div class="kayit-formu__bos-durum">
+      <p>
+        Şu anda açık kayıt yok. Bir sonraki çağrı için
+        <a href="/takvim">takvime</a> bak ya da
+        <a href="/#ates-mektuplari">Ateş Mektupları</a>'na katıl.
+      </p>
+    </div>
+    ) : (
+    <form class="kayit-formu__form" data-format={format}>
+      {/* KARAR 194 honeypot — bot doldurur, endpoint sessiz success. */}
+      <div class="hp-field" aria-hidden="true">
+        <label for="kf-website">Website</label>
+        <input type="text" name="website" id="kf-website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <!-- BÖLÜM 1 — Sen (default açık) -->
+      <details class="kayit-formu__grup" open>
+        <summary>Sen</summary>
+        <div class="kayit-formu__grup-icerik">
+          <div class="kayit-formu__group">
+            <label for="kf-ad">Ad <span class="kayit-formu__required">*</span></label>
+            <input
+              id="kf-ad"
+              type="text"
+              class="kayit-formu__input"
+              name="ad"
+              placeholder="Adın"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="kayit-formu__group">
+            <label for="kf-email">E-posta <span class="kayit-formu__required">*</span></label>
+            <input
+              id="kf-email"
+              type="email"
+              class="kayit-formu__input"
+              name="email"
+              placeholder="email@adresin.com"
+              required
+              pattern="[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}"
+              oninvalid="this.setCustomValidity('Geçerli bir e-posta gir')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="kayit-formu__group">
+            <label for="kf-telefon">Telefon <span class="kayit-formu__required">*</span></label>
+            <input
+              id="kf-telefon"
+              type="tel"
+              class="kayit-formu__input"
+              name="telefon"
+              placeholder="+90 5xx xxx xx xx"
+              required
+              oninvalid="this.setCustomValidity('Geçerli bir telefon numarası gir')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="kayit-formu__group">
+            <label for="kf-sehir">Şehir <span class="kayit-formu__required">*</span></label>
+            <input
+              id="kf-sehir"
+              type="text"
+              class="kayit-formu__input"
+              name="sehir"
+              placeholder="Yaşadığın şehir"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
+          <div class="kayit-formu__group">
+            <span class="kayit-formu__label-as-legend">
+              Bizi nereden duydun? <span class="kayit-formu__required">*</span>
+            </span>
+            <div class="kayit-formu__radios">
+              {/* Sıra: Instagram · Arkadaş · Google · Etkinlik · Diğer.
+                  Value Notion "İlk dokunuş kanalı" enum'una birebir yazılır. */}
+              <label class="kayit-formu__radio">
+                <input type="radio" name="kanal" value="Instagram" required
+                  oninvalid="this.setCustomValidity('Bir seçim yap')"
+                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Instagram</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="kanal" value="Arkadaş" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Arkadaş tavsiyesi</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="kanal" value="Google" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Google arama</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="kanal" value="Etkinlik" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Etkinlik</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="kanal" value="Diğer" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Diğer</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      {/* BÖLÜM 2 — Niyet (Notion'dan dinamik; boş → bölüm hiç YOK) */}
+      {kayitSorulari.length > 0 && (
+      <details class="kayit-formu__grup">
+        <summary>Niyet</summary>
+        <div class="kayit-formu__grup-icerik">
+          {kayitSorulari.map((soru, i) => (
+            <div class="kayit-formu__group">
+              <label for={`kf-soru-${i}`}>{soru}</label>
+              <textarea
+                id={`kf-soru-${i}`}
+                class="kayit-formu__textarea"
+                name={`soru_${i}`}
+                data-soru={soru}
+                rows="4"
+                placeholder="Birkaç cümle yeter."
+              ></textarea>
+            </div>
+          ))}
+        </div>
+      </details>
+      )}
+
+      <!-- BÖLÜM 3 — Katılım & Ödeme -->
+      <details class="kayit-formu__grup">
+        <summary>Katılım & Ödeme</summary>
+        <div class="kayit-formu__grup-icerik">
+          <div class="kayit-formu__group">
+            <label for="kf-etkinlik">Tarih seç <span class="kayit-formu__required">*</span></label>
+            <select
+              id="kf-etkinlik"
+              name="etkinlik_id"
+              class="kayit-formu__select"
+              required
+              oninvalid="this.setCustomValidity('Bir tarih seç')"
+              onchange="this.setCustomValidity('')"
+            >
+              <option value="">— Tarih seç —</option>
+              {etkinlikler.map((e) => {
+                const d = etkinlikData(e);
+                return (
+                  <option
+                    value={e.id}
+                    data-tarih={d.tarih}
+                    data-ucret={d.ucret}
+                    data-para-birimi={d.paraBirimi}
+                    disabled={d.dolu}
+                  >
+                    {d.tarih}{d.dolu ? ' — Dolu' : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <div class="kayit-formu__group">
+            <span class="kayit-formu__label-as-legend">
+              Ekonomik katılım <span class="kayit-formu__required">*</span>
+            </span>
+            <div class="kayit-formu__radios">
+              <label class="kayit-formu__radio">
+                <input type="radio" name="ekonomik_katilim" value="Tam" required
+                  oninvalid="this.setCustomValidity('Bir seçim yap')"
+                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Tam — kendi yolculuğum için ödüyorum</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="ekonomik_katilim" value="Burs Talep" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Burs Talep — uygun bir paylaşımla konuşmak isterim</span>
+              </label>
+              <label class="kayit-formu__radio">
+                <input type="radio" name="ekonomik_katilim" value="Askıda Yer" />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">Askıda Yer — başkasına yer açmak için ek katkı</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Koşullu ödeme bloğu — JS tarihe göre açar/kapatır (data-ucret > 0). */}
+          <div class="kayit-formu__odeme" data-iban={havaleIban} data-ad={havaleAd} hidden>
+            <h3 class="kayit-formu__odeme-baslik">Ödeme</h3>
+            <p class="kayit-formu__odeme-tutar">
+              <span class="kayit-formu__odeme-rakam" data-kf-tutar>—</span>
+              <span class="kayit-formu__odeme-para" data-kf-para>TRY</span>
+            </p>
+            <dl class="kayit-formu__odeme-bilgi">
+              <dt>IBAN</dt>
+              <dd data-kf-iban>{havaleIban}</dd>
+              <dt>Hesap adı</dt>
+              <dd data-kf-ad>{havaleAd}</dd>
+              <dt>Açıklama</dt>
+              <dd>
+                <span data-kf-aciklama>Açıklamaya adını ve seçtiğin tarihi yaz.</span>
+              </dd>
+            </dl>
+          </div>
+
+          <div class="kayit-formu__group kayit-formu__kvkk">
+            <label class="kayit-formu__kvkk-onay">
+              <input type="checkbox" name="kvkk" required
+                oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
+                onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+              <span class="kayit-formu__kvkk-text">
+                Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
+                <span class="kayit-formu__required">*</span>
+              </span>
+            </label>
+            <details class="kayit-formu__kvkk-detay">
+              <summary>KVKK aydınlatma metnini oku</summary>
+              <div class="kayit-formu__kvkk-icerik">
+                <p>
+                  OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
+                  yalnızca aşağıdaki amaçlarla kullanırız:
+                </p>
+                <ul>
+                  <li>Kayıt başvurunun değerlendirilmesi</li>
+                  <li>Etkinlik öncesi ve sonrası iletişim</li>
+                  <li>Lansman sonrası program iletişimi (bülten + duyurular)</li>
+                </ul>
+                <p>
+                  Verilerini üçüncü taraflara satmayız, paylaşmayız. Talebin üzerine
+                  silinir (selam@ocak.biz). Detaylı KVKK metni için <a href="/iletisim">/iletisim</a> sayfası.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+
+      <button type="submit" class="kayit-formu__submit">Kaydımı Gönder</button>
+
+      <p class="kayit-formu__error" role="alert" hidden></p>
+    </form>
+    )}
+
+    {/* Success copy — KARAR 205 onaylandı (Kaan, Brief 2B Adım 3). */}
+    <div class="kayit-formu__success" hidden>
+      <div class="kayit-formu__success-ember" aria-hidden="true"></div>
+      <h3 class="kayit-formu__success-title" data-kf-success-title>Kaydın bize ulaştı</h3>
+
+      {/* Ödemesiz dal — odeme.gerekli=false.
+          Brief 6 (KARAR 210): Katılım Linki BOŞSA fallback metni
+          ("...yakında seninle paylaşacağız") tek paragraf gösterilir;
+          link/adres VARSA (katilim.var=true) bu metin gizlenir + KARAR
+          209 katilim bloğu doldurulur. JS tarafı bu seçimi yapar. */}
+      <div class="kayit-formu__success-odemesiz" data-kf-success-odemesiz>
+        <p
+          class="kayit-formu__success-text"
+          data-kf-success-odemesiz-fallback
+        >
+          Ateşin yanında sana yer ayırdık. Buluşmanın detaylarını yakında seninle
+          paylaşacağız.
+        </p>
+      </div>
+
+      {/* Ödemeli dal — odeme.gerekli=true */}
+      <div class="kayit-formu__success-odemeli" data-kf-success-odemeli hidden>
+        <p class="kayit-formu__success-text">
+          Ateşin yanında sana yer ayırdık. Yerini sabitlemek için katılım payını
+          aşağıdaki hesaba iletebilirsin; ulaştığında buluşmanın detaylarıyla
+          sana dönüyoruz.
+        </p>
+        <dl class="kayit-formu__success-odeme">
+          <dt>Tutar</dt>
+          <dd><span data-kf-success-tutar>—</span> <span data-kf-success-para>TRY</span></dd>
+          <dt>Referans no</dt>
+          <dd data-kf-success-referans></dd>
+          <dt>IBAN</dt>
+          <dd data-kf-success-iban></dd>
+          <dt>Hesap adı</dt>
+          <dd data-kf-success-ad></dd>
+          <dt>Açıklama</dt>
+          <dd data-kf-success-aciklama></dd>
+        </dl>
+      </div>
+
+      {/* Brief 6 KARAR 210 — katilim (link/adres) bloğu, onaylı.
+          Görünürlük: katilim.var=true VE odeme.gerekli=false (Kaan kararı:
+          ödeme bekleyen kayıtta yer kesinleşmedi → link/adres ödeme alınınca
+          otomasyonla gider, success'te gösterme). Ödemeli + linkli ise bu
+          blok HIDDEN kalır, ödemeli fallback ("ulaştığında detaylarla
+          döneriz") metni devam eder. */}
+      <div class="kayit-formu__success-katilim" data-kf-success-katilim hidden>
+        <p class="kayit-formu__success-katilim-not" data-kf-success-katilim-cumle></p>
+        <p
+          class="kayit-formu__success-katilim-deger"
+          data-kf-success-katilim-deger
+        ></p>
+      </div>
+
+      <p class="kayit-formu__success-imza">— OCAK</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Section — coal-deep zemin + üst ambient çizgi + ember glow (Anadolu/Cember kardeşi). */
+  .kayit-formu {
+    padding: var(--space-9) var(--space-6);
+    background: var(--coal-deep);
+    position: relative;
+  }
+  .kayit-formu::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ash), transparent);
+  }
+  .kayit-formu::after {
+    content: '';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    width: min(600px, 100%);
+    height: 600px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(196, 75, 47, 0.08) 0%,
+      rgba(196, 75, 47, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
+  .kayit-formu__container {
+    max-width: 620px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* === Accordion grupları (Anadolu pattern verbatim) === */
+  .kayit-formu__grup {
+    border-bottom: 1px solid var(--ash);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__grup[open] { border-bottom-color: var(--ember); }
+  .kayit-formu__grup > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-5) 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h3);
+    color: var(--cream);
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__grup > summary::-webkit-details-marker { display: none; }
+  .kayit-formu__grup > summary:hover,
+  .kayit-formu__grup > summary:focus-visible {
+    color: var(--ember);
+    outline: none;
+  }
+  .kayit-formu__grup > summary::after {
+    content: '';
+    margin-left: auto;
+    width: 12px;
+    height: 12px;
+    border-right: 1px solid var(--ember);
+    border-bottom: 1px solid var(--ember);
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__grup[open] > summary::after { transform: rotate(-135deg); }
+  .kayit-formu__grup-icerik { padding: var(--space-3) 0 var(--space-6); }
+
+  /* === Form group === */
+  .kayit-formu__group { margin-bottom: var(--space-5); }
+  .kayit-formu__group:last-child { margin-bottom: 0; }
+  .kayit-formu__group > label,
+  .kayit-formu__label-as-legend {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--cream-soft);
+    margin-bottom: 0.55rem;
+  }
+  .kayit-formu__required {
+    color: var(--ember);
+    margin-left: 0.15rem;
+  }
+
+  /* === Input + textarea + select === */
+  .kayit-formu__input,
+  .kayit-formu__textarea,
+  .kayit-formu__select {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--cream);
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    padding: 0.9rem 1.2rem;
+    outline: none;
+    transition: border-color var(--duration-base) var(--ease-out);
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+  .kayit-formu__input::placeholder,
+  .kayit-formu__textarea::placeholder { color: var(--smoke); }
+  .kayit-formu__input:focus,
+  .kayit-formu__textarea:focus,
+  .kayit-formu__select:focus { border-color: var(--ember); }
+  .kayit-formu__textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.7;
+  }
+  .kayit-formu__select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--cream-soft) 50%),
+                      linear-gradient(135deg, var(--cream-soft) 50%, transparent 50%);
+    background-position: calc(100% - 1.4rem) 1.15rem, calc(100% - 1rem) 1.15rem;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2.6rem;
+    cursor: pointer;
+  }
+  .kayit-formu__select option { color: var(--cream); background: var(--coal); }
+  .kayit-formu__select option:disabled { color: var(--smoke); }
+
+  /* === Radio grubu (Anadolu/Cember pattern) === */
+  .kayit-formu__radios {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .kayit-formu__radio {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.9rem 1.2rem;
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    cursor: pointer;
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__radio:hover { border-color: var(--smoke); }
+  .kayit-formu__radio input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .kayit-formu__radio:has(input:checked) {
+    border-color: var(--ember);
+    background: rgba(196, 75, 47, 0.06);
+  }
+  .kayit-formu__radio-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--smoke);
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__radio:has(input:checked) .kayit-formu__radio-circle {
+    border-color: var(--ember);
+  }
+  .kayit-formu__radio-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ember);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s var(--ease-out);
+  }
+  .kayit-formu__radio:has(input:checked) .kayit-formu__radio-circle::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .kayit-formu__radio-text {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--cream-soft);
+    line-height: 1.5;
+  }
+
+  /* === Ödeme bloğu — ember vurgulu kart === */
+  .kayit-formu__odeme {
+    margin-bottom: var(--space-5);
+    padding: var(--space-5) var(--space-5);
+    background: rgba(196, 75, 47, 0.05);
+    border: 1px solid rgba(196, 75, 47, 0.3);
+    border-radius: 0;
+  }
+  .kayit-formu__odeme[hidden] { display: none; }
+  .kayit-formu__odeme-baslik {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h4);
+    color: var(--cream);
+    font-weight: 400;
+  }
+  .kayit-formu__odeme-tutar {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--ember);
+  }
+  .kayit-formu__odeme-para {
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    margin-left: 0.4rem;
+  }
+  .kayit-formu__odeme-bilgi {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+  }
+  .kayit-formu__odeme-bilgi dt { color: var(--smoke); }
+  .kayit-formu__odeme-bilgi dd {
+    margin: 0;
+    color: var(--cream);
+    word-break: break-all;
+  }
+
+  /* === KVKK (Anadolu pattern verbatim) === */
+  .kayit-formu__kvkk {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ash);
+  }
+  .kayit-formu__kvkk-onay {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    cursor: pointer;
+    margin-bottom: var(--space-3);
+  }
+  .kayit-formu__kvkk-onay input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--ember);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .kayit-formu__kvkk-text {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--cream-soft);
+    line-height: 1.6;
+  }
+  .kayit-formu__kvkk-detay summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    padding: 0.4rem 0;
+    transition: color var(--duration-base) var(--ease-out);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .kayit-formu__kvkk-detay summary::-webkit-details-marker { display: none; }
+  .kayit-formu__kvkk-detay summary:hover,
+  .kayit-formu__kvkk-detay summary:focus-visible { color: var(--ember); outline: none; }
+  .kayit-formu__kvkk-detay summary::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__kvkk-detay[open] summary::after { transform: rotate(-135deg); }
+  .kayit-formu__kvkk-icerik {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--cream-soft);
+    line-height: 1.7;
+    padding: var(--space-2) 0;
+  }
+  .kayit-formu__kvkk-icerik p { margin: 0 0 var(--space-2); }
+  .kayit-formu__kvkk-icerik ul { margin: 0 0 var(--space-2); padding-left: 1.2rem; }
+  .kayit-formu__kvkk-icerik li { margin-bottom: 0.25rem; }
+  .kayit-formu__kvkk-icerik a {
+    color: var(--ember);
+    text-decoration: underline;
+    text-decoration-color: rgba(196, 75, 47, 0.4);
+    text-underline-offset: 0.2em;
+  }
+
+  /* === Submit === */
+  .kayit-formu__submit {
+    width: 100%;
+    padding: 1.1rem 2rem;
+    margin-top: var(--space-6);
+    background: var(--ember);
+    border: 1px solid var(--ember);
+    color: var(--coal);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--duration-base) var(--ease-out),
+                opacity var(--duration-base) var(--ease-out),
+                box-shadow var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__submit:hover:not(:disabled) {
+    background: var(--ember-soft);
+    box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+  }
+  .kayit-formu__submit:disabled { opacity: 0.5; cursor: default; }
+
+  .kayit-formu__error {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--ember);
+    text-align: center;
+    margin: var(--space-3) 0 0;
+  }
+  .kayit-formu__form[hidden] { display: none; }
+  .kayit-formu__success[hidden] { display: none; }
+
+  /* === Boş durum === */
+  .kayit-formu__bos-durum {
+    max-width: 38ch;
+    margin: 0 auto;
+    padding: var(--space-5) 0;
+    text-align: center;
+  }
+  .kayit-formu__bos-durum p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0;
+  }
+  .kayit-formu__bos-durum a {
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(196, 75, 47, 0.4);
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__bos-durum a:hover { border-bottom-color: var(--ember); }
+
+  /* === Success state (Anadolu pattern) === */
+  .kayit-formu__success {
+    scroll-margin-top: var(--nav-height);
+    text-align: center;
+    padding: var(--space-7) 0;
+    animation: kayit-formu-fade 0.8s var(--ease-out) forwards;
+  }
+  .kayit-formu__success-ember {
+    width: 10px;
+    height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--ember), 0 0 40px rgba(196, 75, 47, 0.3);
+    margin: 0 auto var(--space-6);
+  }
+  .kayit-formu__success-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    color: var(--gold);
+    font-weight: 400;
+    margin: 0 0 var(--space-4);
+  }
+  .kayit-formu__success-text {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0 auto var(--space-5);
+    max-width: 42ch;
+  }
+  .kayit-formu__success-odeme {
+    margin: 0 auto var(--space-5);
+    max-width: 42ch;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--space-4);
+    row-gap: var(--space-2);
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+  }
+  .kayit-formu__success-odeme dt { color: var(--smoke); }
+  .kayit-formu__success-odeme dd {
+    margin: 0;
+    color: var(--cream);
+    word-break: break-all;
+  }
+  .kayit-formu__success-imza {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--cream-soft);
+    margin: 0;
+  }
+  .kayit-formu__success-odemesiz[hidden],
+  .kayit-formu__success-odemeli[hidden],
+  .kayit-formu__success-katilim[hidden] { display: none; }
+
+  /* Brief 5 KARAR 208 — katilim bloğu (link/adres + "not al" cümlesi). */
+  .kayit-formu__success-katilim {
+    margin: 0 auto var(--space-6);
+    max-width: 42ch;
+    text-align: center;
+  }
+  .kayit-formu__success-katilim-not {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0 0 var(--space-3);
+  }
+  .kayit-formu__success-katilim-deger {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--cream);
+    margin: 0;
+    word-break: break-all;
+  }
+  .kayit-formu__success-katilim-deger a {
+    color: var(--ember);
+    text-decoration: underline;
+    text-decoration-color: rgba(196, 75, 47, 0.4);
+    text-underline-offset: 0.2em;
+  }
+
+  @keyframes kayit-formu-fade {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === Mobil === */
+  @media (max-width: 480px) {
+    .kayit-formu { padding: var(--space-7) var(--space-5); }
+    .kayit-formu__grup > summary {
+      font-size: var(--text-h4);
+      padding: var(--space-4) 0;
+    }
+    .kayit-formu__grup-icerik { padding: var(--space-2) 0 var(--space-5); }
+    .kayit-formu__group { margin-bottom: var(--space-4); }
+  }
+
+  /* === A11y === */
+  @media (prefers-reduced-motion: reduce) {
+    .kayit-formu__grup > summary,
+    .kayit-formu__grup > summary::after,
+    .kayit-formu__grup,
+    .kayit-formu__kvkk-detay summary::after,
+    .kayit-formu__radio,
+    .kayit-formu__radio-circle,
+    .kayit-formu__radio-circle::after,
+    .kayit-formu__submit,
+    .kayit-formu__input,
+    .kayit-formu__textarea,
+    .kayit-formu__select,
+    .kayit-formu__success {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { submitKayit, type KayitPayload } from '../lib/api';
+  import { scrollToSuccess } from '../lib/scroll-to-success';
+
+  const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
+  if (form) {
+    const section = form.closest<HTMLElement>('.kayit-formu')!;
+    const submit = form.querySelector<HTMLButtonElement>('.kayit-formu__submit')!;
+    const errorEl = section.querySelector<HTMLElement>('.kayit-formu__error')!;
+    const successEl = section.querySelector<HTMLElement>('.kayit-formu__success')!;
+    const odemeBlok = form.querySelector<HTMLElement>('.kayit-formu__odeme')!;
+    const select = form.querySelector<HTMLSelectElement>('select[name="etkinlik_id"]')!;
+    const format = form.dataset.format ?? '';
+    const oldText = submit.textContent ?? 'Kaydımı Gönder';
+
+    // Ödeme bloğunu seçilen etkinliğin ücretine göre aç/kapa.
+    function refreshOdemeBlok() {
+      const opt = select.options[select.selectedIndex];
+      const ucretRaw = opt?.dataset.ucret ?? '0';
+      const ucret = Number(ucretRaw) || 0;
+      const para = opt?.dataset.paraBirimi ?? 'TRY';
+      const tarih = opt?.dataset.tarih ?? '';
+      if (ucret > 0) {
+        odemeBlok.querySelector('[data-kf-tutar]')!.textContent = String(ucret);
+        odemeBlok.querySelector('[data-kf-para]')!.textContent = para;
+        const aciklamaEl = odemeBlok.querySelector('[data-kf-aciklama]')!;
+        aciklamaEl.textContent = `Açıklamaya adını ve "${formatBaslik(format)} – ${tarih}" yaz.`;
+        odemeBlok.hidden = false;
+      } else {
+        odemeBlok.hidden = true;
+      }
+    }
+    select.addEventListener('change', refreshOdemeBlok);
+    refreshOdemeBlok();
+
+    function formatBaslik(f: string): string {
+      // Frontend gösterim için map; backend Notion enum'u kullanır (FORMAT_TIP).
+      const map: Record<string, string> = {
+        cember: 'Çember',
+        'acik-kapi': 'Açık Kapı',
+        'mini-retreat': 'Mini Retreat',
+        istanbul: 'İstanbul',
+        seremoni: 'Seremoni',
+        workshop: 'Workshop',
+      };
+      return map[f] ?? f;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      submit.disabled = true;
+      submit.textContent = 'Gönderiliyor…';
+
+      const data = new FormData(form);
+
+      // Ek soruları topla — name="soru_0", "soru_1", ... textarea'lar.
+      // Key = data-soru attribute (Notion soru metni); value = textarea içeriği.
+      const ekSorular: Record<string, string> = {};
+      form
+        .querySelectorAll<HTMLTextAreaElement>('textarea[name^="soru_"]')
+        .forEach((ta) => {
+          const soru = ta.dataset.soru ?? ta.name;
+          const cevap = ta.value.trim();
+          if (cevap) ekSorular[soru] = cevap;
+        });
+
+      const payload: KayitPayload = {
+        format,
+        ad: (data.get('ad') ?? '').toString().trim(),
+        email: (data.get('email') ?? '').toString().trim(),
+        telefon: (data.get('telefon') ?? '').toString().trim(),
+        sehir: (data.get('sehir') ?? '').toString().trim(),
+        kanal: (data.get('kanal') ?? '').toString(),
+        ekSorular,
+        etkinlikId: (data.get('etkinlik_id') ?? '').toString(),
+        seciliTarih: select.options[select.selectedIndex]?.dataset.tarih ?? '',
+        ekonomikKatilim: (data.get('ekonomik_katilim') ?? '').toString(),
+        kvkk: data.get('kvkk') === 'on',
+        // KARAR 194 honeypot — bot doldurursa endpoint sessiz success döner.
+        website: (data.get('website') ?? '').toString(),
+      };
+
+      // Defansif validation (native required attribute zorunlu alanları yakalar).
+      const eksik =
+        !payload.ad ||
+        !payload.email ||
+        !payload.telefon ||
+        !payload.sehir ||
+        !payload.kanal ||
+        !payload.etkinlikId ||
+        !payload.ekonomikKatilim ||
+        !payload.kvkk;
+      if (eksik) {
+        errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+        // Eksik field'lı bölümü aç ki kullanıcı görsün.
+        section
+          .querySelectorAll<HTMLDetailsElement>('.kayit-formu__grup')
+          .forEach((d) => {
+            if (d.querySelector(':invalid')) d.open = true;
+          });
+        return;
+      }
+
+      try {
+        const result = await submitKayit(payload);
+        if (result.status === 'success') {
+          form.hidden = true;
+          // Ödeme dalına göre success içeriğini doldur.
+          const odemesizDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemesiz]')!;
+          const odemeliDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemeli]')!;
+          if (result.odeme?.gerekli) {
+            odemesizDiv.hidden = true;
+            odemeliDiv.hidden = false;
+            successEl.querySelector('[data-kf-success-tutar]')!.textContent =
+              String(result.odeme.tutar ?? '');
+            successEl.querySelector('[data-kf-success-para]')!.textContent =
+              result.odeme.paraBirimi;
+            // Brief 6 KARAR 210 — referans no havale bilgisinde.
+            successEl.querySelector('[data-kf-success-referans]')!.textContent =
+              result.referansNo ?? '';
+            successEl.querySelector('[data-kf-success-iban]')!.textContent = result.odeme.iban;
+            successEl.querySelector('[data-kf-success-ad]')!.textContent = result.odeme.ad;
+            successEl.querySelector('[data-kf-success-aciklama]')!.textContent =
+              result.odeme.aciklama;
+          } else {
+            odemesizDiv.hidden = false;
+            odemeliDiv.hidden = true;
+          }
+          // Brief 6 KARAR 210 — katilim bloğu (link/adres). İki koşul:
+          //   1) katilim.var=true (link/adres var)
+          //   2) odeme.gerekli=false (ödeme bekleyen kayıtta link gizli)
+          // odemesiz+link var ise: katilim bloğu görünür + ödemesiz fallback
+          //   metni gizlenir (link cümlesi ana mesaj olur).
+          // odemesiz+link YOK ise: fallback metin "yakında paylaşacağız" kalır.
+          // ödemeli+link var ise: katilim bloğu GİZLİ (ödeme alınınca otomasyon).
+          const katilimDiv = successEl.querySelector<HTMLElement>('[data-kf-success-katilim]')!;
+          const odemesizFallbackEl = successEl.querySelector<HTMLElement>(
+            '[data-kf-success-odemesiz-fallback]',
+          )!;
+          if (result.katilim?.var && !result.odeme?.gerekli) {
+            const cumleEl = katilimDiv.querySelector<HTMLElement>('[data-kf-success-katilim-cumle]')!;
+            const degerEl = katilimDiv.querySelector<HTMLElement>('[data-kf-success-katilim-deger]')!;
+            cumleEl.textContent =
+              result.katilim.tipi === 'link'
+                ? 'Buluşma linkin burada. Mail kutuna da düştü.'
+                : 'Buluşacağımız yer burada. Mail kutuna da düştü.';
+            // XSS koruması — Notion'dan geliyor ama yine de href'i element olarak set et.
+            degerEl.textContent = '';
+            if (result.katilim.tipi === 'link') {
+              const a = document.createElement('a');
+              a.href = result.katilim.deger;
+              a.textContent = result.katilim.deger;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              degerEl.appendChild(a);
+            } else {
+              degerEl.textContent = result.katilim.deger;
+            }
+            katilimDiv.hidden = false;
+            // Link var → fallback metin gereksiz, gizle.
+            odemesizFallbackEl.hidden = true;
+          }
+          successEl.hidden = false;
+          scrollToSuccess(successEl);
+          if (typeof window !== 'undefined' && window.dataLayer) {
+            window.dataLayer.push({ event: 'form_submit', form_type: format });
+          }
+        } else if (result.status === 'skip') {
+          // Honeypot — sessiz success (kullanıcıya bir şey gösterme, sadece form'da kal).
+          form.hidden = true;
+          successEl.hidden = false;
+          scrollToSuccess(successEl);
+        }
+      } catch (err) {
+        console.error('Kayıt error:', err);
+        errorEl.textContent =
+          'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
+        errorEl.hidden = false;
+        submit.disabled = false;
+        submit.textContent = oldText;
+      }
+    });
+  }
+</script>

@@ -1,0 +1,31 @@
+---
+// /mini-retreat/kayit — Mini retreat ödemeli kayıt (Brief 3 KARAR 206).
+// "mini retreat" yerleşik marka K2 formatı (Brief 3 not: slug mini-retreat,
+// retreat değil; route + Notion kategori + grup hepsi aynı formatı işaret eder).
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import KayitFormu from '../../components/KayitFormu.astro';
+import { loadKayitData } from '../../lib/kayit-sayfa';
+
+const data = await loadKayitData('mini-retreat');
+---
+<Layout
+  title="Mini Retreat Kaydı"
+  description="Sıradaki mini retreat'e kaydını yap. Tarih seç, kısa bir niyet yaz, katılım payını ilet."
+  oda="Buluşmalar"
+>
+  <Hero
+    oda="Buluşmalar"
+    overline="MİNİ RETREAT"
+    title="Bir mini retreat'e katıl."
+    subtitle="Tarih seç, kısa bir niyet yaz, katılım payını ilet — ateşin yanında sana yer ayıralım."
+    showScroll={false}
+  />
+  <KayitFormu
+    format="mini-retreat"
+    etkinlikler={data.etkinlikler}
+    kayitSorulari={data.kayitSorulari}
+    havaleIban={data.havaleIban}
+    havaleAd={data.havaleAd}
+  />
+</Layout>

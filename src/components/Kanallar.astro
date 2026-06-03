@@ -26,7 +26,10 @@
 // Instagram kartı için yan kapı (Advaita) ince köz çizgisiyle ayrılır; ayrı
 // tıklanabilir (a > a HTML'de yasak, parent div + iki a child).
 
-const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
+// WhatsApp numarası tek kaynak: src/lib/api.ts → WHATSAPP_URL (uluslararası
+// format, wa.me/15551911472). Eski placeholder `{{whatsapp_link}}` ve hatalı
+// 05... formatı kaldırıldı; numara değişirse api.ts tek yer dokunulur.
+import { WHATSAPP_URL } from '../lib/api';
 ---
 <section class="kanallar" data-section="kanallar">
   <div class="kanallar__inner">
@@ -44,7 +47,7 @@ const wa = 'https://wa.me/05325555226'; // {{whatsapp_link}} — Railway deploy
       </a>
 
       <!-- WHATSAPP -->
-      <a class="kanal kanal--anlik" href={wa}>
+      <a class="kanal kanal--anlik" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
         <span class="kanal__koz" aria-hidden="true"></span>
         <span class="kanal__rozet">yapay zekâ</span>
         <span class="kanal__etiket">anlık kıvılcım</span>

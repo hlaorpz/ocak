@@ -7,6 +7,7 @@ import {
   resolveNotionPageLinks,
 } from '../lib/notion-pages';
 import { fetchEtkinlikler, transformEtkinlik } from '../lib/notion-etkinlikler';
+import { resolveKayitCtaHref } from '../lib/kayit';
 
 /**
  * Sayfalar — 19 site sayfasının içerikleri.
@@ -61,7 +62,10 @@ const sayfalar = defineCollection({
               const r = await renderMarkdown(frag.content);
               return {
                 kind: 'markdown' as const,
-                html: resolveNotionPageLinks(r.html, pageIdToSlug, slug),
+                html: resolveKayitCtaHref(
+                  resolveNotionPageLinks(r.html, pageIdToSlug, slug),
+                  slug,
+                ),
               };
             }
             // KARAR 151: form-anchor intro varsa markdown→HTML render et (markdown
@@ -93,7 +97,13 @@ const sayfalar = defineCollection({
           id: slug,
           data,
           body: transformed.body,
-          rendered: { ...rendered, html: resolveNotionPageLinks(rendered.html, pageIdToSlug, slug) },
+          rendered: {
+            ...rendered,
+            html: resolveKayitCtaHref(
+              resolveNotionPageLinks(rendered.html, pageIdToSlug, slug),
+              slug,
+            ),
+          },
           digest: generateDigest(transformed.body),
         });
         ok++;
@@ -201,6 +211,10 @@ const etkinlikler = defineCollection({
     siteGoster: z.boolean(),
     oneCikar: z.boolean(),
     notion_id: z.string(),
+    // Brief 2A — ödemeli kayıt: Notion Etkinlikler DB'den ücret/para birimi/kayıt soruları.
+    ucret: z.number().optional(),
+    paraBirimi: z.string().optional(),
+    kayitSorulari: z.string().optional(),
   }),
 });
 
