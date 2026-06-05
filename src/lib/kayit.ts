@@ -97,23 +97,65 @@ export function katilimTipiCoz(mekan: string | undefined | null): 'link' | 'adre
 }
 
 /**
- * Brief 5 Yol C: MailerLite custom field payload'u oluşturur. C-1 güvenlik
- * ağı — `etkinlik_adi` daima yazılır, `katilim_linki` sadece dolu+trimmed
- * ise eklenir. Boş link payload'a hiç girmez (otomasyon tarafında
- * `{$katilim_linki}` boş basmasın diye field'ı hiç göndermeyiz).
- *
- * Çağıran taraf bu Record'u MailerLite subscribers payload'unun
- * `fields` objesine merge eder (name + bu).
+ * Brief Katman 2: MailerLite custom field payload'u — online vs fiziksel
+ * ayrımlı. Daima yazılan: `etkinlik_adi`, opsiyonel `etkinlik_tarihi` /
+ * `etkinlik_saati`. Online (link) etkinlikte `zoom_link` + `katilim_linki`
+ * (C-1 geriye uyum) + `zoom_sifresi`; fiziksel etkinlikte `etkinlik_mekan`
+ * + `etkinlik_adres`. Boş/whitespace değerler payload'a hiç girmez
+ * (otomasyon tarafında `{$x}` boş basmasın diye field'ı göndermeyiz).
  */
-export function mailerLiteCustomFields(
-  etkinlikAdi: string,
-  katilimLinki: string | undefined | null,
-): Record<string, string> {
-  const fields: Record<string, string> = { etkinlik_adi: etkinlikAdi };
-  if (katilimLinki && katilimLinki.trim()) {
-    fields.katilim_linki = katilimLinki.trim();
+export type MailerLiteFieldGirdi = {
+  etkinlikAdi: string;
+  etkinlikTarihi?: string | null;
+  etkinlikSaati?: string | null;
+  katilimTipi: 'link' | 'adres';
+  /** Online ise Zoom join URL (Notion Katılım Linki). */
+  katilimLinki?: string | null;
+  /** Online ise Zoom meeting password (Notion Zoom Şifresi). */
+  zoomSifresi?: string | null;
+  /** Fiziksel ise Mekân/Platform select değeri (örn. "İstanbul"). */
+  mekan?: string | null;
+  /** Fiziksel ise adres detayı (Notion Konum Detay). */
+  mekanAdres?: string | null;
+};
+
+export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, string> {
+  const fields: Record<string, string> = { etkinlik_adi: g.etkinlikAdi };
+  const ekle = (k: string, v: string | undefined | null) => {
+    if (v && v.trim()) fields[k] = v.trim();
+  };
+  ekle('etkinlik_tarihi', g.etkinlikTarihi);
+  ekle('etkinlik_saati', g.etkinlikSaati);
+  if (g.katilimTipi === 'link') {
+    // C-1 geriye uyum: katilim_linki mevcut şablonu kırmasın diye korunur.
+    ekle('katilim_linki', g.katilimLinki);
+    ekle('zoom_link', g.katilimLinki);
+    ekle('zoom_sifresi', g.zoomSifresi);
+  } else {
+    ekle('etkinlik_mekan', g.mekan);
+    ekle('etkinlik_adres', g.mekanAdres);
   }
   return fields;
+}
+
+/**
+ * Notion date ISO ("2026-06-21" veya "2026-06-21T18:00:00.000+03:00") →
+ * Türkçe "21 Haziran 2026". Parse edilemezse input'u aynen döner (defansif).
+ * MailerLite `etkinlik_tarihi` custom field'ı için welcome şablonunda
+ * doğrudan basılır.
+ */
+export function tarihTrFormat(iso: string | undefined | null): string {
+  if (!iso) return '';
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return iso;
+  const aylar = [
+    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
+  ];
+  const gun = Number(m[3]);
+  const ayIdx = Number(m[2]) - 1;
+  if (ayIdx < 0 || ayIdx > 11) return iso;
+  return `${gun} ${aylar[ayIdx]} ${m[1]}`;
 }
 
 /**

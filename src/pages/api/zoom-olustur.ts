@@ -135,16 +135,22 @@ export const POST: APIRoute = async ({ request }) => {
   // 5. Meeting yarat
   const topic = titlePlain(props, 'Başlık');
   const tarih = dateStart(props, 'Tarih');
-  const saat = richTextPlain(props, 'Saat');
+  // Brief Katman 1: saat kaynağı artık "Zoom Başlangıç Saati" (Kaan elle "20:00"
+  // girer). Boşsa fallback 00:00 ama console.warn — sessizce düşme.
+  const zoomSaat = richTextPlain(props, 'Zoom Başlangıç Saati');
+  if (!zoomSaat) {
+    // eslint-disable-next-line no-console
+    console.warn(`[zoom-olustur] Zoom Başlangıç Saati boş: "${topic}" — 00:00 fallback`);
+  }
   if (!topic || !tarih) {
     return json(
       { status: 'error', message: 'Başlık veya Tarih boş — meeting yaratılamaz', topic, tarih },
       400,
     );
   }
-  const startTime = startTimeBirlestir(tarih, saat);
+  const startTime = startTimeBirlestir(tarih, zoomSaat);
 
-  let meeting: { join_url: string; meeting_id: number };
+  let meeting: { join_url: string; meeting_id: number; password: string };
   try {
     meeting = await zoomMeetingOlustur({ topic, startTime });
   } catch (err) {
@@ -157,13 +163,18 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ status: 'error', message: 'Zoom helper hatası', detay: String(err).slice(0, 200) }, 500);
   }
 
-  // 6. Notion Katılım Linki yaz
+  // 6. Notion Katılım Linki + Zoom Şifresi yaz (Brief Katman 1).
+  // İkisi tek update'te — idempotanslık guard'ı Katılım Linki üzerinde,
+  // şifre o sebeple ayrı yarıya düşmez.
   try {
     await notion.pages.update({
       page_id: pageId,
       properties: {
         'Katılım Linki': {
           rich_text: [{ text: { content: meeting.join_url } }],
+        },
+        'Zoom Şifresi': {
+          rich_text: [{ text: { content: meeting.password } }],
         },
       },
     });
@@ -174,5 +185,10 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  return json({ status: 'created', join_url: meeting.join_url, meeting_id: meeting.meeting_id });
+  return json({
+    status: 'created',
+    join_url: meeting.join_url,
+    meeting_id: meeting.meeting_id,
+    password_set: meeting.password.length > 0,
+  });
 };
