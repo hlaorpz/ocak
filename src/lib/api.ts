@@ -1,16 +1,17 @@
 /**
- * api.ts — OCAK form gönderimleri için tek sabit endpoint kaynağı (#23 Brief 3).
+ * api.ts — OCAK form gönderimleri için tek sabit endpoint kaynağı (#23 Brief 3,
+ * brief-appscript-olum). Apps Script emekli; tüm formlar Astro server route'una
+ * POST eder.
  *
- * Tüm formlar (Ateş Mektupları, ileride basvuru/acik-kapi Astro'ya geçince) bu
- * unified Apps Script doPost endpoint'ine POST eder. formType ile ayrışırlar.
+ * Endpoint'ler:
+ *  - /api/form  — ücretsiz lead formları (ates-mektuplari, anadolu-basvuru,
+ *                 iletisim). Body: { formType, ...alanlar }, JSON.
+ *  - /api/kayit — ücretli kayıt formları (KayitFormu, 6 format). KAYIT_API_URL
+ *                 sabiti aşağıda.
  *
- * Bu URL bir secret DEĞİL — public web-app URL'i. MailerLite/Sheets token'ları
- * Apps Script PropertiesService'te server-side yaşar, client'a hiç gitmez
- * (KARAR: token client'ta tutulmaz). Gövde: { formType, ...alanlar }.
- * Content-Type 'text/plain;charset=utf-8' — Apps Script CORS bypass pattern'i (legacy verbatim).
+ * Token'lar (NOTION_TOKEN, MAILERLITE_API_KEY, NOTION_BASVURULAR_DB_ID) Vercel
+ * env'inde server-side yaşar; client'a gitmez.
  */
-export const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycby0zKMg14Bwdc-0tHmgq6UGoY0Iczrep-WWxOj9HxobS2MNtk-aI920sXCWhsnW6-KKiw/exec';
 
 /**
  * WhatsApp asistanı tek kaynak. wa.me uluslararası format (+1). Boş chat (text param yok).

@@ -66,7 +66,7 @@ const bos = liste.length === 0;
       <ul class="sonraki-bulusma__liste">
         {liste.map((etkinlik) => (
           <li class="sonraki-bulusma__item">
-            <article class="sonraki-bulusma__kart">
+            <article class="sonraki-bulusma__kart">{etkinlik.kartGorsel && (<div aria-hidden="true" style="margin:calc(var(--space-5) * -1) calc(var(--space-5) * -1) var(--space-3);aspect-ratio:16/10;overflow:hidden;background:var(--coal);"><img src={etkinlik.kartGorsel} alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" /></div>)}
               <span class="sonraki-bulusma__tip">{etkinlik.tip}</span>
               <h3 class="sonraki-bulusma__baslik">{etkinlik.baslik}</h3>
               <p class="sonraki-bulusma__meta">

@@ -15,19 +15,15 @@
  * /iletisim — eski çoklu anchor (sıra 2 IletisimForm + sıra 7 CTA), form göçü
  * (brief-iletisim-form-tasima.md) sonrası SIFIR anchor.
  *
+ * brief-appscript-olum: CemberBasvuru + AcikKapiKayit component'leri silindi
+ * (Apps Script paritesi ile birlikte). Pipeline B (/api/kayit) tek kayıt akışı.
+ *
  * Defansif: slug yoksa registry'de → boş array → fragment null basar, sayfa çökmez.
  */
 
 import AtesMektuplari from '../components/AtesMektuplari.astro';
-import CemberBasvuru from '../components/CemberBasvuru.astro';
-import AcikKapiKayit from '../components/AcikKapiKayit.astro';
 import AtesMektuplariCTA from '../components/AtesMektuplariCTA.astro';
 import KayitCTA from '../components/KayitCTA.astro';
-
-// CemberBasvuru + AcikKapiKayit ölü component'ler (KARAR 204-206) — silme
-// toplu temizliği ayrı bir brief'te.
-void CemberBasvuru;
-void AcikKapiKayit;
 
 // Astro component factory — Astro'nun runtime tip exportları internal API'de yaşıyor.
 // Registry consumer (PageContent.astro) bu değerleri `<Component />` olarak render eder;

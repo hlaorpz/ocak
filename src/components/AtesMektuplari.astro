@@ -1,14 +1,13 @@
 ---
 // AtesMektuplari — ana sayfa bülten formu (#23 Brief 3, KARAR 96 davranış verbatim)
 // Plugin `ates-mektuplari` section'ını OMIT ediyor; bu component manuel render edilir.
-// Endpoint: unified Apps Script doPost (api.ts). Token Apps Script tarafında — client'ta yok.
+// Endpoint: /api/form (Astro server route, brief-appscript-olum). Token Vercel env'de.
 // Görünür metin Notion form spec'inden; yapı + submit davranışı legacy/index.html verbatim.
 //
 // introHtml (KARAR 151): loader form-anchor look-backward'ı önceki section etiketini
 // consume edip render edilmiş HTML olarak buraya geçer. Geldiğinde internal
 // __heading + __desc gizlenir, intro div render edilir (içerik kaybı önleme — KARAR 102
 // gerçek yapıyı gör). Gelmediğinde eski davranış: internal heading + desc görünür.
-import { APPS_SCRIPT_URL } from '../lib/api';
 
 interface Props {
   introHtml?: string;
@@ -27,7 +26,7 @@ const { introHtml } = Astro.props;
       </>
     )}
 
-    <form class="ates-mektuplari__form" data-endpoint={APPS_SCRIPT_URL}>
+    <form class="ates-mektuplari__form" data-endpoint="/api/form">
       {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return. */}
       <div class="hp-field" aria-hidden="true">
         <label for="am-website">Website</label>
@@ -323,8 +322,8 @@ const { introHtml } = Astro.props;
 <script>
   import { scrollToSuccess } from '../lib/scroll-to-success';
 
-  // Submit davranışı legacy/acik-kapi.html verbatim: text/plain POST (CORS bypass),
-  // result.status === 'success' → success state; aksi → error, form aktif kalır.
+  // Submit davranışı: JSON POST /api/form, result.status === 'success' → success
+  // state; aksi → error, form aktif kalır.
   const form = document.querySelector<HTMLFormElement>('.ates-mektuplari__form');
   if (form) {
     const section = form.closest('.ates-mektuplari') as HTMLElement;
@@ -345,20 +344,20 @@ const { introHtml } = Astro.props;
       const fd = new FormData(form);
       const email = (fd.get('email') ?? '').toString().trim();
       const ilk_dokunus_kanali = (fd.get('ilk_dokunus_kanali') ?? '').toString();
-      // KARAR 152 honeypot — gerçek kullanıcıda hep boş; bot doldurursa Apps Script erken döner.
+      // KARAR 152 honeypot — gerçek kullanıcıda hep boş; bot doldurursa /api/form erken döner.
       const website = (fd.get('website') ?? '').toString();
 
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ formType: 'ates-mektuplari', email, ilk_dokunus_kanali, website }),
         });
         const result = await res.json();
 
         if (result.status === 'success') {
           // TODO (#24 Brief 2 C3 — KARAR 104 sınırı): already-subscribed dalı atlandı.
-          // Apps Script handleAtesMektuplari MailerLite response shape'ini (yeni vs duplicate)
+          // /api/form handleAtesMektuplari MailerLite response shape'ini (yeni vs duplicate)
           // ayırmıyor. Eklendiğinde: result.subscriberState === 'existing' → success metni
           // "Zaten aramızdasın. Ateş yanıyor. 🔥" override. Lansman sonrası veya #25'te.
           form.hidden = true;

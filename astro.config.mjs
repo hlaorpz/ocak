@@ -13,7 +13,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       // /test KARAR 143 — Kaan görsel referansı, Google görmemeli.
-      filter: (page) => !page.includes('/test'),
+      // /onizleme/* (Brief brief-fotolu-onizleme.md) — fotolu önizleme oyun alanı,
+      // master ile yan yana canlı ama Google indekslemesin (robots.txt'te de disallow).
+      filter: (page) => !page.includes('/test') && !page.includes('/onizleme'),
     }),
   ],
   // remark-ocak-sections: `## section: NAME` → kanonik <section> transform (#23 Brief 1

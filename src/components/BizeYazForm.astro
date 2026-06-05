@@ -5,21 +5,20 @@
 // success state form HTML'ini gizler + sayfa tepesine kayar.
 //
 // Field'lar: isim, email, konu (dropdown), mesaj, kvkk + honeypot (KARAR 194).
-// Endpoint: unified Apps Script doPost (api.ts), formType: 'iletisim' (backend
-// dokunulmadı — brief talebi: round-trip korunmalı). Konu seçimi mesaj content'inin
-// başına prepend edilir; Apps Script handler ek field görmez.
+// Endpoint: /api/form (Astro server route, brief-appscript-olum), formType: 'iletisim'.
+// Konu seçimi mesaj content'inin başına prepend edilir; backend handler ek field
+// görmez (round-trip korunur).
 //
 // Dropdown seçenekleri (eski 5'li set değişti): placeholder "Ne hakkında yazıyorsun?"
 // + 4 seçenek. Yolculuk çıktı (kendi başvuru sayfası var), işbirliği+basın+ortaklık
 // "Bir teklifim var" altında birleşti.
 //
 // Success state (KARAR 115 ton): "Mektubun bize ulaştı." + 48s/pazartesi nefesi.
-import { APPS_SCRIPT_URL } from '../lib/api';
 ---
 <section class="bize-yaz" data-section="bize-yaz">
   <div class="bize-yaz__container">
-    <form class="bize-yaz__form" data-endpoint={APPS_SCRIPT_URL}>
-      {/* KARAR 194/152 honeypot — bot doldurur, Apps Script erken return. */}
+    <form class="bize-yaz__form" data-endpoint="/api/form">
+      {/* KARAR 194/152 honeypot — bot doldurur, /api/form erken return. */}
       <div class="hp-field" aria-hidden="true">
         <label for="by-website">Website</label>
         <input type="text" name="website" id="by-website" tabindex="-1" autocomplete="off" />
@@ -454,9 +453,8 @@ import { APPS_SCRIPT_URL } from '../lib/api';
 <script>
   import { scrollToSuccess } from '../lib/scroll-to-success';
 
-  // Submit pattern AnadoluBasvuru/IletisimForm verbatim — text/plain POST,
-  // result.status === 'success' → success state. Konu mesaja prepend: backend
-  // (Apps Script handleIletisim) ek field görmez, round-trip korunur.
+  // Submit: JSON POST /api/form, result.status === 'success' → success state.
+  // Konu mesaja prepend: backend (handleIletisim) ek field görmez, round-trip korunur.
   const form = document.querySelector<HTMLFormElement>('.bize-yaz__form');
   if (form) {
     const section = form.closest('.bize-yaz') as HTMLElement;
@@ -485,7 +483,7 @@ import { APPS_SCRIPT_URL } from '../lib/api';
         isim,
         email,
         mesaj,
-        // KARAR 194/152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
+        // KARAR 194/152 honeypot — gerçek kullanıcıda boş; bot doldurursa /api/form erken döner.
         website: (data.get('website') ?? '').toString(),
       };
 
@@ -500,7 +498,7 @@ import { APPS_SCRIPT_URL } from '../lib/api';
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
         const result = await res.json();

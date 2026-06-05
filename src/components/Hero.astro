@@ -17,6 +17,12 @@ interface Props {
   ctaText?: string;        // CTA buton metni
   ctaHref?: string;        // CTA buton link
   showScroll?: boolean;    // scroll indicator göster (default: true)
+  /**
+   * Brief brief-fotolu-onizleme.md — fotolu önizleme hero arka plan görseli.
+   * undefined ise hero__bg div'i hiç basılmaz → master HTML byte-identik kalır.
+   * Doluyken: tam ekran cover image + coal degrade overlay (metin okunaklığı için).
+   */
+  bgImage?: string;
 }
 
 const {
@@ -27,9 +33,10 @@ const {
   ctaText,
   ctaHref,
   showScroll = true,
+  bgImage,
 } = Astro.props;
 ---
-<section class="hero" data-section="hero" data-oda={oda}>
+<section class="hero" data-section="hero" data-oda={oda}>{bgImage && (<div aria-hidden="true" style={`position:absolute;inset:0;background-image:url('${bgImage}');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;`}><div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,18,16,0.55) 0%,rgba(26,18,16,0.35) 45%,rgba(26,18,16,0.85) 100%);"></div></div>)}
   <div class="hero__glow" aria-hidden="true"></div>
   <div class="hero__fade-out" aria-hidden="true"></div>
 

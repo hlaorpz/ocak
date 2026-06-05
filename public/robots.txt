@@ -4,6 +4,7 @@
 # User-agent: *
 # Allow: /
 # Disallow: /test
+# Disallow: /onizleme
 # Sitemap: https://ocak.biz/sitemap-index.xml
 
 User-agent: *

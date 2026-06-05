@@ -1,0 +1,122 @@
+---
+// onizleme/advaita.astro — /advaita fotolu önizleme iskeleti.
+// Brief brief-fotolu-onizleme.md İş 3 + ek-brief-foto-oranlari.md
+// + ek-brief-oran-placeholder.md (GEÇİCİ — `// PLACEHOLDER` etiketli bloklar
+//   Kaan onayıyla SİLİNECEK).
+//
+// Master /advaita dinamik [...slug].astro route'undan render edilir; bu dosya
+// onun "fotolu kardeşi". Aynı content (sayfalar/'/advaita') + aynı PageContent
+// fragment'ları + foto yerleşimi. Master'a sıfır dokunuş.
+//
+// Tür 1 (düzen değişmez): hero foto bandı 16:9 (Hero Görsel doluyken).
+// Tür 2 (düzen değişir): "portre split" — Portre Görsel doluyken iki sütun
+//   (portre 4:5 + PageContent yan yana). Boşken master'a düşer: tek sütun PageContent.
+import { getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import PageContent from '../../components/PageContent.astro';
+// PLACEHOLDER import — ek-brief-oran-placeholder.md (cleanup'ta SİL)
+import { placeholderSvg, placeholderDataUrl } from '../../lib/_onizleme_placeholder';
+
+const sayfa = await getEntry('sayfalar', '/advaita');
+if (!sayfa) {
+  throw new Error("onizleme/advaita.astro: 'sayfalar' collection'ında '/advaita' slug'ı bulunamadı.");
+}
+
+const { heroImage, portreImage } = sayfa.data;
+// PLACEHOLDER: heroImage boşken hero-band fallback data URL; portreImage boşken
+// split mode'u ZORLA aç (test: "placeholder varken iki sütun, kaldırınca Master").
+// Cleanup → `const heroBg = heroImage;` ve `const splitMode = Boolean(portreImage);`
+const heroBg = heroImage ?? placeholderDataUrl('HERO', '16:9', 160, 90);
+const splitMode = true; // PLACEHOLDER: portreImage boşken bile split'i göster
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+  noindex
+>
+  {/* Tür 1 — hero fonu. PLACEHOLDER: heroBg her zaman var (placeholder data URL
+      fallback). Cleanup'ta `{heroImage && (...)` koşulu geri gelir. */}
+  <section class="onizleme-hero-band" data-onizleme="hero-band">
+    <div class="onizleme-hero-band__image" style={`background-image: url('${heroBg}')`} aria-hidden="true"></div>
+  </section>
+
+  {/* Tür 2 — portre split. PLACEHOLDER: splitMode TRUE; portreImage boşken sol
+      sütunda placeholder SVG. Cleanup'ta `splitMode = Boolean(portreImage)` ve
+      portreImage olmadığında `<PageContent />` tek sütun. */}
+  {splitMode ? (
+    <div class="onizleme-advaita-split" data-onizleme="split">
+      <aside class="onizleme-advaita-split__portre">
+        <figure>
+          {portreImage
+            ? <img src={portreImage} alt="" loading="lazy" />
+            : <Fragment set:html={placeholderSvg('PORTRE', '4:5', 40, 50)} />
+          }
+        </figure>
+      </aside>
+      <div class="onizleme-advaita-split__icerik">
+        <PageContent slug="/advaita" fragments={sayfa.data.fragments} />
+      </div>
+    </div>
+  ) : (
+    <PageContent slug="/advaita" fragments={sayfa.data.fragments} />
+  )}
+</Layout>
+
+<style>
+  /* Brief brief-fotolu-onizleme.md — Kaan'ın CSS oyun alanı (advaita).
+     Bu blok master'a etki etmez. Serbest kurcala: split oran, gap, kırılma. */
+
+  .onizleme-hero-band {
+    padding: 0;
+  }
+
+  .onizleme-hero-band__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;         /* ek-brief: Hero arka plan 16:9 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .onizleme-advaita-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    max-width: var(--container-max, 1100px);
+    margin-inline: auto;
+    padding: var(--space-8) var(--space-4);
+  }
+
+  .onizleme-advaita-split__portre {
+    margin: 0;
+  }
+
+  .onizleme-advaita-split__portre figure {
+    margin: 0;
+    aspect-ratio: 4 / 5;          /* ek-brief: Advaita portre 4:5 dikey, IG-tutarlı */
+    overflow: hidden;
+    background: var(--ash);
+    border-radius: 2px;
+  }
+
+  .onizleme-advaita-split__portre img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 900px) {
+    .onizleme-advaita-split {
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      align-items: start;
+      padding-inline: var(--space-6);
+    }
+    .onizleme-advaita-split__portre {
+      position: sticky;
+      top: var(--space-6);
+    }
+  }
+</style>

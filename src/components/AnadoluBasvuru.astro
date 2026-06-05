@@ -1,16 +1,15 @@
 ---
 // AnadoluBasvuru — /anadolu/basvuru sayfasında 13 field niyet mektubu formu (#28 Brief B, KARAR 123).
 // Mevcut 3 form pattern'inden BİLİNÇLİ sapma: ağır form (13 field) ayrı route, accordion 3 grup.
-// Endpoint: unified Apps Script doPost (api.ts). formType: 'anadolu-basvuru'.
-// Backend: Apps Script handleAnadoluBasvuru → MailerLite ANADOLU_GROUP + Notion Başvurular DB.
+// Endpoint: /api/form (Astro server route, brief-appscript-olum). formType: 'anadolu-basvuru'.
+// Backend: handleAnadoluBasvuru → MailerLite ANADOLU_GROUP + Notion Başvurular DB.
 // Accordion: native <details>, JS yok (SSS.astro pattern); ilk grup default açık.
 // KVKK: checkbox required + <details> expander (Q5 cevabı, lansman sonrası tam metin).
-import { APPS_SCRIPT_URL } from '../lib/api';
 ---
 <section class="anadolu-basvuru" data-section="anadolu-basvuru">
   <div class="anadolu-basvuru__container">
-    <form class="anadolu-basvuru__form" data-endpoint={APPS_SCRIPT_URL}>
-      {/* KARAR 152 honeypot — bot doldurur, Apps Script erken return.
+    <form class="anadolu-basvuru__form" data-endpoint="/api/form">
+      {/* KARAR 152 honeypot — bot doldurur, /api/form erken return.
        * Accordion dışında ki kapalı grup hidden olsa bile DOM'da daima mevcut. */}
       <div class="hp-field" aria-hidden="true">
         <label for="ab-website">Website</label>
@@ -766,7 +765,7 @@ import { APPS_SCRIPT_URL } from '../lib/api';
 <script>
   import { scrollToSuccess } from '../lib/scroll-to-success';
 
-  // Submit pattern CemberBasvuru verbatim — text/plain POST, result.status === 'success' → success state.
+  // Submit: JSON POST /api/form, result.status === 'success' → success state.
   // 13 field payload: KARAR 123 müşteri datası attribution (ilk_dokunus_kanali) + KARAR 117 askıda eğitim (ekonomik_katilim).
   const form = document.querySelector<HTMLFormElement>('.anadolu-basvuru__form');
   if (form) {
@@ -798,7 +797,7 @@ import { APPS_SCRIPT_URL } from '../lib/api';
         saglik_notu: (data.get('saglik_notu') ?? '').toString().trim(),
         cember_deneyimi: (data.get('cember_deneyimi') ?? '').toString().trim(),
         ekonomik_katilim: (data.get('ekonomik_katilim') ?? '').toString(),
-        // KARAR 152 honeypot — gerçek kullanıcıda boş; bot doldurursa Apps Script erken döner.
+        // KARAR 152 honeypot — gerçek kullanıcıda boş; bot doldurursa /api/form erken döner.
         website: (data.get('website') ?? '').toString(),
       };
 
@@ -828,7 +827,7 @@ import { APPS_SCRIPT_URL } from '../lib/api';
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
         const result = await res.json();

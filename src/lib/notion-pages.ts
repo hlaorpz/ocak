@@ -27,6 +27,19 @@ export type SayfaFrontmatter = {
   durum: string;
   ogImage?: string;
   notion_id: string;
+  // Brief brief-fotolu-onizleme.md İş 2 + ek-brief-foto-oranlari.md Değişiklik 1.
+  // Notion files alanları, fotolu önizleme iskeleti tüketir. Master sayfa bu
+  // alanları OKUMAZ → property boşken (undefined) master HTML byte-değişmez.
+  // Whitelist: aşağıdaki adlar tanınır; başka files alanı eklenirse loader sessiz
+  // ignore eder.
+  // atmosfer1/2/3: ek-brief — tek property + galeri DEĞİL; 3 ayrı KONUMLU property
+  // (her biri ana sayfada belirli bir banda denk gelir). Boş olan band fotolu
+  // iskelette atlanır (master akışına düşer, kırık görsel kutusu olmaz).
+  heroImage?: string;
+  portreImage?: string;
+  atmosfer1?: string;
+  atmosfer2?: string;
+  atmosfer3?: string;
 };
 
 export interface TransformedPage {
@@ -286,6 +299,14 @@ export async function transformPage(
   const description = richText(page, 'Meta Açıklama').trim();
   const durum = selectVal(page, 'Durum');
   const ogImage = filesUrl(page, 'OG Görsel');
+  // Fotolu önizleme alanları (Brief brief-fotolu-onizleme.md İş 2 + ek-brief
+  // Değişiklik 1). Notion'da boşsa undefined → SayfaFrontmatter'a eklenmez →
+  // master HTML aynısı kalır. Atmosfer ek-brief sonrası 3 ayrı konumlu property.
+  const heroImage = filesUrl(page, 'Hero Görsel');
+  const portreImage = filesUrl(page, 'Portre Görsel');
+  const atmosfer1 = filesUrl(page, 'Atmosfer Görsel 1');
+  const atmosfer2 = filesUrl(page, 'Atmosfer Görsel 2');
+  const atmosfer3 = filesUrl(page, 'Atmosfer Görsel 3');
 
   // ODA_MAP miss → warn + null (Notion'a taslak/test sayfası eklenirse build çökmez,
   // #29 Brief F.5 sırasında /test sayfası ile yakalandı). Gerçek bilinmeyen üretim
@@ -309,6 +330,11 @@ export async function transformPage(
     notion_id: page.id,
     ...(description ? { description } : {}),
     ...(ogImage ? { ogImage } : {}),
+    ...(heroImage ? { heroImage } : {}),
+    ...(portreImage ? { portreImage } : {}),
+    ...(atmosfer1 ? { atmosfer1 } : {}),
+    ...(atmosfer2 ? { atmosfer2 } : {}),
+    ...(atmosfer3 ? { atmosfer3 } : {}),
   };
 
   const n2m = new NotionToMarkdown({ notionClient: notion });

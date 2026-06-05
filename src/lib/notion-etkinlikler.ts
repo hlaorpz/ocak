@@ -37,6 +37,12 @@ export type EtkinlikFrontmatter = {
   paraBirimi?: string;
   /** Notion "Kayıt Soruları" rich_text — Shift+Enter ile \n ayraçlı. Parse: split('\n').filter(Boolean). */
   kayitSorulari?: string;
+  /**
+   * Notion "Kart Görsel" files & media — buluşma kartı köşe görseli (Brief
+   * brief-fotolu-onizleme.md İş 4). Boşsa undefined → SonrakiBulusma kartı master
+   * görünümünde basılır (sıfır farklılık).
+   */
+  kartGorsel?: string;
 };
 
 // ── Property okuyucular (Node-safe, bağımsız) ──
@@ -68,6 +74,16 @@ function numberVal(page: PageObjectResponse, name: string): number | undefined {
 function urlVal(page: PageObjectResponse, name: string): string {
   const p = page.properties[name];
   return p?.type === 'url' ? (p.url ?? '') : '';
+}
+
+/** files & media property → ilk dosyanın URL'i, yoksa undefined (notion-pages.ts paraleli). */
+function filesUrl(page: PageObjectResponse, name: string): string | undefined {
+  const p = page.properties[name];
+  if (p?.type !== 'files' || p.files.length === 0) return undefined;
+  const f = p.files[0];
+  if (f.type === 'file') return f.file.url;
+  if (f.type === 'external') return f.external.url;
+  return undefined;
 }
 
 /** Notion date property → { start, end? }; boşsa null. */
@@ -107,6 +123,7 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
   const ucret = numberVal(page, 'Ücret');
   const paraBirimi = selectVal(page, 'Para Birimi');
   const kayitSorulari = richText(page, 'Kayıt Soruları');
+  const kartGorsel = filesUrl(page, 'Kart Görsel');
 
   return {
     baslik: richText(page, 'Başlık').trim(),
@@ -125,5 +142,6 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     ...(ucret !== undefined ? { ucret } : {}),
     ...(paraBirimi ? { paraBirimi } : {}),
     ...(kayitSorulari ? { kayitSorulari } : {}),
+    ...(kartGorsel ? { kartGorsel } : {}),
   };
 }
