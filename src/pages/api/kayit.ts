@@ -25,6 +25,7 @@ import {
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  tarihTrFormat,
   uretReferansNo,
   type KayitFormat,
 } from '../../lib/kayit.ts';
@@ -66,19 +67,39 @@ type EtkinlikOkuma = {
   katilimLinki: string;
   /** Notion "Mekân/Platform" select — Online | İzmir | İstanbul | Ege | Anadolu. */
   mekan: string;
+  /** Notion "Zoom Şifresi" rich_text — zoom-olustur endpoint yazar, online'da dolu. */
+  zoomSifresi: string;
+  /** Notion "Tarih" date.start — ISO. tarihTrFormat ile Türkçe'ye çevrilir. */
+  tarihISO: string;
+  /** Notion "Zoom Başlangıç Saati" varsa o, yoksa "Saat" rich_text — "20:00" gibi. */
+  saat: string;
+  /** Notion "Konum Detay" rich_text — fiziksel etkinliklerde adres. */
+  konumDetay: string;
 };
+
+function richTextStr(props: Record<string, any>, name: string): string {
+  return (props[name]?.rich_text ?? [])
+    .map((t: any) => t.plain_text ?? '')
+    .join('')
+    .trim();
+}
 
 async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   const page = await notion.pages.retrieve({ page_id: etkinlikId });
   const props = ('properties' in page ? page.properties : {}) as Record<string, any>;
   const ucret = props['Ücret']?.number ?? null;
   const paraBirimi = props['Para Birimi']?.select?.name ?? 'TRY';
-  const katilimLinki = (props['Katılım Linki']?.rich_text ?? [])
-    .map((t: any) => t.plain_text ?? '')
-    .join('')
-    .trim();
+  const katilimLinki = richTextStr(props, 'Katılım Linki');
   const mekan = props['Mekân/Platform']?.select?.name ?? '';
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan };
+  const zoomSifresi = richTextStr(props, 'Zoom Şifresi');
+  const tarihISO = props['Tarih']?.date?.start ?? '';
+  // Online'da "Zoom Başlangıç Saati" (Katman 1'in yeni kolonu), fiziksel
+  // etkinliklerde mevcut "Saat" rich_text. İkisinden hangisi doluysa onu al.
+  const zoomSaat = richTextStr(props, 'Zoom Başlangıç Saati');
+  const klasikSaat = richTextStr(props, 'Saat');
+  const saat = zoomSaat || klasikSaat;
+  const konumDetay = richTextStr(props, 'Konum Detay');
+  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -233,11 +254,24 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  // Brief 5 Yol C — katilim + MailerLite custom field (pure helper'lara delege).
+  // Brief Katman 2 — katilim + MailerLite custom field (pure helper'lara delege).
+  // Online vs fiziksel ayrımı helper içinde; boş alanlar payload'a girmez.
   const katilimTipi = katilimTipiCoz(etk.mekan);
   const linkVar = etk.katilimLinki.length > 0;
   const etkinlikAdi = etkinlikAdiFormatla(format, body.seciliTarih);
-  const ekFields = mailerLiteCustomFields(etkinlikAdi, etk.katilimLinki);
+  // etkinlik_tarihi: form'daki seçili tarih (zaten Türkçe) varsa onu, yoksa
+  // Notion Tarih ISO'yu Türkçe'ye çevir.
+  const etkinlikTarihi = body.seciliTarih?.trim() || tarihTrFormat(etk.tarihISO);
+  const ekFields = mailerLiteCustomFields({
+    etkinlikAdi,
+    etkinlikTarihi,
+    etkinlikSaati: etk.saat,
+    katilimTipi,
+    katilimLinki: etk.katilimLinki,
+    zoomSifresi: etk.zoomSifresi,
+    mekan: etk.mekan,
+    mekanAdres: etk.konumDetay,
+  });
 
   // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.
   const groupId = FORMAT_MAILERLITE_GROUP[format];

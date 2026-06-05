@@ -24,6 +24,8 @@ export type ZoomMeetingArgs = {
 export type ZoomMeetingResult = {
   join_url: string;
   meeting_id: number;
+  /** Zoom auto-generated meeting password (boş olabilir — hesap policy'sine bağlı). */
+  password: string;
 };
 
 export class ZoomError extends Error {
@@ -34,6 +36,23 @@ export class ZoomError extends Error {
   ) {
     super(`Zoom ${status} (${kind}): ${body.slice(0, 200)}`);
   }
+}
+
+/**
+ * Brief: hesap policy ("Require passcode") AÇIK/KAPALI ne olursa olsun şifre
+ * garanti dolu olsun diye request'te kendimiz üretiyoruz — auto-generate'e
+ * bırakırsak policy KAPALI'da password undefined döner → Notion/MailerLite boş.
+ *
+ * 8 karakter saf alfanumerik (Zoom passcode kuralı: max 10 char, bazı özel
+ * karakterler yasak — alfanumerik güvenli). `Math.random().toString(36)`
+ * baştaki sıfırı kırpınca 8'den kısa üretebiliyor; sabit uzunluk için manuel
+ * char-pick.
+ */
+function zoomPasswordUret(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let p = '';
+  for (let i = 0; i < 8; i++) p += chars[Math.floor(Math.random() * chars.length)];
+  return p;
 }
 
 export async function zoomAccessToken(): Promise<string> {
@@ -66,6 +85,7 @@ export async function zoomMeetingOlustur(args: ZoomMeetingArgs): Promise<ZoomMee
       type: 2, // scheduled
       start_time: args.startTime,
       timezone: 'Europe/Istanbul',
+      password: zoomPasswordUret(),
       settings: { waiting_room: true, join_before_host: false },
     }),
   });
@@ -75,6 +95,6 @@ export async function zoomMeetingOlustur(args: ZoomMeetingArgs): Promise<ZoomMee
       res.status === 403 ? 'scope' : res.status === 401 ? 'credential' : 'other';
     throw new ZoomError(res.status, body, kind);
   }
-  const json = JSON.parse(body) as { id: number; join_url: string };
-  return { join_url: json.join_url, meeting_id: json.id };
+  const json = JSON.parse(body) as { id: number; join_url: string; password?: string };
+  return { join_url: json.join_url, meeting_id: json.id, password: json.password ?? '' };
 }

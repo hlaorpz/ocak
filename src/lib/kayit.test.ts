@@ -9,6 +9,7 @@ import {
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  tarihTrFormat,
   uretReferansNo,
   type KayitFormat,
 } from './kayit';
@@ -210,37 +211,165 @@ describe('katilimTipiCoz (Brief 5 KARAR 208)', () => {
   });
 });
 
-describe('mailerLiteCustomFields (Brief 5 C-1 güvenlik ağı)', () => {
-  it('katilim_linki dolu → fields\'a etkinlik_adi + katilim_linki ekler', () => {
-    const f = mailerLiteCustomFields(
-      'Çember — 21 Haziran 2026',
-      'https://zoom.us/j/123456789',
-    );
+describe('mailerLiteCustomFields (Brief Katman 2 — online/fiziksel ayrımı)', () => {
+  it('online + link + şifre dolu → etkinlik_adi + katilim_linki + zoom_link + zoom_sifresi', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'Çember — 21 Haziran 2026',
+      katilimTipi: 'link',
+      katilimLinki: 'https://zoom.us/j/123456789',
+      zoomSifresi: 'gizli42',
+    });
     expect(f).toEqual({
       etkinlik_adi: 'Çember — 21 Haziran 2026',
       katilim_linki: 'https://zoom.us/j/123456789',
+      zoom_link: 'https://zoom.us/j/123456789',
+      zoom_sifresi: 'gizli42',
     });
   });
 
-  it('katilim_linki BOŞ → fields\'a SADECE etkinlik_adi (katilim_linki SKIP)', () => {
-    const f = mailerLiteCustomFields('Seremoni — 21 Haziran 2026', '');
+  it('online + link dolu + şifre BOŞ → zoom_sifresi SKIP', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'Seremoni — 21 Haziran 2026',
+      katilimTipi: 'link',
+      katilimLinki: 'https://zoom.us/j/abc',
+      zoomSifresi: '',
+    });
+    expect(f).toEqual({
+      etkinlik_adi: 'Seremoni — 21 Haziran 2026',
+      katilim_linki: 'https://zoom.us/j/abc',
+      zoom_link: 'https://zoom.us/j/abc',
+    });
+    expect(f).not.toHaveProperty('zoom_sifresi');
+  });
+
+  it('online + link BOŞ → SADECE etkinlik_adi (C-1: katilim_linki + zoom_* SKIP)', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'Seremoni — 21 Haziran 2026',
+      katilimTipi: 'link',
+      katilimLinki: '',
+      zoomSifresi: '',
+    });
     expect(f).toEqual({ etkinlik_adi: 'Seremoni — 21 Haziran 2026' });
+  });
+
+  it('fiziksel + mekan + adres dolu → etkinlik_mekan + etkinlik_adres (zoom_* YOK)', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'İstanbul — 18 Haziran 2026',
+      katilimTipi: 'adres',
+      mekan: 'İstanbul',
+      mekanAdres: 'Kadıköy, Moda',
+    });
+    expect(f).toEqual({
+      etkinlik_adi: 'İstanbul — 18 Haziran 2026',
+      etkinlik_mekan: 'İstanbul',
+      etkinlik_adres: 'Kadıköy, Moda',
+    });
+    expect(f).not.toHaveProperty('zoom_link');
     expect(f).not.toHaveProperty('katilim_linki');
+    expect(f).not.toHaveProperty('zoom_sifresi');
   });
 
-  it('katilim_linki sadece whitespace → katilim_linki SKIP (trim kontrolü)', () => {
-    const f = mailerLiteCustomFields('Workshop — Eylül 2026', '   \n  ');
-    expect(f).not.toHaveProperty('katilim_linki');
+  it('fiziksel + adres BOŞ → SADECE etkinlik_adi + etkinlik_mekan', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'İstanbul — 18 Haziran 2026',
+      katilimTipi: 'adres',
+      mekan: 'İstanbul',
+      mekanAdres: '',
+    });
+    expect(f).toEqual({
+      etkinlik_adi: 'İstanbul — 18 Haziran 2026',
+      etkinlik_mekan: 'İstanbul',
+    });
   });
 
-  it('katilim_linki null/undefined → katilim_linki SKIP', () => {
-    expect(mailerLiteCustomFields('X', null)).not.toHaveProperty('katilim_linki');
-    expect(mailerLiteCustomFields('X', undefined)).not.toHaveProperty('katilim_linki');
+  it('etkinlik_tarihi + etkinlik_saati dolu → her iki katilim tipinde de eklenir', () => {
+    const onl = mailerLiteCustomFields({
+      etkinlikAdi: 'Çember',
+      etkinlikTarihi: '21 Haziran 2026',
+      etkinlikSaati: '20:00',
+      katilimTipi: 'link',
+      katilimLinki: 'https://zoom.us/j/x',
+    });
+    expect(onl.etkinlik_tarihi).toBe('21 Haziran 2026');
+    expect(onl.etkinlik_saati).toBe('20:00');
+
+    const fiz = mailerLiteCustomFields({
+      etkinlikAdi: 'İstanbul',
+      etkinlikTarihi: '18 Haziran 2026',
+      etkinlikSaati: '19:30',
+      katilimTipi: 'adres',
+      mekan: 'İstanbul',
+    });
+    expect(fiz.etkinlik_tarihi).toBe('18 Haziran 2026');
+    expect(fiz.etkinlik_saati).toBe('19:30');
   });
 
-  it('dolu link trimmed yazılır (baş/son whitespace temiz)', () => {
-    const f = mailerLiteCustomFields('X', '  https://zoom.us/j/abc  ');
+  it('whitespace değerler trim edilir + boş whitespace SKIP', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'X',
+      etkinlikTarihi: '   ',
+      etkinlikSaati: undefined,
+      katilimTipi: 'link',
+      katilimLinki: '  https://zoom.us/j/abc  ',
+      zoomSifresi: '  pw  ',
+    });
+    expect(f).not.toHaveProperty('etkinlik_tarihi');
+    expect(f).not.toHaveProperty('etkinlik_saati');
     expect(f.katilim_linki).toBe('https://zoom.us/j/abc');
+    expect(f.zoom_link).toBe('https://zoom.us/j/abc');
+    expect(f.zoom_sifresi).toBe('pw');
+  });
+
+  it('null/undefined opsiyonel alanlar payload\'a girmez', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'X',
+      etkinlikTarihi: null,
+      etkinlikSaati: null,
+      katilimTipi: 'adres',
+      mekan: null,
+      mekanAdres: undefined,
+    });
+    expect(f).toEqual({ etkinlik_adi: 'X' });
+  });
+});
+
+describe('tarihTrFormat (Brief Katman 2 — Notion ISO → Türkçe)', () => {
+  it('"2026-06-21" → "21 Haziran 2026"', () => {
+    expect(tarihTrFormat('2026-06-21')).toBe('21 Haziran 2026');
+  });
+
+  it('ISO datetime "2026-06-21T18:00:00.000+03:00" → "21 Haziran 2026"', () => {
+    expect(tarihTrFormat('2026-06-21T18:00:00.000+03:00')).toBe('21 Haziran 2026');
+  });
+
+  it('12 ayın tamamı doğru çevrilir', () => {
+    expect(tarihTrFormat('2026-01-01')).toBe('1 Ocak 2026');
+    expect(tarihTrFormat('2026-02-14')).toBe('14 Şubat 2026');
+    expect(tarihTrFormat('2026-03-30')).toBe('30 Mart 2026');
+    expect(tarihTrFormat('2026-04-15')).toBe('15 Nisan 2026');
+    expect(tarihTrFormat('2026-05-09')).toBe('9 Mayıs 2026');
+    expect(tarihTrFormat('2026-06-21')).toBe('21 Haziran 2026');
+    expect(tarihTrFormat('2026-07-04')).toBe('4 Temmuz 2026');
+    expect(tarihTrFormat('2026-08-30')).toBe('30 Ağustos 2026');
+    expect(tarihTrFormat('2026-09-22')).toBe('22 Eylül 2026');
+    expect(tarihTrFormat('2026-10-29')).toBe('29 Ekim 2026');
+    expect(tarihTrFormat('2026-11-10')).toBe('10 Kasım 2026');
+    expect(tarihTrFormat('2026-12-31')).toBe('31 Aralık 2026');
+  });
+
+  it('gün başında baştaki 0 düşer (1-9 günler)', () => {
+    expect(tarihTrFormat('2026-06-05')).toBe('5 Haziran 2026');
+  });
+
+  it('boş / null / undefined → ""', () => {
+    expect(tarihTrFormat('')).toBe('');
+    expect(tarihTrFormat(null)).toBe('');
+    expect(tarihTrFormat(undefined)).toBe('');
+  });
+
+  it('parse edilemezse input aynen döner (defansif)', () => {
+    expect(tarihTrFormat('garbage')).toBe('garbage');
+    expect(tarihTrFormat('21-06-2026')).toBe('21-06-2026');
   });
 });
 
