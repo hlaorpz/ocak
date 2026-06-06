@@ -41,6 +41,29 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
   workshop: 'Workshop',
 };
 
+/**
+ * Aşama 2.5 — Kademeli dayanışma fiyatı (sliding scale). Etkinlikler DB tek
+ * `Ücret` taşır (orta/tam fiyat); 3 kademe koddan türetilir:
+ *  - Üst (Ateşi büyüten) = Ücret × 1.5
+ *  - Orta (Ateşin başındaki) = Ücret × 1.0   ← default seçili
+ *  - Alt (Ateşe yaklaşan) = Ücret × 0.75
+ *
+ * Oranlar tek yerde — ileride ayarlanabilir. Yuvarlama en yakın tam TL.
+ * Brief: brief-odeme-asama2.5-kademe-akis.md.
+ */
+export type Kademe = 'ust' | 'orta' | 'alt';
+
+export const KADEME_ORANLARI: Record<Kademe, number> = {
+  ust: 1.5,
+  orta: 1.0,
+  alt: 0.75,
+};
+
+export function kademeTutari(ucret: number, kademe: Kademe): number {
+  const oran = KADEME_ORANLARI[kademe];
+  return Math.round(Math.max(0, ucret) * oran);
+}
+
 // Kapı 1 — direkt kayıt formatları (değerlendirme yok). /api/kayit bunların
 // kaydını YALNIZ Kayıtlar DB'ye yazar (Aşama 1.5, brief-odeme-asama15).
 // Kapı 2 — başvuru/onay (cember + ayrı pipeline'daki anadolu): mevcut akış,

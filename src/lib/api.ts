@@ -121,6 +121,13 @@ export type KayitPayload = {
   askiTutar?: number;
   askiNiyet?: string;
   sadeceAski?: boolean;
+  /**
+   * Aşama 2.5 — kademeli dayanışma fiyatı (Kapı 1). Seçilen kademe
+   * (üst/orta/alt) katmanA'yı belirler (etkinlik.Ücret × oran). Backend
+   * şu an OKUMUYOR (Kayıtlar şemasında `Kademe` alanı yok — Kaan kararı
+   * Aşama 3a+). Frontend payload'a düşürür, sessiz yoksayılır.
+   */
+  kademe?: 'ust' | 'orta' | 'alt';
 };
 
 /**

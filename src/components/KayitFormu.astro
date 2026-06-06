@@ -244,6 +244,85 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             </select>
           </div>
 
+          {/* Aşama 2.5 — Kademeli dayanışma fiyatı (Kapı 1 only).
+              Eski "Ekonomik katılım" 3-radio (Tam/Burs Talep/Askıda Yer)
+              kaldırıldı — askı katmanıyla çakışıyordu (KARAR: brief
+              brief-odeme-asama2.5-kademe-akis.md). Cember (Kapı 2)
+              mevcut akış aşağıda korunur. */}
+          {kapi1 ? (
+          <div class="kayit-formu__group" data-kf-katilim>
+            <p class="kayit-formu__kademe-cerceve">
+              Hangi kademeyi seçeceğine sen karar verirsin. Sormayız, kanıt
+              istemeyiz. OCAK'ta herkesin yeri var — bazıları ateşi büyütür
+              ki bazıları ısınabilsin.
+            </p>
+            <div class="kayit-formu__radios kayit-formu__radios--kademe">
+              <label class="kayit-formu__radio kayit-formu__radio--kademe">
+                <input
+                  type="radio"
+                  name="kademe"
+                  value="ust"
+                  data-kf-kademe
+                  required
+                  oninvalid="this.setCustomValidity('Bir kademe seç')"
+                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))"
+                />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">
+                  <span class="kayit-formu__kademe-baslik">
+                    <strong>Ateşi büyüten</strong>
+                    <span class="kayit-formu__kademe-tutar" data-kf-kademe-tutar="ust">—</span>
+                  </span>
+                  <span class="kayit-formu__kademe-aciklama">
+                    Elin bollaştıysa, senin korun başkasının yolunu da açar.
+                  </span>
+                </span>
+              </label>
+              <label class="kayit-formu__radio kayit-formu__radio--kademe">
+                <input
+                  type="radio"
+                  name="kademe"
+                  value="orta"
+                  data-kf-kademe
+                  checked
+                  required
+                />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">
+                  <span class="kayit-formu__kademe-baslik">
+                    <strong>Ateşin başındaki</strong>
+                    <span class="kayit-formu__kademe-tutar" data-kf-kademe-tutar="orta">—</span>
+                  </span>
+                  <span class="kayit-formu__kademe-aciklama">
+                    Olduğun yerden, tam payınla.
+                  </span>
+                </span>
+              </label>
+              <label class="kayit-formu__radio kayit-formu__radio--kademe">
+                <input
+                  type="radio"
+                  name="kademe"
+                  value="alt"
+                  data-kf-kademe
+                  required
+                />
+                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
+                <span class="kayit-formu__radio-text">
+                  <span class="kayit-formu__kademe-baslik">
+                    <strong>Ateşe yaklaşan</strong>
+                    <span class="kayit-formu__kademe-tutar" data-kf-kademe-tutar="alt">—</span>
+                  </span>
+                  <span class="kayit-formu__kademe-aciklama">
+                    Bu aralar kısıtlıysan, yerin yine burada. Açıklama gerekmez.
+                  </span>
+                </span>
+              </label>
+            </div>
+            <p class="kayit-formu__burs-kopru">
+              <a href="/iletisim/bize-yaz">Bu da zorsa — burs başvurusu yap. Kapı kapanmaz.</a>
+            </p>
+          </div>
+          ) : (
           <div class="kayit-formu__group" data-kf-katilim>
             <span class="kayit-formu__label-as-legend">
               Ekonomik katılım <span class="kayit-formu__required">*</span>
@@ -268,6 +347,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               </label>
             </div>
           </div>
+          )}
 
           {/* Promo kodu — Brief Aşama 2 UI iskelet. Backend doğrulama Aşama 3
               (kodDogrula çağrısı, canlı indirim güncelleme). Şu an kullanıcı
@@ -1048,6 +1128,80 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     letter-spacing: normal;
   }
 
+  /* === Aşama 2.5 — Kademeli dayanışma fiyatı (Kapı 1) =====================
+   * Kademe çerçevesi (üst metin), 3 kademe radio (orta default), tutar
+   * vurgulu ember, açıklama smoke; burs köprüsü en altta sönük link. */
+  .kayit-formu__kademe-cerceve {
+    margin: 0 0 var(--space-4);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--cream-soft);
+  }
+  .kayit-formu__radios--kademe {
+    gap: var(--space-3);
+  }
+  .kayit-formu__radio--kademe {
+    align-items: flex-start;
+    padding: var(--space-4);
+  }
+  .kayit-formu__radio--kademe .kayit-formu__radio-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    width: 100%;
+  }
+  .kayit-formu__kademe-baslik {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+  .kayit-formu__kademe-baslik strong {
+    font-weight: 500;
+    color: var(--cream);
+  }
+  .kayit-formu__kademe-tutar {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--ember);
+    font-size: 1.05rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .kayit-formu__kademe-aciklama {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--smoke);
+    line-height: 1.55;
+  }
+  .kayit-formu__radio--kademe:has(input:checked) .kayit-formu__kademe-aciklama {
+    color: var(--cream-soft);
+  }
+  .kayit-formu__burs-kopru {
+    margin: var(--space-4) 0 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+  }
+  .kayit-formu__burs-kopru a {
+    color: var(--smoke);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+    padding-bottom: 0.15rem;
+    transition: color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__burs-kopru a:hover,
+  .kayit-formu__burs-kopru a:focus-visible {
+    color: var(--cream);
+    border-bottom-color: var(--ember);
+  }
+
   /* === Aşama 3a — promo geri-bildirim mesajı =============================== */
   .kayit-formu__promo-mesaj {
     margin: 0.5rem 0 0;
@@ -1199,7 +1353,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 <script>
   import { submitKayit, type KayitPayload } from '../lib/api';
   import { scrollToSuccess } from '../lib/scroll-to-success';
-  import { uygulaIndirim } from '../lib/kayit';
+  import { uygulaIndirim, kademeTutari, type Kademe } from '../lib/kayit';
   import type { KodSonuc } from '../lib/kodlar';
 
   const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
@@ -1224,15 +1378,46 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const indirimSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-indirim-slot]');
     const katmanBSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-katmanB-slot]');
 
+    // Aşama 2.5 — Kapı 1'de katmanA seçili kademe oranıyla türetilir.
+    // Kapı 2 (cember) eski mantık: etkinlik.Ücret direkt.
+    const kapi1Active = form!.dataset.kapi1 === 'true';
+
+    function seciliKademe(): Kademe {
+      const sec = form!.querySelector<HTMLInputElement>('[data-kf-kademe]:checked');
+      const v = sec?.value;
+      return v === 'ust' || v === 'orta' || v === 'alt' ? v : 'orta';
+    }
+
     function aktifUcret(): { ucret: number; para: string; tarih: string } {
       // Sadece-askı modunda A=0, para birimi default TRY.
       if (askiOnlyEl?.checked) return { ucret: 0, para: 'TRY', tarih: '' };
       const opt = select.options[select.selectedIndex];
+      const baseUcret = Number(opt?.dataset.ucret ?? '0') || 0;
+      const ucret = kapi1Active ? kademeTutari(baseUcret, seciliKademe()) : baseUcret;
       return {
-        ucret: Number(opt?.dataset.ucret ?? '0') || 0,
+        ucret,
         para: opt?.dataset.paraBirimi ?? 'TRY',
         tarih: opt?.dataset.tarih ?? '',
       };
+    }
+
+    // 3 kademe radio'sunun tutar metnini etkinlik seçimine göre günceller.
+    // Etkinlik yoksa "—". Kapı 1 dışında no-op.
+    function refreshKademeTutarlari() {
+      if (!kapi1Active) return;
+      const opt = select.options[select.selectedIndex];
+      const base = Number(opt?.dataset.ucret ?? '0') || 0;
+      const para = opt?.dataset.paraBirimi ?? 'TRY';
+      (['ust', 'orta', 'alt'] as Kademe[]).forEach((k) => {
+        const el = form!.querySelector<HTMLElement>(`[data-kf-kademe-tutar="${k}"]`);
+        if (!el) return;
+        if (base <= 0) {
+          el.textContent = '—';
+        } else {
+          const t = kademeTutari(base, k);
+          el.textContent = `${t.toLocaleString('tr-TR')} ${para}`;
+        }
+      });
     }
 
     // Aşama 3a — promo durumu (state). Boşsa null; geçerli/geçersiz KodSonuc
@@ -1364,6 +1549,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     });
 
     select.addEventListener('change', () => {
+      refreshKademeTutarlari();
       refreshOdemeBlok();
       promoYenidenDogrula(0); // tutar değişti → promo'yu hemen yeniden doğrula
     });
@@ -1371,6 +1557,15 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       refreshOdemeBlok();
       promoYenidenDogrula();
     });
+    // Aşama 2.5 — kademe radio change: katmanA değişti, canlı tutar + promo yenile.
+    form!
+      .querySelectorAll<HTMLInputElement>('[data-kf-kademe]')
+      .forEach((r) =>
+        r.addEventListener('change', () => {
+          refreshOdemeBlok();
+          promoYenidenDogrula(0);
+        }),
+      );
 
     // Sadece-askı toggle — form data-aski-only attribute'u CSS gizler.
     // required attribute'larını temizle (etkinlik/ekonomik form-validation'a
@@ -1402,6 +1597,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       refreshOdemeBlok();
     }
     askiOnlyEl?.addEventListener('change', syncAskiOnly);
+    refreshKademeTutarlari();
     refreshOdemeBlok();
 
     function formatBaslik(f: string): string {
@@ -1447,6 +1643,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const askiTutarRaw = (data.get('aski_tutar') ?? '').toString().trim();
       const askiTutar = Number(askiTutarRaw);
       const askiNiyetRaw = (data.get('aski_niyet') ?? '').toString().trim();
+      // Aşama 2.5 — Kapı 1 kademe seçimi (Kapı 2'de yok).
+      const kademeRaw = (data.get('kademe') ?? '').toString();
+      const kademeOk = kademeRaw === 'ust' || kademeRaw === 'orta' || kademeRaw === 'alt';
 
       const payload: KayitPayload = {
         format,
@@ -1467,12 +1666,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         ...(askiTutarRaw && askiTutar > 0 ? { askiTutar } : {}),
         ...(askiNiyetRaw ? { askiNiyet: askiNiyetRaw } : {}),
         ...(sadeceAski ? { sadeceAski: true } : {}),
+        ...(kapi1Active && kademeOk ? { kademe: kademeRaw as 'ust' | 'orta' | 'alt' } : {}),
       };
 
-      // Defansif validation — sadece-askı vs normal kayıt iki dal:
+      // Defansif validation — üç dal:
       // - sadece-askı: ad + email + kvkk + askıTutar > 0
-      // - normal: ad + email + telefon + şehir + kanal + etkinlikId +
-      //   ekonomikKatilim + kvkk
+      // - Kapı 1 (kademe): mevcut zorunlular + kademe (ekonomikKatilim YOK)
+      // - Kapı 2 (cember): mevcut zorunlular + ekonomikKatilim (kademe YOK)
       const eksik = sadeceAski
         ? !payload.ad || !payload.email || !payload.kvkk || !(payload.askiTutar && payload.askiTutar > 0)
         : !payload.ad ||
@@ -1481,8 +1681,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           !payload.sehir ||
           !payload.kanal ||
           !payload.etkinlikId ||
-          !payload.ekonomikKatilim ||
-          !payload.kvkk;
+          !payload.kvkk ||
+          (kapi1Active ? !payload.kademe : !payload.ekonomikKatilim);
       if (eksik) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
         errorEl.hidden = false;

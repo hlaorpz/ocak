@@ -24,6 +24,7 @@ import {
   FORMAT_MAILERLITE_GROUP,
   isKapi1,
   isKayitFormat,
+  kademeTutari,
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
@@ -31,6 +32,7 @@ import {
   uretReferansNo,
   uygulaIndirim,
   type KayitFormat,
+  type Kademe,
 } from '../../lib/kayit.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
@@ -56,6 +58,11 @@ type KayitBody = {
   askiTutar?: number;
   askiNiyet?: string;
   sadeceAski?: boolean;
+  // Aşama 2.5 — Kapı 1 kademeli dayanışma fiyatı. Kapı 2 (cember) yoksayılır
+  // (cember askı/promo/kademe akışında değil). Geçersiz/eksik → 'orta'.
+  // Kayıtlar şemasında `Kademe` alanı YOK — hesabı etkiler, yazıma girmez.
+  // (Kademe select Notion'a eklenirse Aşama 3a+ yazımına eklenecek.)
+  kademe?: Kademe;
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
@@ -393,7 +400,15 @@ export const POST: APIRoute = async ({ request }) => {
       500,
     );
   }
-  const katmanA = etk.tutar ?? 0;
+  // Aşama 2.5 — Kapı 1'de katmanA seçili kademe oranıyla türetilir
+  // (frontend canlı tutar bloğuyla TEK kaynak — uyumsuzluk olmasın).
+  // Kapı 2 (cember) eski mantık: etkinlik.Ücret direkt.
+  const baseUcret = etk.tutar ?? 0;
+  const kademe: Kademe =
+    body.kademe === 'ust' || body.kademe === 'orta' || body.kademe === 'alt'
+      ? body.kademe
+      : 'orta';
+  const katmanA = isKapi1(format) ? kademeTutari(baseUcret, kademe) : baseUcret;
   const katmanB = Math.max(0, Number(body.askiTutar) || 0);
 
   // Aşama 3a — promo SERVER-SIDE re-validate (client'a güvenme).
