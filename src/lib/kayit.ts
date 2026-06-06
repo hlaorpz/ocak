@@ -41,6 +41,23 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
   workshop: 'Workshop',
 };
 
+// Kapı 1 — direkt kayıt formatları (değerlendirme yok). /api/kayit bunların
+// kaydını YALNIZ Kayıtlar DB'ye yazar (Aşama 1.5, brief-odeme-asama15).
+// Kapı 2 — başvuru/onay (cember + ayrı pipeline'daki anadolu): mevcut akış,
+// Başvurular'a yazılır, oradan Kaan onayı + automation ile Kayıtlar'a düşer
+// (Aşama 1.6 köprüsü, bu pakette DEĞİL).
+export const KAPI1_FORMATLAR: readonly KayitFormat[] = [
+  'acik-kapi',
+  'workshop',
+  'mini-retreat',
+  'istanbul',
+  'seremoni',
+] as const;
+
+export function isKapi1(format: KayitFormat): boolean {
+  return (KAPI1_FORMATLAR as readonly string[]).includes(format);
+}
+
 // Slug → MailerLite grup ID. Brief 3 (KARAR 206): 6 formatın hepsi map'lendi.
 // null fallback artık yok — eksik grup compile-time kırar.
 export const FORMAT_MAILERLITE_GROUP: Record<KayitFormat, string> = {

@@ -17,10 +17,11 @@
 // fallback metnine düşer. Otomasyon (Kaan kuracak) boş-link kontrolüyle
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
-import { notion, NOTION_BASVURULAR_DB } from '../../lib/notion.ts';
+import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import {
   FORMAT_TIP,
   FORMAT_MAILERLITE_GROUP,
+  isKapi1,
   isKayitFormat,
   katilimTipiCoz,
   mailerLiteCustomFields,
@@ -108,6 +109,61 @@ function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): st
     .filter(([, v]) => v && v.trim())
     .map(([soru, cevap]) => `${soru}: ${cevap}`)
     .join('\n\n');
+}
+
+/**
+ * Kapı 1 formatları (acik-kapi/workshop/mini-retreat/istanbul/seremoni) için
+ * Kayıtlar DB'ye satır açar (Aşama 1.5, KARAR 76). Pending — gerçek tahsilat
+ * henüz olmadı; `Ödenen Tutar` + `Ödeme Tarihi` ödeme onaylanınca yazılır
+ * (Aşama 3).
+ *
+ * Enum tuzağı: Başvurular `Bekliyor/Muaf` ≠ Kayıtlar `Beklemede/Bedava`.
+ * Kayıtlar enum'unu kullanıyoruz — yanlış option Notion API "option does
+ * not exist" döner.
+ *
+ * Kullanıcıya dönen response değişmez; satırın hangi DB'ye düştüğü
+ * kullanıcıdan saklı (havale yönergesi + OCAK-XXXXX aynı görünür).
+ */
+async function notionKayitlaraYaz(args: {
+  body: KayitBody;
+  ucretliMi: boolean;
+  referansNo: string;
+}): Promise<string> {
+  const { body, ucretliMi, referansNo } = args;
+  const properties: Record<string, any> = {
+    'Kayıt ID': { title: [{ text: { content: referansNo } }] },
+    'Kayıt Kaynağı': { select: { name: 'Site' } },
+    'Ödeme Durumu': { select: { name: ucretliMi ? 'Beklemede' : 'Bedava' } },
+  };
+  if (body.ad) {
+    properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+  }
+  if (body.email) properties.Email = { email: body.email };
+  if (body.telefon) properties.Telefon = { phone_number: body.telefon };
+  if (body.seciliTarih) {
+    properties['Seçilen Tarih'] = { rich_text: [{ text: { content: body.seciliTarih } }] };
+  }
+  if (body.etkinlikId) {
+    properties['Etkinlikler'] = { relation: [{ id: body.etkinlikId }] };
+  }
+  const cevaplar = formatKayitCevaplari(body.ekSorular);
+  if (cevaplar) {
+    properties['Kayıt cevapları'] = { rich_text: [{ text: { content: cevaplar } }] };
+  }
+  // Ücretli akış bugün havale — Iyzico Aşama 6'da bağlanınca yöntem
+  // ödeme onay handler'ı tarafından override edilir. Ücretsizde yöntem
+  // anlamsız → boş bırakılır (Kayıtlar select default null).
+  if (ucretliMi) {
+    properties['Ödeme Yöntemi'] = { select: { name: 'Havale' } };
+  }
+  // `Ödenen Tutar`, `Ödeme Tarihi`, `Katıldı mı?`, `Geri Bildirim Verdi`,
+  // `Notlar` → kayıt anında dokunulmaz.
+
+  const result = await notion.pages.create({
+    parent: { database_id: NOTION_KAYITLAR_DB },
+    properties,
+  });
+  return result.id;
 }
 
 async function notionBasvuruYaz(args: {
@@ -243,10 +299,13 @@ export const POST: APIRoute = async ({ request }) => {
   // input + response'a çıkış aynı değer olsun.
   const referansNo = uretReferansNo();
 
-  // Notion Başvurular satır yaz
+  // Notion satır yaz — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular) dallanması.
+  // Brief brief-odeme-asama15-kapi1-kayitlar.md, KARAR 76.
   let basvuruId: string;
   try {
-    basvuruId = await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
+    basvuruId = isKapi1(format)
+      ? await notionKayitlaraYaz({ body, ucretliMi: odemeGerekli, referansNo })
+      : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {
     return json(
       { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
