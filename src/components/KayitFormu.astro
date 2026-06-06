@@ -75,20 +75,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         <input type="text" name="website" id="kf-website" tabindex="-1" autocomplete="off" />
       </div>
 
-      {/* Sadece-askı toggle (Brief Aşama 2). Kapı 1'de görünür; cember'de
-          başvuru/onay akışı askı havuzunu taşımaz. Tıklanınca tarih/Niyet/
-          Ekonomik katılım/Ödeme gizlenir; yalnız Sen + askı bölümü kalır.
-          POST Aşama 3'te backend'e bağlanacak — şu an submit "yakında" uyarısı
-          verir, kayıt göndermez. */}
-      {kapi1 && (
-      <div class="kayit-formu__aski-toggle">
-        <label class="kayit-formu__aski-toggle-label">
-          <input type="checkbox" name="sadece_aski" data-kf-sadece-aski />
-          <span>Bir buluşmaya katılmadan da kor bırakabilirsin.</span>
-        </label>
-      </div>
-      )}
-
       <!-- BÖLÜM 1 — Sen (default açık) -->
       <details class="kayit-formu__grup" open>
         <summary>Sen</summary>
@@ -471,6 +457,18 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             açabilirsin. Her kor, başka bir kadının kapıyı geçmesini sağlar.
           </p>
 
+          {/* Sadece-askı toggle — Aşama 2.6 (Brief Madde 1): form üstünden
+              askı bölümü içine taşındı. Mantıksal yer burada. Açık → tarih/
+              kademe/promo gizli, kor zorunlu, submit eder (Aşama 3a). */}
+          {kapi1 && (
+          <div class="kayit-formu__aski-toggle">
+            <label class="kayit-formu__aski-toggle-label">
+              <input type="checkbox" name="sadece_aski" data-kf-sadece-aski />
+              <span>Bir buluşmaya katılmadan da kor bırakabilirsin.</span>
+            </label>
+          </div>
+          )}
+
           <div class="kayit-formu__group">
             <label for="kf-aski-tutar">
               OCAK burs havuzuna katkın
@@ -487,6 +485,17 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               inputmode="numeric"
               data-kf-aski-tutar
             />
+            {/* Aşama 2.6 Madde 5 — canlı toplam mirror: kor girince yukarıdaki
+                tutar bloğuyla görsel bağ. JS refreshOdemeBlok günceller. */}
+            <p
+              class="kayit-formu__aski-toplam-mirror"
+              data-kf-aski-toplam-mirror
+              hidden
+            >
+              Toplam:
+              <span data-kf-aski-toplam-mirror-tutar>—</span>
+              <span data-kf-aski-toplam-mirror-para>TRY</span>
+            </p>
           </div>
 
           <div class="kayit-formu__group">
@@ -1280,6 +1289,27 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     font-weight: 400;
   }
 
+  /* === Aşama 2.6 Madde 5 — askı bölümünde mini canlı toplam mirror ========
+   * Kor girince yukarıdaki tutar bloğuyla görsel bağ — kullanıcı "buraya
+   * yansıdı" hissini anında alır. Mini, sönük; esas toplam üstteki blokta. */
+  .kayit-formu__aski-toplam-mirror {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .kayit-formu__aski-toplam-mirror[hidden] { display: none; }
+  .kayit-formu__aski-toplam-mirror [data-kf-aski-toplam-mirror-tutar] {
+    color: var(--ember);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: 400;
+  }
+
   /* === Aşama 2 — askı referans liste (yaklaşan 3 ücretli) ================== */
   .kayit-formu__aski-referans {
     margin-top: var(--space-5);
@@ -1461,6 +1491,17 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // tüm [data-kf-katilim] CSS ile gizli — blok DOM'da ama görünmez,
       // güvenli.
       odemeBlok.hidden = hesap.toplam <= 0;
+
+      // Aşama 2.6 Madde 5 — askı bölümünde mini toplam mirror. Kor girince
+      // (katmanB > 0) görünür; aksi hâlde gizli. Esas toplam üstteki blok.
+      const mirrorEl = form!.querySelector<HTMLElement>('[data-kf-aski-toplam-mirror]');
+      if (mirrorEl) {
+        mirrorEl.hidden = katmanB <= 0;
+        const mt = mirrorEl.querySelector('[data-kf-aski-toplam-mirror-tutar]');
+        const mp = mirrorEl.querySelector('[data-kf-aski-toplam-mirror-para]');
+        if (mt) mt.textContent = String(hesap.toplam);
+        if (mp) mp.textContent = para;
+      }
     }
 
     // Promo doğrulama — /api/promo-dogrula (Aşama 3a). Debounced input + blur.
@@ -1481,6 +1522,24 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       promoMesajEl.classList.toggle('kayit-formu__promo-mesaj--hata', tip === 'hata');
     }
 
+    // Aşama 2.6 Madde 4 — tam-burs ile askı bölümü çakışır (ödeyemeyen
+     // aynı anda kor bırakmaya davet edilmez, tutarsız). Helper: tam-burs
+     // durumuna göre askı bölümünü gizle/göster + sadece-askı toggle'ı
+     // sıfırla (askı modu zaten anlamsız).
+    function syncAskiBolumGorunum() {
+      if (!askiBolum) return;
+      const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
+      askiBolum.hidden = tamBurs;
+      if (tamBurs) {
+        // Askı kapatılsın — kor input + niyet boşa düşürülmesin (kullanıcı
+        // tam-burs'tan vazgeçerse veri kalsın). Sadece bölüm gizli.
+        if (askiOnlyEl?.checked) {
+          askiOnlyEl.checked = false;
+          syncAskiOnly();
+        }
+      }
+    }
+
     async function dogrulaPromo() {
       if (!promoInputEl) return;
       const kod = promoInputEl.value.trim().toUpperCase();
@@ -1488,6 +1547,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         promoSonuc = null;
         if (promoKodIdEl) promoKodIdEl.value = '';
         promoMesajGoster('', 'nort');
+        syncAskiBolumGorunum();
         refreshOdemeBlok();
         return;
       }
@@ -1532,6 +1592,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         if (promoKodIdEl) promoKodIdEl.value = '';
         promoMesajGoster('Doğrulama şu an çalışmıyor.', 'hata');
       }
+      syncAskiBolumGorunum();
       refreshOdemeBlok();
     }
 
@@ -1577,6 +1638,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // Zorunluluk yönetimi
       const etkSel = form!.querySelector<HTMLSelectElement>('select[name="etkinlik_id"]');
       const ekonRadios = form!.querySelectorAll<HTMLInputElement>('input[name="ekonomik_katilim"]');
+      // Aşama 2.6 Madde 2 — kademe radio required toggling (Aşama 2.5'te
+      // eksikti, syncAskiOnly bunları yönetmiyordu → sadece-askı modunda
+      // kademe hâlâ required → submit "kademe seç" alert veriyordu).
+      const kademeRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-kademe]');
       if (etkSel) {
         if (aski) etkSel.removeAttribute('required');
         else etkSel.setAttribute('required', '');
@@ -1584,6 +1649,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       ekonRadios.forEach((r) => {
         if (aski) r.removeAttribute('required');
         else if (r.value === 'Tam') r.setAttribute('required', '');
+      });
+      kademeRadios.forEach((r) => {
+        if (aski) r.removeAttribute('required');
+        else r.setAttribute('required', '');
       });
       if (askiBolum) {
         askiBolum.open = aski || askiBolum.open;
