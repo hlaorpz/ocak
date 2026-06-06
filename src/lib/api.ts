@@ -78,6 +78,14 @@ export type KayitPayload = {
   kvkk: boolean;
   /** Honeypot — gerçek kullanıcıda boş; bot doldurursa endpoint sessiz success döner. */
   website?: string;
+  /**
+   * Aşama 2 (Brief brief-odeme-asama2-form-aski-ui.md) UI iskelet — backend
+   * BU AŞAMADA OKUMAZ. Aşama 3'te kodDogrula + Kayıtlar yazımına bağlanacak.
+   * Şimdilik payload'a düşer, /api/kayit sessizce yoksayar.
+   */
+  promoKod?: string;
+  askiTutar?: number;
+  askiNiyet?: string;
 };
 
 /**

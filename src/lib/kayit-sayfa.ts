@@ -7,7 +7,7 @@
 
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { filterDropdownEtkinlikleri } from './format-etkinlik';
+import { filterDropdownEtkinlikleri, yaklasanUcretliler } from './format-etkinlik';
 import {
   FORMAT_NOTION_FORMAT,
   parseKayitSorulari,
@@ -20,6 +20,13 @@ export type KayitSayfaData = {
   kayitSorulari: string[];
   havaleIban: string;
   havaleAd: string;
+  /**
+   * "Bir kor daha taşı" askı bölümü için referans liste (Aşama 2 UI). Yaklaşan
+   * ücretli etkinliklerin ilk 3'ü — fikir verici, fiyat listesi değil.
+   * Format-bağımsız tüm Etkinlikler havuzundan (askı genel havuz, formattan
+   * bağımsız). Boş olabilir → form bloğu hiç render olmaz.
+   */
+  askiReferanslari: CollectionEntry<'etkinlikler'>[];
 };
 
 export async function loadKayitData(format: KayitFormat): Promise<KayitSayfaData> {
@@ -28,10 +35,12 @@ export async function loadKayitData(format: KayitFormat): Promise<KayitSayfaData
   const etkinlikler = filterDropdownEtkinlikleri(tum, notionFormat);
   const ilk = etkinlikler[0];
   const kayitSorulari = parseKayitSorulari(ilk?.data.kayitSorulari);
+  const askiReferanslari = yaklasanUcretliler(tum, 3);
   return {
     etkinlikler,
     kayitSorulari,
     havaleIban: import.meta.env.PUBLIC_HAVALE_IBAN ?? '',
     havaleAd: import.meta.env.PUBLIC_HAVALE_AD ?? '',
+    askiReferanslari,
   };
 }

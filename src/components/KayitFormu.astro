@@ -14,7 +14,7 @@
 // Honeypot KARAR 194 (gizli `website` alanı), KVKK KARAR 144 (checkbox + expander),
 // scrollToSuccess KARAR 156, success'te form HTML gizleme KARAR 116.
 import type { CollectionEntry } from 'astro:content';
-import type { KayitFormat } from '../lib/kayit';
+import { isKapi1, type KayitFormat } from '../lib/kayit';
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
 
 interface Props {
@@ -23,10 +23,28 @@ interface Props {
   kayitSorulari: string[];
   havaleIban: string;
   havaleAd: string;
+  /**
+   * "Bir kor daha taşı" askı bölümü için fikir verici referans liste
+   * (Aşama 2 UI). Yaklaşan ücretli etkinliklerin ilk 3'ü. Boş veya
+   * Kapı 2 (cember) → askı bölümü hiç render edilmez.
+   */
+  askiReferanslari?: CollectionEntry<'etkinlikler'>[];
 }
 
-const { format, etkinlikler, kayitSorulari, havaleIban, havaleAd } = Astro.props;
+const {
+  format,
+  etkinlikler,
+  kayitSorulari,
+  havaleIban,
+  havaleAd,
+  askiReferanslari = [],
+} = Astro.props;
 const bosForm = etkinlikler.length === 0;
+// Askı katmanı + sadece-askı modu yalnız Kapı 1 formatlarında. Cember (Kapı 2)
+// başvuru/onay pipeline'ında — askı orada UX'i bozar (kayda dönüşüm Kaan
+// onayına bağlı, askı havuzu o akışa ait değil). Brief: Aşama 2 Kapı 1 odaklı.
+const kapi1 = isKapi1(format);
+const askiGoster = kapi1 && askiReferanslari.length > 0;
 
 // Etkinliğe ait fiyat bilgisi data-attribute'lerle option'a basılır; JS değişiklikte
 // ödeme bloğunu açar/kapatır (build-time karar veremiyoruz çünkü kullanıcı seçimi).
@@ -50,12 +68,26 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       </p>
     </div>
     ) : (
-    <form class="kayit-formu__form" data-format={format}>
+    <form class="kayit-formu__form" data-format={format} data-kapi1={kapi1 ? 'true' : 'false'}>
       {/* KARAR 194 honeypot — bot doldurur, endpoint sessiz success. */}
       <div class="hp-field" aria-hidden="true">
         <label for="kf-website">Website</label>
         <input type="text" name="website" id="kf-website" tabindex="-1" autocomplete="off" />
       </div>
+
+      {/* Sadece-askı toggle (Brief Aşama 2). Kapı 1'de görünür; cember'de
+          başvuru/onay akışı askı havuzunu taşımaz. Tıklanınca tarih/Niyet/
+          Ekonomik katılım/Ödeme gizlenir; yalnız Sen + askı bölümü kalır.
+          POST Aşama 3'te backend'e bağlanacak — şu an submit "yakında" uyarısı
+          verir, kayıt göndermez. */}
+      {kapi1 && (
+      <div class="kayit-formu__aski-toggle">
+        <label class="kayit-formu__aski-toggle-label">
+          <input type="checkbox" name="sadece_aski" data-kf-sadece-aski />
+          <span>Bir buluşmaya katılmadan da kor bırakabilirsin.</span>
+        </label>
+      </div>
+      )}
 
       <!-- BÖLÜM 1 — Sen (default açık) -->
       <details class="kayit-formu__grup" open>
@@ -157,9 +189,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         </div>
       </details>
 
-      {/* BÖLÜM 2 — Niyet (Notion'dan dinamik; boş → bölüm hiç YOK) */}
+      {/* BÖLÜM 2 — Niyet (Notion'dan dinamik; boş → bölüm hiç YOK).
+          Sadece-askı modunda gizli (katılım niyeti askıyla ilgisiz). */}
       {kayitSorulari.length > 0 && (
-      <details class="kayit-formu__grup">
+      <details class="kayit-formu__grup kayit-formu__grup--niyet">
         <summary>Niyet</summary>
         <div class="kayit-formu__grup-icerik">
           {kayitSorulari.map((soru, i) => (
@@ -183,7 +216,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       <details class="kayit-formu__grup">
         <summary>Katılım & Ödeme</summary>
         <div class="kayit-formu__grup-icerik">
-          <div class="kayit-formu__group">
+          <div class="kayit-formu__group" data-kf-katilim>
             <label for="kf-etkinlik">Tarih seç <span class="kayit-formu__required">*</span></label>
             <select
               id="kf-etkinlik"
@@ -211,7 +244,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             </select>
           </div>
 
-          <div class="kayit-formu__group">
+          <div class="kayit-formu__group" data-kf-katilim>
             <span class="kayit-formu__label-as-legend">
               Ekonomik katılım <span class="kayit-formu__required">*</span>
             </span>
@@ -236,13 +269,63 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             </div>
           </div>
 
-          {/* Koşullu ödeme bloğu — JS tarihe göre açar/kapatır (data-ucret > 0). */}
-          <div class="kayit-formu__odeme" data-iban={havaleIban} data-ad={havaleAd} hidden>
+          {/* Promo kodu — Brief Aşama 2 UI iskelet. Backend doğrulama Aşama 3
+              (kodDogrula çağrısı, canlı indirim güncelleme). Şu an kullanıcı
+              yazabilir; payload `promo_kod` olarak POST'a gider, backend
+              sessizce yoksayar (kırılmaz). Kapı 1 odaklı; cember'de gösterme. */}
+          {kapi1 && (
+          <div class="kayit-formu__group" data-kf-katilim>
+            <label for="kf-promo">
+              İndirim kodun
+              <span class="kayit-formu__optional">(opsiyonel)</span>
+            </label>
+            <input
+              id="kf-promo"
+              name="promo_kod"
+              class="kayit-formu__input kayit-formu__input--promo"
+              placeholder="örn. BURS2026"
+              autocapitalize="characters"
+              autocomplete="off"
+              data-kf-promo
+            />
+          </div>
+          )}
+
+          {/* Canlı tutar + ödeme yönergesi bloğu. JS tarihe göre açar/kapatır
+              (data-ucret > 0). Üç-dal indirim mantığı (Aşama 3'te backend'den
+              gelecek): Yüzde/Sabit → A+B'ye uygulanır; Tam burs → sadece A
+              sıfırlanır, B aynen kalır. Şu an `indirim` DAİMA 0 — slot DOM'da
+              hazır, görünmez (data-kf-indirim-slot hidden); Aşama 3 sadece
+              değeri yazar + slot'u açar, layout değişmez.
+
+              Katman A = etkinlik ücreti. Katman B = askı tutarı (4. bölüm).
+              Toplam = (A − indirim, floor 0) + B. Sadece-askı modunda A=0. */}
+          <div class="kayit-formu__odeme" data-iban={havaleIban} data-ad={havaleAd} data-kf-katilim hidden>
             <h3 class="kayit-formu__odeme-baslik">Ödeme</h3>
-            <p class="kayit-formu__odeme-tutar">
-              <span class="kayit-formu__odeme-rakam" data-kf-tutar>—</span>
-              <span class="kayit-formu__odeme-para" data-kf-para>TRY</span>
-            </p>
+            <ul class="kayit-formu__tutar-bloku">
+              <li class="kayit-formu__tutar-satir">
+                <span>Katılım payı</span>
+                <span>
+                  <span data-kf-katmanA>—</span>
+                  <span data-kf-para>TRY</span>
+                </span>
+              </li>
+              <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--indirim" data-kf-indirim-slot hidden>
+                <span>İndirim</span>
+                <span>− <span data-kf-indirim>0</span> TL</span>
+              </li>
+              <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--katmanB" data-kf-katmanB-slot hidden>
+                <span>Bir kor</span>
+                <span>+ <span data-kf-katmanB>0</span> TL</span>
+              </li>
+              <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--toplam">
+                <span>Toplam</span>
+                <span class="kayit-formu__tutar-toplam">
+                  <span data-kf-toplam>—</span>
+                  <span data-kf-para-toplam>TRY</span>
+                </span>
+              </li>
+            </ul>
             <dl class="kayit-formu__odeme-bilgi">
               <dt>IBAN</dt>
               <dd data-kf-iban>{havaleIban}</dd>
@@ -286,6 +369,82 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           </div>
         </div>
       </details>
+
+      {/* BÖLÜM 4 — Bir kor daha taşı (opsiyonel, Kapı 1 + askı referansı varsa).
+          Brief Aşama 2: askı genel havuza katkı. UI iskelet — backend POST
+          payload'ında `aski_tutar` + `aski_niyet` gönderilir, Aşama 3'te
+          Kayıtlar'a `Askı Tutarı` / `Askı Katkısı` field'larına yazılacak
+          (şimdi sessizce yoksayılır). Tutar > 0 girilirse canlı tutar
+          bloğunda Katman B satırı görünür + toplam güncellenir. */}
+      {askiGoster && (
+      <details class="kayit-formu__grup kayit-formu__grup--aski">
+        <summary>
+          Bir kor daha taşı
+          <span class="kayit-formu__optional">(opsiyonel)</span>
+        </summary>
+        <div class="kayit-formu__grup-icerik">
+          <p class="kayit-formu__aski-aciklama">
+            Hazır hissedersen, senden sonra gelecek bir kadının yolunu
+            açabilirsin. Her kor, başka bir kadının kapıyı geçmesini sağlar.
+          </p>
+
+          <div class="kayit-formu__group">
+            <label for="kf-aski-tutar">
+              OCAK burs havuzuna katkın
+              <span class="kayit-formu__aski-tutar-birim">(TL)</span>
+            </label>
+            <input
+              id="kf-aski-tutar"
+              name="aski_tutar"
+              type="number"
+              min="0"
+              step="50"
+              class="kayit-formu__input"
+              placeholder="örn. 250"
+              inputmode="numeric"
+              data-kf-aski-tutar
+            />
+          </div>
+
+          <div class="kayit-formu__group">
+            <label for="kf-aski-niyet">
+              Dilersen bir niyet bırak
+              <span class="kayit-formu__optional">(opsiyonel)</span>
+            </label>
+            <textarea
+              id="kf-aski-niyet"
+              name="aski_niyet"
+              class="kayit-formu__textarea"
+              rows="3"
+              placeholder="yoluna çıkacak kadına bir söz…"
+            ></textarea>
+          </div>
+
+          <div class="kayit-formu__aski-referans">
+            <p class="kayit-formu__aski-referans-baslik">
+              Bir fikir olsun diye, yaklaşan buluşmalar:
+            </p>
+            <ul class="kayit-formu__aski-referans-liste">
+              {askiReferanslari.map((e) => {
+                const tarih = formatEtkinlikTarihi(
+                  e.data.tarihBaslangic,
+                  e.data.tarihBitis,
+                  e.data.saat,
+                );
+                const ucret = e.data.ucret ?? 0;
+                const para = e.data.paraBirimi ?? 'TRY';
+                return (
+                  <li>
+                    {e.data.baslik} — {tarih} ·{' '}
+                    {ucret.toLocaleString('tr-TR')} {para}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      </details>
+      )}
 
       <button type="submit" class="kayit-formu__submit">Kaydımı Gönder</button>
 
@@ -805,6 +964,162 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* === Aşama 2 — sadece-askı toggle (form üstü) ============================
+   * Küçük, sessiz davet — checkbox + metin, smoke renk, hover'da ember.
+   * Cember (Kapı 2) formunda gösterilmez. */
+  .kayit-formu__aski-toggle {
+    margin-bottom: var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--ash);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .kayit-formu__aski-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    line-height: 1.5;
+  }
+  .kayit-formu__aski-toggle-label input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--ember);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .kayit-formu__aski-toggle-label:hover,
+  .kayit-formu__aski-toggle-label:focus-within {
+    color: var(--cream);
+  }
+
+  /* === Aşama 2 — opsiyonel etiket ("opsiyonel" smoke gri, küçük) =========== */
+  .kayit-formu__optional {
+    color: var(--smoke);
+    font-size: 0.75em;
+    font-weight: 400;
+    margin-left: 0.4em;
+    letter-spacing: 0.02em;
+  }
+
+  /* === Aşama 2 — promo input ===============================================
+   * Mevcut input baseline + büyük harf hissi (kullanıcı kodları upper-case
+   * gireceği için autocapitalize'la birlikte text-transform). */
+  .kayit-formu__input--promo {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .kayit-formu__input--promo::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  /* === Aşama 2 — canlı tutar bloğu (Katman A + indirim + B + Toplam) =======
+   * Mevcut .kayit-formu__odeme-bilgi DL paterninin <ul> kardeşi — KARAR'a
+   * göre tutar dökümü liste, ödeme bilgisi DL kalır.
+   * Toplam satırı vurgulu (ember rakam); ara satırlar sönük. */
+  .kayit-formu__tutar-bloku {
+    list-style: none;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+  }
+  .kayit-formu__tutar-satir {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    color: var(--cream-soft);
+    border-bottom: 1px dashed rgba(196, 75, 47, 0.12);
+  }
+  .kayit-formu__tutar-satir:last-child { border-bottom: none; }
+  .kayit-formu__tutar-satir--indirim { color: var(--gold); }
+  .kayit-formu__tutar-satir--katmanB { color: var(--cream-soft); }
+  .kayit-formu__tutar-satir--toplam {
+    padding-top: 0.7rem;
+    margin-top: 0.35rem;
+    border-top: 1px solid rgba(196, 75, 47, 0.4);
+    border-bottom: none;
+    color: var(--cream);
+    font-size: 1rem;
+  }
+  .kayit-formu__tutar-toplam {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ember);
+    font-weight: 400;
+  }
+
+  /* === Aşama 2 — "Bir kor daha taşı" askı bölümü ===========================
+   * Brief: opsiyonel/yumuşak (ember değil, sönük) — "davet, zorlama değil".
+   * Ash border, [open]'da da ash kalır (ember vurgu yok). */
+  .kayit-formu__grup--aski[open] { border-bottom-color: var(--ash); }
+  .kayit-formu__grup--aski > summary {
+    color: var(--cream-soft);
+  }
+  .kayit-formu__grup--aski > summary:hover,
+  .kayit-formu__grup--aski > summary:focus-visible {
+    color: var(--cream);
+  }
+  .kayit-formu__grup--aski > summary::after {
+    border-color: var(--smoke);
+  }
+  .kayit-formu__aski-aciklama {
+    margin: 0 0 var(--space-5);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.02rem;
+    line-height: 1.7;
+    color: var(--cream-soft);
+  }
+  .kayit-formu__aski-tutar-birim {
+    color: var(--smoke);
+    font-size: 0.85em;
+    margin-left: 0.3em;
+    font-weight: 400;
+  }
+
+  /* === Aşama 2 — askı referans liste (yaklaşan 3 ücretli) ================== */
+  .kayit-formu__aski-referans {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--ash);
+  }
+  .kayit-formu__aski-referans-baslik {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--smoke);
+    text-transform: uppercase;
+  }
+  .kayit-formu__aski-referans-liste {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    line-height: 1.7;
+  }
+  .kayit-formu__aski-referans-liste li {
+    padding: 0.25rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+  }
+  .kayit-formu__aski-referans-liste li:last-child { border-bottom: none; }
+
+  /* === Aşama 2 — sadece-askı modunda gizlenecek bölümler ==================
+   * JS sadece_aski toggle'a göre data-kf-katilim attribute'ünü değiştirir;
+   * "katilim=hidden" sınıfı gizler. (class:list yerine attribute selector —
+   * KARAR Astro byte-identical riskine girmez.) */
+  .kayit-formu__form[data-aski-only='true'] .kayit-formu__group--katilim,
+  .kayit-formu__form[data-aski-only='true'] [data-kf-katilim] {
+    display: none;
+  }
+
   /* === Mobil === */
   @media (max-width: 480px) {
     .kayit-formu { padding: var(--space-7) var(--space-5); }
@@ -814,6 +1129,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     }
     .kayit-formu__grup-icerik { padding: var(--space-2) 0 var(--space-5); }
     .kayit-formu__group { margin-bottom: var(--space-4); }
+    .kayit-formu__tutar-toplam { font-size: 1.2rem; }
   }
 
   /* === A11y === */
@@ -851,24 +1167,95 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const format = form.dataset.format ?? '';
     const oldText = submit.textContent ?? 'Kaydımı Gönder';
 
-    // Ödeme bloğunu seçilen etkinliğin ücretine göre aç/kapa.
-    function refreshOdemeBlok() {
+    // Aşama 2 — canlı tutar (Katman A + indirim slot + Katman B + Toplam).
+    // İndirim DAİMA 0 (backend yok; Aşama 3'te kodDogrula'dan gelecek + slot
+    // açılacak). Üç-dal mantığı (Aşama 3): Yüzde/Sabit indirim A+B'ye uygulanır;
+    // Tam burs sadece A sıfırlanır, B aynen kalır. Şimdi tek formül: yeniA =
+    // max(0, A − indirim); toplam = yeniA + B. Indirim=0 olduğu için A+B.
+    const askiOnlyEl = form.querySelector<HTMLInputElement>('[data-kf-sadece-aski]');
+    const askiTutarEl = form.querySelector<HTMLInputElement>('[data-kf-aski-tutar]');
+    const askiBolum = section.querySelector<HTMLDetailsElement>('.kayit-formu__grup--aski');
+    const indirimSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-indirim-slot]');
+    const katmanBSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-katmanB-slot]');
+
+    function aktifUcret(): { ucret: number; para: string; tarih: string } {
+      // Sadece-askı modunda A=0, para birimi default TRY.
+      if (askiOnlyEl?.checked) return { ucret: 0, para: 'TRY', tarih: '' };
       const opt = select.options[select.selectedIndex];
-      const ucretRaw = opt?.dataset.ucret ?? '0';
-      const ucret = Number(ucretRaw) || 0;
-      const para = opt?.dataset.paraBirimi ?? 'TRY';
-      const tarih = opt?.dataset.tarih ?? '';
-      if (ucret > 0) {
-        odemeBlok.querySelector('[data-kf-tutar]')!.textContent = String(ucret);
-        odemeBlok.querySelector('[data-kf-para]')!.textContent = para;
+      return {
+        ucret: Number(opt?.dataset.ucret ?? '0') || 0,
+        para: opt?.dataset.paraBirimi ?? 'TRY',
+        tarih: opt?.dataset.tarih ?? '',
+      };
+    }
+
+    function refreshOdemeBlok() {
+      const { ucret: katmanA, para, tarih } = aktifUcret();
+      const indirim = 0; // Aşama 3'te kodDogrula'dan gelecek.
+      const yeniA = Math.max(0, katmanA - indirim);
+      const katmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
+      const toplam = yeniA + katmanB;
+
+      odemeBlok.querySelector('[data-kf-katmanA]')!.textContent = String(katmanA);
+      odemeBlok.querySelector('[data-kf-para]')!.textContent = para;
+      odemeBlok.querySelector('[data-kf-toplam]')!.textContent = String(toplam);
+      odemeBlok.querySelector('[data-kf-para-toplam]')!.textContent = para;
+
+      // Katman B slot: askı > 0 ise göster.
+      if (katmanBSlot) {
+        katmanBSlot.hidden = katmanB <= 0;
+        const kbEl = odemeBlok.querySelector('[data-kf-katmanB]');
+        if (kbEl) kbEl.textContent = String(katmanB);
+      }
+
+      // İndirim slot: Aşama 2'de indirim=0 → daima hidden. Aşama 3'te
+      // backend cevabı varsa açılacak.
+      if (indirimSlot) indirimSlot.hidden = indirim <= 0;
+
+      // Havale açıklaması — sadece etkinlik ücreti varsa anlamlı.
+      if (katmanA > 0) {
         const aciklamaEl = odemeBlok.querySelector('[data-kf-aciklama]')!;
         aciklamaEl.textContent = `Açıklamaya adını ve "${formatBaslik(format)} – ${tarih}" yaz.`;
-        odemeBlok.hidden = false;
-      } else {
-        odemeBlok.hidden = true;
       }
+
+      // Bloğu görünür kıl: toplam > 0 (ücret veya askı). Sadece-askı modunda
+      // tüm [data-kf-katilim] CSS ile gizli — blok DOM'da ama görünmez,
+      // güvenli.
+      odemeBlok.hidden = toplam <= 0;
     }
     select.addEventListener('change', refreshOdemeBlok);
+    askiTutarEl?.addEventListener('input', refreshOdemeBlok);
+
+    // Sadece-askı toggle — form data-aski-only attribute'u CSS gizler.
+    // required attribute'larını temizle (etkinlik/ekonomik form-validation'a
+    // takılmasın). Askı bölümünü auto-aç + tutar input'unu required yap.
+    // Submit handler aşağıda mod'a göre erken döner.
+    function syncAskiOnly() {
+      const aski = !!askiOnlyEl?.checked;
+      form!.dataset.askiOnly = aski ? 'true' : 'false';
+      // Zorunluluk yönetimi
+      const etkSel = form!.querySelector<HTMLSelectElement>('select[name="etkinlik_id"]');
+      const ekonRadios = form!.querySelectorAll<HTMLInputElement>('input[name="ekonomik_katilim"]');
+      if (etkSel) {
+        if (aski) etkSel.removeAttribute('required');
+        else etkSel.setAttribute('required', '');
+      }
+      ekonRadios.forEach((r) => {
+        if (aski) r.removeAttribute('required');
+        else if (r.value === 'Tam') r.setAttribute('required', '');
+      });
+      if (askiBolum) {
+        askiBolum.open = aski || askiBolum.open;
+      }
+      if (askiTutarEl) {
+        if (aski) askiTutarEl.setAttribute('required', '');
+        else askiTutarEl.removeAttribute('required');
+      }
+      // Submit butonu metni — mod ipucu.
+      submit.textContent = aski ? 'Bir kor bırak' : oldText;
+      refreshOdemeBlok();
+    }
+    askiOnlyEl?.addEventListener('change', syncAskiOnly);
     refreshOdemeBlok();
 
     function formatBaslik(f: string): string {
@@ -887,6 +1274,16 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorEl.hidden = true;
+
+      // Aşama 2 — sadece-askı modu UI iskelet; backend bağlanmadı (Aşama 3).
+      // POST etmiyoruz, kullanıcıya nazik bir bilgi gösteriyoruz.
+      if (askiOnlyEl?.checked) {
+        errorEl.textContent =
+          'Sadece-askı akışı yakında açılacak. O zamana kadar bir buluşmaya katılarak da kor bırakabilirsin.';
+        errorEl.hidden = false;
+        return;
+      }
+
       submit.disabled = true;
       submit.textContent = 'Gönderiliyor…';
 
@@ -903,6 +1300,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           if (cevap) ekSorular[soru] = cevap;
         });
 
+      // Aşama 2 — askı + promo alanları payload'a düşer; backend Aşama 3'te
+      // okumaya başlayacak (şu an sessizce yoksayılır, hatasız).
+      const promoKodRaw = (data.get('promo_kod') ?? '').toString().trim();
+      const askiTutarRaw = (data.get('aski_tutar') ?? '').toString().trim();
+      const askiTutar = Number(askiTutarRaw);
+      const askiNiyetRaw = (data.get('aski_niyet') ?? '').toString().trim();
+
       const payload: KayitPayload = {
         format,
         ad: (data.get('ad') ?? '').toString().trim(),
@@ -917,6 +1321,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         kvkk: data.get('kvkk') === 'on',
         // KARAR 194 honeypot — bot doldurursa endpoint sessiz success döner.
         website: (data.get('website') ?? '').toString(),
+        ...(promoKodRaw ? { promoKod: promoKodRaw } : {}),
+        ...(askiTutarRaw && askiTutar > 0 ? { askiTutar } : {}),
+        ...(askiNiyetRaw ? { askiNiyet: askiNiyetRaw } : {}),
       };
 
       // Defansif validation (native required attribute zorunlu alanları yakalar).

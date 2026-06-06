@@ -132,3 +132,44 @@ export function filterDropdownEtkinlikleri<T extends DropdownEntry>(
         new Date(b.data.tarihBaslangic).getTime(),
     );
 }
+
+/**
+ * KayitFormu "Bir kor daha taşı" bölümünde fikir verici referans listesi
+ * için yaklaşan ücretli etkinlikler (Brief: brief-odeme-asama2-form-aski-ui.md).
+ *
+ * Filtre: `Statü == 'Kayıt Açık'` AND `Ücret > 0` AND tarih bugünden sonra.
+ * Sıralı (artan), ilk `limit` adet (default 3). Etkinlik formatı/türü bağımsız —
+ * askı genel havuz, "şu programa şu kadar" demez; sadece fiyat aralığı için
+ * bir his verir.
+ */
+interface YaklasanUcretliEntry {
+  data: {
+    durum: string;
+    tarihBaslangic: string;
+    tarihBitis?: string;
+    ucret?: number;
+  };
+}
+
+export function yaklasanUcretliler<T extends YaklasanUcretliEntry>(
+  entries: T[],
+  limit = 3,
+  bugun: Date = new Date(),
+): T[] {
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
+  return entries
+    .filter((e) => e.data.durum === 'Kayıt Açık' && (e.data.ucret ?? 0) > 0)
+    .filter((e) => {
+      const referans = e.data.tarihBitis ?? e.data.tarihBaslangic;
+      const p = parcala(referans);
+      if (!p) return true; // parse fail → defansif göster (bugundenSonra ile aynı politika)
+      return new Date(p.yil, p.ayIdx, p.gun) >= sinir;
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.data.tarihBaslangic).getTime() -
+        new Date(b.data.tarihBaslangic).getTime(),
+    )
+    .slice(0, limit);
+}
