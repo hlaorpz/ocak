@@ -194,6 +194,56 @@ export function etkinlikAdiFormatla(
 }
 
 /**
+ * Aşama 3a — promo + iki katman tutar hesabı (tek otorite, backend+frontend
+ * paylaşır). Brief: brief-odeme-asama3a-promo-aski-backend.md.
+ *
+ * Kurallar:
+ *  - Kod yok / geçersiz → toplam = A + B, indirim = 0.
+ *  - tip='yuzde' veya 'sabit' → indirim (A+B)'ye uygulanır;
+ *    toplam = max(0, A+B − indirim). Helper `kodDogrula` zaten A+B üzerinden
+ *    hesapladıysa indirimTutari doğrudan kullanılır.
+ *  - tip='tam-burs' → sadece A sıfırlanır, B aynen kalır;
+ *    indirim = A, toplam = B. (Helper bu durumda yeniTutar=0 döner çünkü
+ *    A+B'yi sıfırlar — burada B'yi geri ekliyoruz; brief açık karar.)
+ *
+ * Dönüş `katmanA`/`katmanB`: indirimden SONRAKİ değerler (tam-burs'da A=0).
+ * Frontend canlı tutar bloğunda satır-bazlı gösterim için ayrı tutuluyor;
+ * `toplam` zaten katmanA + katmanB.
+ */
+import type { KodSonuc } from './kodlar';
+
+export type IndirimSonuc = {
+  /** İndirim sonrası katman A (tam-burs'da 0). */
+  katmanA: number;
+  /** Katman B — tam-burs'da değişmez, yuzde/sabit'te değişmez (indirim toplama uygulanır). */
+  katmanB: number;
+  /** Toplam indirim TL. Promo yoksa/geçersizse 0. */
+  indirim: number;
+  /** Ödenecek toplam TL = katmanA + katmanB (yuzde/sabit'te = max(0, A+B−indirim); tam-burs'ta = B). */
+  toplam: number;
+};
+
+export function uygulaIndirim(
+  katmanA: number,
+  katmanB: number,
+  kod: KodSonuc | null,
+): IndirimSonuc {
+  const aBT = Math.max(0, katmanA) + Math.max(0, katmanB);
+  if (!kod || !kod.gecerli) {
+    return { katmanA, katmanB, indirim: 0, toplam: aBT };
+  }
+  if (kod.tip === 'tam-burs') {
+    // Sadece A sıfırlanır, B kalır. (Brief açık: helper A+B'yi sıfırlasa da
+    // bizim niyetimiz tam-burs SADECE etkinlik ücretini karşılar.)
+    return { katmanA: 0, katmanB, indirim: katmanA, toplam: katmanB };
+  }
+  // yuzde / sabit — indirim A+B üzerinde uygulanır.
+  const indirim = Math.min(Math.max(0, kod.indirimTutari), aBT);
+  const toplam = Math.max(0, aBT - indirim);
+  return { katmanA, katmanB, indirim, toplam };
+}
+
+/**
  * kayit-cta section'ı için post-render href çözümü (Brief 4 KARAR 207).
  *
  * Plugin (remark-ocak-sections.ts transformKayitCta) buton href'ini

@@ -288,6 +288,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               autocomplete="off"
               data-kf-promo
             />
+            {/* Promo doğrulama geri-bildirim mesajı — JS doldurur. */}
+            <p class="kayit-formu__promo-mesaj" data-kf-promo-mesaj hidden></p>
+            <input type="hidden" name="promo_kod_id" data-kf-promo-kod-id value="" />
           </div>
           )}
 
@@ -470,14 +473,33 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           Ateşin yanında sana yer ayırdık. Buluşmanın detaylarını yakında seninle
           paylaşacağız.
         </p>
+        {/* Aşama 3a — kendi+askı kombinasyonunda ek satır (ödemesiz dal,
+            örn. ücretsiz buluşma + askı). */}
+        <p
+          class="kayit-formu__success-text kayit-formu__success-aski-ek"
+          data-kf-success-aski-ek-odemesiz
+          hidden
+        >
+          Ve bir kor daha bıraktın — teşekkürler.
+        </p>
       </div>
 
-      {/* Ödemeli dal — odeme.gerekli=true */}
+      {/* Ödemeli dal — odeme.gerekli=true. Aşama 3a: sadece-askı dalı da bu
+          bloğu paylaşır (havale yönergesi tek-yer). Üst metin JS'te mod'a
+          göre değişir (data-kf-success-odemeli-metin). */}
       <div class="kayit-formu__success-odemeli" data-kf-success-odemeli hidden>
-        <p class="kayit-formu__success-text">
+        <p class="kayit-formu__success-text" data-kf-success-odemeli-metin>
           Ateşin yanında sana yer ayırdık. Yerini sabitlemek için katılım payını
           aşağıdaki hesaba iletebilirsin; ulaştığında buluşmanın detaylarıyla
           sana dönüyoruz.
+        </p>
+        {/* Aşama 3a — kendi+askı, ödemeli dal: ek satır. */}
+        <p
+          class="kayit-formu__success-text kayit-formu__success-aski-ek"
+          data-kf-success-aski-ek-odemeli
+          hidden
+        >
+          Ve bir kor daha bıraktın — teşekkürler.
         </p>
         <dl class="kayit-formu__success-odeme">
           <dt>Tutar</dt>
@@ -932,6 +954,16 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__success-odemeli[hidden],
   .kayit-formu__success-katilim[hidden] { display: none; }
 
+  /* === Aşama 3a — kendi+askı ek satır (success'te kor teşekkürü) ========== */
+  .kayit-formu__success-aski-ek {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.95rem;
+    margin-top: -0.5rem;
+  }
+  .kayit-formu__success-aski-ek[hidden] { display: none; }
+
   /* Brief 5 KARAR 208 — katilim bloğu (link/adres + "not al" cümlesi). */
   .kayit-formu__success-katilim {
     margin: 0 auto var(--space-6);
@@ -1015,6 +1047,18 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     text-transform: none;
     letter-spacing: normal;
   }
+
+  /* === Aşama 3a — promo geri-bildirim mesajı =============================== */
+  .kayit-formu__promo-mesaj {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--cream-soft);
+  }
+  .kayit-formu__promo-mesaj[hidden] { display: none; }
+  .kayit-formu__promo-mesaj--ok { color: var(--gold); }
+  .kayit-formu__promo-mesaj--hata { color: var(--ember); }
 
   /* === Aşama 2 — canlı tutar bloğu (Katman A + indirim + B + Toplam) =======
    * Mevcut .kayit-formu__odeme-bilgi DL paterninin <ul> kardeşi — KARAR'a
@@ -1155,6 +1199,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 <script>
   import { submitKayit, type KayitPayload } from '../lib/api';
   import { scrollToSuccess } from '../lib/scroll-to-success';
+  import { uygulaIndirim } from '../lib/kayit';
+  import type { KodSonuc } from '../lib/kodlar';
 
   const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
   if (form) {
@@ -1189,16 +1235,21 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       };
     }
 
+    // Aşama 3a — promo durumu (state). Boşsa null; geçerli/geçersiz KodSonuc
+    // backend'ten döner ve refreshOdemeBlok'a beslenir.
+    let promoSonuc: KodSonuc | null = null;
+    const promoInputEl = form.querySelector<HTMLInputElement>('[data-kf-promo]');
+    const promoMesajEl = form.querySelector<HTMLElement>('[data-kf-promo-mesaj]');
+    const promoKodIdEl = form.querySelector<HTMLInputElement>('[data-kf-promo-kod-id]');
+
     function refreshOdemeBlok() {
       const { ucret: katmanA, para, tarih } = aktifUcret();
-      const indirim = 0; // Aşama 3'te kodDogrula'dan gelecek.
-      const yeniA = Math.max(0, katmanA - indirim);
       const katmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
-      const toplam = yeniA + katmanB;
+      const hesap = uygulaIndirim(katmanA, katmanB, promoSonuc);
 
       odemeBlok.querySelector('[data-kf-katmanA]')!.textContent = String(katmanA);
       odemeBlok.querySelector('[data-kf-para]')!.textContent = para;
-      odemeBlok.querySelector('[data-kf-toplam]')!.textContent = String(toplam);
+      odemeBlok.querySelector('[data-kf-toplam]')!.textContent = String(hesap.toplam);
       odemeBlok.querySelector('[data-kf-para-toplam]')!.textContent = para;
 
       // Katman B slot: askı > 0 ise göster.
@@ -1208,9 +1259,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         if (kbEl) kbEl.textContent = String(katmanB);
       }
 
-      // İndirim slot: Aşama 2'de indirim=0 → daima hidden. Aşama 3'te
-      // backend cevabı varsa açılacak.
-      if (indirimSlot) indirimSlot.hidden = indirim <= 0;
+      // İndirim slot: hesap.indirim > 0 ise göster (Aşama 3a aktif).
+      if (indirimSlot) {
+        indirimSlot.hidden = hesap.indirim <= 0;
+        const indEl = odemeBlok.querySelector('[data-kf-indirim]');
+        if (indEl) indEl.textContent = String(hesap.indirim);
+      }
 
       // Havale açıklaması — sadece etkinlik ücreti varsa anlamlı.
       if (katmanA > 0) {
@@ -1221,10 +1275,102 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // Bloğu görünür kıl: toplam > 0 (ücret veya askı). Sadece-askı modunda
       // tüm [data-kf-katilim] CSS ile gizli — blok DOM'da ama görünmez,
       // güvenli.
-      odemeBlok.hidden = toplam <= 0;
+      odemeBlok.hidden = hesap.toplam <= 0;
     }
-    select.addEventListener('change', refreshOdemeBlok);
-    askiTutarEl?.addEventListener('input', refreshOdemeBlok);
+
+    // Promo doğrulama — /api/promo-dogrula (Aşama 3a). Debounced input + blur.
+    // Sayaç artırımı YOK (kodKullanimArtir Aşama 3b ödeme onayında).
+    const PROMO_SEBEP_TR: Record<string, string> = {
+      bulunamadi: 'Bu kodu bulamadık.',
+      pasif: 'Bu kod artık geçerli değil.',
+      'suresi-gecmis': 'Bu kodun süresi dolmuş.',
+      'limit-doldu': 'Bu kod kullanım sınırına ulaşmış.',
+      'format-disi': 'Bu kod bu buluşmada geçerli değil.',
+    };
+
+    function promoMesajGoster(metin: string, tip: 'ok' | 'hata' | 'nort') {
+      if (!promoMesajEl) return;
+      promoMesajEl.textContent = metin;
+      promoMesajEl.hidden = !metin;
+      promoMesajEl.classList.toggle('kayit-formu__promo-mesaj--ok', tip === 'ok');
+      promoMesajEl.classList.toggle('kayit-formu__promo-mesaj--hata', tip === 'hata');
+    }
+
+    async function dogrulaPromo() {
+      if (!promoInputEl) return;
+      const kod = promoInputEl.value.trim().toUpperCase();
+      if (!kod) {
+        promoSonuc = null;
+        if (promoKodIdEl) promoKodIdEl.value = '';
+        promoMesajGoster('', 'nort');
+        refreshOdemeBlok();
+        return;
+      }
+      const { ucret: katmanA } = aktifUcret();
+      const katmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
+      const aBT = katmanA + katmanB;
+      if (aBT <= 0) {
+        promoSonuc = null;
+        if (promoKodIdEl) promoKodIdEl.value = '';
+        promoMesajGoster('Önce bir tarih seç ya da bir tutar yaz.', 'hata');
+        refreshOdemeBlok();
+        return;
+      }
+      try {
+        const res = await fetch('/api/promo-dogrula', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kod, format, tutar: aBT }),
+        });
+        const data = (await res.json()) as KodSonuc | { status: string; message?: string };
+        if ('gecerli' in data) {
+          promoSonuc = data;
+          if (data.gecerli) {
+            if (promoKodIdEl) promoKodIdEl.value = data.kodId;
+            const tipMetin =
+              data.tip === 'tam-burs'
+                ? 'Tam burs — katılım payı sıfır.'
+                : `Geçerli — ${data.indirimTutari} TL indirim.`;
+            promoMesajGoster(tipMetin, 'ok');
+          } else {
+            if (promoKodIdEl) promoKodIdEl.value = '';
+            const mesaj = PROMO_SEBEP_TR[data.sebep] ?? 'Kod doğrulanamadı.';
+            promoMesajGoster(mesaj, 'hata');
+          }
+        } else {
+          promoSonuc = null;
+          if (promoKodIdEl) promoKodIdEl.value = '';
+          promoMesajGoster('Doğrulama şu an çalışmıyor.', 'hata');
+        }
+      } catch {
+        promoSonuc = null;
+        if (promoKodIdEl) promoKodIdEl.value = '';
+        promoMesajGoster('Doğrulama şu an çalışmıyor.', 'hata');
+      }
+      refreshOdemeBlok();
+    }
+
+    // Debounced — input başına 500ms bekle (canlı doğrulama).
+    let promoTimer: ReturnType<typeof setTimeout> | null = null;
+    function promoYenidenDogrula(delay = 500) {
+      if (!promoInputEl?.value.trim()) return;
+      if (promoTimer) clearTimeout(promoTimer);
+      promoTimer = setTimeout(dogrulaPromo, delay);
+    }
+    promoInputEl?.addEventListener('input', () => promoYenidenDogrula());
+    promoInputEl?.addEventListener('blur', () => {
+      if (promoTimer) clearTimeout(promoTimer);
+      dogrulaPromo();
+    });
+
+    select.addEventListener('change', () => {
+      refreshOdemeBlok();
+      promoYenidenDogrula(0); // tutar değişti → promo'yu hemen yeniden doğrula
+    });
+    askiTutarEl?.addEventListener('input', () => {
+      refreshOdemeBlok();
+      promoYenidenDogrula();
+    });
 
     // Sadece-askı toggle — form data-aski-only attribute'u CSS gizler.
     // required attribute'larını temizle (etkinlik/ekonomik form-validation'a
@@ -1275,17 +1421,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       e.preventDefault();
       errorEl.hidden = true;
 
-      // Aşama 2 — sadece-askı modu UI iskelet; backend bağlanmadı (Aşama 3).
-      // POST etmiyoruz, kullanıcıya nazik bir bilgi gösteriyoruz.
-      if (askiOnlyEl?.checked) {
-        errorEl.textContent =
-          'Sadece-askı akışı yakında açılacak. O zamana kadar bir buluşmaya katılarak da kor bırakabilirsin.';
-        errorEl.hidden = false;
-        return;
-      }
+      // Aşama 3a — sadece-askı modu artık AÇIK. POST eder, backend ayrı
+      // Tip="Askı Katkısı" Kayıtlar satırı açar.
+      const sadeceAski = !!askiOnlyEl?.checked;
 
       submit.disabled = true;
-      submit.textContent = 'Gönderiliyor…';
+      submit.textContent = sadeceAski ? 'Gönderiliyor…' : 'Gönderiliyor…';
 
       const data = new FormData(form);
 
@@ -1300,9 +1441,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           if (cevap) ekSorular[soru] = cevap;
         });
 
-      // Aşama 2 — askı + promo alanları payload'a düşer; backend Aşama 3'te
-      // okumaya başlayacak (şu an sessizce yoksayılır, hatasız).
+      // Askı + promo alanları (Aşama 3a backend okur).
       const promoKodRaw = (data.get('promo_kod') ?? '').toString().trim();
+      const promoKodIdRaw = (data.get('promo_kod_id') ?? '').toString().trim();
       const askiTutarRaw = (data.get('aski_tutar') ?? '').toString().trim();
       const askiTutar = Number(askiTutarRaw);
       const askiNiyetRaw = (data.get('aski_niyet') ?? '').toString().trim();
@@ -1322,20 +1463,26 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         // KARAR 194 honeypot — bot doldurursa endpoint sessiz success döner.
         website: (data.get('website') ?? '').toString(),
         ...(promoKodRaw ? { promoKod: promoKodRaw } : {}),
+        ...(promoKodIdRaw ? { kodId: promoKodIdRaw } : {}),
         ...(askiTutarRaw && askiTutar > 0 ? { askiTutar } : {}),
         ...(askiNiyetRaw ? { askiNiyet: askiNiyetRaw } : {}),
+        ...(sadeceAski ? { sadeceAski: true } : {}),
       };
 
-      // Defansif validation (native required attribute zorunlu alanları yakalar).
-      const eksik =
-        !payload.ad ||
-        !payload.email ||
-        !payload.telefon ||
-        !payload.sehir ||
-        !payload.kanal ||
-        !payload.etkinlikId ||
-        !payload.ekonomikKatilim ||
-        !payload.kvkk;
+      // Defansif validation — sadece-askı vs normal kayıt iki dal:
+      // - sadece-askı: ad + email + kvkk + askıTutar > 0
+      // - normal: ad + email + telefon + şehir + kanal + etkinlikId +
+      //   ekonomikKatilim + kvkk
+      const eksik = sadeceAski
+        ? !payload.ad || !payload.email || !payload.kvkk || !(payload.askiTutar && payload.askiTutar > 0)
+        : !payload.ad ||
+          !payload.email ||
+          !payload.telefon ||
+          !payload.sehir ||
+          !payload.kanal ||
+          !payload.etkinlikId ||
+          !payload.ekonomikKatilim ||
+          !payload.kvkk;
       if (eksik) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
         errorEl.hidden = false;
@@ -1354,6 +1501,25 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         const result = await submitKayit(payload);
         if (result.status === 'success') {
           form.hidden = true;
+
+          // Aşama 3a — mod ayrımı (kayit vs sadece-aski). Title + ödemeli
+          // bloğun üst metni mod'a göre.
+          const isSadeceAski = result.mode === 'sadece-aski';
+          const titleEl = successEl.querySelector<HTMLElement>('[data-kf-success-title]');
+          if (titleEl) {
+            titleEl.textContent = isSadeceAski
+              ? 'Bıraktığın kor ulaştı'
+              : 'Kaydın bize ulaştı';
+          }
+          const odemeliMetinEl = successEl.querySelector<HTMLElement>(
+            '[data-kf-success-odemeli-metin]',
+          );
+          if (odemeliMetinEl) {
+            odemeliMetinEl.textContent = isSadeceAski
+              ? 'Bıraktığın kor, yoluna çıkacak bir kadını bekliyor. Katkını aşağıdaki hesaba iletebilirsin; ulaştığında onayını yazıyoruz.'
+              : 'Ateşin yanında sana yer ayırdık. Yerini sabitlemek için katılım payını aşağıdaki hesaba iletebilirsin; ulaştığında buluşmanın detaylarıyla sana dönüyoruz.';
+          }
+
           // Ödeme dalına göre success içeriğini doldur.
           const odemesizDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemesiz]')!;
           const odemeliDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemeli]')!;
@@ -1374,6 +1540,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           } else {
             odemesizDiv.hidden = false;
             odemeliDiv.hidden = true;
+          }
+
+          // Aşama 3a — kendi+askı kombinasyonu: "Ve bir kor daha bıraktın" ek
+          // satırı. Sadece-askı modunda bu ek YOK (zaten ana mesaj askı).
+          // İki slot var (ödemeli/ödemesiz dal); doğru olanı aç.
+          const askiEkOdemeli = successEl.querySelector<HTMLElement>(
+            '[data-kf-success-aski-ek-odemeli]',
+          );
+          const askiEkOdemesiz = successEl.querySelector<HTMLElement>(
+            '[data-kf-success-aski-ek-odemesiz]',
+          );
+          if (askiEkOdemeli) askiEkOdemeli.hidden = true;
+          if (askiEkOdemesiz) askiEkOdemesiz.hidden = true;
+          if (result.aski && !isSadeceAski) {
+            if (result.odeme?.gerekli && askiEkOdemeli) askiEkOdemeli.hidden = false;
+            else if (askiEkOdemesiz) askiEkOdemesiz.hidden = false;
           }
           // Brief 6 KARAR 210 — katilim bloğu (link/adres). İki koşul:
           //   1) katilim.var=true (link/adres var)

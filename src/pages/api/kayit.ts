@@ -18,6 +18,7 @@
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+import { kodDogrula, type KodSonuc } from '../../lib/kodlar.ts';
 import {
   FORMAT_TIP,
   FORMAT_MAILERLITE_GROUP,
@@ -28,8 +29,11 @@ import {
   etkinlikAdiFormatla,
   tarihTrFormat,
   uretReferansNo,
+  uygulaIndirim,
   type KayitFormat,
 } from '../../lib/kayit.ts';
+
+const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
 export const prerender = false;
 
@@ -46,6 +50,12 @@ type KayitBody = {
   ekonomikKatilim?: string;
   kvkk?: boolean;
   website?: string; // honeypot
+  // Aşama 3a — promo + askı + sadece-askı
+  promoKod?: string;
+  kodId?: string;
+  askiTutar?: number;
+  askiNiyet?: string;
+  sadeceAski?: boolean;
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
@@ -128,10 +138,14 @@ async function notionKayitlaraYaz(args: {
   body: KayitBody;
   ucretliMi: boolean;
   referansNo: string;
+  /** Aşama 3a — askı geldiyse Kayıtlar satırına eklenir (kendi+askı tek satır). */
+  askiTutar?: number;
+  askiNiyet?: string;
 }): Promise<string> {
-  const { body, ucretliMi, referansNo } = args;
+  const { body, ucretliMi, referansNo, askiTutar, askiNiyet } = args;
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
+    'Tip': { select: { name: 'Kayıt' } },
     'Kayıt Kaynağı': { select: { name: 'Site' } },
     'Ödeme Durumu': { select: { name: ucretliMi ? 'Beklemede' : 'Bedava' } },
   };
@@ -156,9 +170,51 @@ async function notionKayitlaraYaz(args: {
   if (ucretliMi) {
     properties['Ödeme Yöntemi'] = { select: { name: 'Havale' } };
   }
+  // Askı katmanı (Aşama 3a) — kendi+askı tek satır. Tutar > 0 ise yazılır;
+  // niyet opsiyonel. Bu, kayıt + askı verdi anlamına gelir.
+  if (askiTutar && askiTutar > 0) {
+    properties['Askı Tutarı'] = { number: askiTutar };
+  }
+  if (askiNiyet) {
+    properties['Askı Katkısı'] = { rich_text: [{ text: { content: askiNiyet } }] };
+  }
   // `Ödenen Tutar`, `Ödeme Tarihi`, `Katıldı mı?`, `Geri Bildirim Verdi`,
   // `Notlar` → kayıt anında dokunulmaz.
 
+  const result = await notion.pages.create({
+    parent: { database_id: NOTION_KAYITLAR_DB },
+    properties,
+  });
+  return result.id;
+}
+
+/**
+ * Aşama 3a — sadece-askı dalı. Kayıtlar'a AYRI satır: Tip="Askı Katkısı",
+ * Etkinlikler relation BOŞ (genel havuz, formattan bağımsız), tarih/cevap
+ * yok. Kişi katılımcı DEĞİL, sadece havuza katkı verdi.
+ *
+ * Ödeme havale (Beklemede + Havale); Aşama 3b'de provider/mock geldiğinde
+ * yöntem ödeme-onay handler'ında override edilir.
+ */
+async function notionSadeceAskiYaz(args: {
+  body: KayitBody;
+  referansNo: string;
+}): Promise<string> {
+  const { body, referansNo } = args;
+  const properties: Record<string, any> = {
+    'Kayıt ID': { title: [{ text: { content: referansNo } }] },
+    'Tip': { select: { name: 'Askı Katkısı' } },
+    'Kayıt Kaynağı': { select: { name: 'Site' } },
+    'Ödeme Durumu': { select: { name: 'Beklemede' } },
+    'Ödeme Yöntemi': { select: { name: 'Havale' } },
+    'Askı Tutarı': { number: body.askiTutar ?? 0 },
+  };
+  if (body.ad) properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+  if (body.email) properties.Email = { email: body.email };
+  if (body.telefon) properties.Telefon = { phone_number: body.telefon };
+  if (body.askiNiyet) {
+    properties['Askı Katkısı'] = { rich_text: [{ text: { content: body.askiNiyet } }] };
+  }
   const result = await notion.pages.create({
     parent: { database_id: NOTION_KAYITLAR_DB },
     properties,
@@ -263,10 +319,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ status: 'success', honeypot: true });
   }
 
-  // Validation
-  if (!body.format || !isKayitFormat(body.format)) {
-    return json({ status: 'error', message: 'format geçersiz' }, 400);
-  }
+  // Ortak validation (her iki dal için)
   if (!body.ad || !body.ad.trim()) {
     return json({ status: 'error', message: 'ad zorunlu' }, 400);
   }
@@ -275,6 +328,54 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!body.kvkk) {
     return json({ status: 'error', message: 'KVKK onayı zorunlu' }, 400);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // SADECE-ASKI DALI (Aşama 3a) — etkinlik/format/ekonomik katılım atlanır.
+  // Genel havuza katkı; havale yöntemi; ayrı Tip="Askı Katkısı" Kayıtlar
+  // satırı. MailerLite çağrılmaz (format-bazlı grup yok, sadece-askı için
+  // ayrı grup tanımlı değil).
+  // ───────────────────────────────────────────────────────────────────────
+  if (body.sadeceAski) {
+    const askiTutar = Number(body.askiTutar);
+    if (!Number.isFinite(askiTutar) || askiTutar <= 0) {
+      return json({ status: 'error', message: 'askıTutar > 0 olmalı' }, 400);
+    }
+    const referansNo = uretReferansNo();
+    let basvuruId: string;
+    try {
+      basvuruId = await notionSadeceAskiYaz({ body, referansNo });
+    } catch (err) {
+      return json(
+        { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
+        500,
+      );
+    }
+    const aciklamaSablonu = `${referansNo} — ${body.ad}`;
+    return json({
+      status: 'success',
+      basvuruId,
+      referansNo,
+      mailerlite: null,
+      mode: 'sadece-aski',
+      aski: { tutar: askiTutar, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) },
+      odeme: {
+        gerekli: true,
+        tutar: askiTutar,
+        paraBirimi: 'TRY',
+        iban: HAVALE_IBAN,
+        ad: HAVALE_AD,
+        aciklama: aciklamaSablonu,
+      },
+      katilim: { var: false, tipi: 'link', deger: '' },
+    });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // KAYIT DALI — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular)
+  // ───────────────────────────────────────────────────────────────────────
+  if (!body.format || !isKayitFormat(body.format)) {
+    return json({ status: 'error', message: 'format geçersiz' }, 400);
   }
   if (!body.etkinlikId) {
     return json({ status: 'error', message: 'etkinlikId zorunlu' }, 400);
@@ -292,8 +393,30 @@ export const POST: APIRoute = async ({ request }) => {
       500,
     );
   }
-  const odemeGerekli = etk.tutar !== null && etk.tutar > 0;
-  const odemeDurumu: 'Bekliyor' | 'Muaf' = odemeGerekli ? 'Bekliyor' : 'Muaf';
+  const katmanA = etk.tutar ?? 0;
+  const katmanB = Math.max(0, Number(body.askiTutar) || 0);
+
+  // Aşama 3a — promo SERVER-SIDE re-validate (client'a güvenme).
+  // kodKullanimArtir BURADA ÇAĞRILMAZ — sayaç ödeme onayında artar (Aşama 3b).
+  // Geçersiz promo → sessiz promo'suz devam (kullanıcı client'ta zaten gördü).
+  let promoSonuc: KodSonuc | null = null;
+  if (body.promoKod && body.promoKod.trim() && NOTION_KODLAR_DB) {
+    try {
+      promoSonuc = await kodDogrula(
+        notion,
+        NOTION_KODLAR_DB,
+        body.promoKod,
+        format,
+        katmanA + katmanB,
+      );
+    } catch {
+      promoSonuc = null;
+    }
+  }
+  const hesap = uygulaIndirim(katmanA, katmanB, promoSonuc);
+
+  const odemeGerekli = hesap.toplam > 0;
+  const odemeDurumu: 'Bekliyor' | 'Muaf' = katmanA > 0 ? 'Bekliyor' : 'Muaf';
 
   // Brief 6 (KARAR 210): referans no Notion yazımından önce üret — yazıma
   // input + response'a çıkış aynı değer olsun.
@@ -301,10 +424,18 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Notion satır yaz — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular) dallanması.
   // Brief brief-odeme-asama15-kapi1-kayitlar.md, KARAR 76.
+  // Kapı 2 (cember) — askı/promo bu aşamada YOKSAYILIR; Aşama 3b'de Başvurular
+  // "Kayda Dönüştür" automation köprüsünde değerlendirilir.
   let basvuruId: string;
   try {
     basvuruId = isKapi1(format)
-      ? await notionKayitlaraYaz({ body, ucretliMi: odemeGerekli, referansNo })
+      ? await notionKayitlaraYaz({
+          body,
+          ucretliMi: odemeGerekli,
+          referansNo,
+          askiTutar: katmanB > 0 ? katmanB : undefined,
+          askiNiyet: body.askiNiyet,
+        })
       : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {
     return json(
@@ -348,14 +479,37 @@ export const POST: APIRoute = async ({ request }) => {
   // etkinlik adı/tarih çıkarıldı; referans no zaten kaydı işaret eder.
   const aciklamaSablonu = `${referansNo} — ${body.ad}`;
 
+  // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
+  const promoResp = promoSonuc
+    ? promoSonuc.gecerli
+      ? {
+          gecerli: true as const,
+          tip: promoSonuc.tip,
+          indirimTutari: promoSonuc.indirimTutari,
+        }
+      : { gecerli: false as const, sebep: promoSonuc.sebep }
+    : undefined;
+
+  // Askı bilgisi response'a (kendi+askı dalı) — frontend success copy eki için.
+  const askiResp =
+    katmanB > 0
+      ? { tutar: katmanB, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) }
+      : undefined;
+
   return json({
     status: 'success',
     basvuruId,
     referansNo,
     mailerlite,
+    mode: 'kayit',
+    ...(promoResp ? { promo: promoResp } : {}),
+    ...(askiResp ? { aski: askiResp } : {}),
     odeme: {
       gerekli: odemeGerekli,
-      tutar: etk.tutar,
+      // Aşama 3a: havale için TEK tutar = uygulaIndirim sonucu (yuzde/sabit
+      // A+B-indirim; tam-burs A=0+B). Para birimi etkinliğin para birimi
+      // (askı ile uyumlu olduğunu farzeder — TR'de hep TRY).
+      tutar: odemeGerekli ? hesap.toplam : 0,
       paraBirimi: etk.paraBirimi,
       iban: odemeGerekli ? HAVALE_IBAN : '',
       ad: odemeGerekli ? HAVALE_AD : '',

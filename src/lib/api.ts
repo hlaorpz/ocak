@@ -27,7 +27,7 @@ export const WHATSAPP_URL = 'https://wa.me/15551911472';
  */
 export const KAYIT_API_URL = '/api/kayit';
 
-/** /api/kayit success response shape (Brief 2A + Brief 5 + Brief 6). */
+/** /api/kayit success response shape (Brief 2A + Brief 5 + Brief 6 + Aşama 3a). */
 export type KayitResponse = {
   status: 'success' | 'error' | 'skip';
   basvuruId?: string;
@@ -40,8 +40,33 @@ export type KayitResponse = {
    * gösterilir (ödemesizde gereksiz).
    */
   referansNo?: string;
+  /**
+   * Aşama 3a — kayıt vs sadece-askı dal ayrımı. Frontend success copy
+   * bu alana göre seçilir: 'sadece-aski' = etkinlik/katılım bloğu yok,
+   * "Bıraktığın kor..." metni.
+   */
+  mode?: 'kayit' | 'sadece-aski';
+  /**
+   * Aşama 3a — askı verisi (kendi+askı veya sadece-askı). Frontend
+   * success'te "Bir kor daha bıraktın — teşekkürler" eki için.
+   */
+  aski?: { tutar: number; niyet?: string };
+  /**
+   * Aşama 3a — server-side promo doğrulama sonucu. Geçersiz/uygulanmadıysa
+   * undefined. Frontend buradan kullanıcıya teyit gösterebilir.
+   */
+  promo?: {
+    gecerli: boolean;
+    tip?: 'yuzde' | 'sabit' | 'tam-burs';
+    indirimTutari?: number;
+    sebep?: string;
+  };
   odeme?: {
     gerekli: boolean;
+    /**
+     * Aşama 3a: havale için TEK tutar = (A − indirim, tam-burs A=0) + askı.
+     * Sadece-askı: tutar = askı. Tam burs + askı yok: tutar=0, gerekli=false.
+     */
     tutar: number | null;
     paraBirimi: string;
     iban: string;
@@ -79,13 +104,23 @@ export type KayitPayload = {
   /** Honeypot — gerçek kullanıcıda boş; bot doldurursa endpoint sessiz success döner. */
   website?: string;
   /**
-   * Aşama 2 (Brief brief-odeme-asama2-form-aski-ui.md) UI iskelet — backend
-   * BU AŞAMADA OKUMAZ. Aşama 3'te kodDogrula + Kayıtlar yazımına bağlanacak.
-   * Şimdilik payload'a düşer, /api/kayit sessizce yoksayar.
+   * Aşama 3a (Brief brief-odeme-asama3a-promo-aski-backend.md):
+   * - promoKod: kullanıcının girdiği kod (server-side re-validate edilir,
+   *   client'a güvenilmez). Boş/undefined → indirim 0.
+   * - kodId: client-side promo-dogrula çağrısının döndüğü Notion page id.
+   *   Aşama 3b'de ödeme onaylanınca kodKullanimArtir bu id ile çağrılır.
+   *   Şu an /api/kayit yine de server-side kodDogrula yapıyor; kodId
+   *   ileride race-condition yumuşatma + audit izi.
+   * - askiTutar / askiNiyet: "Bir kor daha taşı" (Kapı 1) — Kayıtlar.Askı
+   *   Tutarı + Askı Katkısı alanlarına yazılır.
+   * - sadeceAski: true ise etkinlikId/ekonomikKatilim opsiyonel; askıTutar
+   *   zorunlu. Backend ayrı satır açar (Tip=Askı Katkısı, Etkinlikler boş).
    */
   promoKod?: string;
+  kodId?: string;
   askiTutar?: number;
   askiNiyet?: string;
+  sadeceAski?: boolean;
 };
 
 /**
