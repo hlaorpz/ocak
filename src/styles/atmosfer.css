@@ -1847,3 +1847,176 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
     border-color: var(--isi-aktif);
   }
 }
+
+/* ===== YASAL PROSE (.ocak-yasal) ============================================
+   4 statik yasal sayfa (hakkimizda, gizlilik, mesafeli-satis, teslimat-iade)
+   + /iletisim kurumsal blok. Plugin/Notion DIŞI; section[data-section][class^="ocak-"]
+   baseline'a düşmez, kendi okuma kolonunu taşır. KARAR 124 tablo ailesini
+   .ocak-yasal table'a uygular (italik serif header + ember border + ash row).
+   Hero/glow YOK — sakin, dikkat metinde. Grain Layout'tan zaten gelir.
+   ============================================================================ */
+
+.ocak-yasal {
+  max-width: 42.5rem;                                /* ~680px okuma kolonu */
+  margin: 0 auto;
+  padding: var(--space-9) var(--space-6);
+  font-family: var(--font-display);                  /* Cormorant Garamond gövde */
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: var(--leading-prose);
+  color: var(--cream-soft);
+}
+
+.ocak-yasal h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-8);
+  text-align: center;
+}
+
+.ocak-yasal h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-h2);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  margin: var(--space-9) 0 var(--space-4);
+}
+
+.ocak-yasal h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 400;
+  color: var(--cream);
+  line-height: var(--leading-snug);
+  margin: var(--space-7) 0 var(--space-3);
+}
+
+.ocak-yasal p {
+  margin: 0 0 var(--space-6);
+}
+
+.ocak-yasal p:last-child {
+  margin-bottom: 0;
+}
+
+.ocak-yasal strong {
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.ocak-yasal em {
+  font-style: italic;
+  color: var(--cream);
+}
+
+.ocak-yasal a {
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+
+.ocak-yasal a:hover,
+.ocak-yasal a:focus-visible {
+  color: var(--ember-soft);
+  border-bottom-color: currentColor;
+}
+
+.ocak-yasal ul,
+.ocak-yasal ol {
+  list-style: none;
+  padding-left: 0;
+  margin: var(--space-6) 0;
+}
+
+.ocak-yasal li {
+  padding-left: var(--space-6);
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+.ocak-yasal ul li::before {
+  content: '·';
+  color: var(--ember);
+  font-weight: 700;
+  position: absolute;
+  left: var(--space-3);
+  font-size: 1.5em;
+  line-height: 1;
+}
+
+.ocak-yasal ol {
+  counter-reset: ocak-yasal-list;
+}
+
+.ocak-yasal ol li {
+  counter-increment: ocak-yasal-list;
+}
+
+.ocak-yasal ol li::before {
+  content: counter(ocak-yasal-list);
+  color: var(--ember);
+  font-family: var(--font-display);
+  font-style: italic;
+  position: absolute;
+  left: 0;
+  font-weight: 400;
+}
+
+/* Tablo — KARAR 124 ailesi (italik serif header + ember border + ash row + cream body).
+   Yasal sayfalarda <th scope="row"> kullanımı (kurumsal bilgi anahtar/değer tablosu):
+   ilk sütun italic-serif label, ikinci sütun düz body — baseline th kuralı row-header'a
+   da uygulanır, görsel tutarlılık korunur. */
+
+.ocak-yasal table {
+  width: 100%;
+  margin: var(--space-8) auto;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+  color: var(--cream-soft);
+}
+
+.ocak-yasal table th,
+.ocak-yasal table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--ash);
+  font-weight: 400;
+  line-height: var(--leading-prose);
+  vertical-align: top;
+}
+
+.ocak-yasal table th {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--cream);
+  font-weight: 400;
+  border-bottom-color: var(--ember);
+}
+
+.ocak-yasal table tr:last-child th,
+.ocak-yasal table tr:last-child td {
+  border-bottom: none;
+}
+
+.ocak-yasal table strong {
+  color: var(--cream);
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .ocak-yasal {
+    padding: var(--space-7) var(--space-5);
+  }
+
+  .ocak-yasal table th,
+  .ocak-yasal table td {
+    padding: var(--space-2) var(--space-3);
+  }
+}
