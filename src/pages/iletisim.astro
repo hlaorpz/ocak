@@ -1,0 +1,65 @@
+---
+// iletisim.astro — /iletisim override (Brief: yasal Adım 3).
+// Brief'in tarif ettiği "src/pages/iletisim.astro" yoktu; /iletisim Notion'dan
+// [...slug].astro üzerinden geliyordu. Iyzico zorunlu kurumsal bloku basmak için
+// istanbul.astro/seremoni.astro pattern'i: getEntry → Layout → PageContent +
+// kurumsal blok. Notion içeriği değişmedi; blok PageContent'in altına geliyor.
+//
+// Form akışı: form-tasima briefi sonrası /iletisim'de form YOK (kendisi
+// /iletisim/bize-yaz). Burada eklenen kurumsal blok statik; success state'ten
+// bağımsız, KARAR 151 bug'ına dokunmaz.
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+
+const sayfa = await getEntry('sayfalar', '/iletisim');
+if (!sayfa) {
+  throw new Error("iletisim.astro: 'sayfalar' collection'ında '/iletisim' slug'ı bulunamadı.");
+}
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  <PageContent slug="/iletisim" fragments={sayfa.data.fragments} />
+
+  {/* Iyzico kurumsal kimlik bloku — Hakkımızda'daki bilgi/stilde tutarlı. */}
+  <article class="ocak-yasal" aria-labelledby="iletisim-kurumsal-baslik">
+    <h2 id="iletisim-kurumsal-baslik">Kurumsal Bilgiler</h2>
+
+    <table>
+      <tbody>
+        <tr>
+          <th scope="row">Ticari Unvan</th>
+          <td>YAP Eğitim Danışmanlık Gıda ve Dış Ticaret A.Ş.</td>
+        </tr>
+        <tr>
+          <th scope="row">Adres</th>
+          <td>Limanreis Mah. Hasan Ali Yücel Sok. No: 3, Narlıdere / İzmir</td>
+        </tr>
+        <tr>
+          <th scope="row">Vergi Dairesi / No</th>
+          <td>Balçova V.D. / 9370693717</td>
+        </tr>
+        <tr>
+          <th scope="row">MERSİS No</th>
+          <td>0937069371700001</td>
+        </tr>
+        <tr>
+          <th scope="row">E-posta</th>
+          <td><a href="mailto:kvkk@ocak.biz">kvkk@ocak.biz</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Telefon</th>
+          <td><a href="tel:+905322080888">+90 532 208 08 88</a></td>
+        </tr>
+        <tr>
+          <th scope="row">KEP Adresi</th>
+          <td><a href="mailto:kep@kep.com.tr">kep@kep.com.tr</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </article>
+</Layout>
