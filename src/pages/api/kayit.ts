@@ -22,6 +22,7 @@ import { kodDogrula, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import {
   FORMAT_TIP,
+  FORMAT_NOTION_FORMAT,
   FORMAT_MAILERLITE_GROUP,
   isKapi1,
   isKayitFormat,
@@ -37,6 +38,46 @@ import {
 } from '../../lib/kayit.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
+
+/**
+ * Aşama 3b eyeball Bulgu 1 düzeltmesi — Vercel Serverless Functions
+ * ortamında `request.url` host bilgisini internal runtime host'tan
+ * (localhost) okur; gerçek public origin için `x-forwarded-*` header'ları
+ * gereklidir. Lokal dev'de Astro `host` header'ı `localhost:4321` verir,
+ * fallback path bunu yakalar. Vercel proxy preview'da `x-forwarded-host`
+ * = `ocak-site-...vercel.app` + `x-forwarded-proto`=`https`, prod'da
+ * `www.ocak.biz`. Böylece kart checkout redirect URL'leri her ortamda
+ * doğru.
+ */
+function publicOrigin(request: Request): string {
+  const proto = request.headers.get('x-forwarded-proto');
+  const host =
+    request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  if (host) return `${proto ?? 'https'}://${host}`;
+  return new URL(request.url).origin;
+}
+
+/**
+ * Havale açıklama metni — kullanıcı bankada görür. Brief Aşama 3b eyeball
+ * Bulgu 2: OCAK-XXXXX referans no banka açıklamasında DEĞİL (success
+ * mesajında/Notion'da kalır). İnsan-okur sade: "Kaan — Mini Retreat ·
+ * 21 Haziran 2026 · 20:00".
+ *  - Kayıt dalı: ad + uzun format adı (`FORMAT_NOTION_FORMAT`) + tarih + saat.
+ *  - Sadece-askı dalı: "Kor katkısı — {ad}" (etkinlik yok).
+ * Boş bileşenler atlanır.
+ */
+function havaleAciklamasi(args: {
+  ad: string;
+  formatAd?: string;
+  tarih?: string;
+  saat?: string;
+}): string {
+  const parcalar = [args.formatAd, args.tarih, args.saat]
+    .map((s) => (s ?? '').trim())
+    .filter(Boolean);
+  if (parcalar.length === 0) return args.ad;
+  return `${args.ad} — ${parcalar.join(' · ')}`;
+}
 
 export const prerender = false;
 
@@ -368,15 +409,18 @@ export const POST: APIRoute = async ({ request }) => {
         500,
       );
     }
-    const aciklamaSablonu = `${referansNo} — ${body.ad}`;
+    // Aşama 3b eyeball Bulgu 2 — sadece-askı havale açıklaması:
+    // "Kor katkısı — {ad}" (etkinlik yok). OCAK-XXXXX referans no
+    // banka açıklamasında değil, success ekranında + Notion'da.
+    const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, formatAd: 'Kor katkısı' });
 
     // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, iyzico
-    // Aşama 6). Sayfa origin'i request URL'den; basariUrl /odeme/tamam,
-    // hataUrl /odeme/iptal (tamam'a fallback).
+    // Aşama 6). Sayfa origin Vercel `x-forwarded-*` header'larından
+    // (Bulgu 1 fix); basariUrl /odeme/tamam, hataUrl /odeme/iptal.
     let checkoutUrl: string | undefined;
     if (yontem === 'kart') {
       const provider = getPaymentProvider();
-      const baseUrl = new URL(request.url).origin;
+      const baseUrl = publicOrigin(request);
       const sonuc = await provider.checkoutBaslat({
         kayitId: basvuruId,
         tutar: askiTutar,
@@ -528,9 +572,18 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Brief 6 (KARAR 210): havale açıklama formatı "{referansNo} — {ad}" —
-  // etkinlik adı/tarih çıkarıldı; referans no zaten kaydı işaret eder.
-  const aciklamaSablonu = `${referansNo} — ${body.ad}`;
+  // Aşama 3b eyeball Bulgu 2 — havale açıklama formatı insan-okur sade:
+  // "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00". OCAK-XXXXX referans
+  // no banka açıklamasında DEĞİL (success ekranında + Notion'da).
+  // Format adı uzun varyant (FORMAT_NOTION_FORMAT: "İstanbul Akşamı" gibi).
+  // Tarih: form'dan gelen seciliTarih (Türkçe formatlı) veya Notion ISO
+  // çevirisi. Saat: Etkinlikler.Saat (online + fiziksel).
+  const aciklamaSablonu = havaleAciklamasi({
+    ad: body.ad,
+    formatAd: FORMAT_NOTION_FORMAT[format],
+    tarih: body.seciliTarih?.trim() || tarihTrFormat(etk.tarihISO),
+    saat: etk.saat,
+  });
 
   // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
   const promoResp = promoSonuc
@@ -557,7 +610,8 @@ export const POST: APIRoute = async ({ request }) => {
   if (isKapi1Yontem && yontem === 'kart' && odemeGerekli) {
     try {
       const provider = getPaymentProvider();
-      const baseUrl = new URL(request.url).origin;
+      // Aşama 3b eyeball Bulgu 1 — origin Vercel x-forwarded-* header'larından.
+      const baseUrl = publicOrigin(request);
       const promoKodId = promoSonuc?.gecerli ? promoSonuc.kodId : undefined;
       const sonuc = await provider.checkoutBaslat({
         kayitId: basvuruId,
