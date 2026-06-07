@@ -21,6 +21,10 @@ export const ODA_MAP: Record<string, Oda> = {
   '/gizlilik': 'OCAK',
   '/mesafeli-satis': 'OCAK',
   '/teslimat-iade': 'OCAK',
+  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; iyzico Aşama 6)
+  '/odeme/mock': 'OCAK',
+  '/odeme/tamam': 'OCAK',
+  '/odeme/iptal': 'OCAK',
   // Yol
   '/sen-neredesin': 'Yol',
   // Buluşmalar

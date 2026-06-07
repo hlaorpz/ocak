@@ -395,7 +395,33 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                 </span>
               </li>
             </ul>
-            <dl class="kayit-formu__odeme-bilgi">
+
+            {/* Aşama 3b — ödeme yöntemi seçimi (kart/havale, Model 1).
+                Kart default. Tam burs durumunda tutar 0 → ödeme bloğu zaten
+                gizli (refreshOdemeBlok hidden). */}
+            <div class="kayit-formu__odeme-yontem" data-kf-yontem-grup>
+              <span class="kayit-formu__label-as-legend">Ödeme yöntemi</span>
+              <div class="kayit-formu__yontem-radios">
+                <label class="kayit-formu__yontem-radio">
+                  <input
+                    type="radio"
+                    name="odeme_yontemi"
+                    value="kart"
+                    data-kf-yontem
+                    checked
+                  />
+                  <span class="kayit-formu__yontem-text">Kartla öde</span>
+                </label>
+                <label class="kayit-formu__yontem-radio">
+                  <input type="radio" name="odeme_yontemi" value="havale" data-kf-yontem />
+                  <span class="kayit-formu__yontem-text">Havale / EFT</span>
+                </label>
+              </div>
+            </div>
+
+            {/* IBAN bloğu — sadece havale seçilince görünür (Aşama 3b
+                Madde 6 çözümü). */}
+            <dl class="kayit-formu__odeme-bilgi" data-kf-iban-bloku hidden>
               <dt>IBAN</dt>
               <dd data-kf-iban>{havaleIban}</dd>
               <dt>Hesap adı</dt>
@@ -407,35 +433,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             </dl>
           </div>
 
-          <div class="kayit-formu__group kayit-formu__kvkk">
-            <label class="kayit-formu__kvkk-onay">
-              <input type="checkbox" name="kvkk" required
-                oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
-                onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
-              <span class="kayit-formu__kvkk-text">
-                Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
-                <span class="kayit-formu__required">*</span>
-              </span>
-            </label>
-            <details class="kayit-formu__kvkk-detay">
-              <summary>KVKK aydınlatma metnini oku</summary>
-              <div class="kayit-formu__kvkk-icerik">
-                <p>
-                  OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
-                  yalnızca aşağıdaki amaçlarla kullanırız:
-                </p>
-                <ul>
-                  <li>Kayıt başvurunun değerlendirilmesi</li>
-                  <li>Etkinlik öncesi ve sonrası iletişim</li>
-                  <li>Lansman sonrası program iletişimi (bülten + duyurular)</li>
-                </ul>
-                <p>
-                  Verilerini üçüncü taraflara satmayız, paylaşmayız. Talebin üzerine
-                  silinir (selam@ocak.biz). Detaylı KVKK metni için <a href="/iletisim">/iletisim</a> sayfası.
-                </p>
-              </div>
-            </details>
-          </div>
+          {/* KVKK Aşama 3b'de "Katılım & Ödeme" details içinden çıkarıldı;
+              submit butonu hemen üstüne taşındı. Mantıksal yer orada —
+              kullanıcı katılım details'i kapalıysa da KVKK'yı görür. */}
         </div>
       </details>
 
@@ -464,7 +464,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           <div class="kayit-formu__aski-toggle">
             <label class="kayit-formu__aski-toggle-label">
               <input type="checkbox" name="sadece_aski" data-kf-sadece-aski />
-              <span>Bir buluşmaya katılmadan da kor bırakabilirsin.</span>
+              <span>Katılmıyorum, ama birinin yolunu açmak istiyorum.</span>
             </label>
           </div>
           )}
@@ -485,17 +485,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               inputmode="numeric"
               data-kf-aski-tutar
             />
-            {/* Aşama 2.6 Madde 5 — canlı toplam mirror: kor girince yukarıdaki
-                tutar bloğuyla görsel bağ. JS refreshOdemeBlok günceller. */}
-            <p
-              class="kayit-formu__aski-toplam-mirror"
-              data-kf-aski-toplam-mirror
-              hidden
-            >
-              Toplam:
-              <span data-kf-aski-toplam-mirror-tutar>—</span>
-              <span data-kf-aski-toplam-mirror-para>TRY</span>
-            </p>
           </div>
 
           <div class="kayit-formu__group">
@@ -537,6 +526,38 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         </div>
       </details>
       )}
+
+      {/* KVKK — Aşama 3b: submit butonu hemen üstü. Form-level (details
+          dışında) görünür kalır; kullanıcı her durumda onaylar. */}
+      <div class="kayit-formu__group kayit-formu__kvkk">
+        <label class="kayit-formu__kvkk-onay">
+          <input type="checkbox" name="kvkk" required
+            oninvalid="this.setCustomValidity('KVKK onayı gerekiyor')"
+            onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
+          <span class="kayit-formu__kvkk-text">
+            Verilerimin KVKK kapsamında OCAK iletişimi için kullanılmasını onaylıyorum.
+            <span class="kayit-formu__required">*</span>
+          </span>
+        </label>
+        <details class="kayit-formu__kvkk-detay">
+          <summary>KVKK aydınlatma metnini oku</summary>
+          <div class="kayit-formu__kvkk-icerik">
+            <p>
+              OCAK (selam@ocak.biz) olarak bu form üzerinden topladığımız verileri
+              yalnızca aşağıdaki amaçlarla kullanırız:
+            </p>
+            <ul>
+              <li>Kayıt başvurunun değerlendirilmesi</li>
+              <li>Etkinlik öncesi ve sonrası iletişim</li>
+              <li>Lansman sonrası program iletişimi (bülten + duyurular)</li>
+            </ul>
+            <p>
+              Verilerini üçüncü taraflara satmayız, paylaşmayız. Talebin üzerine
+              silinir (selam@ocak.biz). Detaylı KVKK metni için <a href="/iletisim">/iletisim</a> sayfası.
+            </p>
+          </div>
+        </details>
+      </div>
 
       <button type="submit" class="kayit-formu__submit">Kaydımı Gönder</button>
 
@@ -1289,26 +1310,54 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     font-weight: 400;
   }
 
-  /* === Aşama 2.6 Madde 5 — askı bölümünde mini canlı toplam mirror ========
-   * Kor girince yukarıdaki tutar bloğuyla görsel bağ — kullanıcı "buraya
-   * yansıdı" hissini anında alır. Mini, sönük; esas toplam üstteki blokta. */
-  .kayit-formu__aski-toplam-mirror {
-    margin: 0.5rem 0 0;
+  /* === Aşama 3b — Ödeme yöntemi seçimi (kart/havale, Model 1) ==============
+   * Tam burs durumunda tutar 0 → odeme bloğu zaten gizli. */
+  .kayit-formu__odeme-yontem {
+    margin: var(--space-4) 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(196, 75, 47, 0.18);
+  }
+  .kayit-formu__yontem-radios {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: 0.55rem;
+    flex-wrap: wrap;
+  }
+  .kayit-formu__yontem-radio {
+    flex: 1 1 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0.7rem 0.9rem;
+    background: var(--ash);
+    border: 1px solid var(--ash);
+    cursor: pointer;
+    transition: border-color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+  }
+  .kayit-formu__yontem-radio:hover { border-color: var(--smoke); }
+  .kayit-formu__yontem-radio input[type='radio'] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .kayit-formu__yontem-radio:has(input:checked) {
+    border-color: var(--ember);
+    background: rgba(196, 75, 47, 0.08);
+  }
+  .kayit-formu__yontem-text {
     font-family: var(--font-body);
     font-size: 0.85rem;
     color: var(--cream-soft);
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
   }
-  .kayit-formu__aski-toplam-mirror[hidden] { display: none; }
-  .kayit-formu__aski-toplam-mirror [data-kf-aski-toplam-mirror-tutar] {
-    color: var(--ember);
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 1.05rem;
-    font-weight: 400;
+  .kayit-formu__yontem-radio:has(input:checked) .kayit-formu__yontem-text {
+    color: var(--cream);
   }
+  .kayit-formu__odeme-bilgi[hidden] { display: none; }
+
+  /* Mirror (Aşama 2.6 Madde 5) Aşama 3b'de kaldırıldı — Kaan "küçük, kafa
+   * karıştırıyor, iki toplam" dedi. Tek toplam üstteki esas blokta. */
 
   /* === Aşama 2 — askı referans liste (yaklaşan 3 ücretli) ================== */
   .kayit-formu__aski-referans {
@@ -1491,17 +1540,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // tüm [data-kf-katilim] CSS ile gizli — blok DOM'da ama görünmez,
       // güvenli.
       odemeBlok.hidden = hesap.toplam <= 0;
-
-      // Aşama 2.6 Madde 5 — askı bölümünde mini toplam mirror. Kor girince
-      // (katmanB > 0) görünür; aksi hâlde gizli. Esas toplam üstteki blok.
-      const mirrorEl = form!.querySelector<HTMLElement>('[data-kf-aski-toplam-mirror]');
-      if (mirrorEl) {
-        mirrorEl.hidden = katmanB <= 0;
-        const mt = mirrorEl.querySelector('[data-kf-aski-toplam-mirror-tutar]');
-        const mp = mirrorEl.querySelector('[data-kf-aski-toplam-mirror-para]');
-        if (mt) mt.textContent = String(hesap.toplam);
-        if (mp) mp.textContent = para;
-      }
     }
 
     // Promo doğrulama — /api/promo-dogrula (Aşama 3a). Debounced input + blur.
@@ -1522,20 +1560,32 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       promoMesajEl.classList.toggle('kayit-formu__promo-mesaj--hata', tip === 'hata');
     }
 
-    // Aşama 2.6 Madde 4 — tam-burs ile askı bölümü çakışır (ödeyemeyen
-     // aynı anda kor bırakmaya davet edilmez, tutarsız). Helper: tam-burs
-     // durumuna göre askı bölümünü gizle/göster + sadece-askı toggle'ı
-     // sıfırla (askı modu zaten anlamsız).
+    // Aşama 2.6 Madde 4 + Aşama 3b Madde 2 — tam-burs ile askı bölümü
+    // + yöntem seçimi çakışır (ödeyemeyen aynı anda kor bırakmaya/kart
+    // seçmeye davet edilmez, tutarsız). Helper:
+    //  - Askı bölümü gizli (input içeriği boşa düşürülmez — vazgeçerse veri kalsın).
+    //  - Sadece-askı toggle uncheck (askı modu zaten anlamsız).
+    //  - Yöntem grubu gizli; havale otomatik (askı varsa havale için, askı
+    //    yoksa toplam=0 zaten odeme bloğu hidden).
     function syncAskiBolumGorunum() {
-      if (!askiBolum) return;
       const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
-      askiBolum.hidden = tamBurs;
+      if (askiBolum) askiBolum.hidden = tamBurs;
+      if (tamBurs && askiOnlyEl?.checked) {
+        askiOnlyEl.checked = false;
+        syncAskiOnly();
+      }
+      const yontemGrup = form!.querySelector<HTMLElement>('[data-kf-yontem-grup]');
+      if (yontemGrup) yontemGrup.hidden = tamBurs;
       if (tamBurs) {
-        // Askı kapatılsın — kor input + niyet boşa düşürülmesin (kullanıcı
-        // tam-burs'tan vazgeçerse veri kalsın). Sadece bölüm gizli.
-        if (askiOnlyEl?.checked) {
-          askiOnlyEl.checked = false;
-          syncAskiOnly();
+        const havaleR = form!.querySelector<HTMLInputElement>(
+          '[data-kf-yontem][value="havale"]',
+        );
+        if (havaleR && !havaleR.checked) {
+          havaleR.checked = true;
+          // syncYontem henüz tanımlı olmayabilir (üstte hoisting yok); IBAN
+          // bloğunu doğrudan açalım — defansif.
+          const iban = form!.querySelector<HTMLElement>('[data-kf-iban-bloku]');
+          if (iban) iban.hidden = false;
         }
       }
     }
@@ -1666,6 +1716,25 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       refreshOdemeBlok();
     }
     askiOnlyEl?.addEventListener('change', syncAskiOnly);
+
+    // Aşama 3b — ödeme yöntemi (kart/havale). Kart → IBAN gizli + submit
+    // "Karta Yönlen"; havale → IBAN görünür + "Kaydımı Gönder".
+    const yontemRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-yontem]');
+    const ibanBloku = form!.querySelector<HTMLElement>('[data-kf-iban-bloku]');
+    function seciliYontem(): 'kart' | 'havale' {
+      const sec = form!.querySelector<HTMLInputElement>('[data-kf-yontem]:checked');
+      return sec?.value === 'havale' ? 'havale' : 'kart';
+    }
+    function syncYontem() {
+      const yontem = seciliYontem();
+      if (ibanBloku) ibanBloku.hidden = yontem !== 'havale';
+      if (!askiOnlyEl?.checked) {
+        submit.textContent = yontem === 'kart' ? 'Karta Yönlen' : oldText;
+      }
+    }
+    yontemRadios.forEach((r) => r.addEventListener('change', syncYontem));
+    syncYontem();
+
     refreshKademeTutarlari();
     refreshOdemeBlok();
 
@@ -1715,6 +1784,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // Aşama 2.5 — Kapı 1 kademe seçimi (Kapı 2'de yok).
       const kademeRaw = (data.get('kademe') ?? '').toString();
       const kademeOk = kademeRaw === 'ust' || kademeRaw === 'orta' || kademeRaw === 'alt';
+      // Aşama 3b — ödeme yöntemi (Kapı 1; cember'de yok).
+      const yontemRaw = (data.get('odeme_yontemi') ?? '').toString();
+      const yontem: 'kart' | 'havale' = yontemRaw === 'havale' ? 'havale' : 'kart';
 
       const payload: KayitPayload = {
         format,
@@ -1736,6 +1808,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         ...(askiNiyetRaw ? { askiNiyet: askiNiyetRaw } : {}),
         ...(sadeceAski ? { sadeceAski: true } : {}),
         ...(kapi1Active && kademeOk ? { kademe: kademeRaw as 'ust' | 'orta' | 'alt' } : {}),
+        ...(kapi1Active ? { odemeYontemi: yontem } : {}),
       };
 
       // Defansif validation — üç dal:
@@ -1769,6 +1842,15 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       try {
         const result = await submitKayit(payload);
         if (result.status === 'success') {
+          // Aşama 3b — kart yöntemi: backend checkoutUrl döndü → kullanıcı
+          // sağlayıcı checkout sayfasına yönlendirilir. Form ekranı gizlenmez
+          // (kullanıcı geri dönerse — örn. browser back — sayfada kalır;
+          // hata akışında /odeme/iptal sayfasından geri gelir).
+          if (result.checkoutUrl) {
+            window.location.href = result.checkoutUrl;
+            return;
+          }
+
           form.hidden = true;
 
           // Aşama 3a — mod ayrımı (kayit vs sadece-aski). Title + ödemeli

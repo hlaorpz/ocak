@@ -1,0 +1,125 @@
+---
+// /odeme/mock — Mock sanal POS checkout sayfası (Brief Aşama 3b ADIM 3b).
+// Gerçek para YOK. iyzico Aşama 6'da yerine gerçek checkout form gelir.
+//
+// URL params (KayitFormu submit → /api/kayit → checkoutBaslat → mockProvider
+// burayı yönlendirir):
+//   ref     — Notion Kayıtlar page id (basvuruId)
+//   tutar   — TL pozitif
+//   para    — para birimi (TRY)
+//   ad      — kullanıcı adı (sayfada gösterilir)
+//   email   — kullanıcı email
+//   basari  — gerçek basariUrl (success sonrası dönüş; bu sayfada bilgi)
+//   hata    — gerçek hataUrl (iptal sonrası dönüş)
+//   kodId   — promo kod Notion page id (callback'te kodKullanimArtir için)
+//
+// Akış: "Ödemeyi Simüle Et (Başarılı)" → POST /api/odeme-callback (form),
+// "İptal" → /odeme/iptal redirect.
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+
+const url = Astro.url;
+const ref = url.searchParams.get('ref') ?? '';
+const tutarRaw = url.searchParams.get('tutar') ?? '';
+const tutar = Number(tutarRaw) || 0;
+const para = url.searchParams.get('para') ?? 'TRY';
+const ad = url.searchParams.get('ad') ?? '';
+const kodId = url.searchParams.get('kodId') ?? '';
+---
+<Layout title="Ödeme Simülasyonu" description="MOCK ödeme — gerçek para yok." oda="OCAK" noindex>
+  <article class="ocak-yasal">
+    <h1>Ödeme Simülasyonu</h1>
+
+    <p class="ocak-mock-uyari">
+      <strong>MOCK</strong> — Bu bir test sayfasıdır. Gerçek kart bilgisi
+      istenmez, gerçek para çekilmez. Aşama 6'da yerine iyzico Sanal POS
+      formu gelir.
+    </p>
+
+    <table>
+      <tbody>
+        <tr>
+          <th scope="row">Referans</th>
+          <td>{ref}</td>
+        </tr>
+        <tr>
+          <th scope="row">Ad</th>
+          <td>{ad}</td>
+        </tr>
+        <tr>
+          <th scope="row">Tutar</th>
+          <td>{tutar.toLocaleString('tr-TR')} {para}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form method="POST" action="/api/odeme-callback" class="ocak-mock-form">
+      <input type="hidden" name="ref" value={ref} />
+      <input type="hidden" name="tutar" value={String(tutar)} />
+      <input type="hidden" name="sonuc" value="basari" />
+      <input type="hidden" name="mock" value="1" />
+      {kodId && <input type="hidden" name="kodId" value={kodId} />}
+      <button type="submit" class="ocak-mock-buton ocak-mock-buton--basari">
+        Ödemeyi Simüle Et (Başarılı)
+      </button>
+    </form>
+
+    <p class="ocak-mock-iptal">
+      <a href={`/odeme/iptal?ref=${encodeURIComponent(ref)}`}>İptal et</a>
+    </p>
+  </article>
+</Layout>
+
+<style>
+  .ocak-mock-uyari {
+    padding: var(--space-4) var(--space-5);
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed var(--gold);
+    color: var(--gold);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: var(--space-4) 0;
+  }
+  .ocak-mock-uyari strong {
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .ocak-mock-form {
+    margin: var(--space-7) 0 var(--space-4);
+    text-align: center;
+  }
+  .ocak-mock-buton {
+    width: 100%;
+    max-width: 360px;
+    padding: 1.1rem 2rem;
+    background: var(--ember);
+    color: var(--coal);
+    border: 1px solid var(--ember);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--duration-base) var(--ease-out);
+  }
+  .ocak-mock-buton:hover {
+    background: var(--ember-soft);
+  }
+  .ocak-mock-iptal {
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+  }
+  .ocak-mock-iptal a {
+    color: var(--smoke);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.15rem;
+  }
+  .ocak-mock-iptal a:hover {
+    color: var(--cream);
+  }
+</style>

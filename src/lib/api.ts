@@ -73,7 +73,14 @@ export type KayitResponse = {
     ad: string;
     /** Brief 6 (KARAR 210): "{referansNo} — {ad}" (havale açıklaması). */
     aciklama: string;
+    /** Aşama 3b — frontend success'te göstermek için (havale/kart). */
+    yontem?: 'kart' | 'havale';
   };
+  /**
+   * Aşama 3b — kart yöntemi seçilirse backend sağlayıcının checkout URL'ini
+   * döndürür; frontend bu URL'e redirect eder. Havale akışında undefined.
+   */
+  checkoutUrl?: string;
   /**
    * Brief 5 (KARAR 208) Yol C: Etkinliğin Notion `Katılım Linki`'nden gelen
    * buluşma değeri — online'da Zoom URL, yüz-yüzde adres metni.
@@ -123,11 +130,17 @@ export type KayitPayload = {
   sadeceAski?: boolean;
   /**
    * Aşama 2.5 — kademeli dayanışma fiyatı (Kapı 1). Seçilen kademe
-   * (üst/orta/alt) katmanA'yı belirler (etkinlik.Ücret × oran). Backend
-   * şu an OKUMUYOR (Kayıtlar şemasında `Kademe` alanı yok — Kaan kararı
-   * Aşama 3a+). Frontend payload'a düşürür, sessiz yoksayılır.
+   * (üst/orta/alt) katmanA'yı belirler (etkinlik.Ücret × oran).
+   * Aşama 3b — Kayıtlar `Kademe` select alanına yazılır (Kaan ekledi).
    */
   kademe?: 'ust' | 'orta' | 'alt';
+  /**
+   * Aşama 3b — ödeme yöntemi (kart | havale). Default `havale` (bugünkü
+   * akış). Kart seçilirse backend pending Kayıtlar satırı açar, sonra
+   * `getPaymentProvider().checkoutBaslat(...)` → response.checkoutUrl,
+   * frontend redirect. Tam burs (tutar=0) seçimden bağımsız ödeme yok.
+   */
+  odemeYontemi?: 'kart' | 'havale';
 };
 
 /**

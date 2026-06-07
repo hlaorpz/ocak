@@ -1,0 +1,86 @@
+---
+// /odeme/tamam — Ödeme başarı sayfası (Brief Aşama 3b ADIM 3d).
+// Callback Notion'da Ödendi'ye çekildi; bu sayfa kullanıcıya teyit verir.
+//
+// URL params:
+//   ref   — Notion Kayıtlar referans no (OCAK-XXXXX değil page id; success
+//           ekranında basvuruId değeri görünür ama kullanıcıya page id
+//           anlamlı değil — gelecekte ref → referansNo eşlemesi için
+//           Notion'dan çekilebilir. Şu an page id gösterilmez, sadece teyit
+//           metni + havale eşleştirme gerekmediği için yeterli).
+//   mock  — '1' ise dev/preview MOCK uyarı görünür.
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+
+const ref = Astro.url.searchParams.get('ref') ?? '';
+const mockMu = Astro.url.searchParams.get('mock') === '1';
+---
+<Layout title="Ödemen alındı" description="Ödemen alındı, yerin ayrıldı." oda="OCAK" noindex>
+  <article class="ocak-yasal">
+    <div class="ocak-odeme-tamam">
+      <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
+      <h1>Ödemen alındı, yerin ayrıldı.</h1>
+      <p>
+        Buluşmanın detaylarını yakında e-postanla seninle paylaşacağız.
+        Hoş geldin.
+      </p>
+      {ref && <p class="ocak-odeme-tamam__ref">Referans: <strong>{ref}</strong></p>}
+      {mockMu && (
+        <p class="ocak-mock-uyari">
+          <strong>MOCK</strong> — Bu ödeme simülasyondu. Gerçek tahsilat
+          yapılmadı. Aşama 6'da gerçek iyzico devreye girer.
+        </p>
+      )}
+      <p class="ocak-odeme-tamam__imza">— OCAK</p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .ocak-odeme-tamam {
+    text-align: center;
+    padding: var(--space-7) 0;
+  }
+  .ocak-odeme-tamam__ember {
+    width: 14px;
+    height: 14px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--ember), 0 0 50px rgba(196, 75, 47, 0.35);
+    margin: 0 auto var(--space-6);
+  }
+  .ocak-odeme-tamam h1 {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .ocak-odeme-tamam__ref {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--smoke);
+    margin-top: var(--space-5);
+  }
+  .ocak-odeme-tamam__ref strong {
+    color: var(--cream);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .ocak-odeme-tamam__imza {
+    margin-top: var(--space-7);
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--cream-soft);
+  }
+  .ocak-mock-uyari {
+    margin-top: var(--space-5);
+    padding: var(--space-3) var(--space-4);
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed var(--gold);
+    color: var(--gold);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .ocak-mock-uyari strong { letter-spacing: 0.1em; }
+</style>

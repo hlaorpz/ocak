@@ -19,6 +19,7 @@
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { kodDogrula, type KodSonuc } from '../../lib/kodlar.ts';
+import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import {
   FORMAT_TIP,
   FORMAT_MAILERLITE_GROUP,
@@ -58,11 +59,11 @@ type KayitBody = {
   askiTutar?: number;
   askiNiyet?: string;
   sadeceAski?: boolean;
-  // Aşama 2.5 — Kapı 1 kademeli dayanışma fiyatı. Kapı 2 (cember) yoksayılır
-  // (cember askı/promo/kademe akışında değil). Geçersiz/eksik → 'orta'.
-  // Kayıtlar şemasında `Kademe` alanı YOK — hesabı etkiler, yazıma girmez.
-  // (Kademe select Notion'a eklenirse Aşama 3a+ yazımına eklenecek.)
+  // Aşama 2.5 — Kapı 1 kademeli dayanışma fiyatı. Aşama 3b — Kayıtlar
+  // `Kademe` alanına yazılır (Kaan ekledi). Geçersiz/eksik → 'orta'.
   kademe?: Kademe;
+  // Aşama 3b — ödeme yöntemi (kart | havale). Kart → checkoutBaslat → redirect.
+  odemeYontemi?: 'kart' | 'havale';
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
@@ -145,14 +146,20 @@ async function notionKayitlaraYaz(args: {
   body: KayitBody;
   ucretliMi: boolean;
   referansNo: string;
+  /** Aşama 3b — Kademe Kayıtlar `Kademe` select alanına yazılır. */
+  kademe: Kademe;
+  /** Aşama 3b — yöntem 'kart' → "Kredi Kartı"; 'havale' → "Havale". Ücretsiz null. */
+  yontem: 'kart' | 'havale';
   /** Aşama 3a — askı geldiyse Kayıtlar satırına eklenir (kendi+askı tek satır). */
   askiTutar?: number;
   askiNiyet?: string;
 }): Promise<string> {
-  const { body, ucretliMi, referansNo, askiTutar, askiNiyet } = args;
+  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet } = args;
+  const KADEME_AD: Record<Kademe, string> = { ust: 'Üst', orta: 'Orta', alt: 'Alt' };
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
     'Tip': { select: { name: 'Kayıt' } },
+    'Kademe': { select: { name: KADEME_AD[kademe] } },
     'Kayıt Kaynağı': { select: { name: 'Site' } },
     'Ödeme Durumu': { select: { name: ucretliMi ? 'Beklemede' : 'Bedava' } },
   };
@@ -171,11 +178,11 @@ async function notionKayitlaraYaz(args: {
   if (cevaplar) {
     properties['Kayıt cevapları'] = { rich_text: [{ text: { content: cevaplar } }] };
   }
-  // Ücretli akış bugün havale — Iyzico Aşama 6'da bağlanınca yöntem
-  // ödeme onay handler'ı tarafından override edilir. Ücretsizde yöntem
-  // anlamsız → boş bırakılır (Kayıtlar select default null).
+  // Aşama 3b — Ödeme Yöntemi yönteme göre. Ücretsizde anlamsız (boş).
+  // Kart → "Kredi Kartı" jenerik (gerçek provider Aşama 6 — iyzico onayı sonrası
+  // callback override edebilir).
   if (ucretliMi) {
-    properties['Ödeme Yöntemi'] = { select: { name: 'Havale' } };
+    properties['Ödeme Yöntemi'] = { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } };
   }
   // Askı katmanı (Aşama 3a) — kendi+askı tek satır. Tutar > 0 ise yazılır;
   // niyet opsiyonel. Bu, kayıt + askı verdi anlamına gelir.
@@ -185,8 +192,8 @@ async function notionKayitlaraYaz(args: {
   if (askiNiyet) {
     properties['Askı Katkısı'] = { rich_text: [{ text: { content: askiNiyet } }] };
   }
-  // `Ödenen Tutar`, `Ödeme Tarihi`, `Katıldı mı?`, `Geri Bildirim Verdi`,
-  // `Notlar` → kayıt anında dokunulmaz.
+  // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
+  // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
 
   const result = await notion.pages.create({
     parent: { database_id: NOTION_KAYITLAR_DB },
@@ -206,14 +213,16 @@ async function notionKayitlaraYaz(args: {
 async function notionSadeceAskiYaz(args: {
   body: KayitBody;
   referansNo: string;
+  /** Aşama 3b — yöntem kart/havale (sadece-askı da kart desteği). */
+  yontem: 'kart' | 'havale';
 }): Promise<string> {
-  const { body, referansNo } = args;
+  const { body, referansNo, yontem } = args;
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
     'Tip': { select: { name: 'Askı Katkısı' } },
     'Kayıt Kaynağı': { select: { name: 'Site' } },
     'Ödeme Durumu': { select: { name: 'Beklemede' } },
-    'Ödeme Yöntemi': { select: { name: 'Havale' } },
+    'Ödeme Yöntemi': { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } },
     'Askı Tutarı': { number: body.askiTutar ?? 0 },
   };
   if (body.ad) properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
@@ -348,10 +357,11 @@ export const POST: APIRoute = async ({ request }) => {
     if (!Number.isFinite(askiTutar) || askiTutar <= 0) {
       return json({ status: 'error', message: 'askıTutar > 0 olmalı' }, 400);
     }
+    const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
     const referansNo = uretReferansNo();
     let basvuruId: string;
     try {
-      basvuruId = await notionSadeceAskiYaz({ body, referansNo });
+      basvuruId = await notionSadeceAskiYaz({ body, referansNo, yontem });
     } catch (err) {
       return json(
         { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
@@ -359,6 +369,26 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
     const aciklamaSablonu = `${referansNo} — ${body.ad}`;
+
+    // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, iyzico
+    // Aşama 6). Sayfa origin'i request URL'den; basariUrl /odeme/tamam,
+    // hataUrl /odeme/iptal (tamam'a fallback).
+    let checkoutUrl: string | undefined;
+    if (yontem === 'kart') {
+      const provider = getPaymentProvider();
+      const baseUrl = new URL(request.url).origin;
+      const sonuc = await provider.checkoutBaslat({
+        kayitId: basvuruId,
+        tutar: askiTutar,
+        paraBirimi: 'TRY',
+        ad: body.ad,
+        email: body.email,
+        basariUrl: `${baseUrl}/odeme/tamam?ref=${encodeURIComponent(referansNo)}`,
+        hataUrl: `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansNo)}`,
+      });
+      if ('redirectUrl' in sonuc) checkoutUrl = sonuc.redirectUrl;
+    }
+
     return json({
       status: 'success',
       basvuruId,
@@ -370,11 +400,13 @@ export const POST: APIRoute = async ({ request }) => {
         gerekli: true,
         tutar: askiTutar,
         paraBirimi: 'TRY',
-        iban: HAVALE_IBAN,
-        ad: HAVALE_AD,
-        aciklama: aciklamaSablonu,
+        iban: yontem === 'havale' ? HAVALE_IBAN : '',
+        ad: yontem === 'havale' ? HAVALE_AD : '',
+        aciklama: yontem === 'havale' ? aciklamaSablonu : '',
+        yontem,
       },
       katilim: { var: false, tipi: 'link', deger: '' },
+      ...(checkoutUrl ? { checkoutUrl } : {}),
     });
   }
 
@@ -437,10 +469,14 @@ export const POST: APIRoute = async ({ request }) => {
   // input + response'a çıkış aynı değer olsun.
   const referansNo = uretReferansNo();
 
+  // Aşama 3b — yöntem. Kart/havale; tam-burs + askısız → ödeme yok (gereksiz);
+  // tutar > 0 ise yöntem anlamlı. Default havale (bugünkü akış).
+  const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
+
   // Notion satır yaz — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular) dallanması.
   // Brief brief-odeme-asama15-kapi1-kayitlar.md, KARAR 76.
-  // Kapı 2 (cember) — askı/promo bu aşamada YOKSAYILIR; Aşama 3b'de Başvurular
-  // "Kayda Dönüştür" automation köprüsünde değerlendirilir.
+  // Kapı 2 (cember) — askı/promo/kademe/yöntem bu aşamada YOKSAYILIR; Aşama 1.6'da
+  // Başvurular "Kayda Dönüştür" automation köprüsünde değerlendirilir.
   let basvuruId: string;
   try {
     basvuruId = isKapi1(format)
@@ -448,6 +484,8 @@ export const POST: APIRoute = async ({ request }) => {
           body,
           ucretliMi: odemeGerekli,
           referansNo,
+          kademe,
+          yontem,
           askiTutar: katmanB > 0 ? katmanB : undefined,
           askiNiyet: body.askiNiyet,
         })
@@ -511,6 +549,42 @@ export const POST: APIRoute = async ({ request }) => {
       ? { tutar: katmanB, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) }
       : undefined;
 
+  // Aşama 3b — kart yöntemi + Kapı 1 + ödeme gerekli → checkoutBaslat
+  // (mock; iyzico Aşama 6). promoSonuc.kodId callback'e taşınır
+  // (kodKullanimArtir orada — ödeme onayında TEK çağrı noktası).
+  const isKapi1Yontem = isKapi1(format);
+  let checkoutUrl: string | undefined;
+  if (isKapi1Yontem && yontem === 'kart' && odemeGerekli) {
+    try {
+      const provider = getPaymentProvider();
+      const baseUrl = new URL(request.url).origin;
+      const promoKodId = promoSonuc?.gecerli ? promoSonuc.kodId : undefined;
+      const sonuc = await provider.checkoutBaslat({
+        kayitId: basvuruId,
+        tutar: hesap.toplam,
+        paraBirimi: etk.paraBirimi,
+        ad: body.ad,
+        email: body.email,
+        basariUrl: `${baseUrl}/odeme/tamam?ref=${encodeURIComponent(referansNo)}`,
+        hataUrl: `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansNo)}`,
+        ...(promoKodId ? { kodId: promoKodId } : {}),
+      });
+      if ('redirectUrl' in sonuc) checkoutUrl = sonuc.redirectUrl;
+    } catch (err) {
+      // Provider hatası → checkout açılamadı, kullanıcıya hata dönelim
+      // (Kayıtlar satırı zaten pending açıldı; Kaan elle temizler veya
+      // tekrar dener).
+      return json(
+        { status: 'error', message: 'Ödeme sağlayıcı hatası', detay: String(err).slice(0, 200) },
+        500,
+      );
+    }
+  }
+
+  const havaleyiKullan = isKapi1Yontem && yontem === 'havale' && odemeGerekli;
+  // Cember (Kapı 2) eski havale akışı korunur — yontem ayrımı yok.
+  const cemberHavale = !isKapi1Yontem && odemeGerekli;
+
   return json({
     status: 'success',
     basvuruId,
@@ -526,14 +600,16 @@ export const POST: APIRoute = async ({ request }) => {
       // (askı ile uyumlu olduğunu farzeder — TR'de hep TRY).
       tutar: odemeGerekli ? hesap.toplam : 0,
       paraBirimi: etk.paraBirimi,
-      iban: odemeGerekli ? HAVALE_IBAN : '',
-      ad: odemeGerekli ? HAVALE_AD : '',
-      aciklama: odemeGerekli ? aciklamaSablonu : '',
+      iban: havaleyiKullan || cemberHavale ? HAVALE_IBAN : '',
+      ad: havaleyiKullan || cemberHavale ? HAVALE_AD : '',
+      aciklama: havaleyiKullan || cemberHavale ? aciklamaSablonu : '',
+      ...(isKapi1Yontem && odemeGerekli ? { yontem } : {}),
     },
     katilim: {
       var: linkVar,
       tipi: katilimTipi,
       deger: linkVar ? etk.katilimLinki : '',
     },
+    ...(checkoutUrl ? { checkoutUrl } : {}),
   });
 };
