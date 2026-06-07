@@ -34,8 +34,26 @@ async function odemeyiOnayla(args: {
   tutar: number;
   mockMu: boolean;
   kodId?: string;
-}): Promise<{ ok: boolean; error?: string; kodArtimi?: number }> {
+}): Promise<{ ok: boolean; error?: string; kodArtimi?: number; kodAdi?: string }> {
   const { basvuruId, tutar, mockMu, kodId } = args;
+
+  // Aşama 3b-fix ADIM 2 — kodId varsa Kodlar'dan kod adını al (Kayıtlar.
+  // Kullanılan Kod rich_text alanına yazılacak). Tek Notion update'te dahil
+  // edelim ki ekstra round-trip olmasın. Retrieve hata defansif (sayaç +
+  // ödeme onayı yine başarılı).
+  let kodAdi: string | undefined;
+  if (kodId) {
+    try {
+      const kodPage = await notion.pages.retrieve({ page_id: kodId });
+      const props = ('properties' in kodPage ? kodPage.properties : {}) as Record<string, any>;
+      const title = props['Kod']?.title ?? [];
+      const txt = title.map((t: any) => t.plain_text ?? '').join('').trim();
+      if (txt) kodAdi = txt;
+    } catch (err) {
+      console.error('[odeme-callback] kod retrieve hatası:', String(err).slice(0, 200));
+    }
+  }
+
   const properties: Record<string, any> = {
     'Ödeme Durumu': { select: { name: 'Ödendi' } },
     'Ödenen Tutar': { number: tutar },
@@ -50,23 +68,33 @@ async function odemeyiOnayla(args: {
       ],
     };
   }
+  if (kodAdi) {
+    properties['Kullanılan Kod'] = {
+      rich_text: [{ text: { content: kodAdi } }],
+    };
+  }
   try {
     await notion.pages.update({ page_id: basvuruId, properties });
   } catch (err) {
     return { ok: false, error: String(err).slice(0, 200) };
   }
 
-  // Promo sayaç artırımı — İLK ve TEK çağrı noktası. Hata defansif: ödeme
-  // başarılı sayılır, sayaç kaymış olur (Kaan manuel düzeltir).
+  // Aşama 3b-fix ADIM 2 — promo sayaç artırımı; İLK ve TEK çağrı noktası.
+  // Defansif log: kodId yoksa promo'suz kayıt, kodId varsa çağrı sonucu
+  // (kodArtimi yeni değer veya hata mesajı). Eyeball'da "sayaç artmadı"
+  // raporu için Vercel runtime log'unda izlenebilir.
   let kodArtimi: number | undefined;
   if (kodId) {
     try {
       kodArtimi = await kodKullanimArtir(notion, kodId);
-    } catch {
-      kodArtimi = undefined;
+      console.log(`[odeme-callback] kodKullanimArtir OK — kodId=${kodId} kod="${kodAdi ?? '?'}" yeniSayac=${kodArtimi}`);
+    } catch (err) {
+      console.error('[odeme-callback] kodKullanimArtir hatası:', String(err).slice(0, 200));
     }
+  } else {
+    console.log(`[odeme-callback] kodId YOK — promo'suz kayıt, sayaç artırılmadı`);
   }
-  return { ok: true, kodArtimi };
+  return { ok: true, kodArtimi, kodAdi };
 }
 
 function parseGirdi(url: URL, bodyParams: URLSearchParams | null) {

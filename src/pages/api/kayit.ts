@@ -25,7 +25,7 @@ import {
   FORMAT_TIP,
   FORMAT_NOTION_FORMAT,
   FORMAT_MAILERLITE_GROUP,
-  isKapi1,
+  isDirekt,
   isKayitFormat,
   kademeTutari,
   katilimTipiCoz,
@@ -35,6 +35,7 @@ import {
   uretReferansNo,
   uygulaIndirim,
   type KayitFormat,
+  type KayitTipi,
   type Kademe,
 } from '../../lib/kayit.ts';
 
@@ -118,6 +119,8 @@ type EtkinlikOkuma = {
   saat: string;
   /** Notion "Konum Detay" rich_text — fiziksel etkinliklerde adres. */
   konumDetay: string;
+  /** Aşama 3b-fix — etkinlik bazlı Kayıt Tipi. Boş → 'Direkt' (eski etkinlikler için güvenli default). */
+  kayitTipi: KayitTipi;
 };
 
 function richTextStr(props: Record<string, any>, name: string): string {
@@ -142,7 +145,10 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   const klasikSaat = richTextStr(props, 'Saat');
   const saat = zoomSaat || klasikSaat;
   const konumDetay = richTextStr(props, 'Konum Detay');
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay };
+  // Aşama 3b-fix — Kayıt Tipi okuma; default 'Direkt' (eski etkinlikler).
+  const kayitTipiRaw = props['Kayıt Tipi']?.select?.name;
+  const kayitTipi: KayitTipi = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
+  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay, kayitTipi };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -461,20 +467,23 @@ export const POST: APIRoute = async ({ request }) => {
   }
   // Aşama 2.5 — Kapı 1'de katmanA seçili kademe oranıyla türetilir
   // (frontend canlı tutar bloğuyla TEK kaynak — uyumsuzluk olmasın).
-  // Kapı 2 (cember) eski mantık: etkinlik.Ücret direkt.
+  // Aşama 3b-fix — Kayıt Tipi etkinlik bazlı dallanma. `Direkt` (mevcut Kapı 1
+  // akışı): kademe × ücret + askı + promo + checkout + Kayıtlar. `Başvuru`:
+  // sade Başvurular yazımı, kademe yok, askı yok, promo yok, ödeme yok.
+  const direktAkis = isDirekt(etk.kayitTipi);
   const baseUcret = etk.tutar ?? 0;
   const kademe: Kademe =
     body.kademe === 'ust' || body.kademe === 'orta' || body.kademe === 'alt'
       ? body.kademe
       : 'orta';
-  const katmanA = isKapi1(format) ? kademeTutari(baseUcret, kademe) : baseUcret;
-  const katmanB = Math.max(0, Number(body.askiTutar) || 0);
+  const katmanA = direktAkis ? kademeTutari(baseUcret, kademe) : baseUcret;
+  const katmanB = direktAkis ? Math.max(0, Number(body.askiTutar) || 0) : 0;
 
   // Aşama 3a — promo SERVER-SIDE re-validate (client'a güvenme).
   // kodKullanimArtir BURADA ÇAĞRILMAZ — sayaç ödeme onayında artar (Aşama 3b).
   // Geçersiz promo → sessiz promo'suz devam (kullanıcı client'ta zaten gördü).
   let promoSonuc: KodSonuc | null = null;
-  if (body.promoKod && body.promoKod.trim() && NOTION_KODLAR_DB) {
+  if (direktAkis && body.promoKod && body.promoKod.trim() && NOTION_KODLAR_DB) {
     try {
       promoSonuc = await kodDogrula(
         notion,
@@ -500,13 +509,15 @@ export const POST: APIRoute = async ({ request }) => {
   // tutar > 0 ise yöntem anlamlı. Default havale (bugünkü akış).
   const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
 
-  // Notion satır yaz — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular) dallanması.
-  // Brief brief-odeme-asama15-kapi1-kayitlar.md, KARAR 76.
-  // Kapı 2 (cember) — askı/promo/kademe/yöntem bu aşamada YOKSAYILIR; Aşama 1.6'da
-  // Başvurular "Kayda Dönüştür" automation köprüsünde değerlendirilir.
+  // Aşama 3b-fix — etkinlik bazlı Kayıt Tipi dallanması.
+  // `Direkt` → Kayıtlar (Kapı 1 mevcut akış: kademe + askı + promo + Ödeme Yöntemi).
+  // `Başvuru` → Başvurular (sade: ad/email/telefon/etkinlik soruları/tarih; ödeme/askı/promo YOK).
+  //   Format-bazlı whitelist (isKapi1) deprecated — etkinlik bazlı otorite.
+  //   Başvuru'da Tip Notion enum'undan (cember → 'Çember', vb.) yazılır;
+  //   `Kayda Dönüştür` automation (Aşama 1.6) Kayıtlar'a düşürür.
   let basvuruId: string;
   try {
-    basvuruId = isKapi1(format)
+    basvuruId = direktAkis
       ? await notionKayitlaraYaz({
           body,
           ucretliMi: odemeGerekli,
@@ -544,9 +555,11 @@ export const POST: APIRoute = async ({ request }) => {
   });
 
   // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.
+  // Aşama 3b-fix: Başvuru tipinde MailerLite çağrılmaz (mail tetiklenmez;
+  // Zoom linki / katılım bilgisi henüz yok, davet eden Notlar/Kaan elle yazar).
   const groupId = FORMAT_MAILERLITE_GROUP[format];
   let mailerlite: { ok: boolean; status: number; error?: string } | null = null;
-  if (groupId) {
+  if (direktAkis && groupId) {
     mailerlite = await mailerLiteEkle({
       email: body.email,
       ad: body.ad,
@@ -585,12 +598,11 @@ export const POST: APIRoute = async ({ request }) => {
       ? { tutar: katmanB, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) }
       : undefined;
 
-  // Aşama 3b — kart yöntemi + Kapı 1 + ödeme gerekli → checkoutBaslat
+  // Aşama 3b — kart yöntemi + Direkt + ödeme gerekli → checkoutBaslat
   // (mock; iyzico Aşama 6). promoSonuc.kodId callback'e taşınır
   // (kodKullanimArtir orada — ödeme onayında TEK çağrı noktası).
-  const isKapi1Yontem = isKapi1(format);
   let checkoutUrl: string | undefined;
-  if (isKapi1Yontem && yontem === 'kart' && odemeGerekli) {
+  if (direktAkis && yontem === 'kart' && odemeGerekli) {
     try {
       const provider = getPaymentProvider();
       // Aşama 3b eyeball Bulgu 1 — origin Vercel x-forwarded-* header'larından.
@@ -618,9 +630,12 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  const havaleyiKullan = isKapi1Yontem && yontem === 'havale' && odemeGerekli;
-  // Cember (Kapı 2) eski havale akışı korunur — yontem ayrımı yok.
-  const cemberHavale = !isKapi1Yontem && odemeGerekli;
+  const havaleyiKullan = direktAkis && yontem === 'havale' && odemeGerekli;
+  // Başvuru (cember default) eski havale akışı korunur — yontem ayrımı yok.
+  // Aslında Başvuru'da ödeme YOKSAYILIR (sade form), bu yüzden cemberHavale
+  // her zaman false olmalı yeni mantıkta. Eski enum davranışını korumak için
+  // mevcut "Bekliyor/Muaf" başvuruları için iban yine boş.
+  const basvuruHavale = false;
 
   return json({
     status: 'success',
@@ -637,16 +652,16 @@ export const POST: APIRoute = async ({ request }) => {
       // (askı ile uyumlu olduğunu farzeder — TR'de hep TRY).
       tutar: odemeGerekli ? hesap.toplam : 0,
       paraBirimi: etk.paraBirimi,
-      iban: havaleyiKullan || cemberHavale ? HAVALE_IBAN : '',
-      ad: havaleyiKullan || cemberHavale ? HAVALE_AD : '',
-      aciklama: havaleyiKullan || cemberHavale ? aciklamaSablonu : '',
-      ...(isKapi1Yontem && odemeGerekli ? { yontem } : {}),
+      iban: havaleyiKullan || basvuruHavale ? HAVALE_IBAN : '',
+      ad: havaleyiKullan || basvuruHavale ? HAVALE_AD : '',
+      aciklama: havaleyiKullan || basvuruHavale ? aciklamaSablonu : '',
+      ...(direktAkis && odemeGerekli ? { yontem } : {}),
     },
-    katilim: {
-      var: linkVar,
-      tipi: katilimTipi,
-      deger: linkVar ? etk.katilimLinki : '',
-    },
+    // Aşama 3b-fix — Başvuru tipinde katılım bilgisi gönderilmez (Zoom/adres
+    // henüz yok, davet sonra). Direkt'te mevcut katılım bloğu.
+    katilim: direktAkis
+      ? { var: linkVar, tipi: katilimTipi, deger: linkVar ? etk.katilimLinki : '' }
+      : { var: false, tipi: 'link' as const, deger: '' },
     ...(checkoutUrl ? { checkoutUrl } : {}),
   });
 };

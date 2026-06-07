@@ -228,6 +228,11 @@ const etkinlikler = defineCollection({
     // Brief brief-fotolu-onizleme.md İş 4 — kart köşe görseli (Notion files & media).
     // Boşken SonrakiBulusma kartı master görünümünde basılır.
     kartGorsel: z.string().optional(),
+    // Aşama 3b-fix — Notion "Kayıt Tipi" select. Direkt = mevcut Kapı 1 akışı
+    // (kademe + askı + promo + checkout + Kayıtlar). Başvuru = sade form +
+    // Başvurular DB (ödeme yok, Zoom yok, mail yok). Format whitelist
+    // (KAPI1_FORMATLAR) deprecated — otorite etkinlik bazlı.
+    kayitTipi: z.enum(['Direkt', 'Başvuru']),
   }),
 });
 

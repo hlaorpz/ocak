@@ -69,6 +69,11 @@ export function kademeTutari(ucret: number, kademe: Kademe): number {
 // Kapı 2 — başvuru/onay (cember + ayrı pipeline'daki anadolu): mevcut akış,
 // Başvurular'a yazılır, oradan Kaan onayı + automation ile Kayıtlar'a düşer
 // (Aşama 1.6 köprüsü, bu pakette DEĞİL).
+//
+// DEPRECATED (Aşama 3b-fix): otorite artık etkinlik bazlı `Kayıt Tipi`
+// (Notion Etkinlikler select). `isDirekt(kayitTipi)` kullan. `isKapi1` ve
+// `KAPI1_FORMATLAR` legacy testler / fallback için tutuluyor; yeni kod
+// `etk.kayitTipi === 'Direkt'` dallanmasına bakar.
 export const KAPI1_FORMATLAR: readonly KayitFormat[] = [
   'acik-kapi',
   'workshop',
@@ -79,6 +84,18 @@ export const KAPI1_FORMATLAR: readonly KayitFormat[] = [
 
 export function isKapi1(format: KayitFormat): boolean {
   return (KAPI1_FORMATLAR as readonly string[]).includes(format);
+}
+
+/**
+ * Aşama 3b-fix — Kayıt Tipi dallanması. Notion Etkinlikler `Kayıt Tipi`
+ * select [Başvuru | Direkt]. `Direkt` → mevcut Kapı 1 akışı (kademe +
+ * askı + promo + kart/havale + checkout + Kayıtlar). `Başvuru` → sade
+ * form + Başvurular DB (ödeme yok, Zoom + mail tetiklenmez).
+ */
+export type KayitTipi = 'Direkt' | 'Başvuru';
+
+export function isDirekt(kayitTipi: KayitTipi | string | undefined): boolean {
+  return kayitTipi === 'Direkt';
 }
 
 // Slug → MailerLite grup ID. Brief 3 (KARAR 206): 6 formatın hepsi map'lendi.
