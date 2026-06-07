@@ -20,6 +20,7 @@ import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { kodDogrula, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
+import { publicOrigin } from '../../lib/public-origin.ts';
 import {
   FORMAT_TIP,
   FORMAT_NOTION_FORMAT,
@@ -38,24 +39,6 @@ import {
 } from '../../lib/kayit.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
-
-/**
- * Aşama 3b eyeball Bulgu 1 düzeltmesi — Vercel Serverless Functions
- * ortamında `request.url` host bilgisini internal runtime host'tan
- * (localhost) okur; gerçek public origin için `x-forwarded-*` header'ları
- * gereklidir. Lokal dev'de Astro `host` header'ı `localhost:4321` verir,
- * fallback path bunu yakalar. Vercel proxy preview'da `x-forwarded-host`
- * = `ocak-site-...vercel.app` + `x-forwarded-proto`=`https`, prod'da
- * `www.ocak.biz`. Böylece kart checkout redirect URL'leri her ortamda
- * doğru.
- */
-function publicOrigin(request: Request): string {
-  const proto = request.headers.get('x-forwarded-proto');
-  const host =
-    request.headers.get('x-forwarded-host') ?? request.headers.get('host');
-  if (host) return `${proto ?? 'https'}://${host}`;
-  return new URL(request.url).origin;
-}
 
 /**
  * Havale açıklama metni — kullanıcı bankada görür. Brief Aşama 3b eyeball

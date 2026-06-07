@@ -21,6 +21,7 @@
 import type { APIRoute } from 'astro';
 import { notion } from '../../lib/notion.ts';
 import { kodKullanimArtir } from '../../lib/kodlar.ts';
+import { publicOrigin } from '../../lib/public-origin.ts';
 
 export const prerender = false;
 
@@ -102,7 +103,10 @@ async function handle(request: Request): Promise<Response> {
     }
   }
   const girdi = parseGirdi(url, bodyParams);
-  const baseUrl = url.origin;
+  // Aşama 3b eyeball Bulgu 4 — redirect base URL Vercel x-forwarded-*
+  // header'larından (request.url Vercel'de internal/localhost). Bulgu 1
+  // ile aynı kök; ortak helper.
+  const baseUrl = publicOrigin(request);
 
   if (!girdi.basvuruId) {
     return redirect(`${baseUrl}/odeme/iptal?hata=ref-yok`);
