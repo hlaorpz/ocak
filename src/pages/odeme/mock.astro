@@ -54,7 +54,18 @@ const kodId = url.searchParams.get('kodId') ?? '';
       </tbody>
     </table>
 
-    <form method="POST" action="/api/odeme-callback" class="ocak-mock-form">
+    {/* Aşama 3b eyeball Bulgu 3 — form GET. Astro 5 `security.checkOrigin`
+        Vercel proxy ortamında HTML form POST'larını "cross-site" sayıyor
+        çünkü `request.url` host'u internal runtime (localhost) ama Browser
+        `Origin` header'ı public alias. CSRF check sadece HTML form POST'lara
+        bakar — GET ve XHR/fetch hariç. Callback `handle()` URL params'tan
+        okuyor (POST body fallback'i var), backend değişmedi.
+
+        Gerçek iyzico (Aşama 6) farklı: webhook server-to-server POST atar,
+        Origin header'ı iyzico domain'i veya yok → Astro CSRF reject eder.
+        O noktada `security.checkOrigin: false` config + iyzico webhook imza
+        doğrulama eklenir (CSRF'nin yerini imza alır). */}
+    <form method="GET" action="/api/odeme-callback" class="ocak-mock-form">
       <input type="hidden" name="ref" value={ref} />
       <input type="hidden" name="tutar" value={String(tutar)} />
       <input type="hidden" name="sonuc" value="basari" />
