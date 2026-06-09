@@ -47,6 +47,13 @@ export type KayitResponse = {
    */
   mode?: 'kayit' | 'sadece-aski';
   /**
+   * Aşama 3b-fix tasarım — etkinliğin Kayıt Tipi (Notion). Frontend success
+   * ekranını ona göre seçer: 'Başvuru' → sade "Başvurun ulaştı" + tutar/IBAN
+   * YOK; 'Direkt' → mevcut akış (ödendi / havale). mode='sadece-aski' iken
+   * bu alan undefined.
+   */
+  kayitTipi?: 'Direkt' | 'Başvuru';
+  /**
    * Aşama 3a — askı verisi (kendi+askı veya sadece-askı). Frontend
    * success'te "Bir kor daha bıraktın — teşekkürler" eki için.
    */
@@ -93,6 +100,13 @@ export type KayitResponse = {
     var: boolean;
     tipi: 'link' | 'adres';
     deger: string;
+    /**
+     * Aşama 3b-fix tasarım — Zoom Şifresi (online link'le birlikte). Notion
+     * "Zoom Şifresi" rich_text dolu ise frontend success-katilim bloğunda
+     * link altında gösterilir. Mail'de de var (MailerLite `zoom_sifresi`
+     * custom field). Boş/yoksa frontend gizler.
+     */
+    zoomSifresi?: string;
   };
 };
 

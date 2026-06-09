@@ -22,6 +22,13 @@
 export type CheckoutBaslatGirdi = {
   /** Notion Kayıtlar page id — callback bu satırı Ödendi'ye çeker. */
   kayitId: string;
+  /**
+   * Aşama 3b-fix tasarım — kullanıcıya görünen referans (OCAK-XXXXX).
+   * Mock checkout sayfası + success ekranı bunu gösterir. `kayitId`
+   * (Notion UUID) Notion update için, `referansNo` (OCAK-XXXXX)
+   * kullanıcı görüntüleme için — ikisi ayrı.
+   */
+  referansNo: string;
   /** Toplam tutar TL (uygulaIndirim sonrası). */
   tutar: number;
   paraBirimi: string;
@@ -63,10 +70,13 @@ export interface PaymentProvider {
  */
 export const mockPaymentProvider: PaymentProvider = {
   ad: 'mock',
-  async checkoutBaslat({ kayitId, tutar, paraBirimi, ad, email, basariUrl, hataUrl, kodId }) {
+  async checkoutBaslat({ kayitId, referansNo, tutar, paraBirimi, ad, email, basariUrl, hataUrl, kodId }) {
     const url = new URL(basariUrl);
     url.pathname = '/odeme/mock';
-    url.searchParams.set('ref', kayitId);
+    // Aşama 3b-fix tasarım: ref=OCAK-XXXXX (kullanıcı görür), pageId=Notion
+    // UUID (callback Notion update için). İkisi ayrı taşınır.
+    url.searchParams.set('ref', referansNo);
+    url.searchParams.set('pageId', kayitId);
     url.searchParams.set('tutar', String(tutar));
     url.searchParams.set('para', paraBirimi);
     url.searchParams.set('ad', ad);

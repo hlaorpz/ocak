@@ -100,8 +100,14 @@ async function odemeyiOnayla(args: {
 function parseGirdi(url: URL, bodyParams: URLSearchParams | null) {
   const get = (k: string) =>
     bodyParams?.get(k) ?? url.searchParams.get(k) ?? '';
+  // Aşama 3b-fix tasarım: ref=OCAK-XXXXX (kullanıcıya görünür, success'e),
+  // pageId=Notion UUID (pages.update için). Eski mock URL'sinde pageId yok
+  // → ref'i basvuruId saymıştık; backward-compat fallback.
+  const refSuccess = get('ref');
+  const pageId = get('pageId') || refSuccess;
   return {
-    basvuruId: get('ref'),
+    basvuruId: pageId,
+    refSuccess,
     tutarRaw: get('tutar'),
     sonuc: (get('sonuc') || 'basari').toLowerCase(),
     mockMu: get('mock') === '1' || url.searchParams.get('mock') === '1',
@@ -160,9 +166,11 @@ async function handle(request: Request): Promise<Response> {
       `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(girdi.basvuruId)}&hata=notion`,
     );
   }
-  // Başarı — success sayfasına yönlendir. ref'i + (varsa) mock işaretini taşı.
+  // Aşama 3b-fix tasarım — başarı: success sayfasına refSuccess (OCAK-XXXXX)
+  // taşınır. Notion UUID (basvuruId) sadece pages.update için kullanıldı;
+  // success'te göstermiyoruz (ham UUID kullanıcıya anlamsız).
   const basariUrl = new URL(`${baseUrl}/odeme/tamam`);
-  basariUrl.searchParams.set('ref', girdi.basvuruId);
+  basariUrl.searchParams.set('ref', girdi.refSuccess || girdi.basvuruId);
   if (girdi.mockMu) basariUrl.searchParams.set('mock', '1');
   return redirect(basariUrl.toString());
 }

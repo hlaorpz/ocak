@@ -20,7 +20,10 @@ export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
 
 const url = Astro.url;
+// Aşama 3b-fix tasarım: ref=OCAK-XXXXX (kullanıcı görür), pageId=Notion UUID
+// (callback Notion update için). İkisi ayrı taşınır.
 const ref = url.searchParams.get('ref') ?? '';
+const pageId = url.searchParams.get('pageId') ?? '';
 const tutarRaw = url.searchParams.get('tutar') ?? '';
 const tutar = Number(tutarRaw) || 0;
 const para = url.searchParams.get('para') ?? 'TRY';
@@ -67,6 +70,7 @@ const kodId = url.searchParams.get('kodId') ?? '';
         doğrulama eklenir (CSRF'nin yerini imza alır). */}
     <form method="GET" action="/api/odeme-callback" class="ocak-mock-form">
       <input type="hidden" name="ref" value={ref} />
+      {pageId && <input type="hidden" name="pageId" value={pageId} />}
       <input type="hidden" name="tutar" value={String(tutar)} />
       <input type="hidden" name="sonuc" value="basari" />
       <input type="hidden" name="mock" value="1" />

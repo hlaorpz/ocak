@@ -61,7 +61,23 @@ export const KADEME_ORANLARI: Record<Kademe, number> = {
 
 export function kademeTutari(ucret: number, kademe: Kademe): number {
   const oran = KADEME_ORANLARI[kademe];
-  return Math.round(Math.max(0, ucret) * oran);
+  // Aşama 3b-fix tasarım (KARAR 61/88 kırpma yasağı): kuruş korunur. Float
+  // hatalarını engellemek için ×100/100. Önceki Math.round → 225×0.75=169
+  // (kuruş kayboluyordu); yeni: 168.75. Gösterim `formatTutarTr` ile.
+  return Math.round(Math.max(0, ucret) * oran * 100) / 100;
+}
+
+/**
+ * Aşama 3b-fix tasarım — tutar gösterimi TR locale + iki ondalık:
+ * 168.75 → "168,75". KARAR 61/88: kuruş ekranda görünür, gizli kırpma yok.
+ * Tek otorite — frontend canlı tutar bloğu + backend response gösterimi
+ * paylaşır.
+ */
+export function formatTutarTr(tutar: number): string {
+  return tutar.toLocaleString('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 }
 
 // Kapı 1 — direkt kayıt formatları (değerlendirme yok). /api/kayit bunların
@@ -268,19 +284,30 @@ export function uygulaIndirim(
   katmanB: number,
   kod: KodSonuc | null,
 ): IndirimSonuc {
-  const aBT = Math.max(0, katmanA) + Math.max(0, katmanB);
+  // Aşama 3b-fix tasarım KARARI (2026-06-09): indirim SADECE Katman A
+  // (katılım payı) üzerine uygulanır. Kor (Katman B / askı) tam kalır —
+  // kullanıcı kendi katkısını yapıyor, indirim onu da düşürmek mantıksız.
+  // Önceden A+B'ye uygulanıyordu (Aşama 3a); değiştirildi.
+  const aSafe = Math.max(0, katmanA);
+  const bSafe = Math.max(0, katmanB);
+  const yuvarlaKurus = (n: number) => Math.round(n * 100) / 100;
   if (!kod || !kod.gecerli) {
-    return { katmanA, katmanB, indirim: 0, toplam: aBT };
+    return { katmanA: aSafe, katmanB: bSafe, indirim: 0, toplam: yuvarlaKurus(aSafe + bSafe) };
   }
   if (kod.tip === 'tam-burs') {
-    // Sadece A sıfırlanır, B kalır. (Brief açık: helper A+B'yi sıfırlasa da
-    // bizim niyetimiz tam-burs SADECE etkinlik ücretini karşılar.)
-    return { katmanA: 0, katmanB, indirim: katmanA, toplam: katmanB };
+    return { katmanA: 0, katmanB: bSafe, indirim: aSafe, toplam: bSafe };
   }
-  // yuzde / sabit — indirim A+B üzerinde uygulanır.
-  const indirim = Math.min(Math.max(0, kod.indirimTutari), aBT);
-  const toplam = Math.max(0, aBT - indirim);
-  return { katmanA, katmanB, indirim, toplam };
+  // yuzde / sabit — indirim SADECE A'ya. `kod.indirimTutari` kodDogrula
+  // çağrısının `tutar` parametresine göre hesaplanır; çağıran A'yı
+  // geçirmişse doğrudan kullanılır, A+B geçirmişse burada A ile sınırlanır.
+  const indirim = Math.min(Math.max(0, kod.indirimTutari), aSafe);
+  const yeniA = Math.max(0, aSafe - indirim);
+  return {
+    katmanA: yuvarlaKurus(yeniA),
+    katmanB: bSafe,
+    indirim: yuvarlaKurus(indirim),
+    toplam: yuvarlaKurus(yeniA + bSafe),
+  };
 }
 
 /**

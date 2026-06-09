@@ -428,6 +428,7 @@ export const POST: APIRoute = async ({ request }) => {
       const baseUrl = publicOrigin(request);
       const sonuc = await provider.checkoutBaslat({
         kayitId: basvuruId,
+        referansNo,
         tutar: askiTutar,
         paraBirimi: 'TRY',
         ad: body.ad,
@@ -501,12 +502,14 @@ export const POST: APIRoute = async ({ request }) => {
   let promoSonuc: KodSonuc | null = null;
   if (direktAkis && body.promoKod && body.promoKod.trim() && NOTION_KODLAR_DB) {
     try {
+      // Aşama 3b-fix tasarım: indirim sadece Katman A (katılım payı) üzerine
+      // uygulanır → kodDogrula'a SADECE A geçer. Kor (B) tam kalır.
       promoSonuc = await kodDogrula(
         notion,
         NOTION_KODLAR_DB,
         body.promoKod,
         format,
-        katmanA + katmanB,
+        katmanA,
       );
     } catch {
       promoSonuc = null;
@@ -623,18 +626,26 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Aşama 3b eyeball Bulgu 2 — havale açıklama formatı insan-okur sade:
-  // "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00". OCAK-XXXXX referans
-  // no banka açıklamasında DEĞİL (success ekranında + Notion'da).
-  // Format adı uzun varyant (FORMAT_NOTION_FORMAT: "İstanbul Akşamı" gibi).
-  // Tarih: form'dan gelen seciliTarih (Türkçe formatlı) veya Notion ISO
-  // çevirisi. Saat: Etkinlikler.Saat (online + fiziksel).
-  const aciklamaSablonu = havaleAciklamasi({
-    ad: body.ad,
-    formatAd: FORMAT_NOTION_FORMAT[format],
-    tarih: body.seciliTarih?.trim() || tarihTrFormat(etk.tarihISO),
-    saat: etk.saat,
-  });
+  // Aşama 3b eyeball Bulgu 2 + 3b-fix tasarım: havale açıklama insan-okur
+  // sade. "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00".
+  //
+  // ÖNEMLİ — saat duplikatı önleme: body.seciliTarih = frontend
+  // formatEtkinlikTarihi(başl, bit, saat) çıktısı (saat zaten DAHİL).
+  // Helper'a saat ek geçirme yoksa "...19:00 · 19:00" duplikat. Fallback
+  // (Notion ISO çevirisi) saat'siz, saat ek argüman gerek.
+  const seciliTarihSaatli = body.seciliTarih?.trim();
+  const aciklamaSablonu = seciliTarihSaatli
+    ? havaleAciklamasi({
+        ad: body.ad,
+        formatAd: FORMAT_NOTION_FORMAT[format],
+        tarih: seciliTarihSaatli,
+      })
+    : havaleAciklamasi({
+        ad: body.ad,
+        formatAd: FORMAT_NOTION_FORMAT[format],
+        tarih: tarihTrFormat(etk.tarihISO),
+        saat: etk.saat,
+      });
 
   // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
   const promoResp = promoSonuc
@@ -665,6 +676,7 @@ export const POST: APIRoute = async ({ request }) => {
       const promoKodId = promoSonuc?.gecerli ? promoSonuc.kodId : undefined;
       const sonuc = await provider.checkoutBaslat({
         kayitId: basvuruId,
+        referansNo,
         tutar: hesap.toplam,
         paraBirimi: etk.paraBirimi,
         ad: body.ad,
@@ -685,12 +697,10 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
+  // Aşama 3b-fix tasarım: Başvuru'da ödeme YOK (sade success — tutar/IBAN
+  // gizli, sadece "başvurun ulaştı" mesajı). Direkt + havale → iban + aciklama.
   const havaleyiKullan = direktAkis && yontem === 'havale' && odemeGerekli;
-  // Başvuru (cember default) eski havale akışı korunur — yontem ayrımı yok.
-  // Aslında Başvuru'da ödeme YOKSAYILIR (sade form), bu yüzden cemberHavale
-  // her zaman false olmalı yeni mantıkta. Eski enum davranışını korumak için
-  // mevcut "Bekliyor/Muaf" başvuruları için iban yine boş.
-  const basvuruHavale = false;
+  const odemeGerekliResp = direktAkis && odemeGerekli;
 
   return json({
     status: 'success',
@@ -698,24 +708,32 @@ export const POST: APIRoute = async ({ request }) => {
     referansNo,
     mailerlite,
     mode: 'kayit',
+    kayitTipi: direktAkis ? 'Direkt' : 'Başvuru',
     ...(promoResp ? { promo: promoResp } : {}),
     ...(askiResp ? { aski: askiResp } : {}),
     odeme: {
-      gerekli: odemeGerekli,
-      // Aşama 3a: havale için TEK tutar = uygulaIndirim sonucu (yuzde/sabit
-      // A+B-indirim; tam-burs A=0+B). Para birimi etkinliğin para birimi
-      // (askı ile uyumlu olduğunu farzeder — TR'de hep TRY).
-      tutar: odemeGerekli ? hesap.toplam : 0,
+      gerekli: odemeGerekliResp,
+      // Aşama 3a + 3b-fix tasarım: havale için TEK tutar = uygulaIndirim
+      // sonucu (indirim sadece A'ya, sonra +B). Başvuru'da tutar=0.
+      tutar: odemeGerekliResp ? hesap.toplam : 0,
       paraBirimi: etk.paraBirimi,
-      iban: havaleyiKullan || basvuruHavale ? HAVALE_IBAN : '',
-      ad: havaleyiKullan || basvuruHavale ? HAVALE_AD : '',
-      aciklama: havaleyiKullan || basvuruHavale ? aciklamaSablonu : '',
+      iban: havaleyiKullan ? HAVALE_IBAN : '',
+      ad: havaleyiKullan ? HAVALE_AD : '',
+      aciklama: havaleyiKullan ? aciklamaSablonu : '',
       ...(direktAkis && odemeGerekli ? { yontem } : {}),
     },
-    // Aşama 3b-fix — Başvuru tipinde katılım bilgisi gönderilmez (Zoom/adres
-    // henüz yok, davet sonra). Direkt'te mevcut katılım bloğu.
+    // Aşama 3b-fix tasarım — Başvuru'da katilim gönderilmez (Zoom/adres
+    // henüz yok). Direkt'te: link + (Online + dolu Notion alanı ise) Zoom
+    // Şifresi success-katilim bloğuna.
     katilim: direktAkis
-      ? { var: linkVar, tipi: katilimTipi, deger: linkVar ? etk.katilimLinki : '' }
+      ? {
+          var: linkVar,
+          tipi: katilimTipi,
+          deger: linkVar ? etk.katilimLinki : '',
+          ...(katilimTipi === 'link' && etk.zoomSifresi
+            ? { zoomSifresi: etk.zoomSifresi }
+            : {}),
+        }
       : { var: false, tipi: 'link' as const, deger: '' },
     ...(checkoutUrl ? { checkoutUrl } : {}),
   });
