@@ -126,56 +126,29 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             />
           </div>
 
-          <div class="kayit-formu__group" data-kf-direkt-only data-kf-askisiz>
-            <label for="kf-sehir">Şehir <span class="kayit-formu__required">*</span></label>
+          {/* Aşama 3b-fix Şehir — opsiyonel (Brief eyeball: gizli+required
+              tuzağı kaldırıldı; required HİÇBİR akışta yok). Her iki akışta
+              görünür (data-kf-direkt-only çıkarıldı). Backend Kayıtlar
+              `Şehir` rich_text'e koşullu yazar (boşsa atlar). */}
+          <div class="kayit-formu__group">
+            <label for="kf-sehir">
+              Şehir <span class="kayit-formu__optional">(opsiyonel)</span>
+            </label>
             <input
               id="kf-sehir"
               type="text"
               class="kayit-formu__input"
               name="sehir"
               placeholder="Yaşadığın şehir"
-              required
-              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
-              oninput="this.setCustomValidity('')"
             />
           </div>
 
-          <div class="kayit-formu__group" data-kf-direkt-only data-kf-askisiz>
-            <span class="kayit-formu__label-as-legend">
-              Bizi nereden duydun? <span class="kayit-formu__required">*</span>
-            </span>
-            <div class="kayit-formu__radios">
-              {/* Sıra: Instagram · Arkadaş · Google · Etkinlik · Diğer.
-                  Value Notion "İlk dokunuş kanalı" enum'una birebir yazılır. */}
-              <label class="kayit-formu__radio">
-                <input type="radio" name="kanal" value="Instagram" required
-                  oninvalid="this.setCustomValidity('Bir seçim yap')"
-                  onchange="Array.from(this.form.elements[this.name]).forEach(r=>r.setCustomValidity(''))" />
-                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
-                <span class="kayit-formu__radio-text">Instagram</span>
-              </label>
-              <label class="kayit-formu__radio">
-                <input type="radio" name="kanal" value="Arkadaş" />
-                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
-                <span class="kayit-formu__radio-text">Arkadaş tavsiyesi</span>
-              </label>
-              <label class="kayit-formu__radio">
-                <input type="radio" name="kanal" value="Google" />
-                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
-                <span class="kayit-formu__radio-text">Google arama</span>
-              </label>
-              <label class="kayit-formu__radio">
-                <input type="radio" name="kanal" value="Etkinlik" />
-                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
-                <span class="kayit-formu__radio-text">Etkinlik</span>
-              </label>
-              <label class="kayit-formu__radio">
-                <input type="radio" name="kanal" value="Diğer" />
-                <span class="kayit-formu__radio-circle" aria-hidden="true"></span>
-                <span class="kayit-formu__radio-text">Diğer</span>
-              </label>
-            </div>
-          </div>
+          {/* "Bizi nereden duydun?" (kanal) TAMAMEN KALDIRILDI — Brief
+              eyeball: gizli+required tuzağı vardı + lansman sonrası iş.
+              Devam paketi notu: ileride lazımsa attribution farklı yere
+              taşınır (UTM/referrer). Backend tarafında `notionBasvuruYaz`
+              `if (body.kanal)` koşulu zaten var → payload'da olmadığı için
+              sessiz geçilir, kırılmaz. */}
         </div>
       </details>
 
@@ -1657,22 +1630,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 
     // Aşama 3b-fix — Kayıt Tipi etkinlik bazlı; tarih değişince form.dataset
     // .direktAkis sync edilir (CSS Direkt-only bölümleri gizler/açar), Direkt-
-    // only required'lar (kademe, şehir, kanal) toggle edilir, submit metni
-    // güncellenir. Sadece-askı toggle priorty: syncAskiOnly üzerine yazar.
+    // only required'lar (kademe) toggle edilir. Şehir ve kanal artık required
+    // DEĞİL (Brief eyeball blocker fix — gizli+required tuzağı kalktı).
+    // Sadece-askı toggle Başvuru'da auto-reset.
     function syncDirektAkis() {
       const direkt = direktAktif();
       form!.dataset.direktAkis = direkt ? 'true' : 'false';
-      const sehirEl = form!.querySelector<HTMLInputElement>('input[name="sehir"]');
-      const kanalRadios = form!.querySelectorAll<HTMLInputElement>('input[name="kanal"]');
       const kademeRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-kademe]');
-      if (sehirEl) {
-        if (direkt) sehirEl.setAttribute('required', '');
-        else sehirEl.removeAttribute('required');
-      }
-      kanalRadios.forEach((r) => {
-        if (direkt && r.value === 'Instagram') r.setAttribute('required', '');
-        else r.removeAttribute('required');
-      });
       kademeRadios.forEach((r) => {
         if (direkt) r.setAttribute('required', '');
         else r.removeAttribute('required');
@@ -1842,7 +1806,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         email: (data.get('email') ?? '').toString().trim(),
         telefon: (data.get('telefon') ?? '').toString().trim(),
         sehir: (data.get('sehir') ?? '').toString().trim(),
-        kanal: (data.get('kanal') ?? '').toString(),
+        // kanal: kaldırıldı (Brief 3b-fix); payload'da yok artık.
         ekSorular,
         etkinlikId: (data.get('etkinlik_id') ?? '').toString(),
         seciliTarih: select.options[select.selectedIndex]?.dataset.tarih ?? '',
@@ -1859,10 +1823,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         ...(direktAktif() ? { odemeYontemi: yontem } : {}),
       };
 
-      // Defansif validation — üç dal (Aşama 3b-fix Kayıt Tipi etkinlik bazlı):
+      // Defansif validation — üç dal (Aşama 3b-fix eyeball: şehir/kanal artık
+      // required değil → validation listesinden çıkarıldı). Tüm gizli alanlar
+      // required-suz (CSS-gizli + required = submit bloker, tuzak temizliği).
       // - sadece-askı: ad + email + kvkk + askıTutar > 0
-      // - Direkt: ad + email + telefon + şehir + kanal + etkinlik + kademe + kvkk
-      // - Başvuru: ad + email + telefon + etkinlik + kvkk (şehir/kanal/kademe YOK)
+      // - Direkt: ad + email + telefon + etkinlik + kademe + kvkk
+      // - Başvuru: ad + email + telefon + etkinlik + kvkk (kademe YOK)
       const direkt = direktAktif();
       const eksik = sadeceAski
         ? !payload.ad || !payload.email || !payload.kvkk || !(payload.askiTutar && payload.askiTutar > 0)
@@ -1871,7 +1837,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           !payload.telefon ||
           !payload.etkinlikId ||
           !payload.kvkk ||
-          (direkt && (!payload.sehir || !payload.kanal || !payload.kademe));
+          (direkt && !payload.kademe);
       if (eksik) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
         errorEl.hidden = false;

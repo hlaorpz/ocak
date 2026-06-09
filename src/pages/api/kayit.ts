@@ -18,7 +18,7 @@
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
-import { kodDogrula, type KodSonuc } from '../../lib/kodlar.ts';
+import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 import {
@@ -183,8 +183,14 @@ async function notionKayitlaraYaz(args: {
   /** Aşama 3a — askı geldiyse Kayıtlar satırına eklenir (kendi+askı tek satır). */
   askiTutar?: number;
   askiNiyet?: string;
+  /**
+   * Aşama 3b-fix tam burs — kod adı (örn. "TESTBURS"). Sadece tam burs
+   * akışında geçirilir; ödemeli kayıtlarda callback `Kullanılan Kod` yazımını
+   * yapar (notion update ile). Çift yazımı önler.
+   */
+  kullanilanKod?: string;
 }): Promise<string> {
-  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet } = args;
+  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod } = args;
   const KADEME_AD: Record<Kademe, string> = { ust: 'Üst', orta: 'Orta', alt: 'Alt' };
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
@@ -198,6 +204,11 @@ async function notionKayitlaraYaz(args: {
   }
   if (body.email) properties.Email = { email: body.email };
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
+  // Aşama 3b-fix eyeball — Şehir opsiyonel rich_text. Boşsa atlanır.
+  // Kayıtlar.Şehir property bu turda eklendi (Kaan + CC paralel).
+  if (body.sehir) {
+    properties['Şehir'] = { rich_text: [{ text: { content: body.sehir } }] };
+  }
   if (body.seciliTarih) {
     properties['Seçilen Tarih'] = { rich_text: [{ text: { content: body.seciliTarih } }] };
   }
@@ -221,6 +232,11 @@ async function notionKayitlaraYaz(args: {
   }
   if (askiNiyet) {
     properties['Askı Katkısı'] = { rich_text: [{ text: { content: askiNiyet } }] };
+  }
+  // Aşama 3b-fix tam burs — Kullanılan Kod kayıt anında yazılır (tam burs
+  // sayacı +1 ile birlikte). Ödemeli kayıtlarda callback yazar.
+  if (kullanilanKod) {
+    properties['Kullanılan Kod'] = { rich_text: [{ text: { content: kullanilanKod } }] };
   }
   // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
   // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
@@ -515,6 +531,13 @@ export const POST: APIRoute = async ({ request }) => {
   //   Format-bazlı whitelist (isKapi1) deprecated — etkinlik bazlı otorite.
   //   Başvuru'da Tip Notion enum'undan (cember → 'Çember', vb.) yazılır;
   //   `Kayda Dönüştür` automation (Aşama 1.6) Kayıtlar'a düşürür.
+  //
+  // Aşama 3b-fix tam burs sayacı: tam-burs ise Kayıtlar satırına
+  // `Kullanılan Kod` da yazılır (kayıt anında, çünkü checkout/callback
+  // hiç olmayacak). Sayaç +1 aşağıda.
+  const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
+  const kullanilanKodAdi =
+    tamBurs && body.promoKod ? body.promoKod.trim().toUpperCase() : undefined;
   let basvuruId: string;
   try {
     basvuruId = direktAkis
@@ -526,6 +549,7 @@ export const POST: APIRoute = async ({ request }) => {
           yontem,
           askiTutar: katmanB > 0 ? katmanB : undefined,
           askiNiyet: body.askiNiyet,
+          kullanilanKod: kullanilanKodAdi,
         })
       : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {
@@ -533,6 +557,37 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
       500,
     );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // Aşama 3b-fix — kodKullanimArtir İKİNCİ çağrı noktası (tam burs).
+  //
+  // Çift sayım KORUMASI — net ayrım, dikkat:
+  //   • ÖDEMELİ kayıt (Direkt + tutar > 0): /api/kayit pending açar (Bekle-
+  //     mede). Ödeme onayı checkout → /api/odeme-callback.ts'te yapılır;
+  //     `kodKullanimArtir` ORADA çağrılır. BURADA çağrılmaz.
+  //   • TAM BURS (Direkt + promo tam-burs + tutar = 0): Bedava kayıt yazılır,
+  //     checkout/callback hiç olmaz. `kodKullanimArtir` BURADA çağrılır
+  //     (kontenjan için brief kararı 2026-06-09).
+  //   • HAVALE (Direkt + tutar > 0 + yöntem havale): pending Beklemede; sayaç
+  //     henüz artmaz. Kaan elle Ödendi'ye çekerken manuel düzeltir veya
+  //     ileride Notion automation tetiklenir (henüz brief'lenmedi).
+  //
+  // Net: aynı kayıt için kodKullanimArtir TEK kez çağrılır — tam burs ise
+  // burada, ödemeli/kart ise callback'te. İkisi birden mümkün değil çünkü
+  // tam burs ödeme yapmaz (checkout yok).
+  if (tamBurs && promoSonuc?.gecerli && promoSonuc.kodId) {
+    try {
+      const yeniSayac = await kodKullanimArtir(notion, promoSonuc.kodId);
+      console.log(
+        `[api/kayit] tam-burs kodKullanimArtir OK — kodId=${promoSonuc.kodId} ` +
+          `kod="${kullanilanKodAdi ?? '?'}" yeniSayac=${yeniSayac}`,
+      );
+    } catch (err) {
+      // Defansif: sayaç artırılamadıysa kayıt yine başarılı sayılır
+      // (Kaan manuel düzeltir, kor verilen yer iptal edilmez).
+      console.error('[api/kayit] tam-burs kodKullanimArtir hatası:', String(err).slice(0, 200));
+    }
   }
 
   // Brief Katman 2 — katilim + MailerLite custom field (pure helper'lara delege).
