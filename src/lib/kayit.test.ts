@@ -11,6 +11,7 @@ import {
   etkinlikAdiFormatla,
   tarihTrFormat,
   uretReferansNo,
+  uretBenzersizReferansNo,
   type KayitFormat,
 } from './kayit';
 
@@ -410,21 +411,20 @@ describe('etkinlikAdiFormatla (Brief 5 — MailerLite etkinlik_adi şablonu)', (
 // hacim, Kaan kararı). Notion'a daima yazılır + success ödemeli dalında
 // gösterilir (ödemesizde gizli, ödemeli havale eşleştirmesi için).
 
-describe('uretReferansNo (Brief 6 KARAR 210)', () => {
-  it('"OCAK-" prefix + tam 5 haneli rakam (10000-99999)', () => {
-    const re = /^OCAK-\d{5}$/;
+describe('uretReferansNo (Brief 6 KARAR 210 + Son tur 2026-06-14)', () => {
+  it('"OCAK-" prefix + tam 6 haneli rakam (100000-999999)', () => {
+    const re = /^OCAK-\d{6}$/;
     for (let i = 0; i < 200; i++) {
       const ref = uretReferansNo();
       expect(ref).toMatch(re);
       const sayi = Number(ref.slice(5));
-      expect(sayi).toBeGreaterThanOrEqual(10000);
-      expect(sayi).toBeLessThanOrEqual(99999);
+      expect(sayi).toBeGreaterThanOrEqual(100000);
+      expect(sayi).toBeLessThanOrEqual(999999);
     }
   });
 
   it('arka arkaya iki çağrı genellikle farklı (rastgelelik kanıtı)', () => {
-    // Math.random tek-thread içinde mutlaka farklı seed → kollizyon olasılığı
-    // 1/90000. 50 çağrıda en az 49 farklı değer beklenir.
+    // 6 hane → 900K uzay → 50 çağrıda kollizyon olasılığı ihmal edilebilir.
     const set = new Set<string>();
     for (let i = 0; i < 50; i++) set.add(uretReferansNo());
     expect(set.size).toBeGreaterThanOrEqual(49);
@@ -433,6 +433,52 @@ describe('uretReferansNo (Brief 6 KARAR 210)', () => {
   it('format havale açıklaması için doğrudan kullanılabilir (boşluk yok)', () => {
     const ref = uretReferansNo();
     expect(ref).not.toMatch(/\s/);
-    expect(ref.length).toBe(10); // "OCAK-" (5) + 5 hane
+    expect(ref.length).toBe(11); // "OCAK-" (5) + 6 hane
+  });
+});
+
+describe('uretBenzersizReferansNo (Son tur 2026-06-14 — çakışma garanti)', () => {
+  it('hiç çakışma yoksa ilk üretilen ref döner', async () => {
+    const ref = await uretBenzersizReferansNo(async () => false, ['db1', 'db2']);
+    expect(ref).toMatch(/^OCAK-\d{6}$/);
+  });
+
+  it('aktif DB yoksa (boş liste) tek çağrıda ref döner — test/dev defansif', async () => {
+    let calls = 0;
+    const query = async () => {
+      calls++;
+      return false;
+    };
+    const ref = await uretBenzersizReferansNo(query, []);
+    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(calls).toBe(0);
+  });
+
+  it('ilk aday çakışırsa retry → ikinci adayı döner', async () => {
+    let cagri = 0;
+    const query = async (_dbId: string, _ref: string) => {
+      cagri++;
+      return cagri === 1; // sadece ilk çağrıda çakışma
+    };
+    const ref = await uretBenzersizReferansNo(query, ['db1'], 3);
+    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(cagri).toBeGreaterThanOrEqual(2);
+  });
+
+  it('tüm denemeler çakışırsa timestamp fallback (8 hane)', async () => {
+    const query = async () => true; // her zaman çakışma
+    const ref = await uretBenzersizReferansNo(query, ['db1'], 3);
+    expect(ref).toMatch(/^OCAK-\d{8}$/);
+  });
+
+  it('Kayıtlar + Başvurular ortak uzay — biri çakışırsa retry', async () => {
+    let cagri = 0;
+    const query = async (dbId: string) => {
+      cagri++;
+      // db2'de ilk turda çakışma, sonra rahat
+      return dbId === 'db2' && cagri <= 2;
+    };
+    const ref = await uretBenzersizReferansNo(query, ['db1', 'db2'], 5);
+    expect(ref).toMatch(/^OCAK-\d{6}$/);
   });
 });

@@ -30,8 +30,9 @@ import {
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  uretBenzersizReferansNo,
+  type RefUniqueQuery,
   tarihTrFormat,
-  uretReferansNo,
   uygulaIndirim,
   type KayitFormat,
   type KayitTipi,
@@ -101,6 +102,20 @@ type KayitBody = {
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
 const HAVALE_AD = import.meta.env.PUBLIC_HAVALE_AD ?? '';
 const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY ?? '';
+
+/**
+ * Son tur (2026-06-14) — ref çakışma kontrolü: Notion'da "Referans No"
+ * rich_text alanı aday ref ile eşleşen kayıt var mı? uretBenzersizReferansNo
+ * helper'ı bu fonksiyonu Kayıtlar + Başvurular DB'leri için ardışık çağırır.
+ */
+const refQuery: RefUniqueQuery = async (dbId, ref) => {
+  const res = await notion.databases.query({
+    database_id: dbId,
+    filter: { property: 'Referans No', rich_text: { equals: ref } },
+    page_size: 1,
+  });
+  return res.results.length > 0;
+};
 
 const EMAIL_RE = /^[\x20-\x7E]+@[\x20-\x7E]+\.[\x20-\x7E]+$/;
 
@@ -411,7 +426,11 @@ export const POST: APIRoute = async ({ request }) => {
       return json({ status: 'error', message: 'askıTutar > 0 olmalı' }, 400);
     }
     const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
-    const referansNo = uretReferansNo();
+    // Son tur — çakışma garantili ref: 6 hane + Notion unique check + retry.
+    const referansNo = await uretBenzersizReferansNo(refQuery, [
+      NOTION_KAYITLAR_DB,
+      NOTION_BASVURULAR_DB,
+    ]);
     let basvuruId: string;
     try {
       basvuruId = await notionSadeceAskiYaz({ body, referansNo, yontem });
@@ -526,9 +545,13 @@ export const POST: APIRoute = async ({ request }) => {
   const odemeGerekli = hesap.toplam > 0;
   const odemeDurumu: 'Bekliyor' | 'Muaf' = katmanA > 0 ? 'Bekliyor' : 'Muaf';
 
-  // Brief 6 (KARAR 210): referans no Notion yazımından önce üret — yazıma
-  // input + response'a çıkış aynı değer olsun.
-  const referansNo = uretReferansNo();
+  // Brief 6 (KARAR 210) + Son tur: çakışma garantili ref (6 hane + Notion
+  // unique check + retry). Notion yazımından önce üret — yazıma input +
+  // response'a çıkış aynı değer.
+  const referansNo = await uretBenzersizReferansNo(refQuery, [
+    NOTION_KAYITLAR_DB,
+    NOTION_BASVURULAR_DB,
+  ]);
 
   // Aşama 3b — yöntem. Kart/havale; tam-burs + askısız → ödeme yok (gereksiz);
   // tutar > 0 ise yöntem anlamlı. Default havale (bugünkü akış).

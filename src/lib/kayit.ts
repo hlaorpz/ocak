@@ -143,19 +143,62 @@ export function parseKayitSorulari(raw: string | undefined | null): string[] {
 }
 
 /**
- * Brief 6 (KARAR 210): Kayıt için benzersiz referans no üretir.
- * Format: `OCAK-XXXXX` (5 haneli rakam, 10000–99999, 90.000 ihtimal).
- * Çakışma kontrolü YOK — düşük hacim, pratik kabul (Kaan kararı).
+ * Brief 6 (KARAR 210) + Son tur (2026-06-14): Kayıt için benzersiz referans
+ * no üretir.
  *
- * Üretim anında /api/kayit Notion Başvurular DB'ye yazar; success ekranı
- * havale açıklamasında "{referansNo} — {ad}" formatında gösterir.
- * Ödemesiz/Muaf kayıtlarda da Notion'a yazılır (zararsız, izleme için
- * faydalı) ama success ekranında gizlenir (ödeme bloğu yoksa gereksiz).
+ * Format: `OCAK-XXXXXX` (6 haneli rakam, 100000–999999, 900K ihtimal). Önceki
+ * 5 hane (90K uzay) doğum günü paradoksu ile ~300 kayıtta %50 çakışma — yetersiz.
+ * 6 hane ~1000 kayıtta %50 — 10K seviyesinde rahat. Mevcut 5 haneli kayıtlar
+ * Notion'da olduğu gibi kalır (rich_text alanı, uzunluk esnek).
+ *
+ * Çakışma garantisi `uretBenzersizReferansNo(client, dbIds)` ile (Notion query
+ * + retry + timestamp fallback). Bu pure helper kullanan testler için.
  */
 export function uretReferansNo(): string {
-  // 10000–99999 inclusive — Math.random() [0,1) * 90000 → [0, 89999] + 10000.
-  const sayi = Math.floor(Math.random() * 90000) + 10000;
+  // 100000–999999 inclusive — Math.random() [0,1) * 900000 → [0, 899999] + 100000.
+  const sayi = Math.floor(Math.random() * 900000) + 100000;
   return `OCAK-${sayi}`;
+}
+
+/**
+ * Son tur (2026-06-14) — çakışma garantili ref üretimi. Notion Kayıtlar +
+ * Başvurular DB'lerinde "Referans No" rich_text alanını query'leyip aday
+ * ref'i kontrol eder; varsa yeniden üretir (max `maxDeneme` deneme).
+ * Başarısızsa timestamp tabanlı fallback (`OCAK-${Date.now().slice(-8)}` —
+ * 100M uzay, çakışma neredeyse imkânsız).
+ *
+ * KARAR 76 — Kayıtlar tek otorite; ama Başvurular'a da Kapı 2 akışında ref
+ * yazılıyor. İki DB ortak OCAK-XXXXXX uzayı paylaşır.
+ *
+ * Race condition: iki eşzamanlı kayıt aynı anda aynı ref üretirse, ikisi de
+ * query'de "yok" görür → ikisi de yazar (Notion atomic transaction yok).
+ * Lansman hacmi düşük → pratik kabul. Worst-case Kaan elle düzeltir.
+ *
+ * `client` notion-types client; `dbIds` undefined/empty olanlar atlanır
+ * (test/dev için, prod'da ikisi de set). `query` parametresi async test
+ * için inject edilebilir.
+ */
+export type RefUniqueQuery = (dbId: string, ref: string) => Promise<boolean>;
+
+export async function uretBenzersizReferansNo(
+  query: RefUniqueQuery,
+  dbIds: string[],
+  maxDeneme = 3,
+): Promise<string> {
+  const aktifDbler = dbIds.filter(Boolean);
+  for (let i = 0; i < maxDeneme; i++) {
+    const aday = uretReferansNo();
+    let cakisma = false;
+    for (const dbId of aktifDbler) {
+      if (await query(dbId, aday)) {
+        cakisma = true;
+        break;
+      }
+    }
+    if (!cakisma) return aday;
+  }
+  // Son çare: timestamp suffix (100M uzay) — çakışma neredeyse imkânsız.
+  return `OCAK-${Date.now().toString().slice(-8)}`;
 }
 
 /**

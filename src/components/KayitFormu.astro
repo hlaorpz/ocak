@@ -311,7 +311,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               <span class="kayit-formu__kor-toggle-baslik">Bir kor daha bırak</span>
               <span class="kayit-formu__kor-toggle-aciklama">
                 Katkın dayanışma havuzuna eklenir; ödemekte zorlanan bir kadının
-                (öğrenci, ihtiyaç sahibi) yolunu açar.
+                yolunu açar.
               </span>
             </label>
             <div class="kayit-formu__kor-tutar" data-kf-kor-tutar-wrap hidden>
@@ -1758,6 +1758,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // ADIM 3 — kor opt-in toggle; check → tutar input açılır + refresh.
     korToggleEl?.addEventListener('change', syncKorToggle);
 
+    // Son tur — KVKK toggle: submit metnini akışa göre yeniden senkronize et
+    // (savunmacı; submit fail/catch zaten syncSubmitMetni çağırıyor, ama
+    // toggle döngüsü sırasında state stale olursa otomatik düzeltsin).
+    form
+      .querySelectorAll<HTMLInputElement>('input[name="kvkk"]')
+      .forEach((cb) => cb.addEventListener('change', syncSubmitMetni));
+
     // Aşama 3b — ödeme yöntemi (kart/havale). Kart → IBAN gizli; havale →
     // IBAN görünür. Submit metni `syncSubmitMetni` ile tek yerde yönetilir.
     const yontemRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-yontem]');
@@ -1872,7 +1879,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
         errorEl.hidden = false;
         submit.disabled = false;
-        submit.textContent = oldText;
+        // Son tur (KVKK bug): akış-duyarlı metin (Direkt → "Karta Yönlen"
+        // veya "Kaydımı Gönder", Başvuru → "Başvur"). oldText sabit "Kaydımı
+        // Gönder" idi → Direkt akışta KVKK aç/kapa/aç sonrası submit metni
+        // yanlış kalıyordu.
+        syncSubmitMetni();
         // Eksik field'lı bölümü aç ki kullanıcı görsün.
         section
           .querySelectorAll<HTMLDetailsElement>('.kayit-formu__grup')
@@ -1953,19 +1964,26 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           } else {
             odemesizDiv.hidden = false;
             odemeliDiv.hidden = true;
-            // Tasarım turu 3 (ADIM 1) — Başvuru çift-cümle bug fix: başlık
-            // zaten "Başvurun bize ulaştı"; gövde tekrarı kaldırıldı, sadece
-            // "Değerlendirip..." cümlesi. Direkt+ödemesiz (tam burs/ücretsiz):
-            // mevcut varsayılan.
-            odemesizFallbackElInit.textContent = isBasvuru
-              ? 'Değerlendirip en kısa sürede sana döneceğiz.'
-              : 'Ateşin yanında sana yer ayırdık. Buluşmanın detaylarını yakında seninle paylaşacağız.';
-            if (refDipnotEl && refDipnotDegerEl) {
-              if (result.referansNo) {
-                refDipnotDegerEl.textContent = result.referansNo;
-                refDipnotEl.hidden = false;
-              } else {
-                refDipnotEl.hidden = true;
+            // Son tur (ADIM 2) — Başvuru: ref cümle içine ("bir kenara not et").
+            // Direkt + ödemesiz (tam burs/ücretsiz): varsayılan + alt dipnot.
+            if (isBasvuru) {
+              const refIc = result.referansNo
+                ? ` Takip için referansın: ${result.referansNo} — bir kenara not et.`
+                : '';
+              odemesizFallbackElInit.textContent =
+                `Değerlendirip en kısa sürede sana döneceğiz.${refIc}`;
+              // Başvuru'da alt dipnot kullanılmaz — ref cümle içinde.
+              if (refDipnotEl) refDipnotEl.hidden = true;
+            } else {
+              odemesizFallbackElInit.textContent =
+                'Ateşin yanında sana yer ayırdık. Buluşmanın detaylarını yakında seninle paylaşacağız.';
+              if (refDipnotEl && refDipnotDegerEl) {
+                if (result.referansNo) {
+                  refDipnotDegerEl.textContent = result.referansNo;
+                  refDipnotEl.hidden = false;
+                } else {
+                  refDipnotEl.hidden = true;
+                }
               }
             }
           }
@@ -2051,7 +2069,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
         errorEl.hidden = false;
         submit.disabled = false;
-        submit.textContent = oldText;
+        // Son tur — akış-duyarlı metin toparlamı (oldText sabit yerine).
+        syncSubmitMetni();
       }
     });
   }
