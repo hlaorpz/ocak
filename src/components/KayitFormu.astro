@@ -1560,42 +1560,38 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const promoKodIdEl = form.querySelector<HTMLInputElement>('[data-kf-promo-kod-id]');
 
     function refreshOdemeBlok() {
-      const { ucret: katmanA, para, tarih } = aktifUcret();
+      const { ucret: katmanA, para } = aktifUcret();
       const katmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
       const hesap = uygulaIndirim(katmanA, katmanB, promoSonuc);
 
-      // Aşama 3b-tasarım turu 2 (KARAR 61 — kalemler=Toplam): Katılım payı
-      // satırı BRÜT (indirim öncesi katmanA), İndirim ayrı satır, Kor ayrı,
-      // Toplam = brüt-indirim+kor. Önceki tur post-indirim katmanA basıyordu
-      // → kalemler 500-500+500=500 ama Toplam=1000 imkânsızı.
-      odemeBlok.querySelector('[data-kf-katmanA]')!.textContent = formatTutarTr(katmanA);
-      odemeBlok.querySelector('[data-kf-para]')!.textContent = para;
-      odemeBlok.querySelector('[data-kf-toplam]')!.textContent = formatTutarTr(hesap.toplam);
-      odemeBlok.querySelector('[data-kf-para-toplam]')!.textContent = para;
+      // Tasarım turu 3 regresyon fix (2026-06-14): tüm tutar slot yazıları
+      // null-safe. ADIM 2'de IBAN dl form'dan kaldırıldı; eski `[data-kf-
+      // aciklama]` satırı bu fonksiyonda kalmıştı → null.textContent set →
+      // TypeError → select change chain'i kırılıyordu (Niyet/ödeme/submit
+      // hepsi takıldı). Havale açıklaması artık form'dan yazılmıyor (success
+      // metni backend'den geliyor). KARAR 61 — Katılım payı BRÜT.
+      const setTxt = (sel: string, value: string) => {
+        const el = odemeBlok.querySelector(sel);
+        if (el) el.textContent = value;
+      };
+      setTxt('[data-kf-katmanA]', formatTutarTr(katmanA));
+      setTxt('[data-kf-para]', para);
+      setTxt('[data-kf-toplam]', formatTutarTr(hesap.toplam));
+      setTxt('[data-kf-para-toplam]', para);
 
       // Katman B slot: askı > 0 ise göster.
       if (katmanBSlot) {
         katmanBSlot.hidden = katmanB <= 0;
-        const kbEl = odemeBlok.querySelector('[data-kf-katmanB]');
-        if (kbEl) kbEl.textContent = formatTutarTr(katmanB);
+        setTxt('[data-kf-katmanB]', formatTutarTr(katmanB));
       }
 
       // İndirim slot: hesap.indirim > 0 ise göster.
       if (indirimSlot) {
         indirimSlot.hidden = hesap.indirim <= 0;
-        const indEl = odemeBlok.querySelector('[data-kf-indirim]');
-        if (indEl) indEl.textContent = formatTutarTr(hesap.indirim);
+        setTxt('[data-kf-indirim]', formatTutarTr(hesap.indirim));
       }
 
-      // Havale açıklaması — sadece etkinlik ücreti varsa anlamlı.
-      if (katmanA > 0) {
-        const aciklamaEl = odemeBlok.querySelector('[data-kf-aciklama]')!;
-        aciklamaEl.textContent = `Açıklamaya adını ve "${formatBaslik(format)} – ${tarih}" yaz.`;
-      }
-
-      // Bloğu görünür kıl: toplam > 0 (ücret veya askı). Sadece-askı modunda
-      // tüm [data-kf-katilim] CSS ile gizli — blok DOM'da ama görünmez,
-      // güvenli.
+      // Bloğu görünür kıl: toplam > 0 (ücret veya askı).
       odemeBlok.hidden = hesap.toplam <= 0;
     }
 
@@ -1806,19 +1802,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     refreshKademeTutarlari();
     refreshOdemeBlok();
     renderNiyetSorulari([]);
-
-    function formatBaslik(f: string): string {
-      // Frontend gösterim için map; backend Notion enum'u kullanır (FORMAT_TIP).
-      const map: Record<string, string> = {
-        cember: 'Çember',
-        'acik-kapi': 'Açık Kapı',
-        'mini-retreat': 'Mini Retreat',
-        istanbul: 'İstanbul',
-        seremoni: 'Seremoni',
-        workshop: 'Workshop',
-      };
-      return map[f] ?? f;
-    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
