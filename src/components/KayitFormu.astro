@@ -125,7 +125,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           </div>
 
           <div class="kayit-formu__group">
-            <label for="kf-telefon">Telefon <span class="kayit-formu__required">*</span></label>
+            <label for="kf-telefon">Cep telefonu <span class="kayit-formu__required">*</span></label>
             <input
               id="kf-telefon"
               type="tel"
@@ -310,7 +310,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               <input type="checkbox" data-kf-kor-toggle />
               <span class="kayit-formu__kor-toggle-baslik">Bir kor daha bırak</span>
               <span class="kayit-formu__kor-toggle-aciklama">
-                Senden sonra gelecek bir kadının yolunu açmak için.
+                Katkın dayanışma havuzuna eklenir; ödemekte zorlanan bir kadının
+                (öğrenci, ihtiyaç sahibi) yolunu açar.
               </span>
             </label>
             <div class="kayit-formu__kor-tutar" data-kf-kor-tutar-wrap hidden>
@@ -379,7 +380,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               <input type="hidden" name="promo_kod_id" data-kf-promo-kod-id value="" />
             </div>
 
-            {/* Ödeme yöntemi — kart default. Tam burs → tutar 0 → blok hidden. */}
+            {/* Ödeme yöntemi — kart default. Tam burs → tutar 0 → blok hidden.
+                Tasarım turu 3 (ADIM 2) — havale IBAN bloğu form'dan KALDIRILDI;
+                sadece success'te dl olarak gösterilir (kalabalık temizliği).
+                Havale seçilince küçük not: hesap bilgileri kayıt sonrası. */}
             <div class="kayit-formu__odeme-yontem" data-kf-yontem-grup>
               <span class="kayit-formu__label-as-legend">Ödeme yöntemi</span>
               <div class="kayit-formu__yontem-radios">
@@ -398,18 +402,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                   <span class="kayit-formu__yontem-text">Havale / EFT</span>
                 </label>
               </div>
+              <p class="kayit-formu__yontem-havale-not" data-kf-yontem-havale-not hidden>
+                Hesap bilgileri kaydını gönderdikten sonra ekranda + e-postanda
+                paylaşılır.
+              </p>
             </div>
-
-            <dl class="kayit-formu__odeme-bilgi" data-kf-iban-bloku hidden>
-              <dt>IBAN</dt>
-              <dd data-kf-iban>{havaleIban}</dd>
-              <dt>Hesap adı</dt>
-              <dd data-kf-ad>{havaleAd}</dd>
-              <dt>Açıklama</dt>
-              <dd>
-                <span data-kf-aciklama>Açıklamaya adını ve seçtiğin tarihi yaz.</span>
-              </dd>
-            </dl>
           </div>
         </div>
       </details>
@@ -528,7 +525,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         </p>
       </div>
 
-      <p class="kayit-formu__success-imza">— OCAK</p>
+      <p class="kayit-formu__success-imza">OCAK</p>
     </div>
   </div>
 </section>
@@ -1335,6 +1332,17 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   }
   .kayit-formu__odeme-bilgi[hidden] { display: none; }
 
+  /* Tasarım turu 3 (ADIM 2) — havale seçilince form altında küçük not
+   * (IBAN bloğu artık form'da değil, sadece success'te). */
+  .kayit-formu__yontem-havale-not {
+    margin: var(--space-3) 0 0;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    line-height: 1.5;
+  }
+  .kayit-formu__yontem-havale-not[hidden] { display: none; }
+
   /* Mirror (Aşama 2.6 Madde 5) Aşama 3b'de kaldırıldı — Kaan "küçük, kafa
    * karıştırıyor, iki toplam" dedi. Tek toplam üstteki esas blokta. */
 
@@ -1629,8 +1637,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         );
         if (havaleR && !havaleR.checked) {
           havaleR.checked = true;
-          const iban = form!.querySelector<HTMLElement>('[data-kf-iban-bloku]');
-          if (iban) iban.hidden = false;
         }
       }
     }
@@ -1759,14 +1765,15 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // Aşama 3b — ödeme yöntemi (kart/havale). Kart → IBAN gizli; havale →
     // IBAN görünür. Submit metni `syncSubmitMetni` ile tek yerde yönetilir.
     const yontemRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-yontem]');
-    const ibanBloku = form!.querySelector<HTMLElement>('[data-kf-iban-bloku]');
+    const havaleNotEl = form!.querySelector<HTMLElement>('[data-kf-yontem-havale-not]');
     function seciliYontem(): 'kart' | 'havale' {
       const sec = form!.querySelector<HTMLInputElement>('[data-kf-yontem]:checked');
       return sec?.value === 'havale' ? 'havale' : 'kart';
     }
     function syncYontem() {
       const yontem = seciliYontem();
-      if (ibanBloku) ibanBloku.hidden = yontem !== 'havale';
+      // ADIM 2 — IBAN bloğu artık form'da yok; havale seçilince küçük not gösterilir.
+      if (havaleNotEl) havaleNotEl.hidden = yontem !== 'havale';
       syncSubmitMetni();
     }
     yontemRadios.forEach((r) => r.addEventListener('change', syncYontem));
@@ -1934,14 +1941,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           const odemesizDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemesiz]')!;
           const odemeliDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemeli]')!;
           if (!isBasvuru && result.odeme?.gerekli) {
+            // Tasarım turu 3 (ADIM 1) — havale success: tek cümle yapısı
+            // "OCAK-XXXXX referans numarasıyla kaydını aldık. {vadeMetni}"
+            // (vadeMetni backend'den, tarihe göre dinamik).
             odemesizDiv.hidden = true;
             odemeliDiv.hidden = false;
-            const refIc = result.referansNo ? ` (${result.referansNo})` : '';
+            const refCumle = result.referansNo
+              ? `${result.referansNo} referans numarasıyla kaydını aldık.`
+              : 'Kaydını aldık.';
+            const vade =
+              result.odeme.vadeMetni ??
+              'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
             const odemeliMetinEl = successEl.querySelector<HTMLElement>(
               '[data-kf-success-odemeli-metin]',
             );
             if (odemeliMetinEl) {
-              odemeliMetinEl.textContent = `Kaydını aldık${refIc}. Yerini sabitlemek için katılım payını aşağıdaki hesaba iletebilirsin; ulaştığında buluşmanın detaylarıyla sana dönüyoruz.`;
+              odemeliMetinEl.textContent = `${refCumle} ${vade}`;
             }
             successEl.querySelector('[data-kf-success-tutar]')!.textContent = formatTutarTr(
               result.odeme.tutar ?? 0,
@@ -1955,11 +1970,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           } else {
             odemesizDiv.hidden = false;
             odemeliDiv.hidden = true;
-            // Başvuru: metin "değerlendirip döneceğiz". Direkt+ödemesiz:
-            // varsayılan "ateşin yanında yer ayırdık". Ref dipnot iki dalda
-            // da gösterilir (referansNo varsa).
+            // Tasarım turu 3 (ADIM 1) — Başvuru çift-cümle bug fix: başlık
+            // zaten "Başvurun bize ulaştı"; gövde tekrarı kaldırıldı, sadece
+            // "Değerlendirip..." cümlesi. Direkt+ödemesiz (tam burs/ücretsiz):
+            // mevcut varsayılan.
             odemesizFallbackElInit.textContent = isBasvuru
-              ? 'Başvurun bize ulaştı. Değerlendirip en kısa sürede sana döneceğiz.'
+              ? 'Değerlendirip en kısa sürede sana döneceğiz.'
               : 'Ateşin yanında sana yer ayırdık. Buluşmanın detaylarını yakında seninle paylaşacağız.';
             if (refDipnotEl && refDipnotDegerEl) {
               if (result.referansNo) {

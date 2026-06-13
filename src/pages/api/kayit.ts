@@ -23,7 +23,6 @@ import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 import {
   FORMAT_TIP,
-  FORMAT_NOTION_FORMAT,
   FORMAT_MAILERLITE_GROUP,
   isDirekt,
   isKayitFormat,
@@ -42,25 +41,33 @@ import {
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
 /**
- * Havale açıklama metni — kullanıcı bankada görür. Brief Aşama 3b eyeball
- * Bulgu 2: OCAK-XXXXX referans no banka açıklamasında DEĞİL (success
- * mesajında/Notion'da kalır). İnsan-okur sade: "Kaan — Mini Retreat ·
- * 21 Haziran 2026 · 20:00".
- *  - Kayıt dalı: ad + uzun format adı (`FORMAT_NOTION_FORMAT`) + tarih + saat.
- *  - Sadece-askı dalı: "Kor katkısı — {ad}" (etkinlik yok).
- * Boş bileşenler atlanır.
+ * Havale açıklama metni — kullanıcı bankada görür. Tasarım turu 3 (ADIM 3):
+ * "Ad — OCAK-XXXXX" formatı. Önceden uzun format+tarih+saat vardı; bankada
+ * Kaan'ın eşleştirmesi referans no'yu görmekle anlık. Kısa ve net.
  */
-function havaleAciklamasi(args: {
-  ad: string;
-  formatAd?: string;
-  tarih?: string;
-  saat?: string;
-}): string {
-  const parcalar = [args.formatAd, args.tarih, args.saat]
-    .map((s) => (s ?? '').trim())
-    .filter(Boolean);
-  if (parcalar.length === 0) return args.ad;
-  return `${args.ad} — ${parcalar.join(' · ')}`;
+function havaleAciklamasi(args: { ad: string; referansNo: string }): string {
+  return `${args.ad} — ${args.referansNo}`;
+}
+
+/**
+ * Tasarım turu 3 (ADIM 1) — havale success metninde ödeme süresi dinamik:
+ *  - Etkinlik tarihine 3+ gün varsa: "Katılım payını en geç 3 gün içinde
+ *    aşağıdaki hesaba iletebilirsin."
+ *  - 3 günden yakınsa: "Katılım payını ilettiğinde biz kontrol edip sana
+ *    döneceğiz."
+ * tarihISO YYYY-MM-DD veya ISO timestamp. Parse edilemezse defansif olarak
+ * 3+ gün dalına düşer (rahat metin).
+ */
+function havaleVadeMetni(tarihISO: string | undefined | null, bugun: Date = new Date()): string {
+  const m = tarihISO?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
+  const etk = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
+  const gunFarki = Math.round((etk.getTime() - sinir.getTime()) / 86_400_000);
+  return gunFarki >= 3
+    ? 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.'
+    : 'Katılım payını ilettiğinde biz kontrol edip sana döneceğiz.';
 }
 
 export const prerender = false;
@@ -414,10 +421,9 @@ export const POST: APIRoute = async ({ request }) => {
         500,
       );
     }
-    // Aşama 3b eyeball Bulgu 2 — sadece-askı havale açıklaması:
-    // "Kor katkısı — {ad}" (etkinlik yok). OCAK-XXXXX referans no
-    // banka açıklamasında değil, success ekranında + Notion'da.
-    const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, formatAd: 'Kor katkısı' });
+    // Tasarım turu 3 (ADIM 3) — havale açıklama: "Ad — OCAK-XXXXX". Kaan
+    // bankada eşleştirmeyi referans no üzerinden yapar (kısa, net).
+    const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
 
     // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, iyzico
     // Aşama 6). Sayfa origin Vercel `x-forwarded-*` header'larından
@@ -628,24 +634,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Aşama 3b eyeball Bulgu 2 + 3b-fix tasarım: havale açıklama insan-okur
   // sade. "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00".
-  //
-  // ÖNEMLİ — saat duplikatı önleme: body.seciliTarih = frontend
-  // formatEtkinlikTarihi(başl, bit, saat) çıktısı (saat zaten DAHİL).
-  // Helper'a saat ek geçirme yoksa "...19:00 · 19:00" duplikat. Fallback
-  // (Notion ISO çevirisi) saat'siz, saat ek argüman gerek.
-  const seciliTarihSaatli = body.seciliTarih?.trim();
-  const aciklamaSablonu = seciliTarihSaatli
-    ? havaleAciklamasi({
-        ad: body.ad,
-        formatAd: FORMAT_NOTION_FORMAT[format],
-        tarih: seciliTarihSaatli,
-      })
-    : havaleAciklamasi({
-        ad: body.ad,
-        formatAd: FORMAT_NOTION_FORMAT[format],
-        tarih: tarihTrFormat(etk.tarihISO),
-        saat: etk.saat,
-      });
+  // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXXX". Format+tarih
+  // gerekmez (referans no banka açıklamasında eşleştirme için yeterli).
+  const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
+  // ADIM 1 — havale vade metni (Direkt+havale success'inde gösterilecek):
+  // 3+ gün varsa "3 gün içinde", yakınsa "ilettiğinde döneceğiz".
+  const vadeMetni = havaleVadeMetni(etk.tarihISO);
 
   // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
   const promoResp = promoSonuc
@@ -721,6 +715,8 @@ export const POST: APIRoute = async ({ request }) => {
       ad: havaleyiKullan ? HAVALE_AD : '',
       aciklama: havaleyiKullan ? aciklamaSablonu : '',
       ...(direktAkis && odemeGerekli ? { yontem } : {}),
+      // ADIM 1 — vade metni Direkt+havale success'inde gösterilir.
+      ...(havaleyiKullan ? { vadeMetni } : {}),
     },
     // Aşama 3b-fix tasarım — Başvuru'da katilim gönderilmez (Zoom/adres
     // henüz yok). Direkt'te: link + (Online + dolu Notion alanı ise) Zoom

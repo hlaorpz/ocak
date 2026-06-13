@@ -78,10 +78,17 @@ export type KayitResponse = {
     paraBirimi: string;
     iban: string;
     ad: string;
-    /** Brief 6 (KARAR 210): "{referansNo} — {ad}" (havale açıklaması). */
+    /** Tasarım turu 3 ADIM 3: "{ad} — {referansNo}" (kısa banka açıklaması). */
     aciklama: string;
     /** Aşama 3b — frontend success'te göstermek için (havale/kart). */
     yontem?: 'kart' | 'havale';
+    /**
+     * Tasarım turu 3 ADIM 1 — Direkt+havale success'inde gösterilen vade
+     * metni; etkinlik tarihine göre dinamik:
+     *  - 3+ gün: "Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin."
+     *  - <3 gün: "Katılım payını ilettiğinde biz kontrol edip sana döneceğiz."
+     */
+    vadeMetni?: string;
   };
   /**
    * Aşama 3b — kart yöntemi seçilirse backend sağlayıcının checkout URL'ini
