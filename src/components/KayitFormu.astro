@@ -469,7 +469,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               onchange="this.setCustomValidity('')" />
             <span class="kayit-formu__mesafeli-text">
               <a href="/mesafeli-satis" target="_blank" rel="noopener">Mesafeli Satış Sözleşmesi</a>'ni
-              ve Ön Bilgilendirme Formu'nu okudum, onaylıyorum.
+              ve <a href="/mesafeli-satis" target="_blank" rel="noopener">Ön Bilgilendirme Formu</a>'nu
+              okudum, onaylıyorum.
               <span class="kayit-formu__required">*</span>
             </span>
           </label>
@@ -823,9 +824,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   }
   .kayit-formu__kvkk-text {
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     color: var(--cream-soft);
-    line-height: 1.5;
+    line-height: 1.55;
   }
   .kayit-formu__kvkk-text a {
     color: var(--ember);
@@ -871,7 +872,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
    * Aşama 5 düzeltme: font 0.8rem (KVKK ile aynı), iki onay satırı arası
    * sıkı (space-2). */
   .kayit-formu__mesafeli {
-    padding-top: var(--space-2);
+    padding-top: var(--space-1);
   }
   .kayit-formu__mesafeli[hidden] { display: none; }
   .kayit-formu__mesafeli-onay {
@@ -890,9 +891,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   }
   .kayit-formu__mesafeli-text {
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     color: var(--cream-soft);
-    line-height: 1.5;
+    line-height: 1.55;
   }
   .kayit-formu__mesafeli-text a {
     color: var(--ember);
