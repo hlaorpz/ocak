@@ -1,0 +1,61 @@
+---
+// /odeme/iptal — Ödeme iptal/hata sayfası (Brief Aşama 3b ADIM 3c iptal dalı).
+// Kayıtlar pending satırı Beklemede kalır; Kaan terk edilen kayıtları manuel
+// temizler. Kullanıcıya nazik bir mesaj + tekrar denemek için yönlendirme.
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+
+const ref = Astro.url.searchParams.get('ref') ?? '';
+const hata = Astro.url.searchParams.get('hata') ?? '';
+---
+<Layout title="Ödeme tamamlanmadı" description="Ödeme tamamlanmadı. Tekrar deneyebilirsin." oda="OCAK" noindex>
+  <article class="ocak-yasal">
+    <div class="ocak-odeme-iptal">
+      <h1>Ödeme tamamlanmadı.</h1>
+      <p>
+        Bir aksaklık olmuş ya da sen iptal etmişsin. Hazır olduğunda yeniden
+        deneyebilirsin — kapı kapalı değil.
+      </p>
+      {ref && (
+        <p class="ocak-odeme-iptal__ref">
+          Referans: <strong>{ref}</strong>
+          {hata && <span class="ocak-odeme-iptal__hata"> · {hata}</span>}
+        </p>
+      )}
+      <p class="ocak-odeme-iptal__yardim">
+        Sorun devam ederse: <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
+      </p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .ocak-odeme-iptal {
+    text-align: center;
+    padding: var(--space-7) 0;
+  }
+  .ocak-odeme-iptal h1 {
+    color: var(--cream);
+    font-style: italic;
+  }
+  .ocak-odeme-iptal__ref {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--smoke);
+    margin-top: var(--space-5);
+  }
+  .ocak-odeme-iptal__ref strong {
+    color: var(--cream);
+  }
+  .ocak-odeme-iptal__hata {
+    color: var(--ember);
+  }
+  .ocak-odeme-iptal__yardim {
+    margin-top: var(--space-6);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+  }
+  .ocak-odeme-iptal__yardim a { color: var(--ember); }
+</style>

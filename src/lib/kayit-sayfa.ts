@@ -7,31 +7,35 @@
 
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { filterDropdownEtkinlikleri } from './format-etkinlik';
-import {
-  FORMAT_NOTION_FORMAT,
-  parseKayitSorulari,
-  type KayitFormat,
-} from './kayit';
+import { filterDropdownEtkinlikleri, yaklasanUcretliler } from './format-etkinlik';
+import { FORMAT_NOTION_FORMAT, type KayitFormat } from './kayit';
 
 export type KayitSayfaData = {
   etkinlikler: CollectionEntry<'etkinlikler'>[];
-  /** Sıradaki etkinliğin Kayıt Soruları'ndan parse edilmiş soru dizisi (boş → []). */
-  kayitSorulari: string[];
   havaleIban: string;
   havaleAd: string;
+  /**
+   * "Bir kor daha taşı" askı bölümü için referans liste (Aşama 2 UI). Yaklaşan
+   * ücretli etkinliklerin ilk 3'ü — fikir verici, fiyat listesi değil.
+   * Format-bağımsız tüm Etkinlikler havuzundan (askı genel havuz, formattan
+   * bağımsız). Boş olabilir → form bloğu hiç render olmaz.
+   */
+  askiReferanslari: CollectionEntry<'etkinlikler'>[];
 };
 
+// Aşama 3b-fix tasarım (ADIM 2) — kayitSorulari artık per-event runtime.
+// Eskiden tek-set (ilk etkinliğin soruları) tüm tarih seçimlerine ortaktı;
+// artık her `<option>` kendi `data-sorular` JSON'unu taşır, JS tarih
+// değişince Niyet textarealarını yeniden render eder.
 export async function loadKayitData(format: KayitFormat): Promise<KayitSayfaData> {
   const tum = await getCollection('etkinlikler');
   const notionFormat = FORMAT_NOTION_FORMAT[format];
   const etkinlikler = filterDropdownEtkinlikleri(tum, notionFormat);
-  const ilk = etkinlikler[0];
-  const kayitSorulari = parseKayitSorulari(ilk?.data.kayitSorulari);
+  const askiReferanslari = yaklasanUcretliler(tum, 3);
   return {
     etkinlikler,
-    kayitSorulari,
     havaleIban: import.meta.env.PUBLIC_HAVALE_IBAN ?? '',
     havaleAd: import.meta.env.PUBLIC_HAVALE_AD ?? '',
+    askiReferanslari,
   };
 }

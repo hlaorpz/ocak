@@ -52,8 +52,21 @@ const year = new Date().getFullYear();
       <span class="footer__manifesto-line footer__manifesto-line--break">seni sana geri vermek için buradayız.</span>
     </p>
 
+    {/* Aşama 5 düzeltme (KARAR 251 + 257 aday): yasal linkler artık
+        baseline satırının ORTASINDA (sol OCAK ↔ orta yasal ↔ sağ © yıl).
+        Manifesto altı eski yasal satır kaldırıldı; tek baseline satırı.
+        Mobilde 3 öğe sığmazsa yasal alt satıra wrap'ler (OCAK+© üstte). */}
     <div class="footer__bottom">
       <span class="footer__brand">OCAK</span>
+      <nav class="footer__yasal" aria-label="Yasal">
+        <a href="/hakkimizda">Hakkımızda</a>
+        <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+        <a href="/gizlilik">Gizlilik ve KVKK</a>
+        <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+        <a href="/mesafeli-satis">Mesafeli Satış</a>
+        <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+        <a href="/teslimat-iade">Teslimat ve İade</a>
+      </nav>
       <span class="footer__year">© {year}</span>
     </div>
   </div>
@@ -149,12 +162,72 @@ const year = new Date().getFullYear();
     }
   }
 
-  .footer__bottom {
+  /* Aşama 5 düzeltme (KARAR 251 + 257 aday): footer yasal linkleri
+   * baseline satırının ORTASINDA. Sol OCAK ↔ orta yasal ↔ sağ © yıl.
+   * Grid 3-kolon: yasal `1fr` ortada, brand/year `auto`. Yasal font ©
+   * yıl ölçeğine yakın (text-xs), nötr ton; ember değil — dikkat
+   * çekmemeli. Mobilde (≤600px) 3 öğe sığmazsa yasal alt satıra
+   * wrap'ler (OCAK+© üstte yan yana, yasal altta ortalı). */
+  .footer__yasal {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: baseline;
+    gap: 0 var(--space-3);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__yasal a {
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .footer__yasal a:hover,
+  .footer__yasal a:focus-visible {
+    color: var(--cream-soft);
+    outline: none;
+  }
+
+  .footer__yasal-ayrac {
+    color: var(--text-muted);
+    opacity: 0.6;
+    user-select: none;
+  }
+
+  .footer__bottom {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
     padding-top: var(--space-5);
     border-top: 1px solid var(--border-subtle);
+  }
+
+  .footer__bottom .footer__yasal {
+    justify-self: center;
+  }
+
+  /* Mobil: 3 öğe baseline'da sığmaz — OCAK+© üstte yan yana, yasal alt
+   * satıra wrap. iPhone Safari + Chrome eyeball şart (KARAR 88). */
+  @media (max-width: 600px) {
+    .footer__bottom {
+      grid-template-columns: auto auto;
+      grid-template-areas:
+        'brand year'
+        'yasal yasal';
+      justify-content: space-between;
+      row-gap: var(--space-4);
+    }
+    .footer__brand { grid-area: brand; }
+    .footer__year { grid-area: year; }
+    .footer__bottom .footer__yasal {
+      grid-area: yasal;
+      justify-self: center;
+    }
   }
 
   .footer__brand {

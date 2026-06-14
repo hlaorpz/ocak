@@ -1,7 +1,7 @@
 /**
  * oda-map.ts — Slug → Oda sabit eşlemesi (KARAR 87, Çekirdek SİTE MİMARİSİ tablosu)
  *
- * 19 sayfa kapalı set. Notion Sayfalar DB'sinde "oda" property'si YOK (Brief 1 sapma
+ * Kapalı set. Notion Sayfalar DB'sinde "oda" property'si YOK (Brief 1 sapma
  * raporu) — oda kaynağı kod-içi bu map (Brief 2 mimari karar A). Notion'a oda property
  * eklenmedi; tek doğruluk kaynağı burası.
  */
@@ -16,6 +16,15 @@ export const ODA_MAP: Record<string, Oda> = {
   '/araclar': 'OCAK',
   '/site-rehber': 'OCAK',
   '/test': 'OCAK',                    // Kaan format referansı (lansman öncesi dev sayfa)
+  // Yasal (statik .astro, Notion DIŞI — Iyzico onay sayfaları, brief-yasal-sayfalar-adim1.md)
+  '/hakkimizda': 'OCAK',
+  '/gizlilik': 'OCAK',
+  '/mesafeli-satis': 'OCAK',
+  '/teslimat-iade': 'OCAK',
+  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; iyzico Aşama 6)
+  '/odeme/mock': 'OCAK',
+  '/odeme/tamam': 'OCAK',
+  '/odeme/iptal': 'OCAK',
   // Yol
   '/sen-neredesin': 'Yol',
   // Buluşmalar
@@ -47,7 +56,7 @@ export function getOda(slug: string): Oda {
   const oda = ODA_MAP[slug];
   if (!oda) {
     throw new Error(
-      `getOda: bilinmeyen slug "${slug}" — ODA_MAP'te yok (19 sayfa kapalı set, KARAR 87). ` +
+      `getOda: bilinmeyen slug "${slug}" — ODA_MAP'te yok (kapalı set, KARAR 87). ` +
         `Notion'a yeni sayfa eklendiyse önce ODA_MAP'e ekle.`,
     );
   }

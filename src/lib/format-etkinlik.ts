@@ -111,24 +111,83 @@ export function formatAyEtiketi(key: string): string {
 
 /**
  * /cember + /acik-kapi tarih dropdown'ları için filtre+sort (KARAR — Brief F.6).
- * tip eşleşen + durum∈{Kayıt Açık, Dolu} entry'leri tarihBaslangic'e göre artan sıralı döner.
- * Durum filtresi defansif: loader zaten `AKTIF_DURUM` yapıyor ama component bağımsız
- * çalışsın diye burada da uygulanır (loader değişimine karşı koruma).
+ * tip eşleşen + durum∈{Kayıt Açık, Dolu} + bugünden sonraki entry'leri
+ * tarihBaslangic'e göre artan sıralı döner.
+ *
+ * Tasarım turu 3 (ADIM 5) — tarih filtresi eklendi: Notion'da durum hâlâ
+ * "Kayıt Açık" kalan geçmiş etkinlikler dropdown'da görünmesin. `bugundenSonra`
+ * helper'ı tarihBitis (range varsa) veya tarihBaslangic referansıyla bugünle
+ * karşılaştırır; parse hatasında defansif olarak gösterir (içerik hatası UI'da görünür).
+ * Notion'daki durum güncellemesi unutulursa kod güvenlik şeridi olur.
  */
 interface DropdownEntry {
-  data: { tip: string; durum: string; tarihBaslangic: string };
+  data: { tip: string; durum: string; tarihBaslangic: string; tarihBitis?: string };
 }
 
 export function filterDropdownEtkinlikleri<T extends DropdownEntry>(
   entries: T[],
   tip: string,
+  bugun: Date = new Date(),
 ): T[] {
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
   return entries
     .filter((e) => e.data.tip === tip)
     .filter((e) => e.data.durum === 'Kayıt Açık' || e.data.durum === 'Dolu')
+    .filter((e) => {
+      // Tasarım turu 3 (ADIM 5) — bugünden eski etkinlikler dropdown'a düşmez.
+      // Range'te tarihBitis öncelik (15 Eyl–6 Eki aralığında 1 Eki ise hâlâ
+      // aktif). Parse hatası → defansif göster.
+      const referans = e.data.tarihBitis ?? e.data.tarihBaslangic;
+      const p = parcala(referans);
+      if (!p) return true;
+      const d = new Date(p.yil, p.ayIdx, p.gun);
+      return d >= sinir;
+    })
     .sort(
       (a, b) =>
         new Date(a.data.tarihBaslangic).getTime() -
         new Date(b.data.tarihBaslangic).getTime(),
     );
+}
+
+/**
+ * KayitFormu "Bir kor daha taşı" bölümünde fikir verici referans listesi
+ * için yaklaşan ücretli etkinlikler (Brief: brief-odeme-asama2-form-aski-ui.md).
+ *
+ * Filtre: `Statü == 'Kayıt Açık'` AND `Ücret > 0` AND tarih bugünden sonra.
+ * Sıralı (artan), ilk `limit` adet (default 3). Etkinlik formatı/türü bağımsız —
+ * askı genel havuz, "şu programa şu kadar" demez; sadece fiyat aralığı için
+ * bir his verir.
+ */
+interface YaklasanUcretliEntry {
+  data: {
+    durum: string;
+    tarihBaslangic: string;
+    tarihBitis?: string;
+    ucret?: number;
+  };
+}
+
+export function yaklasanUcretliler<T extends YaklasanUcretliEntry>(
+  entries: T[],
+  limit = 3,
+  bugun: Date = new Date(),
+): T[] {
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
+  return entries
+    .filter((e) => e.data.durum === 'Kayıt Açık' && (e.data.ucret ?? 0) > 0)
+    .filter((e) => {
+      const referans = e.data.tarihBitis ?? e.data.tarihBaslangic;
+      const p = parcala(referans);
+      if (!p) return true; // parse fail → defansif göster (bugundenSonra ile aynı politika)
+      return new Date(p.yil, p.ayIdx, p.gun) >= sinir;
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.data.tarihBaslangic).getTime() -
+        new Date(b.data.tarihBaslangic).getTime(),
+    )
+    .slice(0, limit);
 }

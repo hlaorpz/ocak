@@ -41,6 +41,79 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
   workshop: 'Workshop',
 };
 
+/**
+ * Aşama 2.5 — Kademeli dayanışma fiyatı (sliding scale). Etkinlikler DB tek
+ * `Ücret` taşır (orta/tam fiyat); 3 kademe koddan türetilir:
+ *  - Üst (Ateşi büyüten) = Ücret × 1.5
+ *  - Orta (Ateşin başındaki) = Ücret × 1.0   ← default seçili
+ *  - Alt (Ateşe yaklaşan) = Ücret × 0.75
+ *
+ * Oranlar tek yerde — ileride ayarlanabilir. Yuvarlama en yakın tam TL.
+ * Brief: brief-odeme-asama2.5-kademe-akis.md.
+ */
+export type Kademe = 'ust' | 'orta' | 'alt';
+
+export const KADEME_ORANLARI: Record<Kademe, number> = {
+  ust: 1.5,
+  orta: 1.0,
+  alt: 0.75,
+};
+
+export function kademeTutari(ucret: number, kademe: Kademe): number {
+  const oran = KADEME_ORANLARI[kademe];
+  // Aşama 3b-fix tasarım (KARAR 61/88 kırpma yasağı): kuruş korunur. Float
+  // hatalarını engellemek için ×100/100. Önceki Math.round → 225×0.75=169
+  // (kuruş kayboluyordu); yeni: 168.75. Gösterim `formatTutarTr` ile.
+  return Math.round(Math.max(0, ucret) * oran * 100) / 100;
+}
+
+/**
+ * Aşama 3b-fix tasarım — tutar gösterimi TR locale + iki ondalık:
+ * 168.75 → "168,75". KARAR 61/88: kuruş ekranda görünür, gizli kırpma yok.
+ * Tek otorite — frontend canlı tutar bloğu + backend response gösterimi
+ * paylaşır.
+ */
+export function formatTutarTr(tutar: number): string {
+  return tutar.toLocaleString('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+// Kapı 1 — direkt kayıt formatları (değerlendirme yok). /api/kayit bunların
+// kaydını YALNIZ Kayıtlar DB'ye yazar (Aşama 1.5, brief-odeme-asama15).
+// Kapı 2 — başvuru/onay (cember + ayrı pipeline'daki anadolu): mevcut akış,
+// Başvurular'a yazılır, oradan Kaan onayı + automation ile Kayıtlar'a düşer
+// (Aşama 1.6 köprüsü, bu pakette DEĞİL).
+//
+// DEPRECATED (Aşama 3b-fix): otorite artık etkinlik bazlı `Kayıt Tipi`
+// (Notion Etkinlikler select). `isDirekt(kayitTipi)` kullan. `isKapi1` ve
+// `KAPI1_FORMATLAR` legacy testler / fallback için tutuluyor; yeni kod
+// `etk.kayitTipi === 'Direkt'` dallanmasına bakar.
+export const KAPI1_FORMATLAR: readonly KayitFormat[] = [
+  'acik-kapi',
+  'workshop',
+  'mini-retreat',
+  'istanbul',
+  'seremoni',
+] as const;
+
+export function isKapi1(format: KayitFormat): boolean {
+  return (KAPI1_FORMATLAR as readonly string[]).includes(format);
+}
+
+/**
+ * Aşama 3b-fix — Kayıt Tipi dallanması. Notion Etkinlikler `Kayıt Tipi`
+ * select [Başvuru | Direkt]. `Direkt` → mevcut Kapı 1 akışı (kademe +
+ * askı + promo + kart/havale + checkout + Kayıtlar). `Başvuru` → sade
+ * form + Başvurular DB (ödeme yok, Zoom + mail tetiklenmez).
+ */
+export type KayitTipi = 'Direkt' | 'Başvuru';
+
+export function isDirekt(kayitTipi: KayitTipi | string | undefined): boolean {
+  return kayitTipi === 'Direkt';
+}
+
 // Slug → MailerLite grup ID. Brief 3 (KARAR 206): 6 formatın hepsi map'lendi.
 // null fallback artık yok — eksik grup compile-time kırar.
 export const FORMAT_MAILERLITE_GROUP: Record<KayitFormat, string> = {
@@ -70,19 +143,62 @@ export function parseKayitSorulari(raw: string | undefined | null): string[] {
 }
 
 /**
- * Brief 6 (KARAR 210): Kayıt için benzersiz referans no üretir.
- * Format: `OCAK-XXXXX` (5 haneli rakam, 10000–99999, 90.000 ihtimal).
- * Çakışma kontrolü YOK — düşük hacim, pratik kabul (Kaan kararı).
+ * Brief 6 (KARAR 210) + Son tur (2026-06-14): Kayıt için benzersiz referans
+ * no üretir.
  *
- * Üretim anında /api/kayit Notion Başvurular DB'ye yazar; success ekranı
- * havale açıklamasında "{referansNo} — {ad}" formatında gösterir.
- * Ödemesiz/Muaf kayıtlarda da Notion'a yazılır (zararsız, izleme için
- * faydalı) ama success ekranında gizlenir (ödeme bloğu yoksa gereksiz).
+ * Format: `OCAK-XXXXXX` (6 haneli rakam, 100000–999999, 900K ihtimal). Önceki
+ * 5 hane (90K uzay) doğum günü paradoksu ile ~300 kayıtta %50 çakışma — yetersiz.
+ * 6 hane ~1000 kayıtta %50 — 10K seviyesinde rahat. Mevcut 5 haneli kayıtlar
+ * Notion'da olduğu gibi kalır (rich_text alanı, uzunluk esnek).
+ *
+ * Çakışma garantisi `uretBenzersizReferansNo(client, dbIds)` ile (Notion query
+ * + retry + timestamp fallback). Bu pure helper kullanan testler için.
  */
 export function uretReferansNo(): string {
-  // 10000–99999 inclusive — Math.random() [0,1) * 90000 → [0, 89999] + 10000.
-  const sayi = Math.floor(Math.random() * 90000) + 10000;
+  // 100000–999999 inclusive — Math.random() [0,1) * 900000 → [0, 899999] + 100000.
+  const sayi = Math.floor(Math.random() * 900000) + 100000;
   return `OCAK-${sayi}`;
+}
+
+/**
+ * Son tur (2026-06-14) — çakışma garantili ref üretimi. Notion Kayıtlar +
+ * Başvurular DB'lerinde "Referans No" rich_text alanını query'leyip aday
+ * ref'i kontrol eder; varsa yeniden üretir (max `maxDeneme` deneme).
+ * Başarısızsa timestamp tabanlı fallback (`OCAK-${Date.now().slice(-8)}` —
+ * 100M uzay, çakışma neredeyse imkânsız).
+ *
+ * KARAR 76 — Kayıtlar tek otorite; ama Başvurular'a da Kapı 2 akışında ref
+ * yazılıyor. İki DB ortak OCAK-XXXXXX uzayı paylaşır.
+ *
+ * Race condition: iki eşzamanlı kayıt aynı anda aynı ref üretirse, ikisi de
+ * query'de "yok" görür → ikisi de yazar (Notion atomic transaction yok).
+ * Lansman hacmi düşük → pratik kabul. Worst-case Kaan elle düzeltir.
+ *
+ * `client` notion-types client; `dbIds` undefined/empty olanlar atlanır
+ * (test/dev için, prod'da ikisi de set). `query` parametresi async test
+ * için inject edilebilir.
+ */
+export type RefUniqueQuery = (dbId: string, ref: string) => Promise<boolean>;
+
+export async function uretBenzersizReferansNo(
+  query: RefUniqueQuery,
+  dbIds: string[],
+  maxDeneme = 3,
+): Promise<string> {
+  const aktifDbler = dbIds.filter(Boolean);
+  for (let i = 0; i < maxDeneme; i++) {
+    const aday = uretReferansNo();
+    let cakisma = false;
+    for (const dbId of aktifDbler) {
+      if (await query(dbId, aday)) {
+        cakisma = true;
+        break;
+      }
+    }
+    if (!cakisma) return aday;
+  }
+  // Son çare: timestamp suffix (100M uzay) — çakışma neredeyse imkânsız.
+  return `OCAK-${Date.now().toString().slice(-8)}`;
 }
 
 /**
@@ -174,6 +290,67 @@ export function etkinlikAdiFormatla(
   const tip = FORMAT_TIP[format];
   const tarih = seciliTarih?.trim();
   return tarih ? `${tip} — ${tarih}` : tip;
+}
+
+/**
+ * Aşama 3a — promo + iki katman tutar hesabı (tek otorite, backend+frontend
+ * paylaşır). Brief: brief-odeme-asama3a-promo-aski-backend.md.
+ *
+ * Kurallar:
+ *  - Kod yok / geçersiz → toplam = A + B, indirim = 0.
+ *  - tip='yuzde' veya 'sabit' → indirim (A+B)'ye uygulanır;
+ *    toplam = max(0, A+B − indirim). Helper `kodDogrula` zaten A+B üzerinden
+ *    hesapladıysa indirimTutari doğrudan kullanılır.
+ *  - tip='tam-burs' → sadece A sıfırlanır, B aynen kalır;
+ *    indirim = A, toplam = B. (Helper bu durumda yeniTutar=0 döner çünkü
+ *    A+B'yi sıfırlar — burada B'yi geri ekliyoruz; brief açık karar.)
+ *
+ * Dönüş `katmanA`/`katmanB`: indirimden SONRAKİ değerler (tam-burs'da A=0).
+ * Frontend canlı tutar bloğunda satır-bazlı gösterim için ayrı tutuluyor;
+ * `toplam` zaten katmanA + katmanB.
+ */
+import type { KodSonuc } from './kodlar';
+
+export type IndirimSonuc = {
+  /** İndirim sonrası katman A (tam-burs'da 0). */
+  katmanA: number;
+  /** Katman B — tam-burs'da değişmez, yuzde/sabit'te değişmez (indirim toplama uygulanır). */
+  katmanB: number;
+  /** Toplam indirim TL. Promo yoksa/geçersizse 0. */
+  indirim: number;
+  /** Ödenecek toplam TL = katmanA + katmanB (yuzde/sabit'te = max(0, A+B−indirim); tam-burs'ta = B). */
+  toplam: number;
+};
+
+export function uygulaIndirim(
+  katmanA: number,
+  katmanB: number,
+  kod: KodSonuc | null,
+): IndirimSonuc {
+  // Aşama 3b-fix tasarım KARARI (2026-06-09): indirim SADECE Katman A
+  // (katılım payı) üzerine uygulanır. Kor (Katman B / askı) tam kalır —
+  // kullanıcı kendi katkısını yapıyor, indirim onu da düşürmek mantıksız.
+  // Önceden A+B'ye uygulanıyordu (Aşama 3a); değiştirildi.
+  const aSafe = Math.max(0, katmanA);
+  const bSafe = Math.max(0, katmanB);
+  const yuvarlaKurus = (n: number) => Math.round(n * 100) / 100;
+  if (!kod || !kod.gecerli) {
+    return { katmanA: aSafe, katmanB: bSafe, indirim: 0, toplam: yuvarlaKurus(aSafe + bSafe) };
+  }
+  if (kod.tip === 'tam-burs') {
+    return { katmanA: 0, katmanB: bSafe, indirim: aSafe, toplam: bSafe };
+  }
+  // yuzde / sabit — indirim SADECE A'ya. `kod.indirimTutari` kodDogrula
+  // çağrısının `tutar` parametresine göre hesaplanır; çağıran A'yı
+  // geçirmişse doğrudan kullanılır, A+B geçirmişse burada A ile sınırlanır.
+  const indirim = Math.min(Math.max(0, kod.indirimTutari), aSafe);
+  const yeniA = Math.max(0, aSafe - indirim);
+  return {
+    katmanA: yuvarlaKurus(yeniA),
+    katmanB: bSafe,
+    indirim: yuvarlaKurus(indirim),
+    toplam: yuvarlaKurus(yeniA + bSafe),
+  };
 }
 
 /**

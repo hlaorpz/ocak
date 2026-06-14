@@ -43,6 +43,15 @@ export type EtkinlikFrontmatter = {
    * görünümünde basılır (sıfır farklılık).
    */
   kartGorsel?: string;
+  /**
+   * Aşama 3b-fix — Notion "Kayıt Tipi" select. `Direkt` → kademe + askı + promo
+   * + kart/havale + checkout + Kayıtlar (mevcut Kapı 1 akışı). `Başvuru` →
+   * sade ad/email/telefon/tarih + Başvurular (ödeme yok, Zoom + mail yok).
+   * Otorite artık etkinlik bazlı — format whitelist (KAPI1_FORMATLAR) deprecated.
+   * Default `Direkt` — Notion'da boş bırakılırsa eski Kapı 1 davranışı korunur
+   * (Kaan eski etkinliklerde tipi set etmediyse sürpriz değişimi olmasın).
+   */
+  kayitTipi: 'Direkt' | 'Başvuru';
 };
 
 // ── Property okuyucular (Node-safe, bağımsız) ──
@@ -124,6 +133,10 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
   const paraBirimi = selectVal(page, 'Para Birimi');
   const kayitSorulari = richText(page, 'Kayıt Soruları');
   const kartGorsel = filesUrl(page, 'Kart Görsel');
+  // Aşama 3b-fix — Notion "Kayıt Tipi" select [Başvuru | Direkt]. Boş/eski
+  // etkinliklerde default 'Direkt' (mevcut Kapı 1 akışı sürpriz değişmesin).
+  const kayitTipiRaw = selectVal(page, 'Kayıt Tipi');
+  const kayitTipi: 'Direkt' | 'Başvuru' = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
 
   return {
     baslik: richText(page, 'Başlık').trim(),
@@ -134,6 +147,7 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     siteGoster: checkboxVal(page, 'Sitede Göster'),
     oneCikar: checkboxVal(page, 'Öne Çıkar'),
     notion_id: page.id,
+    kayitTipi,
     ...(tarih?.end ? { tarihBitis: tarih.end } : {}),
     ...(saat ? { saat } : {}),
     ...(mekanDetay ? { mekanDetay } : {}),

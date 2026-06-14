@@ -17,18 +17,59 @@
 // fallback metnine düşer. Otomasyon (Kaan kuracak) boş-link kontrolüyle
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
-import { notion, NOTION_BASVURULAR_DB } from '../../lib/notion.ts';
+import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
+import { getPaymentProvider } from '../../lib/payment-provider.ts';
+import { publicOrigin } from '../../lib/public-origin.ts';
 import {
   FORMAT_TIP,
   FORMAT_MAILERLITE_GROUP,
+  isDirekt,
   isKayitFormat,
+  kademeTutari,
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  uretBenzersizReferansNo,
+  type RefUniqueQuery,
   tarihTrFormat,
-  uretReferansNo,
+  uygulaIndirim,
   type KayitFormat,
+  type KayitTipi,
+  type Kademe,
 } from '../../lib/kayit.ts';
+
+const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
+
+/**
+ * Havale açıklama metni — kullanıcı bankada görür. Tasarım turu 3 (ADIM 3):
+ * "Ad — OCAK-XXXXX" formatı. Önceden uzun format+tarih+saat vardı; bankada
+ * Kaan'ın eşleştirmesi referans no'yu görmekle anlık. Kısa ve net.
+ */
+function havaleAciklamasi(args: { ad: string; referansNo: string }): string {
+  return `${args.ad} — ${args.referansNo}`;
+}
+
+/**
+ * Tasarım turu 3 (ADIM 1) — havale success metninde ödeme süresi dinamik:
+ *  - Etkinlik tarihine 3+ gün varsa: "Katılım payını en geç 3 gün içinde
+ *    aşağıdaki hesaba iletebilirsin."
+ *  - 3 günden yakınsa: "Katılım payını ilettiğinde biz kontrol edip sana
+ *    döneceğiz."
+ * tarihISO YYYY-MM-DD veya ISO timestamp. Parse edilemezse defansif olarak
+ * 3+ gün dalına düşer (rahat metin).
+ */
+function havaleVadeMetni(tarihISO: string | undefined | null, bugun: Date = new Date()): string {
+  const m = tarihISO?.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
+  const etk = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
+  const gunFarki = Math.round((etk.getTime() - sinir.getTime()) / 86_400_000);
+  return gunFarki >= 3
+    ? 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.'
+    : 'Katılım payını ilettiğinde biz kontrol edip sana döneceğiz.';
+}
 
 export const prerender = false;
 
@@ -45,11 +86,45 @@ type KayitBody = {
   ekonomikKatilim?: string;
   kvkk?: boolean;
   website?: string; // honeypot
+  // Aşama 3a — promo + askı + sadece-askı
+  promoKod?: string;
+  kodId?: string;
+  askiTutar?: number;
+  askiNiyet?: string;
+  sadeceAski?: boolean;
+  // Aşama 2.5 — Kapı 1 kademeli dayanışma fiyatı. Aşama 3b — Kayıtlar
+  // `Kademe` alanına yazılır (Kaan ekledi). Geçersiz/eksik → 'orta'.
+  kademe?: Kademe;
+  // Aşama 3b — ödeme yöntemi (kart | havale). Kart → checkoutBaslat → redirect.
+  odemeYontemi?: 'kart' | 'havale';
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
 const HAVALE_AD = import.meta.env.PUBLIC_HAVALE_AD ?? '';
 const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY ?? '';
+
+/**
+ * Son tur (2026-06-14) — ref çakışma kontrolü: aday ref ile eşleşen kayıt
+ * var mı? uretBenzersizReferansNo helper'ı bu fonksiyonu Kayıtlar +
+ * Başvurular DB'leri için ardışık çağırır.
+ *
+ * DB başına property farkı: Kayıtlar'da referans `Kayıt ID` title alanında
+ * (notionKayitlaraYaz title olarak yazıyor). Başvurular'da ayrı `Referans No`
+ * rich_text property'si (notionBasvuruYaz onu yazıyor). DB ID'sine göre
+ * filter tipi/adı dallandırılır — yoksa "Could not find property" 400 alınır.
+ */
+const refQuery: RefUniqueQuery = async (dbId, ref) => {
+  const filter =
+    dbId === NOTION_KAYITLAR_DB
+      ? { property: 'Kayıt ID', title: { equals: ref } }
+      : { property: 'Referans No', rich_text: { equals: ref } };
+  const res = await notion.databases.query({
+    database_id: dbId,
+    filter,
+    page_size: 1,
+  });
+  return res.results.length > 0;
+};
 
 const EMAIL_RE = /^[\x20-\x7E]+@[\x20-\x7E]+\.[\x20-\x7E]+$/;
 
@@ -75,6 +150,8 @@ type EtkinlikOkuma = {
   saat: string;
   /** Notion "Konum Detay" rich_text — fiziksel etkinliklerde adres. */
   konumDetay: string;
+  /** Aşama 3b-fix — etkinlik bazlı Kayıt Tipi. Boş → 'Direkt' (eski etkinlikler için güvenli default). */
+  kayitTipi: KayitTipi;
 };
 
 function richTextStr(props: Record<string, any>, name: string): string {
@@ -99,7 +176,10 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   const klasikSaat = richTextStr(props, 'Saat');
   const saat = zoomSaat || klasikSaat;
   const konumDetay = richTextStr(props, 'Konum Detay');
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay };
+  // Aşama 3b-fix — Kayıt Tipi okuma; default 'Direkt' (eski etkinlikler).
+  const kayitTipiRaw = props['Kayıt Tipi']?.select?.name;
+  const kayitTipi: KayitTipi = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
+  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay, kayitTipi };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -108,6 +188,131 @@ function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): st
     .filter(([, v]) => v && v.trim())
     .map(([soru, cevap]) => `${soru}: ${cevap}`)
     .join('\n\n');
+}
+
+/**
+ * Kapı 1 formatları (acik-kapi/workshop/mini-retreat/istanbul/seremoni) için
+ * Kayıtlar DB'ye satır açar (Aşama 1.5, KARAR 76). Pending — gerçek tahsilat
+ * henüz olmadı; `Ödenen Tutar` + `Ödeme Tarihi` ödeme onaylanınca yazılır
+ * (Aşama 3).
+ *
+ * Enum tuzağı: Başvurular `Bekliyor/Muaf` ≠ Kayıtlar `Beklemede/Bedava`.
+ * Kayıtlar enum'unu kullanıyoruz — yanlış option Notion API "option does
+ * not exist" döner.
+ *
+ * Kullanıcıya dönen response değişmez; satırın hangi DB'ye düştüğü
+ * kullanıcıdan saklı (havale yönergesi + OCAK-XXXXX aynı görünür).
+ */
+async function notionKayitlaraYaz(args: {
+  body: KayitBody;
+  ucretliMi: boolean;
+  referansNo: string;
+  /** Aşama 3b — Kademe Kayıtlar `Kademe` select alanına yazılır. */
+  kademe: Kademe;
+  /** Aşama 3b — yöntem 'kart' → "Kredi Kartı"; 'havale' → "Havale". Ücretsiz null. */
+  yontem: 'kart' | 'havale';
+  /** Aşama 3a — askı geldiyse Kayıtlar satırına eklenir (kendi+askı tek satır). */
+  askiTutar?: number;
+  askiNiyet?: string;
+  /**
+   * Aşama 3b-fix tam burs — kod adı (örn. "TESTBURS"). Sadece tam burs
+   * akışında geçirilir; ödemeli kayıtlarda callback `Kullanılan Kod` yazımını
+   * yapar (notion update ile). Çift yazımı önler.
+   */
+  kullanilanKod?: string;
+}): Promise<string> {
+  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod } = args;
+  const KADEME_AD: Record<Kademe, string> = { ust: 'Üst', orta: 'Orta', alt: 'Alt' };
+  const properties: Record<string, any> = {
+    'Kayıt ID': { title: [{ text: { content: referansNo } }] },
+    'Tip': { select: { name: 'Kayıt' } },
+    'Kademe': { select: { name: KADEME_AD[kademe] } },
+    'Kayıt Kaynağı': { select: { name: 'Site' } },
+    'Ödeme Durumu': { select: { name: ucretliMi ? 'Beklemede' : 'Bedava' } },
+  };
+  if (body.ad) {
+    properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+  }
+  if (body.email) properties.Email = { email: body.email };
+  if (body.telefon) properties.Telefon = { phone_number: body.telefon };
+  // Aşama 3b-fix eyeball — Şehir opsiyonel rich_text. Boşsa atlanır.
+  // Kayıtlar.Şehir property bu turda eklendi (Kaan + CC paralel).
+  if (body.sehir) {
+    properties['Şehir'] = { rich_text: [{ text: { content: body.sehir } }] };
+  }
+  if (body.seciliTarih) {
+    properties['Seçilen Tarih'] = { rich_text: [{ text: { content: body.seciliTarih } }] };
+  }
+  if (body.etkinlikId) {
+    properties['Etkinlikler'] = { relation: [{ id: body.etkinlikId }] };
+  }
+  const cevaplar = formatKayitCevaplari(body.ekSorular);
+  if (cevaplar) {
+    properties['Kayıt cevapları'] = { rich_text: [{ text: { content: cevaplar } }] };
+  }
+  // Aşama 3b — Ödeme Yöntemi yönteme göre. Ücretsizde anlamsız (boş).
+  // Kart → "Kredi Kartı" jenerik (gerçek provider Aşama 6 — iyzico onayı sonrası
+  // callback override edebilir).
+  if (ucretliMi) {
+    properties['Ödeme Yöntemi'] = { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } };
+  }
+  // Askı katmanı (Aşama 3a) — kendi+askı tek satır. Tutar > 0 ise yazılır;
+  // niyet opsiyonel. Bu, kayıt + askı verdi anlamına gelir.
+  if (askiTutar && askiTutar > 0) {
+    properties['Askı Tutarı'] = { number: askiTutar };
+  }
+  if (askiNiyet) {
+    properties['Askı Katkısı'] = { rich_text: [{ text: { content: askiNiyet } }] };
+  }
+  // Aşama 3b-fix tam burs — Kullanılan Kod kayıt anında yazılır (tam burs
+  // sayacı +1 ile birlikte). Ödemeli kayıtlarda callback yazar.
+  if (kullanilanKod) {
+    properties['Kullanılan Kod'] = { rich_text: [{ text: { content: kullanilanKod } }] };
+  }
+  // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
+  // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
+
+  const result = await notion.pages.create({
+    parent: { database_id: NOTION_KAYITLAR_DB },
+    properties,
+  });
+  return result.id;
+}
+
+/**
+ * Aşama 3a — sadece-askı dalı. Kayıtlar'a AYRI satır: Tip="Askı Katkısı",
+ * Etkinlikler relation BOŞ (genel havuz, formattan bağımsız), tarih/cevap
+ * yok. Kişi katılımcı DEĞİL, sadece havuza katkı verdi.
+ *
+ * Ödeme havale (Beklemede + Havale); Aşama 3b'de provider/mock geldiğinde
+ * yöntem ödeme-onay handler'ında override edilir.
+ */
+async function notionSadeceAskiYaz(args: {
+  body: KayitBody;
+  referansNo: string;
+  /** Aşama 3b — yöntem kart/havale (sadece-askı da kart desteği). */
+  yontem: 'kart' | 'havale';
+}): Promise<string> {
+  const { body, referansNo, yontem } = args;
+  const properties: Record<string, any> = {
+    'Kayıt ID': { title: [{ text: { content: referansNo } }] },
+    'Tip': { select: { name: 'Askı Katkısı' } },
+    'Kayıt Kaynağı': { select: { name: 'Site' } },
+    'Ödeme Durumu': { select: { name: 'Beklemede' } },
+    'Ödeme Yöntemi': { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } },
+    'Askı Tutarı': { number: body.askiTutar ?? 0 },
+  };
+  if (body.ad) properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+  if (body.email) properties.Email = { email: body.email };
+  if (body.telefon) properties.Telefon = { phone_number: body.telefon };
+  if (body.askiNiyet) {
+    properties['Askı Katkısı'] = { rich_text: [{ text: { content: body.askiNiyet } }] };
+  }
+  const result = await notion.pages.create({
+    parent: { database_id: NOTION_KAYITLAR_DB },
+    properties,
+  });
+  return result.id;
 }
 
 async function notionBasvuruYaz(args: {
@@ -207,10 +412,7 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ status: 'success', honeypot: true });
   }
 
-  // Validation
-  if (!body.format || !isKayitFormat(body.format)) {
-    return json({ status: 'error', message: 'format geçersiz' }, 400);
-  }
+  // Ortak validation (her iki dal için)
   if (!body.ad || !body.ad.trim()) {
     return json({ status: 'error', message: 'ad zorunlu' }, 400);
   }
@@ -219,6 +421,84 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!body.kvkk) {
     return json({ status: 'error', message: 'KVKK onayı zorunlu' }, 400);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // SADECE-ASKI DALI (Aşama 3a) — etkinlik/format/ekonomik katılım atlanır.
+  // Genel havuza katkı; havale yöntemi; ayrı Tip="Askı Katkısı" Kayıtlar
+  // satırı. MailerLite çağrılmaz (format-bazlı grup yok, sadece-askı için
+  // ayrı grup tanımlı değil).
+  // ───────────────────────────────────────────────────────────────────────
+  if (body.sadeceAski) {
+    const askiTutar = Number(body.askiTutar);
+    if (!Number.isFinite(askiTutar) || askiTutar <= 0) {
+      return json({ status: 'error', message: 'askıTutar > 0 olmalı' }, 400);
+    }
+    const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
+    // Son tur — çakışma garantili ref: 6 hane + Notion unique check + retry.
+    const referansNo = await uretBenzersizReferansNo(refQuery, [
+      NOTION_KAYITLAR_DB,
+      NOTION_BASVURULAR_DB,
+    ]);
+    let basvuruId: string;
+    try {
+      basvuruId = await notionSadeceAskiYaz({ body, referansNo, yontem });
+    } catch (err) {
+      return json(
+        { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
+        500,
+      );
+    }
+    // Tasarım turu 3 (ADIM 3) — havale açıklama: "Ad — OCAK-XXXXX". Kaan
+    // bankada eşleştirmeyi referans no üzerinden yapar (kısa, net).
+    const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
+
+    // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, iyzico
+    // Aşama 6). Sayfa origin Vercel `x-forwarded-*` header'larından
+    // (Bulgu 1 fix); basariUrl /odeme/tamam, hataUrl /odeme/iptal.
+    let checkoutUrl: string | undefined;
+    if (yontem === 'kart') {
+      const provider = getPaymentProvider();
+      const baseUrl = publicOrigin(request);
+      const sonuc = await provider.checkoutBaslat({
+        kayitId: basvuruId,
+        referansNo,
+        tutar: askiTutar,
+        paraBirimi: 'TRY',
+        ad: body.ad,
+        email: body.email,
+        basariUrl: `${baseUrl}/odeme/tamam?ref=${encodeURIComponent(referansNo)}`,
+        hataUrl: `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansNo)}`,
+      });
+      if ('redirectUrl' in sonuc) checkoutUrl = sonuc.redirectUrl;
+    }
+
+    return json({
+      status: 'success',
+      basvuruId,
+      referansNo,
+      mailerlite: null,
+      mode: 'sadece-aski',
+      aski: { tutar: askiTutar, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) },
+      odeme: {
+        gerekli: true,
+        tutar: askiTutar,
+        paraBirimi: 'TRY',
+        iban: yontem === 'havale' ? HAVALE_IBAN : '',
+        ad: yontem === 'havale' ? HAVALE_AD : '',
+        aciklama: yontem === 'havale' ? aciklamaSablonu : '',
+        yontem,
+      },
+      katilim: { var: false, tipi: 'link', deger: '' },
+      ...(checkoutUrl ? { checkoutUrl } : {}),
+    });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  // KAYIT DALI — Kapı 1 (Kayıtlar) / Kapı 2 (Başvurular)
+  // ───────────────────────────────────────────────────────────────────────
+  if (!body.format || !isKayitFormat(body.format)) {
+    return json({ status: 'error', message: 'format geçersiz' }, 400);
   }
   if (!body.etkinlikId) {
     return json({ status: 'error', message: 'etkinlikId zorunlu' }, 400);
@@ -236,22 +516,119 @@ export const POST: APIRoute = async ({ request }) => {
       500,
     );
   }
-  const odemeGerekli = etk.tutar !== null && etk.tutar > 0;
-  const odemeDurumu: 'Bekliyor' | 'Muaf' = odemeGerekli ? 'Bekliyor' : 'Muaf';
+  // Aşama 2.5 — Kapı 1'de katmanA seçili kademe oranıyla türetilir
+  // (frontend canlı tutar bloğuyla TEK kaynak — uyumsuzluk olmasın).
+  // Aşama 3b-fix — Kayıt Tipi etkinlik bazlı dallanma. `Direkt` (mevcut Kapı 1
+  // akışı): kademe × ücret + askı + promo + checkout + Kayıtlar. `Başvuru`:
+  // sade Başvurular yazımı, kademe yok, askı yok, promo yok, ödeme yok.
+  const direktAkis = isDirekt(etk.kayitTipi);
+  const baseUcret = etk.tutar ?? 0;
+  const kademe: Kademe =
+    body.kademe === 'ust' || body.kademe === 'orta' || body.kademe === 'alt'
+      ? body.kademe
+      : 'orta';
+  const katmanA = direktAkis ? kademeTutari(baseUcret, kademe) : baseUcret;
+  const katmanB = direktAkis ? Math.max(0, Number(body.askiTutar) || 0) : 0;
 
-  // Brief 6 (KARAR 210): referans no Notion yazımından önce üret — yazıma
-  // input + response'a çıkış aynı değer olsun.
-  const referansNo = uretReferansNo();
+  // Aşama 3a — promo SERVER-SIDE re-validate (client'a güvenme).
+  // kodKullanimArtir BURADA ÇAĞRILMAZ — sayaç ödeme onayında artar (Aşama 3b).
+  // Geçersiz promo → sessiz promo'suz devam (kullanıcı client'ta zaten gördü).
+  let promoSonuc: KodSonuc | null = null;
+  if (direktAkis && body.promoKod && body.promoKod.trim() && NOTION_KODLAR_DB) {
+    try {
+      // Aşama 3b-fix tasarım: indirim sadece Katman A (katılım payı) üzerine
+      // uygulanır → kodDogrula'a SADECE A geçer. Kor (B) tam kalır.
+      promoSonuc = await kodDogrula(
+        notion,
+        NOTION_KODLAR_DB,
+        body.promoKod,
+        format,
+        katmanA,
+      );
+    } catch {
+      promoSonuc = null;
+    }
+  }
+  const hesap = uygulaIndirim(katmanA, katmanB, promoSonuc);
 
-  // Notion Başvurular satır yaz
+  const odemeGerekli = hesap.toplam > 0;
+  const odemeDurumu: 'Bekliyor' | 'Muaf' = katmanA > 0 ? 'Bekliyor' : 'Muaf';
+
+  // Brief 6 (KARAR 210) + Son tur: çakışma garantili ref (6 hane + Notion
+  // unique check + retry). Notion yazımından önce üret — yazıma input +
+  // response'a çıkış aynı değer.
+  const referansNo = await uretBenzersizReferansNo(refQuery, [
+    NOTION_KAYITLAR_DB,
+    NOTION_BASVURULAR_DB,
+  ]);
+
+  // Aşama 3b — yöntem. Kart/havale; tam-burs + askısız → ödeme yok (gereksiz);
+  // tutar > 0 ise yöntem anlamlı. Default havale (bugünkü akış).
+  const yontem: 'kart' | 'havale' = body.odemeYontemi === 'kart' ? 'kart' : 'havale';
+
+  // Aşama 3b-fix — etkinlik bazlı Kayıt Tipi dallanması.
+  // `Direkt` → Kayıtlar (Kapı 1 mevcut akış: kademe + askı + promo + Ödeme Yöntemi).
+  // `Başvuru` → Başvurular (sade: ad/email/telefon/etkinlik soruları/tarih; ödeme/askı/promo YOK).
+  //   Format-bazlı whitelist (isKapi1) deprecated — etkinlik bazlı otorite.
+  //   Başvuru'da Tip Notion enum'undan (cember → 'Çember', vb.) yazılır;
+  //   `Kayda Dönüştür` automation (Aşama 1.6) Kayıtlar'a düşürür.
+  //
+  // Aşama 3b-fix tam burs sayacı: tam-burs ise Kayıtlar satırına
+  // `Kullanılan Kod` da yazılır (kayıt anında, çünkü checkout/callback
+  // hiç olmayacak). Sayaç +1 aşağıda.
+  const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
+  const kullanilanKodAdi =
+    tamBurs && body.promoKod ? body.promoKod.trim().toUpperCase() : undefined;
   let basvuruId: string;
   try {
-    basvuruId = await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
+    basvuruId = direktAkis
+      ? await notionKayitlaraYaz({
+          body,
+          ucretliMi: odemeGerekli,
+          referansNo,
+          kademe,
+          yontem,
+          askiTutar: katmanB > 0 ? katmanB : undefined,
+          askiNiyet: body.askiNiyet,
+          kullanilanKod: kullanilanKodAdi,
+        })
+      : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {
     return json(
       { status: 'error', message: 'Notion yazımı başarısız', detay: String(err).slice(0, 200) },
       500,
     );
+  }
+
+  // ────────────────────────────────────────────────────────────────────────
+  // Aşama 3b-fix — kodKullanimArtir İKİNCİ çağrı noktası (tam burs).
+  //
+  // Çift sayım KORUMASI — net ayrım, dikkat:
+  //   • ÖDEMELİ kayıt (Direkt + tutar > 0): /api/kayit pending açar (Bekle-
+  //     mede). Ödeme onayı checkout → /api/odeme-callback.ts'te yapılır;
+  //     `kodKullanimArtir` ORADA çağrılır. BURADA çağrılmaz.
+  //   • TAM BURS (Direkt + promo tam-burs + tutar = 0): Bedava kayıt yazılır,
+  //     checkout/callback hiç olmaz. `kodKullanimArtir` BURADA çağrılır
+  //     (kontenjan için brief kararı 2026-06-09).
+  //   • HAVALE (Direkt + tutar > 0 + yöntem havale): pending Beklemede; sayaç
+  //     henüz artmaz. Kaan elle Ödendi'ye çekerken manuel düzeltir veya
+  //     ileride Notion automation tetiklenir (henüz brief'lenmedi).
+  //
+  // Net: aynı kayıt için kodKullanimArtir TEK kez çağrılır — tam burs ise
+  // burada, ödemeli/kart ise callback'te. İkisi birden mümkün değil çünkü
+  // tam burs ödeme yapmaz (checkout yok).
+  if (tamBurs && promoSonuc?.gecerli && promoSonuc.kodId) {
+    try {
+      const yeniSayac = await kodKullanimArtir(notion, promoSonuc.kodId);
+      console.log(
+        `[api/kayit] tam-burs kodKullanimArtir OK — kodId=${promoSonuc.kodId} ` +
+          `kod="${kullanilanKodAdi ?? '?'}" yeniSayac=${yeniSayac}`,
+      );
+    } catch (err) {
+      // Defansif: sayaç artırılamadıysa kayıt yine başarılı sayılır
+      // (Kaan manuel düzeltir, kor verilen yer iptal edilmez).
+      console.error('[api/kayit] tam-burs kodKullanimArtir hatası:', String(err).slice(0, 200));
+    }
   }
 
   // Brief Katman 2 — katilim + MailerLite custom field (pure helper'lara delege).
@@ -274,9 +651,11 @@ export const POST: APIRoute = async ({ request }) => {
   });
 
   // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.
+  // Aşama 3b-fix: Başvuru tipinde MailerLite çağrılmaz (mail tetiklenmez;
+  // Zoom linki / katılım bilgisi henüz yok, davet eden Notlar/Kaan elle yazar).
   const groupId = FORMAT_MAILERLITE_GROUP[format];
   let mailerlite: { ok: boolean; status: number; error?: string } | null = null;
-  if (groupId) {
+  if (direktAkis && groupId) {
     mailerlite = await mailerLiteEkle({
       email: body.email,
       ad: body.ad,
@@ -285,27 +664,105 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // Brief 6 (KARAR 210): havale açıklama formatı "{referansNo} — {ad}" —
-  // etkinlik adı/tarih çıkarıldı; referans no zaten kaydı işaret eder.
-  const aciklamaSablonu = `${referansNo} — ${body.ad}`;
+  // Aşama 3b eyeball Bulgu 2 + 3b-fix tasarım: havale açıklama insan-okur
+  // sade. "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00".
+  // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXXX". Format+tarih
+  // gerekmez (referans no banka açıklamasında eşleştirme için yeterli).
+  const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
+  // ADIM 1 — havale vade metni (Direkt+havale success'inde gösterilecek):
+  // 3+ gün varsa "3 gün içinde", yakınsa "ilettiğinde döneceğiz".
+  const vadeMetni = havaleVadeMetni(etk.tarihISO);
+
+  // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
+  const promoResp = promoSonuc
+    ? promoSonuc.gecerli
+      ? {
+          gecerli: true as const,
+          tip: promoSonuc.tip,
+          indirimTutari: promoSonuc.indirimTutari,
+        }
+      : { gecerli: false as const, sebep: promoSonuc.sebep }
+    : undefined;
+
+  // Askı bilgisi response'a (kendi+askı dalı) — frontend success copy eki için.
+  const askiResp =
+    katmanB > 0
+      ? { tutar: katmanB, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) }
+      : undefined;
+
+  // Aşama 3b — kart yöntemi + Direkt + ödeme gerekli → checkoutBaslat
+  // (mock; iyzico Aşama 6). promoSonuc.kodId callback'e taşınır
+  // (kodKullanimArtir orada — ödeme onayında TEK çağrı noktası).
+  let checkoutUrl: string | undefined;
+  if (direktAkis && yontem === 'kart' && odemeGerekli) {
+    try {
+      const provider = getPaymentProvider();
+      // Aşama 3b eyeball Bulgu 1 — origin Vercel x-forwarded-* header'larından.
+      const baseUrl = publicOrigin(request);
+      const promoKodId = promoSonuc?.gecerli ? promoSonuc.kodId : undefined;
+      const sonuc = await provider.checkoutBaslat({
+        kayitId: basvuruId,
+        referansNo,
+        tutar: hesap.toplam,
+        paraBirimi: etk.paraBirimi,
+        ad: body.ad,
+        email: body.email,
+        basariUrl: `${baseUrl}/odeme/tamam?ref=${encodeURIComponent(referansNo)}`,
+        hataUrl: `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansNo)}`,
+        ...(promoKodId ? { kodId: promoKodId } : {}),
+      });
+      if ('redirectUrl' in sonuc) checkoutUrl = sonuc.redirectUrl;
+    } catch (err) {
+      // Provider hatası → checkout açılamadı, kullanıcıya hata dönelim
+      // (Kayıtlar satırı zaten pending açıldı; Kaan elle temizler veya
+      // tekrar dener).
+      return json(
+        { status: 'error', message: 'Ödeme sağlayıcı hatası', detay: String(err).slice(0, 200) },
+        500,
+      );
+    }
+  }
+
+  // Aşama 3b-fix tasarım: Başvuru'da ödeme YOK (sade success — tutar/IBAN
+  // gizli, sadece "başvurun ulaştı" mesajı). Direkt + havale → iban + aciklama.
+  const havaleyiKullan = direktAkis && yontem === 'havale' && odemeGerekli;
+  const odemeGerekliResp = direktAkis && odemeGerekli;
 
   return json({
     status: 'success',
     basvuruId,
     referansNo,
     mailerlite,
+    mode: 'kayit',
+    kayitTipi: direktAkis ? 'Direkt' : 'Başvuru',
+    ...(promoResp ? { promo: promoResp } : {}),
+    ...(askiResp ? { aski: askiResp } : {}),
     odeme: {
-      gerekli: odemeGerekli,
-      tutar: etk.tutar,
+      gerekli: odemeGerekliResp,
+      // Aşama 3a + 3b-fix tasarım: havale için TEK tutar = uygulaIndirim
+      // sonucu (indirim sadece A'ya, sonra +B). Başvuru'da tutar=0.
+      tutar: odemeGerekliResp ? hesap.toplam : 0,
       paraBirimi: etk.paraBirimi,
-      iban: odemeGerekli ? HAVALE_IBAN : '',
-      ad: odemeGerekli ? HAVALE_AD : '',
-      aciklama: odemeGerekli ? aciklamaSablonu : '',
+      iban: havaleyiKullan ? HAVALE_IBAN : '',
+      ad: havaleyiKullan ? HAVALE_AD : '',
+      aciklama: havaleyiKullan ? aciklamaSablonu : '',
+      ...(direktAkis && odemeGerekli ? { yontem } : {}),
+      // ADIM 1 — vade metni Direkt+havale success'inde gösterilir.
+      ...(havaleyiKullan ? { vadeMetni } : {}),
     },
-    katilim: {
-      var: linkVar,
-      tipi: katilimTipi,
-      deger: linkVar ? etk.katilimLinki : '',
-    },
+    // Aşama 3b-fix tasarım — Başvuru'da katilim gönderilmez (Zoom/adres
+    // henüz yok). Direkt'te: link + (Online + dolu Notion alanı ise) Zoom
+    // Şifresi success-katilim bloğuna.
+    katilim: direktAkis
+      ? {
+          var: linkVar,
+          tipi: katilimTipi,
+          deger: linkVar ? etk.katilimLinki : '',
+          ...(katilimTipi === 'link' && etk.zoomSifresi
+            ? { zoomSifresi: etk.zoomSifresi }
+            : {}),
+        }
+      : { var: false, tipi: 'link' as const, deger: '' },
+    ...(checkoutUrl ? { checkoutUrl } : {}),
   });
 };
