@@ -810,14 +810,14 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   }
   .kayit-formu__kvkk-onay {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-3);
     cursor: pointer;
   }
   .kayit-formu__kvkk-onay input[type='checkbox'] {
     width: 18px;
     height: 18px;
-    margin-top: 2px;
+    margin-top: 0;
     accent-color: var(--ember);
     flex-shrink: 0;
     cursor: pointer;
@@ -872,19 +872,20 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
    * Aşama 5 düzeltme: font 0.8rem (KVKK ile aynı), iki onay satırı arası
    * sıkı (space-2). */
   .kayit-formu__mesafeli {
-    padding-top: var(--space-1);
+    padding-top: 0;
+    margin-top: 0;
   }
   .kayit-formu__mesafeli[hidden] { display: none; }
   .kayit-formu__mesafeli-onay {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-3);
     cursor: pointer;
   }
   .kayit-formu__mesafeli-onay input[type='checkbox'] {
     width: 18px;
     height: 18px;
-    margin-top: 2px;
+    margin-top: 0;
     accent-color: var(--ember);
     flex-shrink: 0;
     cursor: pointer;
