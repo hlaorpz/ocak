@@ -104,14 +104,23 @@ const HAVALE_AD = import.meta.env.PUBLIC_HAVALE_AD ?? '';
 const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY ?? '';
 
 /**
- * Son tur (2026-06-14) — ref çakışma kontrolü: Notion'da "Referans No"
- * rich_text alanı aday ref ile eşleşen kayıt var mı? uretBenzersizReferansNo
- * helper'ı bu fonksiyonu Kayıtlar + Başvurular DB'leri için ardışık çağırır.
+ * Son tur (2026-06-14) — ref çakışma kontrolü: aday ref ile eşleşen kayıt
+ * var mı? uretBenzersizReferansNo helper'ı bu fonksiyonu Kayıtlar +
+ * Başvurular DB'leri için ardışık çağırır.
+ *
+ * DB başına property farkı: Kayıtlar'da referans `Kayıt ID` title alanında
+ * (notionKayitlaraYaz title olarak yazıyor). Başvurular'da ayrı `Referans No`
+ * rich_text property'si (notionBasvuruYaz onu yazıyor). DB ID'sine göre
+ * filter tipi/adı dallandırılır — yoksa "Could not find property" 400 alınır.
  */
 const refQuery: RefUniqueQuery = async (dbId, ref) => {
+  const filter =
+    dbId === NOTION_KAYITLAR_DB
+      ? { property: 'Kayıt ID', title: { equals: ref } }
+      : { property: 'Referans No', rich_text: { equals: ref } };
   const res = await notion.databases.query({
     database_id: dbId,
-    filter: { property: 'Referans No', rich_text: { equals: ref } },
+    filter,
     page_size: 1,
   });
   return res.results.length > 0;
