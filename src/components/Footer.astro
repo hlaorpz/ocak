@@ -52,6 +52,19 @@ const year = new Date().getFullYear();
       <span class="footer__manifesto-line footer__manifesto-line--break">seni sana geri vermek için buradayız.</span>
     </p>
 
+    {/* Aşama 5 (KARAR 251 aday): iyzico/mesafeli satış zorunluluğu — 4
+        yasal sayfaya her sayfadan erişim. Manifesto altı, sessiz nötr
+        ton; lokasyon ayracı `·` (KARAR 201). */}
+    <nav class="footer__yasal" aria-label="Yasal">
+      <a href="/hakkimizda">Hakkımızda</a>
+      <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+      <a href="/gizlilik">Gizlilik ve KVKK</a>
+      <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+      <a href="/mesafeli-satis">Mesafeli Satış</a>
+      <span class="footer__yasal-ayrac" aria-hidden="true">·</span>
+      <a href="/teslimat-iade">Teslimat ve İade</a>
+    </nav>
+
     <div class="footer__bottom">
       <span class="footer__brand">OCAK</span>
       <span class="footer__year">© {year}</span>
@@ -147,6 +160,39 @@ const year = new Date().getFullYear();
     .footer__manifesto-line {
       white-space: normal;
     }
+  }
+
+  /* Aşama 5 (KARAR 251 aday): footer yasal link satırı. Manifesto altı,
+   * `footer__bottom` alt-çizgisi öncesi. Nötr ton (text-muted), küçük
+   * punto; ember değil, dikkat çekmemeli — yasal erişilebilirlik için
+   * tanımlanır. Doğal wrap (KARAR 196 nowrap zorlaması yok); ayraçların
+   * orphan kalmaması için `inline-flex` + `gap` ile yatay akış. */
+  .footer__yasal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    font-size: clamp(0.78rem, 1.5vw, 0.85rem);
+    line-height: 1.4;
+  }
+
+  .footer__yasal a {
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .footer__yasal a:hover,
+  .footer__yasal a:focus-visible {
+    color: var(--cream-soft);
+    outline: none;
+  }
+
+  .footer__yasal-ayrac {
+    color: var(--text-muted);
+    opacity: 0.6;
+    user-select: none;
   }
 
   .footer__bottom {
