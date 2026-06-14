@@ -807,6 +807,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__kvkk {
     padding-top: var(--space-3);
     border-top: 1px solid var(--ash);
+    /* KARAR 259 fix: `.kayit-formu__group` baz margin-bottom var(--space-5)
+     * (24px) → KVKK ile Mesafeli arasında "hâlâ açık" boşluk. Compound
+     * spesifiklik (0,2,0 > 0,1,0) ile override. space-2 = 8px — sıkı ama
+     * yapışık değil. */
+    margin-bottom: var(--space-2);
   }
   .kayit-formu__kvkk-onay {
     display: flex;
@@ -874,6 +879,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__mesafeli {
     padding-top: 0;
     margin-top: 0;
+    /* KARAR 259 fix: `.kayit-formu__group` baz margin-bottom override.
+     * Submit butonu zaten margin-top var(--space-6); ek alt boşluk yok. */
+    margin-bottom: 0;
   }
   .kayit-formu__mesafeli[hidden] { display: none; }
   .kayit-formu__mesafeli-onay {
