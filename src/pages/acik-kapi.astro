@@ -1,0 +1,117 @@
+---
+// /acik-kapi — Notion sayfa override + geçmiş-etkinlik güvenlik ağı.
+// brief-davet-sistemi: davet linki `/acik-kapi?etkinlik=YYY&ref=XXX`
+// formatında. Davet edileni etkinlik geçtikten sonra tıklarsa nazikçe
+// yönlendiren banner — KARAR 219 deseni, "davet asla ölü linke düşmez".
+//
+// Override gerekçesi: [...slug].astro statik prerender (getStaticPaths),
+// query params SSR olmadan yakalanamaz. Bu sayfa `prerender = false` ile
+// SSR; davet query'sini server-side okur, banner conditional render eder.
+// Notion içeriği aynen PageContent ile basılır (override sadece banner +
+// SSR için).
+//
+// Banner sadece etkinlik tarihi geçmişse görünür; etkinlik aktifse veya
+// param hiç yoksa Notion içeriği saf render.
+export const prerender = false;
+
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import { notion } from '../lib/notion.ts';
+
+const sayfa = await getEntry('sayfalar', '/acik-kapi');
+if (!sayfa) {
+  throw new Error("acik-kapi.astro: 'sayfalar' collection'ında '/acik-kapi' slug'ı bulunamadı.");
+}
+
+const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
+
+/**
+ * Etkinlik tarihi bugünden geçmişse true. Hata/eksik durumlarda false
+ * (fail-safe: banner gösterme, davet edilen normal akışla içeriği görür).
+ * Sadece davet linkiyle gelmiş kullanıcı için sorgu açılır — normal
+ * ziyaretçide ekstra Notion call yok.
+ */
+async function etkinlikGecmisMi(id: string): Promise<boolean> {
+  if (!id) return false;
+  try {
+    const etk = await notion.pages.retrieve({ page_id: id });
+    if (!('properties' in etk)) return false;
+    const props = etk.properties as Record<string, any>;
+    const tarihRaw: string | undefined =
+      props['Tarih']?.date?.start ?? props['Tarih']?.date?.end;
+    if (!tarihRaw) return false;
+    const tarih = new Date(tarihRaw);
+    if (Number.isNaN(tarih.getTime())) return false;
+    // Aynı gün hâlâ aktif sayılır — gün sonuna kadar yer var.
+    const bugun = new Date();
+    bugun.setHours(0, 0, 0, 0);
+    return tarih.getTime() < bugun.getTime();
+  } catch (err) {
+    console.error('[acik-kapi] etkinlik retrieve hatası:', String(err).slice(0, 200));
+    return false;
+  }
+}
+
+const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  {etkinlikGecmis && (
+    <aside class="acik-kapi-uyari" role="status">
+      <div class="acik-kapi-uyari__icerik">
+        <p class="acik-kapi-uyari__metin">
+          Bu buluşma geçti, sönmeyen kor burada — sıradaki şu.
+        </p>
+        <a class="acik-kapi-uyari__cta" href="/acik-kapi/kayit">
+          Sıradaki Açık Kapı'ya bak →
+        </a>
+      </div>
+    </aside>
+  )}
+
+  <PageContent slug="/acik-kapi" fragments={sayfa.data.fragments} />
+</Layout>
+
+<style>
+  .acik-kapi-uyari {
+    max-width: 42.5rem;
+    margin: var(--space-6) auto var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    border: 1px solid var(--ember);
+    border-radius: 4px;
+    background: rgba(196, 75, 47, 0.05);
+    text-align: center;
+  }
+  .acik-kapi-uyari__icerik {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .acik-kapi-uyari__metin {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--cream);
+    font-size: 1.05rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .acik-kapi-uyari__cta {
+    font-family: var(--font-body);
+    color: var(--ember);
+    text-decoration: none;
+    font-size: 0.92rem;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .acik-kapi-uyari__cta:hover,
+  .acik-kapi-uyari__cta:focus-visible {
+    color: var(--ember-soft, #d8654e);
+  }
+</style>

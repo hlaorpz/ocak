@@ -1,0 +1,437 @@
+---
+// DavetKutusu — kayıt/ödeme success'inde davet kutusu (brief-davet-sistemi).
+// "Fiyat kaldıracı YOK" — jest modeli (KORUNACAK İFADE #7). Üç yol:
+//   1. WhatsApp ile çağır (birincil) — Web Share API açıksa paylaş menüsü
+//      (WhatsApp/Mesajlar/Mail/Instagram); değilse wa.me/?text=... fallback.
+//      Numara YOK — kullanıcı kendi kişisini seçer. WhatsappYuzen bot
+//      düğmesinden ayrı (KARAR 212-213).
+//   2. Instagram'dan göndereceksen kopyala — clipboard. Niyetli etiket;
+//      Instagram deep-link kapalı olduğu için kullanıcı DM'ine yapıştırır.
+//   3. E-posta ile çağır — /api/davet POST → Resend tek mail + Davetler DB.
+//
+// Mount edildiği iki yer:
+//   - KayitFormu success div'i (havale + ücretsiz, tüm formatlar).
+//     refKodu + etkinlikId submit handler tarafından data-attribute olarak
+//     set edilir; props boş gelir.
+//   - /odeme/tamam (kart redirect sonrası). Props server-side dolu gelir.
+//
+// JS data-attribute'lardan okur (her iki mod tek pattern).
+// Temizlik mikro-metni KVKK güven jesti + marka anlatısı (KORUNACAK İFADE #1).
+
+export interface Props {
+  /** OCAK-XXXXX referans no (davet edenin izi). Boş ise JS submit handler doldurur. */
+  refKodu?: string;
+  /** Notion etkinlik page id (davet linkine gömülür). Boş ise JS submit handler doldurur. */
+  etkinlikId?: string;
+}
+
+const { refKodu = '', etkinlikId = '' } = Astro.props;
+---
+
+<aside
+  class="davet-kutusu"
+  data-davet-kutusu
+  data-davet-ref={refKodu}
+  data-davet-etkinlik={etkinlikId}
+>
+  <div class="davet-kutusu__ember" aria-hidden="true"></div>
+  <h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır</h3>
+  <p class="davet-kutusu__metin">
+    Ateşin yanında onun da yeri var. Üç yol, hangi kanal kolaysa.
+  </p>
+
+  <div class="davet-kutusu__yollar">
+    <button
+      type="button"
+      class="davet-kutusu__btn davet-kutusu__btn--birincil"
+      data-davet-whatsapp
+    >
+      WhatsApp ile çağır
+    </button>
+
+    <button
+      type="button"
+      class="davet-kutusu__btn davet-kutusu__btn--ucuncu"
+      data-davet-kopyala
+    >
+      Instagram'dan göndereceksen kopyala
+    </button>
+
+    <form class="davet-kutusu__mail" data-davet-mail novalidate>
+      <label class="davet-kutusu__mail-label" for="davet-email">
+        E-posta ile çağır
+      </label>
+      <div class="davet-kutusu__mail-row">
+        <input
+          id="davet-email"
+          name="davet-email"
+          type="email"
+          required
+          autocomplete="off"
+          placeholder="arkadaşının e-postası"
+          class="davet-kutusu__mail-input"
+          data-davet-mail-input
+        />
+        <button
+          type="submit"
+          class="davet-kutusu__btn davet-kutusu__btn--ikincil"
+          data-davet-mail-btn
+        >
+          Gönder
+        </button>
+      </div>
+      <p class="davet-kutusu__mail-hata" data-davet-mail-hata hidden></p>
+    </form>
+  </div>
+
+  <p class="davet-kutusu__teyit" data-davet-teyit hidden role="status" aria-live="polite"></p>
+
+  <p class="davet-kutusu__temizlik">
+    Davet ettiğin kişiye yalnızca tek bir mesaj ulaşır. Onu hiçbir listeye
+    eklemeyiz, biz aramayız. Gelmek tamamen ona kalmış.
+  </p>
+</aside>
+
+<style>
+  .davet-kutusu {
+    margin: var(--space-7) auto 0;
+    padding: var(--space-6) var(--space-5);
+    max-width: 42ch;
+    text-align: center;
+    border: 1px solid var(--ash);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.015);
+  }
+
+  .davet-kutusu__ember {
+    width: 10px;
+    height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 14px var(--ember), 0 0 36px rgba(196, 75, 47, 0.3);
+    margin: 0 auto var(--space-4);
+  }
+
+  .davet-kutusu__baslik {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--cream);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin: 0 0 var(--space-3);
+  }
+
+  .davet-kutusu__metin {
+    font-family: var(--font-body);
+    color: var(--cream-soft);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin: 0 0 var(--space-5);
+  }
+
+  .davet-kutusu__yollar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  .davet-kutusu__btn {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.2;
+    padding: 0.85rem 1.25rem;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .davet-kutusu__btn--birincil {
+    background: var(--ember);
+    color: var(--cream);
+  }
+  .davet-kutusu__btn--birincil:hover,
+  .davet-kutusu__btn--birincil:focus-visible {
+    background: var(--ember-soft, #b04428);
+  }
+
+  .davet-kutusu__btn--ucuncu {
+    background: transparent;
+    color: var(--cream-soft);
+    border-color: var(--ash);
+    font-size: 0.88rem;
+  }
+  .davet-kutusu__btn--ucuncu:hover,
+  .davet-kutusu__btn--ucuncu:focus-visible {
+    color: var(--cream);
+    border-color: var(--smoke);
+  }
+
+  .davet-kutusu__btn--ikincil {
+    background: transparent;
+    color: var(--ember);
+    border-color: var(--ember);
+  }
+  .davet-kutusu__btn--ikincil:hover,
+  .davet-kutusu__btn--ikincil:focus-visible {
+    background: var(--ember);
+    color: var(--cream);
+  }
+
+  .davet-kutusu__mail {
+    text-align: left;
+    margin-top: var(--space-2);
+  }
+
+  .davet-kutusu__mail-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    margin-bottom: var(--space-2);
+    text-align: center;
+  }
+
+  .davet-kutusu__mail-row {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .davet-kutusu__mail-input {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 0.7rem 0.9rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--ash);
+    border-radius: 3px;
+    color: var(--cream);
+    min-width: 0;
+  }
+  .davet-kutusu__mail-input:focus-visible {
+    outline: none;
+    border-color: var(--ember);
+  }
+  .davet-kutusu__mail-input::placeholder {
+    color: var(--smoke);
+  }
+
+  .davet-kutusu__mail-hata {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: var(--ember);
+    margin: var(--space-2) 0 0;
+  }
+  .davet-kutusu__mail-hata[hidden] { display: none; }
+
+  .davet-kutusu__teyit {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--cream);
+    margin: 0 0 var(--space-5);
+    padding: var(--space-3);
+    background: rgba(196, 75, 47, 0.08);
+    border-radius: 3px;
+  }
+  .davet-kutusu__teyit[hidden] { display: none; }
+
+  .davet-kutusu__temizlik {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--smoke);
+    margin: 0;
+    padding: 0 var(--space-2);
+  }
+</style>
+
+<script>
+  /**
+   * DavetKutusu davranışı — her DavetKutusu instance'ı için bağımsız bind.
+   * Sayfada birden fazla varsa (teorik) her biri kendi data-attribute'larını
+   * okur.
+   *
+   * URL üretimi:
+   *   <origin>/acik-kapi?etkinlik=<etkinlikId>&ref=<refKodu>
+   *   (Brief: davet linki etkinliğe özel, geçmiş etkinlik güvenlik ağı
+   *   /acik-kapi tarafında yakalanır.)
+   *
+   * Hazır metin (brief'ten sabit, sonra Notion-bind edilebilir).
+   */
+  const DAVET_METNI =
+    'Ben OCAK\'ta bir Açık Kapı\'ya katılıyorum — kadınların toplandığı bir ateş. Sen de gel, ya da önce bir bak istersen:';
+
+  function davetUrl(refKodu: string, etkinlikId: string): string {
+    const origin = window.location.origin;
+    const params = new URLSearchParams();
+    if (etkinlikId) params.set('etkinlik', etkinlikId);
+    if (refKodu) params.set('ref', refKodu);
+    const qs = params.toString();
+    return `${origin}/acik-kapi${qs ? `?${qs}` : ''}`;
+  }
+
+  function paylas(text: string, url: string): void {
+    // Web Share API → paylaş menüsü (WhatsApp/Mesajlar/Mail/Instagram).
+    // navigator.share senkron API çağrılacağı için kullanıcı jesti zincirine
+    // bağlı; click handler içinde olduğumuz için OK.
+    const shareData = { text: `${text} ${url}` };
+    const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+    if (typeof nav.share === 'function') {
+      nav
+        .share(shareData)
+        .catch(() => {
+          // Kullanıcı vazgeçti veya share fail → wa.me fallback'ine düş.
+          window.location.href = `https://wa.me/?text=${encodeURIComponent(
+            `${text} ${url}`,
+          )}`;
+        });
+      return;
+    }
+    // Web Share API yok → wa.me fallback (masaüstü).
+    window.location.href = `https://wa.me/?text=${encodeURIComponent(
+      `${text} ${url}`,
+    )}`;
+  }
+
+  async function kopyala(text: string, url: string): Promise<boolean> {
+    const tam = `${text} ${url}`;
+    try {
+      await navigator.clipboard.writeText(tam);
+      return true;
+    } catch {
+      // Eski tarayıcı fallback — execCommand deprecated ama bazı eski Safari
+      // sürümleri için geçici. Hata olursa false dön.
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = tam;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        // execCommand deprecated ama Clipboard API yokken (eski Safari) tek
+        // çalışan fallback. Yedek yolu bilinçli koruyoruz.
+        const ok = (document as Document & {
+          execCommand: (cmd: string) => boolean;
+        }).execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function init(): void {
+    document.querySelectorAll<HTMLElement>('[data-davet-kutusu]').forEach((kutu) => {
+      const teyit = kutu.querySelector<HTMLElement>('[data-davet-teyit]');
+      const mailForm = kutu.querySelector<HTMLFormElement>('[data-davet-mail]');
+      const mailInput = kutu.querySelector<HTMLInputElement>('[data-davet-mail-input]');
+      const mailBtn = kutu.querySelector<HTMLButtonElement>('[data-davet-mail-btn]');
+      const mailHata = kutu.querySelector<HTMLElement>('[data-davet-mail-hata]');
+
+      function teyitGoster(metin: string): void {
+        if (!teyit) return;
+        teyit.textContent = metin;
+        teyit.hidden = false;
+      }
+
+      function getDavet(): { ref: string; etkinlik: string; url: string } {
+        const ref = kutu.dataset.davetRef ?? '';
+        const etkinlik = kutu.dataset.davetEtkinlik ?? '';
+        return { ref, etkinlik, url: davetUrl(ref, etkinlik) };
+      }
+
+      kutu
+        .querySelector<HTMLButtonElement>('[data-davet-whatsapp]')
+        ?.addEventListener('click', () => {
+          const { url } = getDavet();
+          paylas(DAVET_METNI, url);
+        });
+
+      kutu
+        .querySelector<HTMLButtonElement>('[data-davet-kopyala]')
+        ?.addEventListener('click', async () => {
+          const { url } = getDavet();
+          const ok = await kopyala(DAVET_METNI, url);
+          teyitGoster(
+            ok
+              ? 'Davet kopyalandı — Instagram\'da DM\'ine yapıştır.'
+              : 'Kopyalanamadı, metni elle seçip kopyalamayı dene.',
+          );
+        });
+
+      mailForm?.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        if (!mailInput || !mailBtn) return;
+        const davetEdilenEmail = mailInput.value.trim();
+
+        if (mailHata) {
+          mailHata.hidden = true;
+          mailHata.textContent = '';
+        }
+
+        if (!EMAIL_RE.test(davetEdilenEmail)) {
+          if (mailHata) {
+            mailHata.textContent = 'Geçerli bir e-posta gir.';
+            mailHata.hidden = false;
+          }
+          return;
+        }
+
+        const { ref, etkinlik } = getDavet();
+        mailBtn.disabled = true;
+        const oncekiMetin = mailBtn.textContent;
+        mailBtn.textContent = 'Gönderiliyor…';
+
+        try {
+          const res = await fetch('/api/davet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              refKodu: ref,
+              davetEdilenEmail,
+              kanal: 'mail',
+              etkinlikId: etkinlik,
+            }),
+          });
+          const data = (await res.json().catch(() => ({}))) as {
+            status?: string;
+            message?: string;
+          };
+          if (res.ok && data.status === 'success') {
+            mailInput.value = '';
+            teyitGoster('Davetin yola çıktı 🔥');
+          } else if (data.status === 'skip') {
+            teyitGoster('Bu davetin yola çıkmıştı, tekrarına gerek yok.');
+            mailInput.value = '';
+          } else {
+            if (mailHata) {
+              mailHata.textContent = data.message ?? 'Gönderilemedi, biraz sonra dene.';
+              mailHata.hidden = false;
+            }
+          }
+        } catch {
+          if (mailHata) {
+            mailHata.textContent = 'Bağlantı hatası. Tekrar dene.';
+            mailHata.hidden = false;
+          }
+        } finally {
+          mailBtn.disabled = false;
+          mailBtn.textContent = oncekiMetin ?? 'Gönder';
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

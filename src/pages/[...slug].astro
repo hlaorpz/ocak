@@ -17,13 +17,23 @@ import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
 
 export async function getStaticPaths() {
+  // brief-davet-sistemi: /acik-kapi davet linkinin hedefi (?etkinlik=&ref=).
+  // Override dosyası src/pages/acik-kapi.astro prerender=false ile SSR; statik
+  // /acik-kapi/index.html üretilmemeli ki Vercel filesystem handler statik
+  // dosyaya düşürüp SSR'ı ezmesin. Notion içeriği acik-kapi.astro override'ı
+  // içinde aynı PageContent ile basılır.
+  // Set getStaticPaths içinde tanımlı — Astro getStaticPaths'i ayrı modül
+  // kapsamına hoist eder, frontmatter const'larına erişemez.
+  const ssrOverrideSluglari = new Set<string>(['/acik-kapi']);
   const sayfalar = await getCollection('sayfalar');
-  return sayfalar.map((sayfa) => ({
-    // Notion URL formatı (/, /cember) → Astro rest slug (undefined, 'cember').
-    // Loader slug'ı Notion URL'ini verbatim taşır; route'ta baştaki '/'ı strip et.
-    params: { slug: sayfa.data.slug === '/' ? undefined : sayfa.data.slug.replace(/^\//, '') },
-    props: { sayfa },
-  }));
+  return sayfalar
+    .filter((sayfa) => !ssrOverrideSluglari.has(sayfa.data.slug))
+    .map((sayfa) => ({
+      // Notion URL formatı (/, /cember) → Astro rest slug (undefined, 'cember').
+      // Loader slug'ı Notion URL'ini verbatim taşır; route'ta baştaki '/'ı strip et.
+      params: { slug: sayfa.data.slug === '/' ? undefined : sayfa.data.slug.replace(/^\//, '') },
+      props: { sayfa },
+    }));
 }
 
 const { sayfa } = Astro.props;

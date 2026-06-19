@@ -162,6 +162,13 @@ export type KayitPayload = {
    * frontend redirect. Tam burs (tutar=0) seçimden bağımsız ödeme yok.
    */
   odemeYontemi?: 'kart' | 'havale';
+  /**
+   * brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). Davet edileninin
+   * tıkladığı linkte ?ref= var → /[format]/kayit hidden input → submit
+   * payload → /api/kayit Kayıtlar DB `Davet Eden Ref` property'sine yazar.
+   * n8n sonuç eşleştirmesi bu kolondan Davetler DB satırını "Geldi" yapar.
+   */
+  ref?: string;
 };
 
 /**

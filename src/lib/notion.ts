@@ -35,6 +35,10 @@ export const NOTION_BASVURULAR_DB = import.meta.env.NOTION_BASVURULAR_DB_ID ?? '
 // mini-retreat/istanbul/seremoni) burada satır açar; cember (Kapı 2) Başvurular'a
 // yazar, oradan onayla Kayıtlar'a düşer (Aşama 1.6 köprüsü).
 export const NOTION_KAYITLAR_DB = import.meta.env.NOTION_KAYITLAR_DB_ID ?? '';
+// brief-davet-sistemi: Davet Sistemi v1 — /api/davet endpoint Davetler DB'ye
+// satır açar (Davet Eden Ref / Davet Edilen / Kanal / Tarih / Sonuç /
+// Hatırlatma Atıldı). Sonuç eşleştirme ve A→B hatırlatma n8n tarafı.
+export const NOTION_DAVETLER_DB = import.meta.env.NOTION_DAVETLER_DB_ID ?? '';
 
 /**
  * Bir Notion database'ini sorgular ve pagination'ı handle ederek tüm sonuçları döner.

@@ -16,6 +16,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { parseKayitSorulari, type KayitFormat } from '../lib/kayit';
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+import DavetKutusu from './DavetKutusu.astro';
 
 interface Props {
   format: KayitFormat;
@@ -32,6 +33,11 @@ interface Props {
 
 const { format, etkinlikler, havaleIban, havaleAd } = Astro.props;
 const bosForm = etkinlikler.length === 0;
+// brief-davet-sistemi: davet edileninin geldiği URL'de ?ref=OCAK-XXXXX
+// varsa hidden input'a bas → submit handler payload'a ekler → /api/kayit
+// Kayıtlar DB "Davet Eden Ref" property'sine yazar. n8n sonuç eşleştirmesi
+// bu kolon üzerinden Davetler DB satırını "Geldi" yapar. Boşsa görünmez.
+const davetEdenRef = (Astro.url.searchParams.get('ref') ?? '').trim();
 // Aşama 3b-fix — Kayıt Tipi etkinlik bazlı (Notion Etkinlikler.Kayıt Tipi).
 // Form ilk yüklenirken ilk etkinliğin tipine bakar (default 'Direkt' güvenli);
 // kullanıcı farklı tipte tarih seçerse JS form.dataset.direktAkis'i günceller.
@@ -86,6 +92,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         <label for="kf-website">Website</label>
         <input type="text" name="website" id="kf-website" tabindex="-1" autocomplete="off" />
       </div>
+
+      {/* brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXXX) → hidden
+          input → submit handler payload.ref → /api/kayit → Kayıtlar DB. */}
+      {davetEdenRef && <input type="hidden" name="ref" value={davetEdenRef} />}
 
       {/* Aşama 3b tasarım turu 2 (Kaan eyeball kararı 2026-06-10) — sıra:
           1) Sen (ad/email/telefon/şehir) — hep görünür, en üst (kullanıcı önce
@@ -558,6 +568,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           Zoom şifresi: <code data-kf-success-katilim-sifre-deger></code>
         </p>
       </div>
+
+      {/* brief-davet-sistemi: KayitFormu success mount.
+          Props boş — submit handler aşağıdaki `data-davet-*` attribute'larını
+          (data-davet-ref, data-davet-etkinlik) result.referansNo ve
+          payload.etkinlikId ile doldurur. Görünür yapıp success reveal'la
+          aynı anda render edilir. */}
+      <DavetKutusu />
 
       <p class="kayit-formu__success-imza">OCAK</p>
     </div>
@@ -1967,6 +1984,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         kvkk: data.get('kvkk') === 'on',
         // KARAR 194 honeypot — bot doldurursa endpoint sessiz success döner.
         website: (data.get('website') ?? '').toString(),
+        // brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXXX).
+        // Boşsa endpoint Kayıtlar DB'ye yazmaz; n8n eşleştirmesi bu kolona
+        // bakar. Form-level hidden input'tan geliyor.
+        ...((() => {
+          const refDeger = (data.get('ref') ?? '').toString().trim();
+          return refDeger ? { ref: refDeger } : {};
+        })()),
         ...(promoKodRaw ? { promoKod: promoKodRaw } : {}),
         ...(promoKodIdRaw ? { kodId: promoKodIdRaw } : {}),
         ...(korAcik && askiTutarRaw && askiTutar > 0 ? { askiTutar } : {}),
@@ -2165,6 +2189,16 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               '[data-kf-success-katilim-sifre]',
             );
             if (sifreEl) sifreEl.hidden = true;
+          }
+          // brief-davet-sistemi: DavetKutusu'yu success reveal'dan önce
+          // doldur. refKodu = result.referansNo (OCAK-XXXXX); etkinlikId =
+          // payload.etkinlikId (form submit'inde alındı). Boş gelirse kutu
+          // davet linkinde param'ları atlar — yine de WhatsApp paylaşımı
+          // çalışır ama davet izlenebilir olmaz; pratikte ikisi de dolu.
+          const davetKutusu = successEl.querySelector<HTMLElement>('[data-davet-kutusu]');
+          if (davetKutusu) {
+            if (result.referansNo) davetKutusu.dataset.davetRef = result.referansNo;
+            if (payload.etkinlikId) davetKutusu.dataset.davetEtkinlik = payload.etkinlikId;
           }
           successEl.hidden = false;
           scrollToSuccess(successEl);
