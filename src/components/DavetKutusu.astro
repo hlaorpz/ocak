@@ -85,23 +85,29 @@ const {
       <label class="davet-kutusu__sr-only" for="davet-email">
         Arkadaşının e-postasını gir
       </label>
-      <input
-        id="davet-email"
-        name="davet-email"
-        type="email"
-        required
-        autocomplete="off"
-        placeholder="arkadaşının e-postası"
-        class="davet-kutusu__mail-input"
-        data-davet-mail-input
-      />
-      <button
-        type="submit"
-        class="davet-kutusu__btn davet-kutusu__btn--ucuncu"
-        data-davet-mail-btn
-      >
-        Gönder
-      </button>
+      {/* Eyeball #4 tur-2 Fix 3: input + Gönder tek çerçevede bütünleşik yol.
+          Dış konteyner (.mail-kutu) WhatsApp/Instagram butonlarıyla aynı
+          çerçeve dilinde; içeride sol input alanı + sağ ayraç + sabit-genişlik
+          Gönder. Göz "3 yol" sayar (alt metin "Üç yol" ile uyumlu). */}
+      <div class="davet-kutusu__mail-kutu">
+        <input
+          id="davet-email"
+          name="davet-email"
+          type="email"
+          required
+          autocomplete="off"
+          placeholder="arkadaşının e-postası"
+          class="davet-kutusu__mail-input"
+          data-davet-mail-input
+        />
+        <button
+          type="submit"
+          class="davet-kutusu__mail-gonder"
+          data-davet-mail-btn
+        >
+          Gönder
+        </button>
+      </div>
       <p class="davet-kutusu__mail-hata" data-davet-mail-hata hidden></p>
     </form>
   </div>
@@ -115,14 +121,19 @@ const {
 </aside>
 
 <style>
+  /* Eyeball #4 tur-2 Fix 2: kutu ölçülü öne çıkar — soluk gri çerçeve
+     ember alpha'ya çevrildi, subtle dış glow eklendi (hero glow'dan çok
+     zayıf, KARAR 116/118 ember disiplini). Başlık boyutu dokunulmadı;
+     sadece kutu kabı vurgulanır. */
   .davet-kutusu {
     margin: var(--space-7) auto 0;
     padding: var(--space-6) var(--space-5);
     max-width: 42ch;
     text-align: center;
-    border: 1px solid var(--ash);
+    border: 1px solid rgba(196, 75, 47, 0.35);
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.015);
+    box-shadow: 0 0 32px rgba(196, 75, 47, 0.12);
   }
 
   .davet-kutusu__baslik {
@@ -184,15 +195,13 @@ const {
     border-color: var(--smoke);
   }
 
-  /* Eyeball #4 tasarım toparlama: e-posta bloğu dikey ritme alındı.
-     Form üç yol arasında görsel kardeş — başlık yok (sr-only), input tam
-     genişlik, Gönder butonu altta tam genişlik + Instagram ("ucuncu") stili.
-     Yol'ların ana gap'i .davet-kutusu__yollar > gap ile, form içindeki
-     input↔buton mesafesi burada. */
+  /* Eyeball #4 tasarım toparlama: e-posta bloğu dikey ritme alındı, ardından
+     tur-2 Fix 3 ile input+Gönder tek çerçeve içinde bütünleşik yol.
+     Form 3 yolun aynı çerçeve dilinde durur; alt metin "Üç yol" ile uyumlu. */
   .davet-kutusu__mail {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
     text-align: left;
   }
 
@@ -208,24 +217,64 @@ const {
     border: 0;
   }
 
-  .davet-kutusu__mail-input {
-    width: 100%;
-    font-family: var(--font-body);
-    font-size: 0.92rem;
-    padding: 0.7rem 0.9rem;
-    background: rgba(0, 0, 0, 0.25);
+  /* Tek dış çerçeve — Instagram ("ucuncu") kutusunun kardeşi (transparent
+     zemin + ash border + focus-within'de ember). İçeride sol geniş input +
+     sağ dikey ayraç + sabit-genişlik Gönder. */
+  .davet-kutusu__mail-kutu {
+    display: flex;
+    align-items: stretch;
+    background: transparent;
     border: 1px solid var(--ash);
     border-radius: 3px;
-    color: var(--cream);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+  .davet-kutusu__mail-kutu:focus-within {
+    border-color: var(--smoke);
+  }
+
+  .davet-kutusu__mail-input {
+    flex: 1 1 auto;
     min-width: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    padding: 0.75rem 0.9rem;
+    background: transparent;
+    border: 0;
+    color: var(--cream);
     box-sizing: border-box;
   }
   .davet-kutusu__mail-input:focus-visible {
     outline: none;
-    border-color: var(--ember);
   }
   .davet-kutusu__mail-input::placeholder {
     color: var(--smoke);
+  }
+
+  .davet-kutusu__mail-gonder {
+    flex: 0 0 auto;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    line-height: 1.2;
+    color: var(--cream-soft);
+    background: transparent;
+    border: 0;
+    border-left: 1px solid var(--ash);
+    padding: 0.75rem 1.1rem;
+    cursor: pointer;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background var(--duration-fast) var(--ease-out);
+  }
+  .davet-kutusu__mail-gonder:hover,
+  .davet-kutusu__mail-gonder:focus-visible {
+    color: var(--cream);
+    background: rgba(255, 255, 255, 0.03);
+    outline: none;
+  }
+  .davet-kutusu__mail-gonder[disabled] {
+    opacity: 0.6;
+    cursor: default;
   }
 
   .davet-kutusu__mail-hata {
