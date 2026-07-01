@@ -19,6 +19,10 @@ const mk = (id: string, tip: string, durum: string, tarih: string): MockEntry =>
   data: { tip, durum, tarihBaslangic: tarih },
 });
 
+// Tasarım turu 3 ADIM 5 sonrası filterDropdownEtkinlikleri tarih-bağımlı;
+// testler tip/durum/sort iddialarını değişmez `bugun` ile deterministik tutar.
+const BUGUN = new Date('2026-01-01');
+
 describe('filterDropdownEtkinlikleri — tip filter', () => {
   it('Çember: sadece tip="Çember" entry\'leri döner, diğer tipler elenir', () => {
     const input: MockEntry[] = [
@@ -27,7 +31,7 @@ describe('filterDropdownEtkinlikleri — tip filter', () => {
       mk('c', 'Workshop', 'Kayıt Açık', '2026-09-15'),
       mk('d', 'Çember', 'Dolu', '2026-07-15'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Çember');
+    const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result.map((e) => e.id)).toEqual(['a', 'd']);
   });
 
@@ -38,7 +42,7 @@ describe('filterDropdownEtkinlikleri — tip filter', () => {
       mk('c', 'Workshop', 'Kayıt Açık', '2026-09-15'),
       mk('d', 'Açık Kapı', 'Dolu', '2026-07-03'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Açık Kapı');
+    const result = filterDropdownEtkinlikleri(input, 'Açık Kapı', BUGUN);
     expect(result.map((e) => e.id)).toEqual(['b', 'd']);
   });
 });
@@ -52,7 +56,7 @@ describe('filterDropdownEtkinlikleri — durum filter', () => {
       mk('gecti', 'Çember', 'Geçti', '2026-05-01'),
       mk('iptal', 'Çember', 'İptal', '2026-06-01'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Çember');
+    const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result.map((e) => e.id)).toEqual(['acik', 'dolu']);
   });
 });
@@ -64,7 +68,7 @@ describe('filterDropdownEtkinlikleri — sort', () => {
       mk('haz', 'Çember', 'Kayıt Açık', '2026-06-21'),
       mk('tem', 'Çember', 'Dolu', '2026-07-15'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Çember');
+    const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result.map((e) => e.id)).toEqual(['haz', 'tem', 'eyl']);
   });
 });
@@ -81,7 +85,7 @@ describe('filterDropdownEtkinlikleri — boş durum', () => {
       mk('a', 'Açık Kapı', 'Kayıt Açık', '2026-06-19'),
       mk('b', 'Workshop', 'Kayıt Açık', '2026-09-15'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Çember');
+    const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result).toEqual([]);
   });
 
@@ -90,7 +94,7 @@ describe('filterDropdownEtkinlikleri — boş durum', () => {
       mk('a', 'Çember', 'Taslak', '2026-06-21'),
       mk('b', 'Çember', 'Geçti', '2026-05-15'),
     ];
-    const result = filterDropdownEtkinlikleri(input, 'Çember');
+    const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result).toEqual([]);
   });
 });

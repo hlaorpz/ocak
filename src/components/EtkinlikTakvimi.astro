@@ -15,10 +15,11 @@
 //   - Eski ay-seçici shortcut nav KALDIRILDI — tür düğmeleri + sticky başlık yeterli,
 //     iki ayrı şerit kalabalık. (Brief H shortcut → #35'te tür filtresine evrildi.)
 //
-// Loader publish filtresi (siteGoster + durum∈{Kayıt Açık,Dolu}) zaten
-// content/config.ts'te uygulanmış — getCollection sonucu filtreli geliyor.
-// bugundenSonra ek olarak geçmiş etkinlikleri gizler (range etkinlikte
-// tarihBitis öncelikli, devam edenler kalır).
+// brief-etkinlik-detay-route.md FAZ 1: content/config.ts publish filtresi
+// gevşedi (siteGoster && durum !== 'İptal'). Bu component artık durum ∈
+// {Kayıt Açık, Dolu} + bugündenSonra süzgeçlerini kendi uyguluyor (aynı
+// commit'te collection gevşetmesiyle atomik). Geçmiş etkinlikleri gizler
+// (range'te tarihBitis öncelikli).
 import { getCollection } from 'astro:content';
 import {
   bugundenSonra,
@@ -27,7 +28,10 @@ import {
   formatEtkinlikTarihi,
 } from '../lib/format-etkinlik';
 
-const tum = (await getCollection('etkinlikler')).map((e) => e.data);
+const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
+const tum = (await getCollection('etkinlikler'))
+  .map((e) => e.data)
+  .filter((e) => AKTIF_DURUM.has(e.durum));
 const gelecekler = bugundenSonra(tum).sort((a, b) => {
   // Kronolojik (tarihBaslangic ASC) — oneCikar sticky değil, normal sırada.
   if (a.tarihBaslangic !== b.tarihBaslangic) return a.tarihBaslangic.localeCompare(b.tarihBaslangic);
@@ -102,6 +106,12 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
                   </span>
                 </span>
               </span>
+              {/* brief-etkinlik-detay-route.md FAZ 3 — satır komple link
+                  (stretched pattern; kayıt mikro-linki üstte). Slug yoksa
+                  link basılmaz — loader zaten warn bastı. */}
+              {e.slug && (
+                <a class="ocak-etkinlik-takvimi__stretched-link" href={`/etkinlik/${e.slug}`} aria-label={`Detay: ${e.baslik}`}></a>
+              )}
               {e.kayitUrl && (
                 <a class="ocak-etkinlik-takvimi__kayit" href={e.kayitUrl}>
                   Kayıt ol <span aria-hidden="true">→</span>
@@ -268,12 +278,26 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
   }
 
   .ocak-etkinlik-takvimi__satir {
+    position: relative; /* stretched link (brief FAZ 3) için */
     display: flex;
     align-items: center;
     gap: var(--space-4);
     padding: var(--space-4) var(--space-3);
     border-top: 1px solid var(--ash);
     transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .ocak-etkinlik-takvimi__stretched-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    text-indent: -9999px;
+    overflow: hidden;
+  }
+
+  .ocak-etkinlik-takvimi__stretched-link:focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: -2px;
   }
 
   .ocak-etkinlik-takvimi__satir[hidden] {
@@ -372,6 +396,8 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
   }
 
   .ocak-etkinlik-takvimi__kayit {
+    position: relative; /* stretched link üstünde tıklanabilir kalsın */
+    z-index: 2;
     flex-shrink: 0;
     font-family: var(--font-body);
     font-size: var(--text-sm);

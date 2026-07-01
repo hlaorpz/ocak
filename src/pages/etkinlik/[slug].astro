@@ -1,0 +1,237 @@
+---
+// etkinlik/[slug].astro — brief-etkinlik-detay-route.md FAZ 2.
+// Her buluşmanın (Notion Etkinlikler DB'sinden) kendi paylaşılabilir/indekslenebilir
+// detay sayfası. getStaticPaths build-time üretir.
+//
+// Kapsam (brief FAZ 2):
+//   - Slug'ı olan HER etkinlik için route (İptal hariç, geçmiş DAHİL — collection
+//     content/config.ts'te 'İptal' zaten süzülüyor; burada slug guard yeter).
+//   - Layout oda="Buluşmalar", title=başlık, description=Detay ilk ~155 kar (fallback
+//     tipe göre), ogImage default.
+//   - Hero: overline=tip, title=başlık, subtitle=tarih + mekan.
+//   - Detay gövdesi: loader'dan gelen detayHtml (Sayfalar pipeline'ıyla aynı zinciri
+//     içinde geçti — remark-ocak-sections + resolveKayitCtaHref).
+//   - Yöneten (varsa): küçük satır.
+//   - Kayıt CTA (gelecek): KayitCTA kardeşi bir blok (kayitUrl veya format-slug'tan
+//     otomatik).
+//   - Geçmiş etkinlik: "tamamlandı" kapanış bloğu — kayıt yok, tipe göre ilgili
+//     format sayfasına davet linki. Build tarihine dayanır (n8n gecelik rebuild ile
+//     dünkü etkinlik sabah "tamamlandı" moduna geçer, brief FAZ 4).
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
+import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
+
+export async function getStaticPaths() {
+  const tumu = await getCollection('etkinlikler');
+  // brief FAZ 2: slug'ı OLAN her etkinlik için route. Collection zaten
+  // siteGoster + !İptal süzüyor (config.ts FAZ 1). Slug boşsa loader zaten
+  // WARN bastı; burada sessiz atla.
+  return tumu
+    .filter((e) => e.data.slug)
+    .map((e) => ({
+      params: { slug: e.data.slug! },
+      props: { etkinlik: e.data },
+    }));
+}
+
+const { etkinlik } = Astro.props;
+
+// Format → 6 KayitFormat sluğu ters çevrimi (config.ts'teki eşleyicinin ikizi).
+// Yolculuk vb. → undefined; CTA'yı kayitUrl yoksa basmayız.
+const NOTION_FORMAT_KAYIT_SLUG = Object.fromEntries(
+  Object.entries(FORMAT_NOTION_FORMAT).map(([slug, notionFmt]) => [notionFmt, slug as KayitFormat]),
+) as Record<string, KayitFormat | undefined>;
+
+// Format → KayitCTA "kategoriAdi" (form-anchor-registry.ts formAnchorProps ile hizalı).
+const KATEGORI_ADI: Record<string, string> = {
+  'Açık Kapı': 'Açık Kapı',
+  Çember: 'Çember',
+  'Mini Retreat': 'mini retreat',
+  'Mevsim Seremonisi': 'mevsim seremonisi',
+  'İstanbul Akşamı': 'İstanbul akşamı',
+  Workshop: 'workshop',
+  Yolculuk: 'Anadolu Yolculuğu',
+};
+
+// Format → "tamamlandı" kapanış bloğunda yönlendireceğimiz format sayfası.
+// 6 KayitFormat ise /{slug}, değilse /bulusmalar genel havuza.
+const kayitSlugu = NOTION_FORMAT_KAYIT_SLUG[etkinlik.tip];
+const formatSayfasi = kayitSlugu ? `/${kayitSlugu}` : '/bulusmalar';
+
+// Kayıt CTA hedefi: Notion'daki kayitUrl doluysa (bir dış/alt link olabilir) o;
+// yoksa 6 format sayfasında `/{slug}/kayit`; yoksa (Yolculuk) CTA basma.
+const kayitHedefi = etkinlik.kayitUrl?.trim() || (kayitSlugu ? `/${kayitSlugu}/kayit` : null);
+
+// Geçmiş etkinlik tespiti (build tarihi referansı — brief FAZ 4 gecelik
+// rebuild ile "bugün" güncel kalır). Range varsa tarihBitis öncelikli.
+function parcala(iso: string) {
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+}
+const bugun = new Date();
+bugun.setHours(0, 0, 0, 0);
+const referans = etkinlik.tarihBitis ?? etkinlik.tarihBaslangic;
+const referansTarihi = parcala(referans);
+const gecmisMi = referansTarihi ? referansTarihi < bugun : false;
+
+const tarihMetni = formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat);
+const mekanMetni = etkinlik.mekanDetay
+  ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}`
+  : etkinlik.mekan;
+
+// SEO description: Detay ilk ~155 kar (section etiketleri strip); yoksa tipe göre
+// fallback. Notion Detay markdown → düz metin: `## section:` satırlarını at,
+// ardışık boşlukları tek boşluğa indir.
+function detayDescription(detay: string): string {
+  const duz = detay
+    .split('\n')
+    .filter((l) => !l.startsWith('## section:'))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return duz.length > 155 ? duz.slice(0, 152).trimEnd() + '…' : duz;
+}
+const description =
+  (etkinlik.detay && detayDescription(etkinlik.detay)) ||
+  etkinlik.aciklama ||
+  `${etkinlik.tip} — OCAK'ta bir buluşma.`;
+
+const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
+---
+<Layout title={etkinlik.baslik} description={description} oda="Buluşmalar">
+  <section class="etkinlik-detay__hero" data-section="hero" data-oda="Buluşmalar">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="hero__fade-out" aria-hidden="true"></div>
+    <div class="hero__content ocak-container">
+      <p class="hero__overline ocak-overline">{etkinlik.tip}</p>
+      <h1 class="hero__title">{etkinlik.baslik}</h1>
+      <p class="hero__subtitle"><em>{tarihMetni} · {mekanMetni}</em></p>
+    </div>
+  </section>
+
+  {etkinlik.detayHtml && (
+    <div class="etkinlik-detay__govde ocak-container" set:html={etkinlik.detayHtml} />
+  )}
+
+  {etkinlik.yoneten && (
+    <p class="etkinlik-detay__yoneten ocak-container">Yöneten: <strong>{etkinlik.yoneten}</strong></p>
+  )}
+
+  {gecmisMi ? (
+    <section class="etkinlik-detay__kapanis" data-section="kayit-cta">
+      <p>Bu buluşma tamamlandı. Ateş sönmedi — spiral devam ediyor.</p>
+      <a class="etkinlik-detay__kapanis-link" href={formatSayfasi}>
+        Sıradaki {kategoriAdi} →
+      </a>
+    </section>
+  ) : (
+    kayitHedefi && (
+      <section class="etkinlik-detay__kayit" data-section="kayit-cta">
+        <p>
+          Sıradaki <strong>{kategoriAdi}</strong> için tarih seç, katılım payını ilet —
+          yerini ayıralım.
+        </p>
+        <a class="etkinlik-detay__kayit-link" href={kayitHedefi}>Kayıt ol →</a>
+      </section>
+    )
+  )}
+</Layout>
+
+<style>
+  /* Hero — Hero.astro'nun kompozit klonu: aynı glow + fade-out + tipografi
+     stackleri global.css/atmosfer.css'te .hero__* class'larıyla tanımlı.
+     Sadece parent geometrisi (min-height, layout) burada. Scroll cue basmıyoruz
+     (detay sayfası aşağı devam ediyor, buluşma sayfaları gibi tam viewport
+     hero'ya gerek yok — sıkı hero). */
+  .etkinlik-detay__hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .etkinlik-detay__govde {
+    padding: var(--space-8) var(--space-4);
+    max-width: 42rem;
+  }
+
+  .etkinlik-detay__yoneten {
+    max-width: 42rem;
+    padding: 0 var(--space-4) var(--space-6);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--cream-soft);
+    text-align: center;
+  }
+
+  .etkinlik-detay__yoneten strong {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  /* Gelecek etkinlik kayıt CTA — KayitCTA component'inin sade kardeşi. */
+  .etkinlik-detay__kayit {
+    text-align: center;
+    padding: var(--space-8) var(--space-4);
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .etkinlik-detay__kayit-link {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .etkinlik-detay__kayit-link:hover,
+  .etkinlik-detay__kayit-link:focus-visible {
+    border-bottom-color: var(--ember);
+  }
+
+  /* Geçmiş etkinlik "tamamlandı" bloğu — satış değil davet: ton düşük, hafif
+     italik ilk cümle, ardından ince ember link "Sıradaki … →". */
+  .etkinlik-detay__kapanis {
+    text-align: center;
+    padding: var(--space-8) var(--space-4);
+    max-width: 42rem;
+    margin: 0 auto;
+  }
+
+  .etkinlik-detay__kapanis p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    margin: 0;
+  }
+
+  .etkinlik-detay__kapanis-link {
+    display: inline-block;
+    margin-top: var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .etkinlik-detay__kapanis-link:hover,
+  .etkinlik-detay__kapanis-link:focus-visible {
+    border-bottom-color: var(--ember);
+  }
+</style>

@@ -52,6 +52,27 @@ export type EtkinlikFrontmatter = {
    * (Kaan eski etkinliklerde tipi set etmediyse sürpriz değişimi olmasın).
    */
   kayitTipi: 'Direkt' | 'Başvuru';
+  /**
+   * brief-etkinlik-detay-route.md FAZ 1 — /etkinlik/[slug] route'unun URL
+   * kısmı. Notion "Slug" rich_text; boş ise detay sayfası üretilmez (loader
+   * guard). Yayına açık + slug boş → build warn. Yayına kapalı + slug boş →
+   * sessiz atla (normal).
+   */
+  slug?: string;
+  /**
+   * brief-etkinlik-detay-route.md FAZ 1 — buluşmanın serbest metin detayı
+   * (Notion "Detay" rich_text). Section etiketli markdown olabilir (`## section:
+   * giris`, `ne-olur` vb.); render pipeline'ı config.ts loader'ında
+   * renderMarkdown + remark-ocak-sections + resolveKayitCtaHref +
+   * resolveNotionPageLinks zincirinden geçirir. Boş → detay sayfası hero + CTA
+   * ile minimum geçerli kalır.
+   */
+  detay?: string;
+  /**
+   * brief-etkinlik-detay-route.md FAZ 1 — buluşmayı yöneten (Notion "Yöneten"
+   * select). Kanonik: Advaita, Çekirdek Ekip. Boş olabilir.
+   */
+  yoneten?: string;
 };
 
 // ── Property okuyucular (Node-safe, bağımsız) ──
@@ -137,6 +158,10 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
   // etkinliklerde default 'Direkt' (mevcut Kapı 1 akışı sürpriz değişmesin).
   const kayitTipiRaw = selectVal(page, 'Kayıt Tipi');
   const kayitTipi: 'Direkt' | 'Başvuru' = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
+  // brief-etkinlik-detay-route.md FAZ 1 — /etkinlik/[slug] için yeni alanlar.
+  const slug = richText(page, 'Slug').trim();
+  const detay = richText(page, 'Detay'); // trim etme — leading heading anlamlı.
+  const yoneten = selectVal(page, 'Yöneten');
 
   return {
     baslik: richText(page, 'Başlık').trim(),
@@ -157,5 +182,8 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     ...(paraBirimi ? { paraBirimi } : {}),
     ...(kayitSorulari ? { kayitSorulari } : {}),
     ...(kartGorsel ? { kartGorsel } : {}),
+    ...(slug ? { slug } : {}),
+    ...(detay ? { detay } : {}),
+    ...(yoneten ? { yoneten } : {}),
   };
 }

@@ -8,10 +8,14 @@
 //   - kategori var + o kategoride etkinlik var → kategori filtresi, KATEGORI_HEADING
 //   - kategori var + o kategoride etkinlik yok → tüm yaklaşan, DEFAULT_HEADING
 //
-// Loader publish filtresi (siteGoster + durum∈{Kayıt Açık,Dolu}) zaten uyguladı.
+// brief-etkinlik-detay-route.md FAZ 1: publish filtresi gevşedi
+// (siteGoster && durum !== 'İptal') — detay route "geçmiş dahil" için. Bu
+// component artık liste için gereken 3 süzgeci (durum ∈ {Kayıt Açık, Dolu},
+// bugündenSonra, kategori) explicit uyguluyor. Aynı commit'te
+// content/config.ts'teki gevşetmeyle atomik yerleşti.
 
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+import { bugundenSonra, formatEtkinlikTarihi } from '../lib/format-etkinlik';
 import {
   filterEtkinliklerByKategori,
   getKategori,
@@ -36,7 +40,13 @@ const sortFn = (a: EtkinlikData, b: EtkinlikData) => {
   return a.baslik.localeCompare(b.baslik, 'tr'); // son kırıcı: başlık TR
 };
 
-const tumu = (await getCollection('etkinlikler')).map((e) => e.data);
+// FAZ 1 — durum + gelecek filtresi liste tarafında (collection artık gevşek).
+const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
+const tumu = bugundenSonra(
+  (await getCollection('etkinlikler'))
+    .map((e) => e.data)
+    .filter((e) => AKTIF_DURUM.has(e.durum)),
+);
 const filtrelenmis = filterEtkinliklerByKategori(tumu, kategori).sort(sortFn);
 
 let liste: EtkinlikData[];
@@ -78,6 +88,12 @@ const bos = liste.length === 0;
                   {etkinlik.mekanDetay ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}` : etkinlik.mekan}
                 </span>
               </p>
+              {/* brief-etkinlik-detay-route.md FAZ 3 — kart komple link
+                  (stretched-link pattern; kayıt mikro-linki üstte kalır).
+                  Slug yoksa link basılmaz — loader zaten build-time WARN bastı. */}
+              {etkinlik.slug && (
+                <a class="sonraki-bulusma__stretched-link" href={`/etkinlik/${etkinlik.slug}`} aria-label={`Detay: ${etkinlik.baslik}`}></a>
+              )}
               {etkinlik.kayitUrl && (
                 <a class="sonraki-bulusma__kayit" href={etkinlik.kayitUrl}>
                   Kayıt ol →
@@ -125,6 +141,7 @@ const bos = liste.length === 0;
   }
 
   .sonraki-bulusma__kart {
+    position: relative;
     height: 100%;
     padding: var(--space-5);
     background: var(--ash);
@@ -140,6 +157,22 @@ const bos = liste.length === 0;
   .sonraki-bulusma__kart:hover {
     border-color: var(--ember);
     background: var(--ash-warm);
+  }
+
+  /* Stretched link (brief FAZ 3): tüm kart /etkinlik/{slug}'a tıklanabilir.
+     "Kayıt ol" mikro-linki üstte kalır (z-index). Focus outline stretched
+     link'e uygulanır — klavye kullanıcısı kartın tümünün link olduğunu görür. */
+  .sonraki-bulusma__stretched-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    text-indent: -9999px;
+    overflow: hidden;
+  }
+
+  .sonraki-bulusma__stretched-link:focus-visible {
+    outline: 2px solid var(--ember);
+    outline-offset: -2px;
   }
 
   .sonraki-bulusma__tip {
@@ -175,6 +208,8 @@ const bos = liste.length === 0;
   }
 
   .sonraki-bulusma__kayit {
+    position: relative; /* stretched link (z-index:1) üstünde kalır */
+    z-index: 2;
     display: inline-block;
     margin-top: auto;
     padding-top: var(--space-3);
