@@ -67,6 +67,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     dolu: e.data.durum === 'Dolu',
     kayitTipi: e.data.kayitTipi,
     sorular: parseKayitSorulari(e.data.kayitSorulari),
+    // Eyeball #4 Fix 2c: davet metni için etkinlik başlığı (Notion Başlık).
+    baslik: e.data.baslik,
   };
 }
 ---
@@ -196,6 +198,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                     data-para-birimi={d.paraBirimi}
                     data-kayit-tipi={d.kayitTipi}
                     data-sorular={JSON.stringify(d.sorular)}
+                    data-baslik={d.baslik}
                     disabled={d.dolu}
                   >
                     {d.tarih}{d.dolu ? ' — Dolu' : ''}
@@ -421,8 +424,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                 </label>
               </div>
               <p class="kayit-formu__yontem-havale-not" data-kf-yontem-havale-not hidden>
-                Hesap bilgileri kaydını gönderdikten sonra ekranda + e-postanda
-                paylaşılır.
+                Hesap bilgileri kaydını gönderdikten sonra ekranda görünecek.
               </p>
             </div>
 
@@ -1632,11 +1634,18 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // Aşama 3b tasarım turu 2 — tarih seçili mi? form.dataset.tarihSecili
     // CSS/JS state için. Ödeme details bu state'e bağlı: tarih+Direkt ise
     // açık, değilse gizli (`hidden` attr).
+    //
+    // Eyeball #4 Fix 1: 0-TL Direkt akışta ödeme details KOMPLE gizli. Dış
+    // katman koşuluna ücret > 0 eklendi → kademe + kor + tutar + kart/havale
+    // + promo + güven şeridi hepsi hidden (tümü bu details içinde). Backend
+    // 0-TL'de zaten odemeGerekli=false döner; bu sadece görünürlük fix'i.
     function syncTarihSecili() {
       const secili = !!select.value;
       form!.dataset.tarihSecili = secili ? 'true' : 'false';
       if (odemeDetails) {
-        odemeDetails.hidden = !(secili && direktAktif());
+        const opt = select.options[select.selectedIndex];
+        const baseUcret = Number(opt?.dataset.ucret ?? '0') || 0;
+        odemeDetails.hidden = !(secili && direktAktif() && baseUcret > 0);
       }
     }
 
@@ -1837,12 +1846,19 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 
     // Kayıt Tipi etkinlik bazlı; tarih değişince form.dataset.direktAkis sync
     // edilir. Direkt-only required'lar (kademe) toggle edilir.
+    //
+    // Eyeball #4 Fix 1: 0-TL Direkt akış — kademe hidden details içinde; DOM'da
+    // required olarak kalırsa hidden-required invisible validation tuzağı olur
+    // (Mesafeli onay pilotundaki desen). Ücret 0 ise required kaldırılır.
     function syncDirektAkis() {
       const direkt = direktAktif();
       form!.dataset.direktAkis = direkt ? 'true' : 'false';
+      const opt = select.options[select.selectedIndex];
+      const baseUcret = Number(opt?.dataset.ucret ?? '0') || 0;
+      const kademeGerekli = direkt && baseUcret > 0;
       const kademeRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-kademe]');
       kademeRadios.forEach((r) => {
-        if (direkt) r.setAttribute('required', '');
+        if (kademeGerekli) r.setAttribute('required', '');
         else r.removeAttribute('required');
       });
     }
@@ -1908,11 +1924,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     }
     yontemRadios.forEach((r) => r.addEventListener('change', syncYontem));
 
-    // Submit butonu metni — tek otorite. Öncelik: Başvuru > tam-burs > kart > havale.
-    // ADIM 3 sonrası sadece-askı dalı yok.
+    // Submit butonu metni — tek otorite. Öncelik: Başvuru > 0-TL Direkt >
+    // tam-burs > kart > havale. ADIM 3 sonrası sadece-askı dalı yok.
+    //
+    // Eyeball #4 Fix 1: 0-TL Direkt akış — ödeme details komple gizli
+    // (syncTarihSecili'de ucret > 0 gate); CTA "Karta Yönlen" yalan sinyal
+    // olur → "Kaydımı Gönder" (oldText). Sıralama: tam-burs'tan ÖNCE, çünkü
+    // 0-TL doğal ücretsizlik (etkinlik özellik), promo değil.
     function syncSubmitMetni() {
       if (!direktAktif()) {
         submit.textContent = 'Başvur';
+        return;
+      }
+      const opt = select.options[select.selectedIndex];
+      const baseUcret = Number(opt?.dataset.ucret ?? '0') || 0;
+      if (baseUcret <= 0) {
+        submit.textContent = oldText;
         return;
       }
       const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
@@ -1999,11 +2026,14 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       };
 
       // Defansif validation:
-      //  - Direkt: ad + email + telefon + etkinlik + kademe + kvkk
+      //  - Direkt (ücretli): ad + email + telefon + etkinlik + kademe + kvkk
+      //  - Direkt (0-TL): kademe YOK (details hidden — Eyeball #4 Fix 1)
       //  - Başvuru: ad + email + telefon + etkinlik + kvkk (kademe YOK)
       //  - Aşama 5 (KARAR 253 aday): Mesafeli onay gerekliyse zorunlu
       //    (native `required` ilk savunma; bu kontrol arka kapı garantisi).
       const direkt = direktAktif();
+      const { ucret: aktifBase } = aktifUcret();
+      const kademeGerekli = direkt && aktifBase > 0;
       const mesafeliOk = data.get('mesafeli_onay') === 'on';
       const eksik =
         !payload.ad ||
@@ -2011,7 +2041,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         !payload.telefon ||
         !payload.etkinlikId ||
         !payload.kvkk ||
-        (direkt && !payload.kademe) ||
+        (kademeGerekli && !payload.kademe) ||
         (mesafeliGerekliMi() && !mesafeliOk);
       if (eksik) {
         errorEl.textContent = 'Lütfen zorunlu alanları doldur.';
@@ -2195,10 +2225,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           // payload.etkinlikId (form submit'inde alındı). Boş gelirse kutu
           // davet linkinde param'ları atlar — yine de WhatsApp paylaşımı
           // çalışır ama davet izlenebilir olmaz; pratikte ikisi de dolu.
+          //
+          // Eyeball #4 Fix 2c: format-özel davet linki + etkinlik-özel metin
+          // için ek data-attribute'lar. Ad = option data-baslik (Notion
+          // Etkinlikler Başlık); tarih = data-tarih (formatEtkinlikTarihi
+          // TR); path = `/${format}` (KayitFormat slug'ları landingPath ile
+          // 1:1).
           const davetKutusu = successEl.querySelector<HTMLElement>('[data-davet-kutusu]');
           if (davetKutusu) {
             if (result.referansNo) davetKutusu.dataset.davetRef = result.referansNo;
             if (payload.etkinlikId) davetKutusu.dataset.davetEtkinlik = payload.etkinlikId;
+            const seciliOpt = select.options[select.selectedIndex];
+            const secAd = seciliOpt?.dataset.baslik ?? '';
+            const secTarih = seciliOpt?.dataset.tarih ?? '';
+            if (secAd) davetKutusu.dataset.davetAd = secAd;
+            if (secTarih) davetKutusu.dataset.davetTarih = secTarih;
+            davetKutusu.dataset.davetPath = `/${format}`;
           }
           successEl.hidden = false;
           scrollToSuccess(successEl);

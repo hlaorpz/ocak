@@ -11,21 +11,43 @@
 //
 // Mount edildiği iki yer:
 //   - KayitFormu success div'i (havale + ücretsiz, tüm formatlar).
-//     refKodu + etkinlikId submit handler tarafından data-attribute olarak
-//     set edilir; props boş gelir.
+//     refKodu + etkinlikId + etkinlikAdi + etkinlikTarihi + landingPath
+//     submit handler tarafından data-attribute olarak set edilir; props
+//     boş gelir.
 //   - /odeme/tamam (kart redirect sonrası). Props server-side dolu gelir.
 //
 // JS data-attribute'lardan okur (her iki mod tek pattern).
 // Temizlik mikro-metni KVKK güven jesti + marka anlatısı (KORUNACAK İFADE #1).
+//
+// Eyeball #4 Fix 2: davet metni format-agnostik ("Açık Kapı" sabiti kalktı),
+// link format-özel (`/cember`, `/seremoni`, vb. `landingPath` prop'undan).
+// Metin şablonu component script'te; değişkenler data-attribute'lardan okur.
 
 export interface Props {
   /** OCAK-XXXXX referans no (davet edenin izi). Boş ise JS submit handler doldurur. */
   refKodu?: string;
   /** Notion etkinlik page id (davet linkine gömülür). Boş ise JS submit handler doldurur. */
   etkinlikId?: string;
+  /** Etkinlik adı, Notion Etkinlikler Başlık (davet metnine gömülür). Boşsa JS doldurur. */
+  etkinlikAdi?: string;
+  /** Etkinlik tarihi TR formatlı (örn. "21 Haziran"). Boşsa JS doldurur. */
+  etkinlikTarihi?: string;
+  /**
+   * Davet linkinin gideceği format sayfası (`/cember`, `/acik-kapi`, `/seremoni`,
+   * `/mini-retreat`, `/istanbul`, `/workshop`). Geçmiş-etkinlik güvenlik ağı
+   * her formatın override sayfasında yaşar. Boşsa JS doldurur; hiç dolmazsa
+   * '/acik-kapi' fallback (WhatsApp paylaşımı yine çalışır).
+   */
+  landingPath?: string;
 }
 
-const { refKodu = '', etkinlikId = '' } = Astro.props;
+const {
+  refKodu = '',
+  etkinlikId = '',
+  etkinlikAdi = '',
+  etkinlikTarihi = '',
+  landingPath = '',
+} = Astro.props;
 ---
 
 <aside
@@ -33,6 +55,9 @@ const { refKodu = '', etkinlikId = '' } = Astro.props;
   data-davet-kutusu
   data-davet-ref={refKodu}
   data-davet-etkinlik={etkinlikId}
+  data-davet-ad={etkinlikAdi}
+  data-davet-tarih={etkinlikTarihi}
+  data-davet-path={landingPath}
 >
   <div class="davet-kutusu__ember" aria-hidden="true"></div>
   <h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır</h3>
@@ -255,23 +280,31 @@ const { refKodu = '', etkinlikId = '' } = Astro.props;
    * Sayfada birden fazla varsa (teorik) her biri kendi data-attribute'larını
    * okur.
    *
-   * URL üretimi:
-   *   <origin>/acik-kapi?etkinlik=<etkinlikId>&ref=<refKodu>
-   *   (Brief: davet linki etkinliğe özel, geçmiş etkinlik güvenlik ağı
-   *   /acik-kapi tarafında yakalanır.)
-   *
-   * Hazır metin (brief'ten sabit, sonra Notion-bind edilebilir).
+   * Eyeball #4 Fix 2 (Yol A — nötr metin + format-özel link):
+   *   - Metin şablonu format-agnostik ("buluşma" şemsiye terim). Değişkenler
+   *     etkinlikAdi + etkinlikTarihi data-attribute'lardan gelir; ek çekim
+   *     riskini önlemek için ad iki noktadan sonra yalın basılır.
+   *   - Link format-özel: `${origin}${landingPath}?etkinlik=<id>&ref=<kod>`.
+   *     Fallback (`landingPath` boş): `/acik-kapi` — WhatsApp paylaşımı yine
+   *     çalışır, geçmiş-etkinlik güvenlik ağı bu path'te aktif.
+   *   - Tek metin, her kanal aynı (WhatsApp + kopyala + e-posta).
    */
-  const DAVET_METNI =
-    'Ben OCAK\'ta bir Açık Kapı\'ya katılıyorum — kadınların toplandığı bir ateş. Sen de gel, ya da önce bir bak istersen:';
+  function davetMetni(etkinlikAdi: string, etkinlikTarihi: string): string {
+    const ekler: string[] = [];
+    if (etkinlikAdi) ekler.push(etkinlikAdi);
+    if (etkinlikTarihi) ekler.push(etkinlikTarihi);
+    const detay = ekler.length ? `: ${ekler.join(', ')}` : '';
+    return `Selam! Ben OCAK'ta bir buluşmaya katılıyorum${detay}. Sen de aklıma geldin — bir bak, ateşin yanında sana da yer var:`;
+  }
 
-  function davetUrl(refKodu: string, etkinlikId: string): string {
+  function davetUrl(refKodu: string, etkinlikId: string, landingPath: string): string {
     const origin = window.location.origin;
+    const path = landingPath && landingPath.startsWith('/') ? landingPath : '/acik-kapi';
     const params = new URLSearchParams();
     if (etkinlikId) params.set('etkinlik', etkinlikId);
     if (refKodu) params.set('ref', refKodu);
     const qs = params.toString();
-    return `${origin}/acik-kapi${qs ? `?${qs}` : ''}`;
+    return `${origin}${path}${qs ? `?${qs}` : ''}`;
   }
 
   function paylas(text: string, url: string): void {
@@ -341,24 +374,37 @@ const { refKodu = '', etkinlikId = '' } = Astro.props;
         teyit.hidden = false;
       }
 
-      function getDavet(): { ref: string; etkinlik: string; url: string } {
+      function getDavet(): {
+        ref: string;
+        etkinlik: string;
+        url: string;
+        metin: string;
+      } {
         const ref = kutu.dataset.davetRef ?? '';
         const etkinlik = kutu.dataset.davetEtkinlik ?? '';
-        return { ref, etkinlik, url: davetUrl(ref, etkinlik) };
+        const ad = kutu.dataset.davetAd ?? '';
+        const tarih = kutu.dataset.davetTarih ?? '';
+        const path = kutu.dataset.davetPath ?? '';
+        return {
+          ref,
+          etkinlik,
+          url: davetUrl(ref, etkinlik, path),
+          metin: davetMetni(ad, tarih),
+        };
       }
 
       kutu
         .querySelector<HTMLButtonElement>('[data-davet-whatsapp]')
         ?.addEventListener('click', () => {
-          const { url } = getDavet();
-          paylas(DAVET_METNI, url);
+          const { url, metin } = getDavet();
+          paylas(metin, url);
         });
 
       kutu
         .querySelector<HTMLButtonElement>('[data-davet-kopyala]')
         ?.addEventListener('click', async () => {
-          const { url } = getDavet();
-          const ok = await kopyala(DAVET_METNI, url);
+          const { url, metin } = getDavet();
+          const ok = await kopyala(metin, url);
           teyitGoster(
             ok
               ? 'Davet kopyalandı — Instagram\'da DM\'ine yapıştır.'

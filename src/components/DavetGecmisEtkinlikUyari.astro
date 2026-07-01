@@ -1,0 +1,65 @@
+---
+// DavetGecmisEtkinlikUyari — davet edilen kişi geçmiş/dolu bir etkinliğin
+// davet linkinden geldiğinde nazikçe yönlendiren banner (Eyeball #4 Fix 2d,
+// KARAR 219 deseni). Format sayfası override'ları (cember/acik-kapi/seremoni
+// /mini-retreat/istanbul/workshop) tarafından render edilir.
+//
+// Görünürlük çağıran sayfa `etkinlikGecmisMi()` sonucuyla kontrol eder;
+// component sadece render'ı standardize eder.
+
+export interface Props {
+  /** "Sıradaki Açık Kapı'ya bak →" — format-özel CTA metni. */
+  ctaMetin: string;
+  /** İlgili format /kayit sayfası (örn. `/acik-kapi/kayit`). */
+  ctaHref: string;
+}
+
+const { ctaMetin, ctaHref } = Astro.props;
+---
+<aside class="davet-uyari" role="status">
+  <div class="davet-uyari__icerik">
+    <p class="davet-uyari__metin">
+      Bu buluşma geçti, sönmeyen kor burada — sıradaki şu.
+    </p>
+    <a class="davet-uyari__cta" href={ctaHref}>{ctaMetin}</a>
+  </div>
+</aside>
+
+<style>
+  .davet-uyari {
+    max-width: 42.5rem;
+    margin: var(--space-6) auto var(--space-2);
+    padding: var(--space-5) var(--space-6);
+    border: 1px solid var(--ember);
+    border-radius: 4px;
+    background: rgba(196, 75, 47, 0.05);
+    text-align: center;
+  }
+  .davet-uyari__icerik {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .davet-uyari__metin {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--cream);
+    font-size: 1.05rem;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .davet-uyari__cta {
+    font-family: var(--font-body);
+    color: var(--ember);
+    text-decoration: none;
+    font-size: 0.92rem;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .davet-uyari__cta:hover,
+  .davet-uyari__cta:focus-visible {
+    color: var(--ember-soft, #d8654e);
+  }
+</style>
