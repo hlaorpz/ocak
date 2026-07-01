@@ -6,19 +6,24 @@
 // Kapsam (brief FAZ 2):
 //   - Slug'ı olan HER etkinlik için route (İptal hariç, geçmiş DAHİL — collection
 //     content/config.ts'te 'İptal' zaten süzülüyor; burada slug guard yeter).
-//   - Layout oda="Buluşmalar", title=başlık, description=Detay ilk ~155 kar (fallback
-//     tipe göre), ogImage default.
-//   - Hero: overline=tip, title=başlık, subtitle=tarih + mekan.
-//   - Detay gövdesi: loader'dan gelen detayHtml (Sayfalar pipeline'ıyla aynı zinciri
-//     içinde geçti — remark-ocak-sections + resolveKayitCtaHref).
-//   - Yöneten (varsa): küçük satır.
-//   - Kayıt CTA (gelecek): KayitCTA kardeşi bir blok (kayitUrl veya format-slug'tan
-//     otomatik).
+//   - Hero: Hero.astro component'i (KARAR 114 legacy parity — glow/fade/tipografi
+//     scope'lu CSS ile beraber; elle kompozit ETMEme, Astro scope'u dışına düşer).
+//   - Detay gövdesi: loader'dan gelen detayHtml (Sayfalar pipeline'ıyla aynı
+//     zinciri geçti — remark-ocak-sections + resolveKayitCtaHref). set:html ile
+//     basılır; wrapper sadece container (padding'i baseline'a bırak — atmosfer.css
+//     `section[data-section][class^="ocak-"]` her section'a 4rem üst / 6rem alt
+//     verir; wrapper ek padding koyarsa hero→ilk section aralığı iki katına çıkar).
+//   - Kayıt CTA (gelecek): buluşma-spesifik davet — "sıradaki" kalıbı YOK
+//     (Eyeball tur 1: bu buluşma zaten sıradaki; format sayfasının "sonraki
+//     dönem" cümlesi burada yanlış okunur).
 //   - Geçmiş etkinlik: "tamamlandı" kapanış bloğu — kayıt yok, tipe göre ilgili
-//     format sayfasına davet linki. Build tarihine dayanır (n8n gecelik rebuild ile
-//     dünkü etkinlik sabah "tamamlandı" moduna geçer, brief FAZ 4).
+//     format sayfasına davet linki. Build tarihine dayanır (n8n gecelik rebuild
+//     ile dünkü etkinlik sabah "tamamlandı" moduna geçer, brief FAZ 4).
+//   - Yöneten: render EDİLMEZ (Eyeball tur 1: Notion property kalır, sayfada
+//     çıkmaz — meta ihtiyacı yok).
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 
@@ -43,7 +48,9 @@ const NOTION_FORMAT_KAYIT_SLUG = Object.fromEntries(
   Object.entries(FORMAT_NOTION_FORMAT).map(([slug, notionFmt]) => [notionFmt, slug as KayitFormat]),
 ) as Record<string, KayitFormat | undefined>;
 
-// Format → KayitCTA "kategoriAdi" (form-anchor-registry.ts formAnchorProps ile hizalı).
+// "Tamamlandı" bloğunda geçmiş buluşmayı yönlendirdiğimiz format sayfası +
+// insan-okur kategori adı (aynı map — form-anchor-registry.ts formAnchorProps
+// ile aynı ton, cümle içi kullanım için).
 const KATEGORI_ADI: Record<string, string> = {
   'Açık Kapı': 'Açık Kapı',
   Çember: 'Çember',
@@ -54,8 +61,6 @@ const KATEGORI_ADI: Record<string, string> = {
   Yolculuk: 'Anadolu Yolculuğu',
 };
 
-// Format → "tamamlandı" kapanış bloğunda yönlendireceğimiz format sayfası.
-// 6 KayitFormat ise /{slug}, değilse /bulusmalar genel havuza.
 const kayitSlugu = NOTION_FORMAT_KAYIT_SLUG[etkinlik.tip];
 const formatSayfasi = kayitSlugu ? `/${kayitSlugu}` : '/bulusmalar';
 
@@ -100,22 +105,16 @@ const description =
 const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
 ---
 <Layout title={etkinlik.baslik} description={description} oda="Buluşmalar">
-  <section class="etkinlik-detay__hero" data-section="hero" data-oda="Buluşmalar">
-    <div class="hero__glow" aria-hidden="true"></div>
-    <div class="hero__fade-out" aria-hidden="true"></div>
-    <div class="hero__content ocak-container">
-      <p class="hero__overline ocak-overline">{etkinlik.tip}</p>
-      <h1 class="hero__title">{etkinlik.baslik}</h1>
-      <p class="hero__subtitle"><em>{tarihMetni} · {mekanMetni}</em></p>
-    </div>
-  </section>
+  <Hero
+    oda="Buluşmalar"
+    overline={etkinlik.tip}
+    title={etkinlik.baslik}
+    subtitle={`${tarihMetni} · ${mekanMetni}`}
+    showScroll={false}
+  />
 
   {etkinlik.detayHtml && (
-    <div class="etkinlik-detay__govde ocak-container" set:html={etkinlik.detayHtml} />
-  )}
-
-  {etkinlik.yoneten && (
-    <p class="etkinlik-detay__yoneten ocak-container">Yöneten: <strong>{etkinlik.yoneten}</strong></p>
+    <div class="ocak-container" set:html={etkinlik.detayHtml} />
   )}
 
   {gecmisMi ? (
@@ -128,10 +127,7 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
   ) : (
     kayitHedefi && (
       <section class="etkinlik-detay__kayit" data-section="kayit-cta">
-        <p>
-          Sıradaki <strong>{kategoriAdi}</strong> için tarih seç, katılım payını ilet —
-          yerini ayıralım.
-        </p>
+        <p>Buluşmaya katılmak istersen aşağıdan kayıt ol — yerini ayıralım.</p>
         <a class="etkinlik-detay__kayit-link" href={kayitHedefi}>Kayıt ol →</a>
       </section>
     )
@@ -139,45 +135,21 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
 </Layout>
 
 <style>
-  /* Hero — Hero.astro'nun kompozit klonu: aynı glow + fade-out + tipografi
-     stackleri global.css/atmosfer.css'te .hero__* class'larıyla tanımlı.
-     Sadece parent geometrisi (min-height, layout) burada. Scroll cue basmıyoruz
-     (detay sayfası aşağı devam ediyor, buluşma sayfaları gibi tam viewport
-     hero'ya gerek yok — sıkı hero). */
-  .etkinlik-detay__hero {
-    position: relative;
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .etkinlik-detay__govde {
-    padding: var(--space-8) var(--space-4);
-    max-width: 42rem;
-  }
-
-  .etkinlik-detay__yoneten {
-    max-width: 42rem;
-    padding: 0 var(--space-4) var(--space-6);
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--cream-soft);
-    text-align: center;
-  }
-
-  .etkinlik-detay__yoneten strong {
-    color: var(--cream);
-    font-weight: 500;
-  }
-
-  /* Gelecek etkinlik kayıt CTA — KayitCTA component'inin sade kardeşi. */
+  /* Gelecek etkinlik kayıt CTA — buluşma-spesifik davet.
+     Format sayfasındaki KayitCTA "sıradaki X" kalıbı burada yok — bu
+     spesifik buluşma zaten sıradaki. */
   .etkinlik-detay__kayit {
     text-align: center;
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-6) var(--space-4) var(--space-9);
     max-width: 42rem;
     margin: 0 auto;
+  }
+
+  .etkinlik-detay__kayit p {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--cream-soft);
+    margin: 0;
   }
 
   .etkinlik-detay__kayit-link {
@@ -203,7 +175,7 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
      italik ilk cümle, ardından ince ember link "Sıradaki … →". */
   .etkinlik-detay__kapanis {
     text-align: center;
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-6) var(--space-4) var(--space-9);
     max-width: 42rem;
     margin: 0 auto;
   }
