@@ -59,7 +59,6 @@ const {
   data-davet-tarih={etkinlikTarihi}
   data-davet-path={landingPath}
 >
-  <div class="davet-kutusu__ember" aria-hidden="true"></div>
   <h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır</h3>
   <p class="davet-kutusu__metin">
     Ateşin yanında onun da yeri var. Üç yol, hangi kanal kolaysa.
@@ -83,28 +82,26 @@ const {
     </button>
 
     <form class="davet-kutusu__mail" data-davet-mail novalidate>
-      <label class="davet-kutusu__mail-label" for="davet-email">
-        E-posta ile çağır
+      <label class="davet-kutusu__sr-only" for="davet-email">
+        Arkadaşının e-postasını gir
       </label>
-      <div class="davet-kutusu__mail-row">
-        <input
-          id="davet-email"
-          name="davet-email"
-          type="email"
-          required
-          autocomplete="off"
-          placeholder="arkadaşının e-postası"
-          class="davet-kutusu__mail-input"
-          data-davet-mail-input
-        />
-        <button
-          type="submit"
-          class="davet-kutusu__btn davet-kutusu__btn--ikincil"
-          data-davet-mail-btn
-        >
-          Gönder
-        </button>
-      </div>
+      <input
+        id="davet-email"
+        name="davet-email"
+        type="email"
+        required
+        autocomplete="off"
+        placeholder="arkadaşının e-postası"
+        class="davet-kutusu__mail-input"
+        data-davet-mail-input
+      />
+      <button
+        type="submit"
+        class="davet-kutusu__btn davet-kutusu__btn--ucuncu"
+        data-davet-mail-btn
+      >
+        Gönder
+      </button>
       <p class="davet-kutusu__mail-hata" data-davet-mail-hata hidden></p>
     </form>
   </div>
@@ -126,15 +123,6 @@ const {
     border: 1px solid var(--ash);
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.015);
-  }
-
-  .davet-kutusu__ember {
-    width: 10px;
-    height: 10px;
-    background: var(--ember);
-    border-radius: 50%;
-    box-shadow: 0 0 14px var(--ember), 0 0 36px rgba(196, 75, 47, 0.3);
-    margin: 0 auto var(--space-4);
   }
 
   .davet-kutusu__baslik {
@@ -196,38 +184,32 @@ const {
     border-color: var(--smoke);
   }
 
-  .davet-kutusu__btn--ikincil {
-    background: transparent;
-    color: var(--ember);
-    border-color: var(--ember);
-  }
-  .davet-kutusu__btn--ikincil:hover,
-  .davet-kutusu__btn--ikincil:focus-visible {
-    background: var(--ember);
-    color: var(--cream);
-  }
-
+  /* Eyeball #4 tasarım toparlama: e-posta bloğu dikey ritme alındı.
+     Form üç yol arasında görsel kardeş — başlık yok (sr-only), input tam
+     genişlik, Gönder butonu altta tam genişlik + Instagram ("ucuncu") stili.
+     Yol'ların ana gap'i .davet-kutusu__yollar > gap ile, form içindeki
+     input↔buton mesafesi burada. */
   .davet-kutusu__mail {
-    text-align: left;
-    margin-top: var(--space-2);
-  }
-
-  .davet-kutusu__mail-label {
-    display: block;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--cream-soft);
-    margin-bottom: var(--space-2);
-    text-align: center;
-  }
-
-  .davet-kutusu__mail-row {
     display: flex;
-    gap: var(--space-2);
+    flex-direction: column;
+    gap: var(--space-3);
+    text-align: left;
+  }
+
+  .davet-kutusu__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .davet-kutusu__mail-input {
-    flex: 1;
+    width: 100%;
     font-family: var(--font-body);
     font-size: 0.92rem;
     padding: 0.7rem 0.9rem;
@@ -236,6 +218,7 @@ const {
     border-radius: 3px;
     color: var(--cream);
     min-width: 0;
+    box-sizing: border-box;
   }
   .davet-kutusu__mail-input:focus-visible {
     outline: none;
@@ -249,7 +232,7 @@ const {
     font-family: var(--font-body);
     font-size: 0.82rem;
     color: var(--ember);
-    margin: var(--space-2) 0 0;
+    margin: 0;
   }
   .davet-kutusu__mail-hata[hidden] { display: none; }
 
