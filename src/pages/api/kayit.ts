@@ -97,6 +97,9 @@ type KayitBody = {
   kademe?: Kademe;
   // Aşama 3b — ödeme yöntemi (kart | havale). Kart → checkoutBaslat → redirect.
   odemeYontemi?: 'kart' | 'havale';
+  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). Boş gelirse
+  // Kayıtlar DB'ye yazılmaz (property atlanır).
+  ref?: string;
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
@@ -269,6 +272,11 @@ async function notionKayitlaraYaz(args: {
   if (kullanilanKod) {
     properties['Kullanılan Kod'] = { rich_text: [{ text: { content: kullanilanKod } }] };
   }
+  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). n8n bu kolondan
+  // Davetler DB satırını "Geldi" yapar. Boş gelirse property atlanır.
+  if (body.ref) {
+    properties['Davet Eden Ref'] = { rich_text: [{ text: { content: body.ref } }] };
+  }
   // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
   // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
 
@@ -307,6 +315,10 @@ async function notionSadeceAskiYaz(args: {
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
   if (body.askiNiyet) {
     properties['Askı Katkısı'] = { rich_text: [{ text: { content: body.askiNiyet } }] };
+  }
+  // brief-davet-sistemi: sadece-askı dalında da davet eden ref izi.
+  if (body.ref) {
+    properties['Davet Eden Ref'] = { rich_text: [{ text: { content: body.ref } }] };
   }
   const result = await notion.pages.create({
     parent: { database_id: NOTION_KAYITLAR_DB },

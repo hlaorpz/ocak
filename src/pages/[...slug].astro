@@ -17,13 +17,30 @@ import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
 
 export async function getStaticPaths() {
+  // brief-davet-sistemi + Eyeball #4 Fix 2d: 6 kayıt formatı davet linkinin
+  // hedefi (`?etkinlik=&ref=`). Her formatın override dosyası prerender=false
+  // ile SSR (geçmiş-etkinlik güvenlik ağı için); statik index.html'ler
+  // üretilmemeli ki Vercel filesystem handler statik dosyaya düşürüp SSR'ı
+  // ezmesin. Notion içeriği override'lar içinde aynı PageContent ile basılır.
+  // Set getStaticPaths içinde tanımlı — Astro getStaticPaths'i ayrı modül
+  // kapsamına hoist eder, frontmatter const'larına erişemez.
+  const ssrOverrideSluglari = new Set<string>([
+    '/acik-kapi',
+    '/cember',
+    '/seremoni',
+    '/mini-retreat',
+    '/istanbul',
+    '/workshop',
+  ]);
   const sayfalar = await getCollection('sayfalar');
-  return sayfalar.map((sayfa) => ({
-    // Notion URL formatı (/, /cember) → Astro rest slug (undefined, 'cember').
-    // Loader slug'ı Notion URL'ini verbatim taşır; route'ta baştaki '/'ı strip et.
-    params: { slug: sayfa.data.slug === '/' ? undefined : sayfa.data.slug.replace(/^\//, '') },
-    props: { sayfa },
-  }));
+  return sayfalar
+    .filter((sayfa) => !ssrOverrideSluglari.has(sayfa.data.slug))
+    .map((sayfa) => ({
+      // Notion URL formatı (/, /cember) → Astro rest slug (undefined, 'cember').
+      // Loader slug'ı Notion URL'ini verbatim taşır; route'ta baştaki '/'ı strip et.
+      params: { slug: sayfa.data.slug === '/' ? undefined : sayfa.data.slug.replace(/^\//, '') },
+      props: { sayfa },
+    }));
 }
 
 const { sayfa } = Astro.props;

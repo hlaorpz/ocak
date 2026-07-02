@@ -46,7 +46,9 @@
   gap: var(--space-5);
   overflow: hidden;
   text-align: center;
-  padding: var(--space-8) var(--space-5);
+  /* Faz B: hero root padding token'a — üst-alt --rhythm-section-bottom (4rem
+   * simetrik hero karakteri korunur), yatay 1.5rem (hero özel dar padding). */
+  padding: var(--rhythm-section-bottom) var(--space-5);
 }
 
 /* Glow — legacy/index.html .hero::before VERBATIM (Brief 2b): 800x800 box,
@@ -176,7 +178,7 @@
  * plugin'de birebir var → kural verbatim (component :global ile aynı). */
 
 [data-section="siradaki-kapi"] {
-  padding: var(--space-8) 0;
+  padding: var(--rhythm-section-bottom) 0;   /* Faz B: 4rem — token'a bağlı */
   display: grid;
   gap: var(--space-4);
   grid-template-columns: 1fr;
@@ -264,7 +266,8 @@
                                                  * yok → ocak-* baseline match etmiyordu,
                                                  * full-width sola dayalı görünüyordu */
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
+  /* Faz B: 4rem üst-alt / 2rem x — token'a bağlı. */
+  padding: var(--rhythm-section-bottom) var(--rhythm-section-x);
 }
 
 [data-section="sss"] details {
@@ -452,7 +455,7 @@ details[data-section^="esik-"] summary:focus-visible {
  * ember-alpha-15 tint bg + krem italik (global blockquote'u specificity ile ezer). */
 
 [data-section="bir-sonraki"] {
-  padding: var(--space-8) 0;
+  padding: var(--rhythm-section-bottom) 0;   /* Faz B: 4rem — token'a bağlı */
 }
 
 [data-section="bir-sonraki"] > blockquote {
@@ -570,7 +573,10 @@ section[data-section="bir-sonraki"] > blockquote > p:has(> strong:only-child) {
 section[data-section][class^="ocak-"] {
   max-width: var(--max-w-prose);              /* 38rem ≈ 608px okuma kolonu */
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6) var(--space-9);   /* 4-2-6rem (#31 Brief G.2 P1) */
+  /* Ritim token'ları (brief-dikey-ritim-token-sistemi.md Faz A):
+   * 3-2-4rem (--rhythm-section-top/x/bottom). Eyeball 2 değerleri semantik
+   * token'a bağlandı — ileride tek yerden ayar. */
+  padding: var(--rhythm-section-top) var(--rhythm-section-x) var(--rhythm-section-bottom);
   position: relative;
 }
 
@@ -579,10 +585,23 @@ section[data-section][class^="ocak-"] p {
   line-height: var(--leading-prose);          /* 1.9 cömert nefes */
   font-weight: 300;
   color: var(--cream-soft);
-  margin: 0 0 var(--space-6);                 /* ~2rem paragraf arası */
+  margin: 0 0 var(--rhythm-block);            /* 2rem — Faz A: --rhythm-block */
 }
 
 section[data-section][class^="ocak-"] p:last-child {
+  margin-bottom: 0;
+}
+
+/* Son-çocuk alt margin sıfırlama (brief-dikey-ritim-token-sistemi.md sonrası,
+ * eyeball ritim turu). Section-arası boşluk son elemanın türünden bağımsız
+ * olmalı — sadece section padding'ine bağlı (3+4=7rem). p:last-child kuralı
+ * yeterli değildi: ul/li ile biten section'da li margin (2rem) + ul margin
+ * (2rem, collapse ile tek görünür) padding'e ekleniyordu → 9rem sapma.
+ * Evrensel > :last-child + iç son-li temizliği ile tüm section-arası 7rem eşit. */
+section[data-section][class^="ocak-"] > :last-child {
+  margin-bottom: 0;
+}
+section[data-section][class^="ocak-"] :is(ul, ol):last-child > li:last-child {
   margin-bottom: 0;
 }
 
@@ -629,7 +648,9 @@ section[data-section][class^="ocak-"] h2 {
   font-weight: 400;
   color: var(--cream);
   line-height: var(--leading-snug);
-  margin: var(--space-7) 0 var(--space-4);    /* 3rem üst / 1rem alt (#31 Brief G.2 P1) */
+  /* Faz A: h2 üst = --rhythm-heading-before (3rem), alt = --rhythm-heading-after
+   * (1.5rem, önceki 1rem'den açıldı — başlık-metin sıkışıklığı giderildi). */
+  margin: var(--rhythm-heading-before) 0 var(--rhythm-heading-after);
   text-align: center;
 }
 
@@ -643,7 +664,9 @@ section[data-section][class^="ocak-"] h3 {
   font-weight: 400;
   color: var(--cream);
   line-height: var(--leading-snug);
-  margin: var(--space-8) 0 var(--space-4);
+  /* Faz A: h3 üst h2 ile eşit (3rem) — "h3 daha önemli" yanılsaması giderildi.
+   * Alt --rhythm-heading-after (1.5rem). */
+  margin: var(--rhythm-heading-before) 0 var(--rhythm-heading-after);
   text-align: center;
 }
 
@@ -653,7 +676,7 @@ section[data-section][class^="ocak-"] ul,
 section[data-section][class^="ocak-"] ol {
   list-style: none;
   padding-left: 0;
-  margin: var(--space-6) 0;
+  margin: var(--rhythm-block) 0;              /* Faz A: --rhythm-block (2rem) */
   text-align: left;
 }
 
@@ -664,7 +687,9 @@ section[data-section][class^="ocak-"] li {
   color: var(--cream-soft);
   padding-left: var(--space-6);
   position: relative;
-  margin-bottom: var(--space-4);
+  /* Faz A: li arası p arasıyla EŞİTLENDİ (--rhythm-block, 2rem).
+   * Önceki 1rem yarısıydı — Kaan'ın gördüğü ana ritim tutarsızlığı. */
+  margin-bottom: var(--rhythm-block);
 }
 
 section[data-section][class^="ocak-"] ul li::before {
@@ -908,7 +933,25 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
 
 @media (max-width: 768px) {
   section[data-section][class^="ocak-"] {
-    padding: var(--space-7) var(--space-5) var(--space-8); /* 3-1.5-4rem (#31 Brief G.2 P1) */
+    /* Faz A: mobil section padding token'a bağlı (2-1.5-3rem).
+     * --rhythm-heading-before-m (2rem) üst / --space-5 (1.5rem) x /
+     * --rhythm-section-top (3rem) alt — aslında mobilde bir kademe küçük. */
+    padding: var(--rhythm-heading-before-m) var(--space-5) var(--rhythm-section-top);
+  }
+  /* Prose bloklar mobilde bir tık sıkışır — --rhythm-block-mobile (1.5rem). */
+  section[data-section][class^="ocak-"] p,
+  section[data-section][class^="ocak-"] li,
+  section[data-section][class^="ocak-"] ul,
+  section[data-section][class^="ocak-"] ol {
+    margin-bottom: var(--rhythm-block-mobile);
+  }
+  section[data-section][class^="ocak-"] ul,
+  section[data-section][class^="ocak-"] ol {
+    margin-top: var(--rhythm-block-mobile);
+  }
+  section[data-section][class^="ocak-"] h2,
+  section[data-section][class^="ocak-"] h3 {
+    margin-top: var(--rhythm-heading-before-m);
   }
 }
 
@@ -925,6 +968,9 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
 section[data-section="mini-cta"] {
   background: var(--ash-warm);
   border-left: 3px solid var(--ember);
+  /* Faz B: clamp() responsive karakter KORUNUR (KRİTİK — mobil sıkışma tasarım).
+   * Sabit değer olmadığı için token bağı burada geçerli değil; ancak vurgu
+   * ailesinde tutarlı clamp kalıbı olarak kalır. */
   padding: clamp(1.25rem, 2vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
   margin: clamp(2rem, 4vw, 3rem) auto;
   max-width: var(--max-w-prose);
@@ -967,6 +1013,7 @@ section[data-section="mini-cta"] > a:focus-visible {
 /* === buyuk-vurgu — ortalı italik gold (lansman amber/gold Brief G'de kalibre) === */
 section[data-section="buyuk-vurgu"] {
   text-align: center;
+  /* Faz B: clamp() KORUNUR — büyük vurgu section'ı responsive nefes bilinçli. */
   padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 2vw, 2rem);
   max-width: 40rem;
   margin: 0 auto;
@@ -999,7 +1046,8 @@ section[data-section="buyuk-vurgu"].ocak-buyuk-vurgu > p > em {
 section[data-section="manifesto-vurgu"].ocak-manifesto-vurgu {
   max-width: 540px;
   margin-inline: auto;
-  padding: clamp(3rem, 6vw, 4.5rem) var(--space-6);
+  /* Faz B: dikey clamp() KORUNUR (karakter). Yatay 2rem → --rhythm-section-x. */
+  padding: clamp(3rem, 6vw, 4.5rem) var(--rhythm-section-x);
   text-align: center;
 }
 
@@ -1043,7 +1091,8 @@ section[data-section="manifesto-vurgu"].ocak-manifesto-vurgu > p {
 section[data-section="ic-ses"].ocak-ic-ses {
   max-width: 540px;
   margin-inline: auto;
-  padding: clamp(2.5rem, 5vw, 3.5rem) var(--space-6);
+  /* Faz B: dikey clamp() KORUNUR. Yatay 2rem → --rhythm-section-x. */
+  padding: clamp(2.5rem, 5vw, 3.5rem) var(--rhythm-section-x);
   text-align: center;
 }
 
@@ -1076,6 +1125,7 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
  * ============================================================================ */
 section[data-section="kayit-cta"] {
   text-align: center;
+  /* Faz B: sıkışık clamp() KORUNUR (Brief 4 — mini-cta'dan dar bilinçli seçim). */
   padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
   margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
   max-width: var(--max-w-prose);

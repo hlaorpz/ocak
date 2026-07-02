@@ -99,6 +99,20 @@
   --space-10:  8rem;      /* 128 */
   --space-11:  12rem;     /* 192 */
 
+  /* ===== DİKEY RİTİM (semantik ritim katmanı — brief-dikey-ritim-token-sistemi.md
+   * Faz A/B). --space-* mekanik ölçek; --rhythm-* semantik niyet katmanı. Anlam
+   * (paragraf arası, başlık üstü, section üstü) tek yerde tanımlı → ileride
+   * ritim ayarı tek dosyadan (buradan) yapılır. Prose baseline + 9 kanonik
+   * section root'u bu token'ları çeker. Faz C (component root'ları) sonrası. */
+  --rhythm-block:            var(--space-6);   /* 2rem  — p/li/ul/ol arası */
+  --rhythm-heading-before:   var(--space-7);   /* 3rem  — h2/h3 üst */
+  --rhythm-heading-after:    var(--space-5);   /* 1.5rem — h2/h3 alt (nefes) */
+  --rhythm-section-top:      var(--space-7);   /* 3rem  — section üst padding */
+  --rhythm-section-bottom:   var(--space-8);   /* 4rem  — section alt padding */
+  --rhythm-section-x:        var(--space-6);   /* 2rem  — section sağ-sol padding */
+  --rhythm-block-mobile:     var(--space-5);   /* 1.5rem — mobil blok arası */
+  --rhythm-heading-before-m: var(--space-6);   /* 2rem  — mobil h2/h3 üst */
+
   /* ===== LAYOUT ===== */
   --max-w-prose:    38rem;   /* okuma sütunu */
   --max-w-content:  64rem;   /* genel içerik */

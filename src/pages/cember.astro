@@ -1,0 +1,40 @@
+---
+// cember.astro — /cember sayfa override (Eyeball #4 Fix 2d).
+// [...slug].astro statik prerender'ından bu slug filter'landı; SSR override
+// davet güvenlik ağını çalıştırıyor. Notion içeriği aynen PageContent ile
+// basılır (görsel değişiklik yok).
+//
+// Davet linki `/cember?etkinlik=YYY&ref=XXX` formatında geldiğinde, etkinlik
+// tarihi geçmişse banner + `/cember/kayit` köprüsü. Aktif etkinlikte veya
+// param yokken saf Notion içeriği.
+export const prerender = false;
+
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
+import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
+
+const sayfa = await getEntry('sayfalar', '/cember');
+if (!sayfa) {
+  throw new Error("cember.astro: 'sayfalar' collection'ında '/cember' slug'ı bulunamadı.");
+}
+
+const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
+const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  {etkinlikGecmis && (
+    <DavetGecmisEtkinlikUyari
+      ctaMetin="Sıradaki Çember'e bak →"
+      ctaHref="/cember/kayit"
+    />
+  )}
+
+  <PageContent slug="/cember" fragments={sayfa.data.fragments} />
+</Layout>

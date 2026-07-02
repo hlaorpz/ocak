@@ -42,6 +42,9 @@ function dumpEtkinlik(fm, idx) {
   log(`| siteGoster | ${fm.siteGoster} |`);
   log(`| oneCikar | ${fm.oneCikar} |`);
   log(`| aciklama | ${(fm.aciklama ?? '∅').replace(/\n/g, ' ').slice(0, 80)} |`);
+  log(`| slug | ${fm.slug ?? '∅'} |`);
+  log(`| yoneten | ${fm.yoneten ?? '∅'} |`);
+  log(`| detay (ilk 120 kar) | ${(fm.detay ?? '∅').replace(/\n/g, ' ').slice(0, 120)} |`);
   log(`| notion_id | ${fm.notion_id} |`);
   log('');
 }

@@ -2,14 +2,24 @@
 // istanbul.astro — /istanbul sayfa override (#26 Brief G Adım 5; KARAR 127).
 // SonrakiBulusma artık fragment-split sonraki-bulusma marker'ından geliyor;
 // hard-coded instance kaldırıldı. AtesMektuplariCTA form-anchor registry'den.
+//
+// Eyeball #4 Fix 2d: prerender=false → SSR. Davet linki ?etkinlik= param'ı
+// server-side okunur; geçmiş etkinlik → banner + kayıt sayfasına köprü.
+export const prerender = false;
+
 import { getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
+import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
+import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
 
 const sayfa = await getEntry('sayfalar', '/istanbul');
 if (!sayfa) {
   throw new Error("istanbul.astro: 'sayfalar' collection'ında '/istanbul' slug'ı bulunamadı.");
 }
+
+const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
+const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
 ---
 <Layout
   title={sayfa.data.title}
@@ -17,5 +27,12 @@ if (!sayfa) {
   ogImage={sayfa.data.ogImage}
   oda={sayfa.data.oda}
 >
+  {etkinlikGecmis && (
+    <DavetGecmisEtkinlikUyari
+      ctaMetin="Sıradaki İstanbul Akşamı'na bak →"
+      ctaHref="/istanbul/kayit"
+    />
+  )}
+
   <PageContent slug="/istanbul" fragments={sayfa.data.fragments} />
 </Layout>

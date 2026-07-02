@@ -7,7 +7,7 @@ import {
   resolveNotionPageLinks,
 } from '../lib/notion-pages';
 import { fetchEtkinlikler, transformEtkinlik } from '../lib/notion-etkinlikler';
-import { resolveKayitCtaHref } from '../lib/kayit';
+import { resolveKayitCtaHref, FORMAT_NOTION_FORMAT, type KayitFormat } from '../lib/kayit';
 
 /**
  * Sayfalar — 19 site sayfasının içerikleri.
@@ -166,37 +166,82 @@ const sayfalar = defineCollection({
  * SonrakiBulusma section'ı Brief 5'te bu collection'a bağlanacak (KARAR 93).
  * Şema Brief 1 keşfindeki Notion gerçeğine eşli; relative kayitUrl için .url() YOK.
  */
+// brief-etkinlik-detay-route.md FAZ 1 — Notion Format select → 6 KayitFormat
+// slug'ı. FORMAT_NOTION_FORMAT (slug→Format) tersinin türetilmişi. Yolculuk
+// KayitFormat dışı → undefined döner (detay içindeki `## section: kayit-cta`
+// resolveKayitCtaHref tarafından slug-format eşleşmediği için kaldırılır +
+// warn). Detay markdown zinciri için kullanılır.
+const NOTION_FORMAT_KAYIT_SLUG = Object.fromEntries(
+  Object.entries(FORMAT_NOTION_FORMAT).map(([slug, notionFmt]) => [notionFmt, slug as KayitFormat]),
+) as Record<string, KayitFormat | undefined>;
+
 const etkinlikler = defineCollection({
   loader: {
     name: 'notion-etkinlikler',
-    load: async ({ store, logger, parseData, generateDigest }) => {
+    load: async ({ store, logger, parseData, generateDigest, renderMarkdown }) => {
       store.clear();
 
       const rows = await fetchEtkinlikler(notion, NOTION_EVENTS_DB);
       logger.info(`Notion Etkinlikler DB: ${rows.length} satır çekildi`);
 
-      // Publish filtresi (Brief 5): siteGoster=true VE durum aktif.
-      // Durum yaşam döngüsü: Taslak → (kayıt açılınca) Kayıt Açık → (dolunca) Dolu →
-      // (bitince) Geçti. Aktif = {Kayıt Açık, Dolu}; Taslak/Geçti/İptal sessizce gizli.
-      const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
-
+      // Publish filtresi (brief-etkinlik-detay-route.md FAZ 1 — Yol A):
+      // Eskiden: siteGoster && durum ∈ {Kayıt Açık, Dolu} — collection zaten
+      // Taslak/Geçti/İptal'i eliyordu. Detay sayfası için "geçmiş dahil"
+      // gerekiyor (arşiv/okuma değeri kaybolmasın), o yüzden gevşetildi:
+      // siteGoster && durum !== 'İptal'. Liste bileşenleri (SonrakiBulusma,
+      // EtkinlikTakvimi) durum + bugundenSonra süzgeçlerini artık kendileri
+      // uyguluyor — bu commit'te birlikte atomik yerleştirildi.
       let ok = 0;
       let gizli = 0;
+      let slugsizYayinAcik = 0;
       for (const row of rows) {
         const fm = transformEtkinlik(row);
 
-        // siteGoster=false veya durum aktif değil → sessizce atla (bilinçli karar).
-        if (!fm.siteGoster || !AKTIF_DURUM.has(fm.durum)) {
+        if (!fm.siteGoster || fm.durum === 'İptal') {
           gizli++;
           continue;
         }
 
-        const data = await parseData({ id: fm.notion_id, data: fm });
-        store.set({ id: fm.notion_id, data, digest: generateDigest(JSON.stringify(fm)) });
+        // brief FAZ 1 — Slug guard: yayına açık ama slug yok → görünür WARN.
+        // Detay sayfası üretilmeyecek, kart tıklanabilir link olmayacak.
+        // Yayına kapalıysa (siteGoster=false) yukarıda zaten sessizce atlandı.
+        if (!fm.slug) {
+          slugsizYayinAcik++;
+          logger.warn(
+            `[etkinlikler] "${fm.baslik}" (${fm.notion_id}): siteGoster=true ama Slug boş — detay sayfası üretilmeyecek. Notion "Slug" alanına URL parçası ekle.`,
+          );
+        }
+
+        // brief FAZ 1 — Detay markdown zinciri (Sayfalar collection'ıyla
+        // hizalı): renderMarkdown → resolveNotionPageLinks → resolveKayitCtaHref.
+        // pageIdToSlug boş map (Etkinlikler loader'ı Sayfalar DB'sine gitmez;
+        // detay içinde Notion @page mention'ı beklenmiyor — çıkarsa warn ile
+        // href olduğu gibi kalır, build kırılmaz). resolveKayitCtaHref
+        // etkinliğin Format'ından türetilen kayıt slug'ıyla çağrılır: Notion
+        // Detay içindeki `## section: kayit-cta` etiketi doğru `/{format}/kayit`
+        // hedefine yönlenir; format 6 KayitFormat dışıysa (Yolculuk) block
+        // kaldırılır + warn (KARAR 207).
+        let detayHtml: string | undefined;
+        if (fm.detay) {
+          const rendered = await renderMarkdown(fm.detay);
+          const kayitSlug = NOTION_FORMAT_KAYIT_SLUG[fm.tip] ?? '';
+          detayHtml = resolveKayitCtaHref(
+            resolveNotionPageLinks(rendered.html, {}, `etkinlik/${fm.slug ?? fm.notion_id}`),
+            kayitSlug,
+          );
+        }
+
+        const data = await parseData({
+          id: fm.notion_id,
+          data: { ...fm, ...(detayHtml ? { detayHtml } : {}) },
+        });
+        store.set({ id: fm.notion_id, data, digest: generateDigest(JSON.stringify(fm) + (detayHtml ?? '')) });
         ok++;
       }
 
-      logger.info(`Notion Etkinlikler: ${ok} yüklendi, ${gizli} atlandı (gizli/pasif durum)`);
+      logger.info(
+        `Notion Etkinlikler: ${ok} yüklendi, ${gizli} atlandı (siteGoster=false veya İptal), ${slugsizYayinAcik} slug'sız-yayın-açık uyarı`,
+      );
     },
   },
   schema: z.object({
@@ -233,6 +278,14 @@ const etkinlikler = defineCollection({
     // Başvurular DB (ödeme yok, Zoom yok, mail yok). Format whitelist
     // (KAPI1_FORMATLAR) deprecated — otorite etkinlik bazlı.
     kayitTipi: z.enum(['Direkt', 'Başvuru']),
+    // brief-etkinlik-detay-route.md FAZ 1 — /etkinlik/[slug] route.
+    // slug boşsa detay sayfası üretilmez (getStaticPaths filtresi FAZ 2).
+    // detay Notion ham metni + detayHtml loader-rendered pipeline çıktısı.
+    // yoneten select (Advaita, Çekirdek Ekip).
+    slug: z.string().optional(),
+    detay: z.string().optional(),
+    detayHtml: z.string().optional(),
+    yoneten: z.string().optional(),
   }),
 });
 
