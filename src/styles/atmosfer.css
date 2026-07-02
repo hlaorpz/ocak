@@ -382,7 +382,7 @@ details[data-section^="esik-"]:hover {
 
 details[data-section^="esik-"][open] {
   border-left-color: var(--ember);
-  padding: var(--space-6) 0 var(--space-6) var(--space-5);
+  padding: var(--space-6) 0 var(--space-5) var(--space-5);
   border-top: 1px solid var(--ash); /* nefes çizgisi */
   margin-top: var(--space-4);
 }
@@ -408,6 +408,9 @@ details[data-section^="esik-"] summary {
   line-height: 1.3;
   color: var(--cream);
   padding: var(--space-2) 0;
+  /* Exclusive accordion (name="esikler") toggle'ında scrollIntoView hedefi sticky
+   * nav'ın altına gizlenmesin — Layout.astro toggle handler'ının ikizi. */
+  scroll-margin-top: var(--nav-height);
 }
 
 details[data-section^="esik-"] summary::-webkit-details-marker {
