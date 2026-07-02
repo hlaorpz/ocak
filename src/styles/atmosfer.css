@@ -382,9 +382,8 @@ details[data-section^="esik-"]:hover {
 
 details[data-section^="esik-"][open] {
   border-left-color: var(--ember);
-  padding: var(--space-6) 0 var(--space-5) var(--space-5);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
   border-top: 1px solid var(--ash); /* nefes çizgisi */
-  margin-top: var(--space-4);
 }
 
 /* Browser default `margin-block-end: ~1em` reset — açık panelin son child'ı
