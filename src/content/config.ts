@@ -258,6 +258,10 @@ const etkinlikler = defineCollection({
     tarihBaslangic: z.string(),
     tarihBitis: z.string().optional(),
     saat: z.string().optional(),
+    // brief-takvim-toparlama-uygula.md ADIM 1 — display fallback için loader'a
+    // taşındı; Zoom otomasyonu bu alandan bağımsız (`zoom-olustur.ts` Notion'dan
+    // direkt okur). Display: `saat ?? zoomBaslangicSaati`.
+    zoomBaslangicSaati: z.string().optional(),
     mekan: z.enum(['Online', 'İzmir', 'İstanbul', 'Ege', 'Anadolu']),
     mekanDetay: z.string().optional(),
     kayitUrl: z.string().optional(), // relative URL'ler valid olmalı — .url() YOK

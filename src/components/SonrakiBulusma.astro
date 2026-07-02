@@ -81,7 +81,7 @@ const bos = liste.length === 0;
               <h3 class="sonraki-bulusma__baslik">{etkinlik.baslik}</h3>
               <p class="sonraki-bulusma__meta">
                 <span class="sonraki-bulusma__tarih">
-                  {formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat)}
+                  {formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat ?? etkinlik.zoomBaslangicSaati)}
                 </span>
                 <span class="sonraki-bulusma__sep" aria-hidden="true">·</span>
                 <span class="sonraki-bulusma__mekan">
