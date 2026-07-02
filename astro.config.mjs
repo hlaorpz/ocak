@@ -25,6 +25,15 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkOcakSections],
   },
+  // Slug rename 2026-07-03: /workshop→/atolye, /istanbul→/sehir-aksami. Site
+  // stealth (robots Disallow, dış link yok) → dış referans neredeyse yok, ama
+  // Kaan bookmark + davet linklerine sigorta. ~6 ay sonra silinebilir.
+  redirects: {
+    '/workshop': { status: 301, destination: '/atolye' },
+    '/istanbul': { status: 301, destination: '/sehir-aksami' },
+    '/workshop/kayit': { status: 301, destination: '/atolye/kayit' },
+    '/istanbul/kayit': { status: 301, destination: '/sehir-aksami/kayit' },
+  },
   build: {
     inlineStylesheets: 'auto',
     assets: '_ocak',

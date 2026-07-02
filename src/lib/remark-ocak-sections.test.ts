@@ -215,8 +215,8 @@ describe('remark-ocak-sections', () => {
     const html = render('fixture-13-notion-link-normalize.md');
     // Internal direct slug → `/cember`
     expect(html).toContain('href="/cember"');
-    // Workspace prefix + 32-hex hash → slug çıkarılır, whitelist'te workshop → `/workshop`
-    expect(html).toContain('href="/workshop"');
+    // Workspace prefix + 32-hex hash → slug çıkarılır, whitelist'te atolye → `/atolye`
+    expect(html).toContain('href="/atolye"');
     // Whitelist dışı slug → korunur (warn log'da)
     expect(html).toContain('href="https://www.notion.so/external-page-xyz"');
     // Normal external → dokunulmaz

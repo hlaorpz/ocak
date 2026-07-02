@@ -132,6 +132,24 @@ const isProd = import.meta.env.PROD;
           el.classList.add('visible');
         });
       }
+
+      // Eşik accordion scroll-jump fix (/sen-neredesin, TUR-3). Exclusive
+      // <details name="esikler"> aşağıdaki maddeye tıklandığında yukarıdaki
+      // kapanır → sayfa yüksekliği ~300-445px kısalır → tıklanan başlık
+      // viewport'ta yukarı zıplar. Chrome scroll-anchoring bu senaryoda
+      // çalışmıyor. Toggle → açılan summary'yi 'nearest' ile hizala:
+      // viewport içindeyse dokunma, dışına çıktıysa asgari kaydır.
+      // CSS scroll-margin-top: var(--nav-height) sticky nav altına gizlenmeyi engeller.
+      document.querySelectorAll<HTMLDetailsElement>('details[name="esikler"]').forEach((d) => {
+        d.addEventListener('toggle', () => {
+          if (d.open) {
+            d.querySelector('summary')?.scrollIntoView({
+              block: 'nearest',
+              behavior: 'auto',
+            });
+          }
+        });
+      });
     </script>
   </body>
 </html>

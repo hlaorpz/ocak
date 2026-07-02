@@ -28,18 +28,18 @@ describe('filterDropdownEtkinlikleri — tip filter', () => {
     const input: MockEntry[] = [
       mk('a', 'Çember', 'Kayıt Açık', '2026-06-21'),
       mk('b', 'Açık Kapı', 'Kayıt Açık', '2026-06-19'),
-      mk('c', 'Workshop', 'Kayıt Açık', '2026-09-15'),
+      mk('c', 'Atölye', 'Kayıt Açık', '2026-09-15'),
       mk('d', 'Çember', 'Dolu', '2026-07-15'),
     ];
     const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result.map((e) => e.id)).toEqual(['a', 'd']);
   });
 
-  it('Açık Kapı: sadece tip="Açık Kapı" entry\'leri döner, Çember/Workshop elenir', () => {
+  it('Açık Kapı: sadece tip="Açık Kapı" entry\'leri döner, Çember/Atölye elenir', () => {
     const input: MockEntry[] = [
       mk('a', 'Çember', 'Kayıt Açık', '2026-06-21'),
       mk('b', 'Açık Kapı', 'Kayıt Açık', '2026-06-19'),
-      mk('c', 'Workshop', 'Kayıt Açık', '2026-09-15'),
+      mk('c', 'Atölye', 'Kayıt Açık', '2026-09-15'),
       mk('d', 'Açık Kapı', 'Dolu', '2026-07-03'),
     ];
     const result = filterDropdownEtkinlikleri(input, 'Açık Kapı', BUGUN);
@@ -83,7 +83,7 @@ describe('filterDropdownEtkinlikleri — boş durum', () => {
   it('eşleşen tip yok → boş array', () => {
     const input: MockEntry[] = [
       mk('a', 'Açık Kapı', 'Kayıt Açık', '2026-06-19'),
-      mk('b', 'Workshop', 'Kayıt Açık', '2026-09-15'),
+      mk('b', 'Atölye', 'Kayıt Açık', '2026-09-15'),
     ];
     const result = filterDropdownEtkinlikleri(input, 'Çember', BUGUN);
     expect(result).toEqual([]);

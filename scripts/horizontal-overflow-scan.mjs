@@ -25,13 +25,13 @@ const ROUTES = [
   '/felsefe',
   '/hikaye',
   '/iletisim',
-  '/istanbul',
+  '/sehir-aksami',
   '/mini-retreat',
   '/sen-neredesin',
   '/seremoni',
   '/site-rehber',
   '/takvim',
-  '/workshop',
+  '/atolye',
   '/yolculuk',
 ];
 const EPS = 0.5;

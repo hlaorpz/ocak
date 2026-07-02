@@ -10,8 +10,8 @@
  *   TESTPASIF   (her şey), Aktif=✗
  *   TESTGECMIS  Yüzde, Aktif=✓, Son Geçerlilik=geçmiş tarih
  *   TESTLIMIT   Yüzde, Aktif=✓, Kullanım Limiti=1, Kullanım Sayısı=1
- *   TESTFORMAT  Yüzde, Aktif=✓, Geçerli Formatlar=[workshop]   (cember ile çağrılır → format-disi)
- *   TESTHARIC   Yüzde, Aktif=✓, Hariç Formatlar=[istanbul]    (istanbul ile çağrılır → format-disi)  [opsiyonel]
+ *   TESTFORMAT  Yüzde, Aktif=✓, Geçerli Formatlar=[atolye]     (cember ile çağrılır → format-disi)
+ *   TESTHARIC   Yüzde, Aktif=✓, Hariç Formatlar=[sehir-aksami] (sehir-aksami ile çağrılır → format-disi)  [opsiyonel]
  *
  * Kod eksikse o senaryo SKIP olur (PASS/FAIL etkilenmez).
  *
@@ -152,17 +152,17 @@ async function main() {
     gecerli: false,
     sebep: 'limit-doldu',
   });
-  await senaryo('TESTFORMAT (whitelist=workshop, çağrı=cember)', 'TESTFORMAT', 'cember', 1000, {
+  await senaryo('TESTFORMAT (whitelist=atolye, çağrı=cember)', 'TESTFORMAT', 'cember', 1000, {
     gecerli: false,
     sebep: 'format-disi',
   });
-  await senaryo('TESTHARIC (blacklist=istanbul, çağrı=istanbul)', 'TESTHARIC', 'istanbul', 1000, {
+  await senaryo('TESTHARIC (blacklist=sehir-aksami, çağrı=sehir-aksami)', 'TESTHARIC', 'sehir-aksami', 1000, {
     gecerli: false,
     sebep: 'format-disi',
   });
-  // Bypass: TESTHARIC istanbul'da format-disi ama cember'de geçerli olmalı
+  // Bypass: TESTHARIC sehir-aksami'de format-disi ama cember'de geçerli olmalı
   // (tip/tutar Kaan'a göre değişir — sadece "geçerli mi?" kontrolü).
-  await senaryo('TESTHARIC (blacklist=istanbul, çağrı=cember) — bypass', 'TESTHARIC', 'cember', 1000, {
+  await senaryo('TESTHARIC (blacklist=sehir-aksami, çağrı=cember) — bypass', 'TESTHARIC', 'cember', 1000, {
     gecerli: true,
   });
   await senaryo('YOKBOYLEKOD', 'YOKBOYLEKOD' + Math.random().toString(36).slice(2), 'cember', 1000, {
