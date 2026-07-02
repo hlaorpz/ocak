@@ -21,7 +21,7 @@ const log = (s = '') => console.log(s);
 
 // Schema'daki enum beklentileri (config.ts ile aynı) — sapma testi için.
 const EXPECTED = {
-  Format: ['Yolculuk', 'Mini Retreat', 'İstanbul Akşamı', 'Workshop', 'Mevsim Seremonisi', 'Açık Kapı', 'Çember'],
+  Format: ['Yolculuk', 'Mini Retreat', 'Şehir Akşamı', 'Atölye', 'Seremoni', 'Açık Kapı', 'Çember'],
   'Mekân/Platform': ['Online', 'İzmir', 'İstanbul', 'Ege', 'Anadolu'],
   Statü: ['Taslak', 'Kayıt Açık', 'Dolu', 'Geçti', 'İptal'],
 };

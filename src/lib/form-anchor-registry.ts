@@ -38,8 +38,8 @@ export const formAnchorRegistry: Record<string, AstroComponent[]> = {
   '/acik-kapi': [KayitCTA],
   '/mini-retreat': [KayitCTA],
   '/seremoni': [KayitCTA],
-  '/istanbul': [KayitCTA],
-  '/workshop': [KayitCTA],
+  '/sehir-aksami': [KayitCTA],
+  '/atolye': [KayitCTA],
   // /takvim + /yolculuk: kayıt sayfası yok, AtesMektuplariCTA kalır.
   '/takvim': [AtesMektuplariCTA],
   '/yolculuk': [AtesMektuplariCTA],
@@ -60,8 +60,8 @@ export const formAnchorProps: Record<string, Array<Record<string, unknown>>> = {
   '/acik-kapi': [{ href: '/acik-kapi/kayit', kategoriAdi: 'Açık Kapı' }],
   '/mini-retreat': [{ href: '/mini-retreat/kayit', kategoriAdi: 'mini retreat' }],
   '/seremoni': [{ href: '/seremoni/kayit', kategoriAdi: 'mevsim seremonisi' }],
-  '/istanbul': [{ href: '/istanbul/kayit', kategoriAdi: 'İstanbul akşamı' }],
-  '/workshop': [{ href: '/workshop/kayit', kategoriAdi: 'workshop' }],
+  '/sehir-aksami': [{ href: '/sehir-aksami/kayit', kategoriAdi: 'şehir akşamı' }],
+  '/atolye': [{ href: '/atolye/kayit', kategoriAdi: 'atölye' }],
   // Kayıt sayfası olmayanlar — AtesMektuplariCTA
   '/takvim': [{ kategoriAdi: 'OCAK buluşması' }],
   '/yolculuk': [{ kategoriAdi: 'Anadolu Yolculuğu' }],

@@ -8,29 +8,27 @@ export type EtkinlikKategori =
   | 'cember'
   | 'acik-kapi'
   | 'seremoni'
-  | 'workshop'
-  | 'istanbul'
+  | 'atolye'
+  | 'sehir-aksami'
   | 'mini-retreat'
   | 'yolculuk';
 
 export const FORMAT_KATEGORI: Record<string, EtkinlikKategori> = {
   'Çember': 'cember',
   'Açık Kapı': 'acik-kapi',
-  'Mevsim Seremonisi': 'seremoni',
-  Workshop: 'workshop',
-  'İstanbul Akşamı': 'istanbul',
+  Seremoni: 'seremoni',
+  Atölye: 'atolye',
+  'Şehir Akşamı': 'sehir-aksami',
   'Mini Retreat': 'mini-retreat',
   Yolculuk: 'yolculuk',
 };
 
 /**
  * Format ham Notion değeri → görünür etiket (brief-takvim-toparlama-uygula.md ADIM 2).
- * Yol B: Notion select DEĞİŞMEZ; sadece UI'da basılan metin yerlileştirilir.
- * Map'te olmayan tip kendi adıyla geçer (güvenli fallback).
+ * Slug rename brief (2026-07-03) sonrası Notion Format enum'u zaten "Seremoni"
+ * kısasına geçtiği için map artık boş — helper kimlik fonksiyonuna düşer.
  */
-export const FORMAT_LABEL: Record<string, string> = {
-  'Mevsim Seremonisi': 'Seremoni',
-};
+export const FORMAT_LABEL: Record<string, string> = {};
 
 export const formatEtiket = (tip: string): string => FORMAT_LABEL[tip] ?? tip;
 
@@ -44,10 +42,10 @@ export const formatEtiket = (tip: string): string => FORMAT_LABEL[tip] ?? tip;
 export const KATEGORI_SIRA: string[] = [
   'Açık Kapı',
   'Çember',
-  'Mevsim Seremonisi',
-  'Workshop',
+  'Seremoni',
+  'Atölye',
   'Mini Retreat',
-  'İstanbul Akşamı',
+  'Şehir Akşamı',
   'Yolculuk',
 ];
 
@@ -107,8 +105,8 @@ export const SLUG_KATEGORI: Record<string, EtkinlikKategori | null> = {
   '/': null,
   '/mini-retreat': 'mini-retreat',
   '/seremoni': 'seremoni',
-  '/workshop': 'workshop',
-  '/istanbul': 'istanbul',
+  '/atolye': 'atolye',
+  '/sehir-aksami': 'sehir-aksami',
   '/cember': 'cember',
   '/acik-kapi': 'acik-kapi',
   '/anadolu': 'yolculuk',
@@ -126,8 +124,8 @@ export const KATEGORI_HEADING: Record<EtkinlikKategori, string> = {
   cember: 'Yaklaşan Çemberler',
   'acik-kapi': 'Yaklaşan Açık Kapılar',
   seremoni: 'Yaklaşan Seremoniler',
-  workshop: "Yaklaşan Workshop'lar",
-  istanbul: 'Yaklaşan İstanbul Akşamları',
+  atolye: 'Yaklaşan Atölyeler',
+  'sehir-aksami': 'Yaklaşan Şehir Akşamları',
   'mini-retreat': "Yaklaşan Mini Retreat'ler",
   yolculuk: 'Yaklaşan Yolculuklar',
 };

@@ -1,5 +1,5 @@
 ---
-// istanbul.astro — /istanbul sayfa override (#26 Brief G Adım 5; KARAR 127).
+// atolye.astro — /atolye sayfa override (#26 Brief G Adım 4; KARAR 127).
 // SonrakiBulusma artık fragment-split sonraki-bulusma marker'ından geliyor;
 // hard-coded instance kaldırıldı. AtesMektuplariCTA form-anchor registry'den.
 //
@@ -13,9 +13,9 @@ import PageContent from '../components/PageContent.astro';
 import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
 import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
 
-const sayfa = await getEntry('sayfalar', '/istanbul');
+const sayfa = await getEntry('sayfalar', '/atolye');
 if (!sayfa) {
-  throw new Error("istanbul.astro: 'sayfalar' collection'ında '/istanbul' slug'ı bulunamadı.");
+  throw new Error("atolye.astro: 'sayfalar' collection'ında '/atolye' slug'ı bulunamadı.");
 }
 
 const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
@@ -29,10 +29,10 @@ const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
 >
   {etkinlikGecmis && (
     <DavetGecmisEtkinlikUyari
-      ctaMetin="Sıradaki İstanbul Akşamı'na bak →"
-      ctaHref="/istanbul/kayit"
+      ctaMetin="Sıradaki Atölye'ye bak →"
+      ctaHref="/atolye/kayit"
     />
   )}
 
-  <PageContent slug="/istanbul" fragments={sayfa.data.fragments} />
+  <PageContent slug="/atolye" fragments={sayfa.data.fragments} />
 </Layout>

@@ -1,5 +1,5 @@
 ---
-// /seremoni/kayit — Mevsim Seremonisi ödemeli kayıt (Brief 3 KARAR 206).
+// /seremoni/kayit — Seremoni ödemeli kayıt (Brief 3 KARAR 206).
 // Notion'da Kayıt Soruları boş — Bölüm 2 "Niyet" dinamik olarak hiç render
 // edilmez (sayfada 2 bölüm görünür: Sen + Katılım & Ödeme). Subtitle da
 // niyet ibaresi içermez.
@@ -11,14 +11,14 @@ import { loadKayitData } from '../../lib/kayit-sayfa';
 const data = await loadKayitData('seremoni');
 ---
 <Layout
-  title="Mevsim Seremonisi Kaydı"
-  description="Sıradaki mevsim seremonisine kaydını yap. Tarih seç, katılım payını ilet."
+  title="Seremoni Kaydı"
+  description="Sıradaki seremoniye kaydını yap. Tarih seç, katılım payını ilet."
   oda="Buluşmalar"
 >
   <Hero
     oda="Buluşmalar"
     overline="SEREMONİ"
-    title="Bir mevsim seremonisine gel."
+    title="Bir seremoniye gel."
     subtitle="Tarih seç, katılım payını ilet — ateşin yanında sana yer ayıralım."
     showScroll={false}
   />

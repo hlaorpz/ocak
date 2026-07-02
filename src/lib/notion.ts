@@ -31,8 +31,8 @@ export const notion = new Client({ auth: NOTION_TOKEN });
 export const NOTION_PAGES_DB = import.meta.env.NOTION_PAGES_DB_ID ?? '';
 export const NOTION_EVENTS_DB = import.meta.env.NOTION_EVENTS_DB_ID ?? '';
 export const NOTION_BASVURULAR_DB = import.meta.env.NOTION_BASVURULAR_DB_ID ?? '';
-// Ödeme/kayıt otoritesi (KARAR 76). Kapı 1 formatları (acik-kapi/workshop/
-// mini-retreat/istanbul/seremoni) burada satır açar; cember (Kapı 2) Başvurular'a
+// Ödeme/kayıt otoritesi (KARAR 76). Kapı 1 formatları (acik-kapi/atolye/
+// mini-retreat/sehir-aksami/seremoni) burada satır açar; cember (Kapı 2) Başvurular'a
 // yazar, oradan onayla Kayıtlar'a düşer (Aşama 1.6 köprüsü).
 export const NOTION_KAYITLAR_DB = import.meta.env.NOTION_KAYITLAR_DB_ID ?? '';
 // brief-davet-sistemi: Davet Sistemi v1 — /api/davet endpoint Davetler DB'ye

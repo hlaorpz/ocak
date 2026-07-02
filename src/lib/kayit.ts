@@ -5,40 +5,38 @@
 // import edip slug→format çözümünde kullanır. Brief 2A'da sadece endpoint
 // kullanır (form henüz yok).
 //
-// Notion enum sapmaları:
-// - Etkinlikler DB "Format" select: "Mevsim Seremonisi", "İstanbul Akşamı" (uzun)
-// - Başvurular DB "Tip" select: "Seremoni", "İstanbul" (kısa) — bu map kısa olan
-//   Tip enum'unu hedefler.
+// Notion enum: Başvurular DB "Tip" + Etkinlikler DB "Format" AYNI değeri taşır
+// (slug rename brief S2 kararı — 2026-07-03: kısa/uzun ayrımı silindi). İki
+// harita ayrı call-site'lar için tutulur ama değerler eşitlenmiştir.
 
 export type KayitFormat =
   | 'cember'
   | 'acik-kapi'
   | 'mini-retreat'
-  | 'istanbul'
+  | 'sehir-aksami'
   | 'seremoni'
-  | 'workshop';
+  | 'atolye';
 
-// Slug → Notion Başvurular DB "Tip" select option name (kısa varyant).
+// Slug → Notion Başvurular DB "Tip" select option name.
 export const FORMAT_TIP: Record<KayitFormat, string> = {
   cember: 'Çember',
   'acik-kapi': 'Açık Kapı',
   'mini-retreat': 'Mini Retreat',
-  istanbul: 'İstanbul',
+  'sehir-aksami': 'Şehir Akşamı',
   seremoni: 'Seremoni',
-  workshop: 'Workshop',
+  atolye: 'Atölye',
 };
 
-// Slug → Notion Etkinlikler DB "Format" select option name (UZUN varyant).
-// İstanbul + Seremoni'de Başvurular Tip'inden farklı: orada "İstanbul/Seremoni"
-// kısaltma, burada "İstanbul Akşamı/Mevsim Seremonisi" uzun. Etkinlikler
-// dropdown filtresi bu uzun ismi kullanır.
+// Slug → Notion Etkinlikler DB "Format" select option name.
+// S2 sonrası FORMAT_TIP ile aynı değeri döndürür; iki harita ayrı call-site'lar
+// için tutulur (etkinlikler dropdown filtresi + başvurular Tip yazımı).
 export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
   cember: 'Çember',
   'acik-kapi': 'Açık Kapı',
   'mini-retreat': 'Mini Retreat',
-  istanbul: 'İstanbul Akşamı',
-  seremoni: 'Mevsim Seremonisi',
-  workshop: 'Workshop',
+  'sehir-aksami': 'Şehir Akşamı',
+  seremoni: 'Seremoni',
+  atolye: 'Atölye',
 };
 
 /**
@@ -92,9 +90,9 @@ export function formatTutarTr(tutar: number): string {
 // `etk.kayitTipi === 'Direkt'` dallanmasına bakar.
 export const KAPI1_FORMATLAR: readonly KayitFormat[] = [
   'acik-kapi',
-  'workshop',
+  'atolye',
   'mini-retreat',
-  'istanbul',
+  'sehir-aksami',
   'seremoni',
 ] as const;
 
@@ -120,9 +118,9 @@ export const FORMAT_MAILERLITE_GROUP: Record<KayitFormat, string> = {
   cember: '187798293576681151',
   'acik-kapi': '187372390149261252',
   'mini-retreat': '189209166869431831',
-  istanbul: '189209188425008761',
+  'sehir-aksami': '189209188425008761',
   seremoni: '189209224470857710',
-  workshop: '189209178380699119',
+  atolye: '189209178380699119',
 };
 
 export function isKayitFormat(s: unknown): s is KayitFormat {

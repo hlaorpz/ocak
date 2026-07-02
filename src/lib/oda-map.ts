@@ -32,8 +32,8 @@ export const ODA_MAP: Record<string, Oda> = {
   '/cember': 'Buluşmalar',
   '/acik-kapi': 'Buluşmalar',
   '/seremoni': 'Buluşmalar',
-  '/workshop': 'Buluşmalar',
-  '/istanbul': 'Buluşmalar',
+  '/atolye': 'Buluşmalar',
+  '/sehir-aksami': 'Buluşmalar',
   '/mini-retreat': 'Buluşmalar',
   '/takvim': 'Buluşmalar',
   // Yolculuk

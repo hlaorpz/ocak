@@ -194,7 +194,7 @@ function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): st
 }
 
 /**
- * Kapı 1 formatları (acik-kapi/workshop/mini-retreat/istanbul/seremoni) için
+ * Kapı 1 formatları (acik-kapi/atolye/mini-retreat/sehir-aksami/seremoni) için
  * Kayıtlar DB'ye satır açar (Aşama 1.5, KARAR 76). Pending — gerçek tahsilat
  * henüz olmadı; `Ödenen Tutar` + `Ödeme Tarihi` ödeme onaylanınca yazılır
  * (Aşama 3).

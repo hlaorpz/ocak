@@ -2,7 +2,7 @@
 
 Direct internal slug: [Çember sayfası](https://www.notion.so/cember)
 
-Workspace prefix + 32-hex hash (defansif): [Workshop hash'li](https://www.notion.so/workspace/workshop-abc123def456abc123def456abc123de)
+Workspace prefix + 32-hex hash (defansif): [Atölye hash'li](https://www.notion.so/workspace/atolye-abc123def456abc123def456abc123de)
 
 Whitelist dışı slug (korunur + warn): [Dış sayfa](https://www.notion.so/external-page-xyz)
 

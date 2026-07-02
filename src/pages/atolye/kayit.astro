@@ -1,5 +1,5 @@
 ---
-// /workshop/kayit — Workshop ödemeli kayıt (Brief 3 KARAR 206).
+// /atolye/kayit — Atölye ödemeli kayıt (Brief 3 KARAR 206).
 // Notion'da Kayıt Soruları boş — Bölüm 2 "Niyet" dinamik olarak hiç render
 // edilmez. Subtitle da niyet ibaresi içermez.
 import Layout from '../../layouts/Layout.astro';
@@ -7,22 +7,22 @@ import Hero from '../../components/Hero.astro';
 import KayitFormu from '../../components/KayitFormu.astro';
 import { loadKayitData } from '../../lib/kayit-sayfa';
 
-const data = await loadKayitData('workshop');
+const data = await loadKayitData('atolye');
 ---
 <Layout
-  title="Workshop Kaydı"
-  description="Sıradaki workshop'a kaydını yap. Tarih seç, katılım payını ilet."
+  title="Atölye Kaydı"
+  description="Sıradaki atölyeye kaydını yap. Tarih seç, katılım payını ilet."
   oda="Buluşmalar"
 >
   <Hero
     oda="Buluşmalar"
-    overline="WORKSHOP"
-    title="Bir workshop'a katıl."
+    overline="ATÖLYE"
+    title="Bir atölyeye katıl."
     subtitle="Tarih seç, katılım payını ilet — ateşin yanında sana yer ayıralım."
     showScroll={false}
   />
   <KayitFormu
-    format="workshop"
+    format="atolye"
     etkinlikler={data.etkinlikler}
     havaleIban={data.havaleIban}
     havaleAd={data.havaleAd}

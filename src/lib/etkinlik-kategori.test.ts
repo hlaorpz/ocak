@@ -18,8 +18,8 @@ const liste: MockEtkinlik[] = [
   { tip: 'Çember', baslik: 'cember-1' },
   { tip: 'Çember', baslik: 'cember-2' },
   { tip: 'Açık Kapı', baslik: 'acik-kapi-1' },
-  { tip: 'Workshop', baslik: 'workshop-1' },
-  { tip: 'Mevsim Seremonisi', baslik: 'seremoni-1' },
+  { tip: 'Atölye', baslik: 'atolye-1' },
+  { tip: 'Seremoni', baslik: 'seremoni-1' },
 ];
 
 describe('filterEtkinliklerByKategori — kategori defansı (#26 / Brief I.3)', () => {
@@ -55,8 +55,8 @@ describe('getKategori — slug → kategori türetme (KARAR 127 genişletme)', (
   it('oda sayfaları (4 hard-coded markerlı + 3 defansif) → ilgili kategori', () => {
     expect(getKategori('/mini-retreat')).toBe('mini-retreat');
     expect(getKategori('/seremoni')).toBe('seremoni');
-    expect(getKategori('/workshop')).toBe('workshop');
-    expect(getKategori('/istanbul')).toBe('istanbul');
+    expect(getKategori('/atolye')).toBe('atolye');
+    expect(getKategori('/sehir-aksami')).toBe('sehir-aksami');
     expect(getKategori('/cember')).toBe('cember');
     expect(getKategori('/acik-kapi')).toBe('acik-kapi');
     expect(getKategori('/anadolu')).toBe('yolculuk');
@@ -79,7 +79,7 @@ describe('getHeading — fallback davranışı (brief karar)', () => {
 
   it('kategori var + o kategoride etkinlik var → KATEGORI_HEADING', () => {
     expect(getHeading('/seremoni', true)).toBe(KATEGORI_HEADING['seremoni']);
-    expect(getHeading('/workshop', true)).toBe(KATEGORI_HEADING['workshop']);
+    expect(getHeading('/atolye', true)).toBe(KATEGORI_HEADING['atolye']);
   });
 
   it('kategori var + o kategoride etkinlik yok → DEFAULT_HEADING (fallback davranışı)', () => {

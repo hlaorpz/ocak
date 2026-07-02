@@ -249,9 +249,9 @@ const etkinlikler = defineCollection({
     tip: z.enum([
       'Yolculuk',
       'Mini Retreat',
-      'İstanbul Akşamı',
-      'Workshop',
-      'Mevsim Seremonisi',
+      'Şehir Akşamı',
+      'Atölye',
+      'Seremoni',
       'Açık Kapı',
       'Çember',
     ]),

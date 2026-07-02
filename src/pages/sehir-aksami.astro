@@ -1,5 +1,5 @@
 ---
-// workshop.astro — /workshop sayfa override (#26 Brief G Adım 4; KARAR 127).
+// sehir-aksami.astro — /sehir-aksami sayfa override (#26 Brief G Adım 5; KARAR 127).
 // SonrakiBulusma artık fragment-split sonraki-bulusma marker'ından geliyor;
 // hard-coded instance kaldırıldı. AtesMektuplariCTA form-anchor registry'den.
 //
@@ -13,9 +13,9 @@ import PageContent from '../components/PageContent.astro';
 import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
 import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
 
-const sayfa = await getEntry('sayfalar', '/workshop');
+const sayfa = await getEntry('sayfalar', '/sehir-aksami');
 if (!sayfa) {
-  throw new Error("workshop.astro: 'sayfalar' collection'ında '/workshop' slug'ı bulunamadı.");
+  throw new Error("sehir-aksami.astro: 'sayfalar' collection'ında '/sehir-aksami' slug'ı bulunamadı.");
 }
 
 const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
@@ -29,10 +29,10 @@ const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
 >
   {etkinlikGecmis && (
     <DavetGecmisEtkinlikUyari
-      ctaMetin="Sıradaki Workshop'a bak →"
-      ctaHref="/workshop/kayit"
+      ctaMetin="Sıradaki Şehir Akşamı'na bak →"
+      ctaHref="/sehir-aksami/kayit"
     />
   )}
 
-  <PageContent slug="/workshop" fragments={sayfa.data.fragments} />
+  <PageContent slug="/sehir-aksami" fragments={sayfa.data.fragments} />
 </Layout>

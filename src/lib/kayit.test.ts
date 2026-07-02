@@ -27,9 +27,9 @@ const TUM_FORMATLAR: KayitFormat[] = [
   'cember',
   'acik-kapi',
   'mini-retreat',
-  'istanbul',
+  'sehir-aksami',
   'seremoni',
-  'workshop',
+  'atolye',
 ];
 
 describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
@@ -46,25 +46,25 @@ describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
     expect(isKayitFormat(42)).toBe(false);
   });
 
-  it('FORMAT_TIP — 6 format, Notion Başvurular DB Tip enum (kısa varyant)', () => {
+  it('FORMAT_TIP — 6 format, Notion Başvurular DB Tip enum (S2 sonrası tek ad)', () => {
     expect(FORMAT_TIP).toEqual({
       cember: 'Çember',
       'acik-kapi': 'Açık Kapı',
       'mini-retreat': 'Mini Retreat',
-      istanbul: 'İstanbul',
+      'sehir-aksami': 'Şehir Akşamı',
       seremoni: 'Seremoni',
-      workshop: 'Workshop',
+      atolye: 'Atölye',
     });
   });
 
-  it('FORMAT_NOTION_FORMAT — 6 format, Notion Etkinlikler DB Format enum (uzun varyant)', () => {
+  it('FORMAT_NOTION_FORMAT — 6 format, Notion Etkinlikler DB Format enum (S2 sonrası tek ad)', () => {
     expect(FORMAT_NOTION_FORMAT).toEqual({
       cember: 'Çember',
       'acik-kapi': 'Açık Kapı',
       'mini-retreat': 'Mini Retreat',
-      istanbul: 'İstanbul Akşamı',
-      seremoni: 'Mevsim Seremonisi',
-      workshop: 'Workshop',
+      'sehir-aksami': 'Şehir Akşamı',
+      seremoni: 'Seremoni',
+      atolye: 'Atölye',
     });
   });
 
@@ -181,8 +181,8 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207)', () => {
 
   it('aynı sayfada birden fazla kayit-cta → hepsi aynı slug ile doldurulur', () => {
     const ikili = SECTION_METINSIZ + '\n<p>Arada prose.</p>\n' + SECTION_METINLI;
-    const out = resolveKayitCtaHref(ikili, '/workshop');
-    const matches = out.match(/href="\/workshop\/kayit"/g);
+    const out = resolveKayitCtaHref(ikili, '/atolye');
+    const matches = out.match(/href="\/atolye\/kayit"/g);
     expect(matches?.length).toBe(2);
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
   });
@@ -382,8 +382,8 @@ describe('etkinlikAdiFormatla (Brief 5 — MailerLite etkinlik_adi şablonu)', (
     expect(etkinlikAdiFormatla('acik-kapi', '19 Haziran 2026')).toBe(
       'Açık Kapı — 19 Haziran 2026',
     );
-    expect(etkinlikAdiFormatla('istanbul', '18 Haziran 2026')).toBe(
-      'İstanbul — 18 Haziran 2026',
+    expect(etkinlikAdiFormatla('sehir-aksami', '18 Haziran 2026')).toBe(
+      'Şehir Akşamı — 18 Haziran 2026',
     );
   });
 
@@ -394,15 +394,15 @@ describe('etkinlikAdiFormatla (Brief 5 — MailerLite etkinlik_adi şablonu)', (
   });
 
   it('seciliTarih sadece whitespace → sadece TIP', () => {
-    expect(etkinlikAdiFormatla('workshop', '   ')).toBe('Workshop');
+    expect(etkinlikAdiFormatla('atolye', '   ')).toBe('Atölye');
   });
 
-  it('Başvurular Tip (kısa) kullanılır, Etkinlikler Format (uzun) DEĞİL', () => {
-    // İstanbul / Seremoni'de kısa-uzun farkı var; helper Tip'i kullanır.
-    expect(etkinlikAdiFormatla('istanbul', '1 Ocak 2027')).toContain('İstanbul');
-    expect(etkinlikAdiFormatla('istanbul', '1 Ocak 2027')).not.toContain('Akşamı');
+  it('S2 sonrası Tip == Format aynı değer (kısa/uzun ayrımı silindi)', () => {
+    // Slug rename brief S2 (2026-07-03): FORMAT_TIP ile FORMAT_NOTION_FORMAT
+    // aynı Notion enum değerini döndürür. Helper Tip'i kullanır.
+    expect(etkinlikAdiFormatla('sehir-aksami', '1 Ocak 2027')).toContain('Şehir Akşamı');
     expect(etkinlikAdiFormatla('seremoni', '1 Ocak 2027')).toContain('Seremoni');
-    expect(etkinlikAdiFormatla('seremoni', '1 Ocak 2027')).not.toContain('Mevsim');
+    expect(etkinlikAdiFormatla('atolye', '1 Ocak 2027')).toContain('Atölye');
   });
 });
 
