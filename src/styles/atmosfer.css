@@ -387,6 +387,13 @@ details[data-section^="esik-"][open] {
   margin-top: var(--space-4);
 }
 
+/* Browser default `margin-block-end: ~1em` reset — açık panelin son child'ı
+ * (<blockquote> 9/10, <ul> esik-spiral) tasarım nefesinin (space-7 = 48px alt
+ * padding) üstüne ~16px eklemesin. Element-agnostik: her iki bitişi de yakalar. */
+details[data-section^="esik-"][open] > *:last-child {
+  margin-block-end: 0;
+}
+
 details[data-section^="esik-"] summary {
   list-style: none; /* native marker kapat */
   cursor: pointer;
