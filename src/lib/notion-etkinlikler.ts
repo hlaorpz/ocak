@@ -22,6 +22,12 @@ export type EtkinlikFrontmatter = {
   /** Notion date.end — range etkinlikler için; tek günlükte undefined. */
   tarihBitis?: string;
   saat?: string;
+  /**
+   * Notion "Zoom Başlangıç Saati" rich_text — Zoom otomasyonu için makine alanı
+   * (`zoom-olustur.ts` / `kayit.ts` API tarafında okunur). Display fallback:
+   * `saat` boşsa kart/form görünen saati buradan basar (brief-takvim-toparlama-uygula.md).
+   */
+  zoomBaslangicSaati?: string;
   mekan: string;
   mekanDetay?: string;
   /** Relative olabilir (örn. /kayit/...) — bu yüzden Zod tarafında .url() YOK. */
@@ -147,6 +153,7 @@ export async function fetchEtkinlikler(
 export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter {
   const tarih = dateRange(page, 'Tarih');
   const saat = richText(page, 'Saat').trim();
+  const zoomBaslangicSaati = richText(page, 'Zoom Başlangıç Saati').trim();
   const mekanDetay = richText(page, 'Konum Detay').trim();
   const kayitUrl = urlVal(page, 'Kayıt Linki').trim();
   const aciklama = richText(page, 'Kısa Açıklama').trim();
@@ -175,6 +182,7 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     kayitTipi,
     ...(tarih?.end ? { tarihBitis: tarih.end } : {}),
     ...(saat ? { saat } : {}),
+    ...(zoomBaslangicSaati ? { zoomBaslangicSaati } : {}),
     ...(mekanDetay ? { mekanDetay } : {}),
     ...(kayitUrl ? { kayitUrl } : {}),
     ...(aciklama ? { aciklama } : {}),

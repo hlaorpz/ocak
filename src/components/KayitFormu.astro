@@ -61,7 +61,7 @@ const formdaDirektEtkinlikVar = etkinlikler.some(
 // prop'u (sadece ilk etkinliğin soruları) vardı, deprecated.
 function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   return {
-    tarih: formatEtkinlikTarihi(e.data.tarihBaslangic, e.data.tarihBitis, e.data.saat),
+    tarih: formatEtkinlikTarihi(e.data.tarihBaslangic, e.data.tarihBitis, e.data.saat ?? e.data.zoomBaslangicSaati),
     ucret: e.data.ucret ?? 0,
     paraBirimi: e.data.paraBirimi ?? 'TRY',
     dolu: e.data.durum === 'Dolu',

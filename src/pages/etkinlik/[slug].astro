@@ -80,7 +80,7 @@ const referans = etkinlik.tarihBitis ?? etkinlik.tarihBaslangic;
 const referansTarihi = parcala(referans);
 const gecmisMi = referansTarihi ? referansTarihi < bugun : false;
 
-const tarihMetni = formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat);
+const tarihMetni = formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat ?? etkinlik.zoomBaslangicSaati);
 const mekanMetni = etkinlik.mekanDetay
   ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}`
   : etkinlik.mekan;

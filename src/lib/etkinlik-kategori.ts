@@ -24,6 +24,58 @@ export const FORMAT_KATEGORI: Record<string, EtkinlikKategori> = {
 };
 
 /**
+ * Format ham Notion değeri → görünür etiket (brief-takvim-toparlama-uygula.md ADIM 2).
+ * Yol B: Notion select DEĞİŞMEZ; sadece UI'da basılan metin yerlileştirilir.
+ * Map'te olmayan tip kendi adıyla geçer (güvenli fallback).
+ */
+export const FORMAT_LABEL: Record<string, string> = {
+  'Mevsim Seremonisi': 'Seremoni',
+};
+
+export const formatEtiket = (tip: string): string => FORMAT_LABEL[tip] ?? tip;
+
+/**
+ * /takvim tepe tab için deterministik format sırası
+ * (brief-takvim-toparlama-uygula.md ADIM 3). String'ler HAM Notion Format
+ * value'ları — sort ham `e.tip` üzerinde çalışır. `FORMAT_KATEGORI` key'leriyle
+ * BİREBİR eşleşmeli; bir harf/boşluk farkı tabı sona atar + warn basar.
+ * SADECE tepe tab; gövdedeki ay-ay timeline tarih-öncelikli kalır.
+ */
+export const KATEGORI_SIRA: string[] = [
+  'Açık Kapı',
+  'Çember',
+  'Mevsim Seremonisi',
+  'Workshop',
+  'Mini Retreat',
+  'İstanbul Akşamı',
+  'Yolculuk',
+];
+
+/**
+ * `Mekân/Platform` (Notion select) → rozet tipi
+ * (brief-takvim-toparlama-uygula.md ADIM 4).
+ * Notion 5 değerli: `Online | İzmir | İstanbul | Ege | Anadolu`. Rozet jenerik:
+ * Online / Fiziksel — şehir rozete yazılmaz (meta satırı zaten şehri gösterir).
+ * Bilinmeyen değer → null + warn.
+ */
+export const mekanTipi = (mekan?: string): 'online' | 'fiziksel' | null => {
+  if (!mekan) return null;
+  if (mekan === 'Online') return 'online';
+  if (['İzmir', 'İstanbul', 'Ege', 'Anadolu'].includes(mekan)) return 'fiziksel';
+  console.warn('[takvim] bilinmeyen Mekân/Platform:', mekan);
+  return null;
+};
+
+/**
+ * Kart ücret metni (brief-takvim-toparlama-uygula.md ADIM 4).
+ * `undefined` veya `0` → "sembolik"; `>0` → "{rakam} {paraBirimi ?? 'TRY'}".
+ */
+export const ucretMetni = (ucret?: number, paraBirimi?: string): string => {
+  if (ucret == null || ucret === 0) return 'sembolik';
+  return `${ucret} ${paraBirimi ?? 'TRY'}`;
+};
+
+/**
  * Etkinlik listesini kategoriye göre filtreler.
  *
  * - `kategori` falsy (undefined / null / '') → liste değişmez (mevcut davranış).
