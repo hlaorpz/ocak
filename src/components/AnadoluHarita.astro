@@ -50,9 +50,12 @@ const evreler: Evre[] = [
     x: 183.8, y: 281.5, isiToken: '--isi-uyanis',
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   // DURUŞ: Tuz Gölü → etiket ÜSTTE (DÖNÜŞ ve Kapadokya yakın, çakışma elemi).
+  // Etiket-yer y=14 offset ile ad'ın ALTINDA olduğu için üst konumda "Tuz Gölü"
+  // nokta merkezine yaklaşır; halka r=20 içinde çakışıyordu. labelDy tüm etiket
+  // blok'unu 20px daha yukarı iter → yer.bottom halka.top'un üstünde kalır.
   { slug: 'durus', ad: 'DURUŞ', yer: 'Tuz Gölü',
     x: 399.5, y: 234.7, isiToken: '--isi-durus',
-    labelDx: 0, labelDy: -20, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: -40, labelAnchor: 'middle' },
   { slug: 'gecis', ad: 'GEÇİŞ', yer: 'Yanartaş · Myra',
     x: 252.3, y: 367.3, isiToken: '--isi-gecis',
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
