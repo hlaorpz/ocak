@@ -1549,10 +1549,14 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
  * --------------------------------------------------------------------------- */
 
 /* ---- evreler-intro: "Altı Evre" başlığı (kart bloğunun açılışı) ---- */
+/* brief-anadolu-gorsel-guclendirme.md Madde 4+5: intro-alt padding space-3 →
+ * space-2 (12→8), ilk kart margin-top: 0 ile birlikte intro-kart arası
+ * çürütüldü. Üst padding space-7 → space-6 (48→32) — sayfa üstü nefes de
+ * kart bloğuna yaklaştı. */
 .ocak-evreler-intro {
   max-width: var(--max-w-prose);
   margin: 0 auto;
-  padding: var(--space-7) var(--space-6) var(--space-3);
+  padding: var(--space-6) var(--space-6) var(--space-2);
   text-align: left;
 }
 
@@ -1575,14 +1579,19 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 /* ---- ocak-evre: dolu kart (Varyant C) ---- */
+/* brief-anadolu-gorsel-guclendirme.md Madde 4: kart ölçek sıkılaştırma —
+ * margin space-5 → space-4 (24→16, kartlar arası "duvar" hissi azaldı),
+ * padding space-5/6 → space-4/5 (24/32→16/24, iç ferahlık korunur ama
+ * kompakt). first-child::before üstten fade-in, last-child alttan fade-out
+ * ile timeline hattının başı-sonu yumuşatılır. */
 .ocak-evre {
   --isi-aktif: var(--ember);
   display: flex;
   align-items: stretch;
-  gap: var(--space-5);
+  gap: var(--space-4);
   max-width: var(--max-w-prose);
-  margin: var(--space-5) auto;
-  padding: var(--space-5) var(--space-6);
+  margin: var(--space-4) auto;
+  padding: var(--space-4) var(--space-5);
   background: var(--ash);
   border: 0.5px solid var(--ash-warm);
   border-radius: var(--radius-lg);
@@ -1596,6 +1605,60 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
     transform var(--duration-base) var(--ease-out);
 }
 
+/* brief-anadolu-gorsel-guclendirme.md Madde 3 — timeline hattı: kart sol
+ * şeridinin üst-alt gap'i (kartlar arası margin) `--kor-cizgi` ile doldurulur.
+ * Sonuç: 6 evre kartının solundan geçen tek sürekli 2px dikey hat — kart içi
+ * ısı gradient (`.ocak-evre__serit`) + gap ara-dönem kor rengi. `/yolculuk`
+ * ekseninin (KARAR 198) görsel kardeşi.
+ *
+ * Konumlama: şerit `.ocak-evre__serit` flex 0 0 2px olduğundan kart sol iç
+ * kenarında padding-left (space-5 = 24px) sonra başlar. `::before` aynı x'te
+ * kartın üst margin'ini (space-4 = 16px) doldurur. first-child üstten fade-in
+ * (transparent → kor); son gap sonraki kartın `::before`'u ile doldurulur.
+ * Last-child alt margin'in altında dolgu yok — kart şeridi kendi coal-mix
+ * fade'ini zaten üretiyor (bitiş hissi). */
+.ocak-evre::before {
+  content: '';
+  position: absolute;
+  left: var(--space-5);           /* padding-left ile aynı: şeritle hizalı */
+  /* Şerit `align-self: stretch` kartın content-box'ında (padding hariç). Yani
+   * kart border-box üst kenarı ile şerit üstü arasında padding-top kadar (16px)
+   * görsel gap var. `::before` gap'i (margin-top 16) + padding-top içini (16)
+   * = 32px doldur → şerit üstüne sürekli bağlan. */
+  top: calc(-1 * var(--space-4));  /* -16 dış (margin-top boyunca) */
+  height: var(--space-6);          /* 32 = margin-top 16 + padding-top 16 */
+  width: 2px;
+  background: var(--kor-cizgi);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ocak-evre:first-child::before {
+  /* İlk kart üstten fade-in — timeline "başlar" hissi (kesik durmasın). */
+  background: linear-gradient(to bottom, transparent, var(--kor-cizgi));
+}
+
+.ocak-evre:last-child::after {
+  /* Son kart alttan fade-out — timeline "biter" hissi. Şerit padding-bot
+   * içinde biter (kart altına 16px kalır); `::after` şerit bitişinden
+   * başlayıp margin-bot dışına uzansın. */
+  content: '';
+  position: absolute;
+  left: var(--space-5);
+  top: calc(100% - var(--space-4));   /* padding-bot içinde: şerit sonu */
+  height: var(--space-6);             /* padding-bot 16 (iç) + margin-bot 16 (dış) */
+  width: 2px;
+  background: linear-gradient(to bottom, var(--kor-cizgi), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* İlk kart margin-top'u sıfırla — evreler-intro alt padding'i (space-2 = 8px)
+ * ile birleşen "intro → kart" nefesi (brief Madde 5 açığı). */
+.ocak-evre:first-child {
+  margin-top: 0;
+}
+
 /* brief v2 R1: hover yükselme (AlOlVer dili — translateY -2px + duration-base
  * ease-out). Sol şerit ısı renginde zaten parlayan dil — hover'da kartın hafif
  * kalkması + ısı şeridi etrafında subtle ember halo bunun devamı. */
@@ -1605,15 +1668,16 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   box-shadow: 0 4px 16px color-mix(in oklab, var(--isi-aktif) 8%, transparent);
 }
 
-/* brief v2 R2: sol şerit derinlik — düz renk yerine üstten alta hafif açıktan
- * koyuya gradient. --isi-aktif token'ından türetilmiş (sabit hex yok), tüm
- * evrelere otomatik uygulanır. Çok hafif: %15 cream / %15 coal mix uçlar —
- * şerit hâlâ "ısı çizgisi" gibi okunur, neon olmaz. Glow zaten box-shadow ile. */
+/* brief-anadolu-gorsel-guclendirme.md Madde 3: şerit 5px → 2px ince, timeline
+ * hattının kart içi devamı (gap dolgusu `--kor-cizgi` `::before` ile aynı x).
+ * Kart içi ısı gradient (cream-mix → --isi-aktif → coal-mix) korundu — her
+ * evrede kendi ısı rengi hissedilir, boşluk `--kor-cizgi` ara dönem, sonraki
+ * kartta yine ısı. Kömür→alev→dinlenen kor doğal akış. */
 .ocak-evre__serit {
-  flex: 0 0 5px;
-  width: 5px;
-  min-width: 5px;
-  border-radius: 3px;
+  flex: 0 0 2px;
+  width: 2px;
+  min-width: 2px;
+  border-radius: 1px;
   background: linear-gradient(
     to bottom,
     color-mix(in oklab, var(--isi-aktif) 85%, var(--cream) 15%) 0%,
@@ -1621,7 +1685,7 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
     color-mix(in oklab, var(--isi-aktif) 85%, var(--coal) 15%) 100%
   );
   align-self: stretch;
-  box-shadow: 0 0 10px color-mix(in oklab, var(--isi-aktif) 30%, transparent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--isi-aktif) 25%, transparent);
 }
 
 /* brief v2 R3: kart içi ritim — meta↔açıklama, açıklama↔alt arası nefes
@@ -1775,16 +1839,9 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   stroke-linejoin: round;
 }
 
-/* Yolculuk hattı — kronolojik kesik çizgi, ember, yumuşak köşeli */
-.anadolu-harita__hat {
-  fill: none;
-  stroke: var(--ember);
-  stroke-width: 1.5;
-  stroke-dasharray: 6 6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0.5;
-}
+/* Yolculuk hattı KALDIRILDI (brief-anadolu-gorsel-guclendirme.md Madde 1):
+ * kronolojik sıra coğrafi olarak zigzag ürettiği için "karışık ağ" hissi
+ * veriyordu. Sıra artık nokta merkezindeki numaralarla görselleştirilir. */
 
 /* Nokta — ısı renginde dolu daire, coal halka stroke.
  * NOT: <g> SVG attribute transform="translate(x,y)" nokta konumunu taşıyor.
@@ -1819,6 +1876,20 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 .anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot {
   stroke: color-mix(in oklab, var(--isi-aktif) 70%, var(--cream) 30%);
   stroke-width: 2;
+}
+
+/* Nokta merkezinde kronolojik sıra numarası (brief-anadolu-gorsel-guclendirme.md
+ * Madde 2). r=9 dot içine ~10px sans, coal fill — ısı renkli dot üzerinde koyu
+ * kontrast. hover'da renk değişmez (numara okunur kalır, halka opacity ile
+ * feedback gösterir). pointer-events none — tıklamalar <g>'ye. */
+.anadolu-harita__nokta-numara {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--coal);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
 }
 
 .anadolu-harita__etiket {
