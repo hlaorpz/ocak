@@ -7,8 +7,11 @@
 //     Anadolu ana kütlesi (~428 pt), Trakya/Avrupa yakası (~61 pt), kuzey Ege adacığı.
 //   - 6 evre noktası: gerçek lat/lng → aynı projeksiyon ile viewBox koordinatına
 //     çevrildi (build-time, harita-data'ya gömülü değil; sabit nokta listesi burada).
-//   - Yolculuk hattı: noktaları kronolojik sırada birleştiren dashed ember çizgi
-//     (AÇILIŞ→İNİŞ→UYANIŞ→DURUŞ→GEÇİŞ→DÖNÜŞ). Brief default: hat KALIR.
+//     brief-anadolu-gorsel-guclendirme.md: nokta dot r=9 (görsel güç), merkezde
+//     kronolojik sıra numarası (1-6, coal fill — ısı rengi üzerinde okunur).
+//   - Yolculuk hattı KALDIRILDI (brief-anadolu-gorsel-guclendirme.md Madde 1):
+//     kronolojik sıra coğrafi olarak zigzag ürettiği için "karışık ağ" hissi
+//     veriyordu. Sıra artık nokta merkezindeki numaralarla görselleştirilir.
 //   - Etiketler: evre adı (serif italik, ısı renginde) + yer adı (küçük, smoke).
 //     DURUŞ üstte, DÖNÜŞ sağda (Tuz Gölü ↔ Kapadokya çakışmasını eler).
 //
@@ -32,36 +35,41 @@ type Evre = {
   labelDx: number; labelDy: number; labelAnchor: 'start' | 'middle' | 'end';
 };
 
+// brief-anadolu-rotus.md Madde 3: dot r=9'a büyüdüğünde halka r=20 → etiket
+// yazısı halkayla çakışıyordu. Dikey offset 26 → 32 (halka altında 12px nefes),
+// DURUŞ üst -14 → -20 (halka üstünde 6px nefes), DÖNÜŞ yatay dx 12 → 24
+// (halka yanında 4px nefes).
 const evreler: Evre[] = [
   { slug: 'acilis', ad: 'AÇILIŞ', yer: 'Ege',
     x: 64.0, y: 258.2, isiToken: '--isi-acilis',
-    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   { slug: 'inis', ad: 'İNİŞ', yer: 'Göbeklitepe · Harran',
     x: 681.2, y: 322.0, isiToken: '--isi-inis',
-    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   { slug: 'uyanis', ad: 'UYANIŞ', yer: 'Aphrodisias · Pamukkale',
     x: 183.8, y: 281.5, isiToken: '--isi-uyanis',
-    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   // DURUŞ: Tuz Gölü → etiket ÜSTTE (DÖNÜŞ ve Kapadokya yakın, çakışma elemi).
+  // Etiket-yer y=14 offset ile ad'ın ALTINDA olduğu için üst konumda "Tuz Gölü"
+  // nokta merkezine yaklaşır; halka r=20 içinde çakışıyordu. labelDy tüm etiket
+  // blok'unu 20px daha yukarı iter → yer.bottom halka.top'un üstünde kalır.
   { slug: 'durus', ad: 'DURUŞ', yer: 'Tuz Gölü',
     x: 399.5, y: 234.7, isiToken: '--isi-durus',
-    labelDx: 0, labelDy: -14, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: -40, labelAnchor: 'middle' },
   { slug: 'gecis', ad: 'GEÇİŞ', yer: 'Yanartaş · Myra',
     x: 252.3, y: 367.3, isiToken: '--isi-gecis',
-    labelDx: 0, labelDy: 26, labelAnchor: 'middle' },
+    labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   // DÖNÜŞ: Kapadokya → etiket SAĞDA (DURUŞ üstte olduğu için aşağı serbest ama
   // brief: text-anchor:start sağa kaydır → daha temiz blok).
   { slug: 'donus', ad: 'DÖNÜŞ', yer: 'Konya · Kapadokya',
     x: 473.6, y: 239.4, isiToken: '--isi-donus',
-    labelDx: 12, labelDy: 5, labelAnchor: 'start' },
+    labelDx: 24, labelDy: 5, labelAnchor: 'start' },
 ];
 
-// Yolculuk hattı — kronolojik sırada noktaları bağlayan kesik çizgi.
-const hatPath = evreler.map((e, i) => `${i === 0 ? 'M' : 'L'}${e.x},${e.y}`).join(' ');
 ---
 <section class="anadolu-harita" aria-labelledby="anadolu-harita-baslik">
   <h2 id="anadolu-harita-baslik" class="anadolu-harita__baslik">Yolculuğun Haritası</h2>
-  <p class="anadolu-harita__altmetin">Altı evre, kronolojik sırada — noktaya dokun, evre kartına in.</p>
+  <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktaya dokun, evre kartına in.</p>
 
   <div class="anadolu-harita__cerceve">
     <svg
@@ -71,9 +79,9 @@ const hatPath = evreler.map((e, i) => `${i === 0 ? 'M' : 'L'}${e.x},${e.y}`).joi
       aria-describedby="anadolu-harita-desc"
       preserveAspectRatio="xMidYMid meet"
     >
-      <title>Anadolu Yolculuğu — altı evrenin Türkiye haritasında konumu</title>
+      <title>Anadolu Yolculuğu — açılış ve beş evrenin Türkiye haritasında konumu</title>
       <desc id="anadolu-harita-desc">
-        Türkiye sınırı üzerinde altı evre noktası kronolojik sırada bağlanmış:
+        Türkiye sınırı üzerinde açılış ve beş evre noktası kronolojik sırada:
         AÇILIŞ Ege (Urla), İNİŞ Göbeklitepe ve Harran (Şanlıurfa), UYANIŞ Aphrodisias
         ve Pamukkale (Denizli), DURUŞ Tuz Gölü (Aksaray), GEÇİŞ Yanartaş ve Myra (Antalya),
         DÖNÜŞ Konya ve Kapadokya (İç Anadolu).
@@ -83,20 +91,21 @@ const hatPath = evreler.map((e, i) => `${i === 0 ? 'M' : 'L'}${e.x},${e.y}`).joi
         {TURKEY_PATHS.map((d) => <path d={d} />)}
       </g>
 
-      {/* Yolculuk hattı — kronolojik kesik çizgi (brief default: KALIR) */}
-      <path class="anadolu-harita__hat" d={hatPath} aria-hidden="true" />
-
       <g class="anadolu-harita__noktalar">
-        {evreler.map((e) => (
+        {evreler.map((e, i) => (
           <g
             class="anadolu-harita__nokta"
             data-evre={e.slug}
             style={`--isi-aktif: var(${e.isiToken});`}
             transform={`translate(${e.x}, ${e.y})`}
           >
-            <circle class="anadolu-harita__nokta-halka" r="14" aria-hidden="true" />
-            <circle class="anadolu-harita__nokta-dot" r="6" />
-            <title>{e.ad} — {e.yer}</title>
+            <circle class="anadolu-harita__nokta-halka" r="20" aria-hidden="true" />
+            <circle class="anadolu-harita__nokta-dot" r="9" />
+            {/* Kronolojik sıra numarası: AÇILIŞ=0 (kuruluş, eşik öncesi),
+                İNİŞ-DÖNÜŞ=1-5 (beş gerçek dönüşüm eşiği). Arketip yayıyla
+                tutarlı (KARAR: Anadolu evre numaralandırma 0-5, sealed). */}
+            <text class="anadolu-harita__nokta-numara" aria-hidden="true">{i}</text>
+            <title>{i}. {e.ad} — {e.yer}</title>
             <g
               class="anadolu-harita__etiket"
               transform={`translate(${e.labelDx}, ${e.labelDy})`}

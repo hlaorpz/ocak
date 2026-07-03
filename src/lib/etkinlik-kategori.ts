@@ -52,14 +52,15 @@ export const KATEGORI_SIRA: string[] = [
 /**
  * `Mekân/Platform` (Notion select) → rozet tipi
  * (brief-takvim-toparlama-uygula.md ADIM 4).
- * Notion 5 değerli: `Online | İzmir | İstanbul | Ege | Anadolu`. Rozet jenerik:
- * Online / Fiziksel — şehir rozete yazılmaz (meta satırı zaten şehri gösterir).
- * Bilinmeyen değer → null + warn.
+ * Notion 7 değerli: `Online | Zoom | İzmir | İstanbul | Ankara | Ege | Anadolu`.
+ * Rozet jenerik: Online / Yüz Yüze — şehir/platform rozete yazılmaz (meta
+ * satırı zaten Mekân/Platform'u gösterir). Mekân/Platform schema `z.string()`
+ * (serbest), bilinmeyen yeni değer → null + warn (rozet basılmaz).
  */
 export const mekanTipi = (mekan?: string): 'online' | 'fiziksel' | null => {
   if (!mekan) return null;
-  if (mekan === 'Online') return 'online';
-  if (['İzmir', 'İstanbul', 'Ege', 'Anadolu'].includes(mekan)) return 'fiziksel';
+  if (mekan === 'Online' || mekan === 'Zoom') return 'online';
+  if (['İzmir', 'İstanbul', 'Ankara', 'Ege', 'Anadolu'].includes(mekan)) return 'fiziksel';
   console.warn('[takvim] bilinmeyen Mekân/Platform:', mekan);
   return null;
 };
