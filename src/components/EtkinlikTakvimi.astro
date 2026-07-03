@@ -103,7 +103,7 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
                   <span class="ocak-etkinlik-takvimi__chip">{formatEtiket(e.tip)}</span>
                   {mTipi && (
                     <span class={`ocak-etkinlik-takvimi__rozet ocak-etkinlik-takvimi__rozet--${mTipi}`}>
-                      {mTipi === 'online' ? 'Online' : 'Fiziksel'}
+                      {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
                     </span>
                   )}
                   {e.oneCikar && <span class="ocak-etkinlik-takvimi__one">öne çıkan</span>}
