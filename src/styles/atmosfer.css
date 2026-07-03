@@ -1579,18 +1579,18 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 /* ---- ocak-evre: dolu kart (Varyant C) ---- */
-/* brief-anadolu-gorsel-guclendirme.md Madde 4: kart ölçek sıkılaştırma —
- * margin space-5 → space-4 (24→16, kartlar arası "duvar" hissi azaldı),
- * padding space-5/6 → space-4/5 (24/32→16/24, iç ferahlık korunur ama
- * kompakt). first-child::before üstten fade-in, last-child alttan fade-out
- * ile timeline hattının başı-sonu yumuşatılır. */
+/* brief-anadolu-gorsel-guclendirme.md Madde 4: kart ölçek sıkılaştırma
+ * (margin space-5→space-4, padding space-5/6→space-4/5). Rötuş turu
+ * (brief-anadolu-rotus.md Madde 4): kart daha da toplandı — margin
+ * space-4→space-3 (16→12), timeline `::before` gap dolgu height'i güncel
+ * (12+16=28). Şerit-timeline sürekliliği korundu. */
 .ocak-evre {
   --isi-aktif: var(--ember);
   display: flex;
   align-items: stretch;
   gap: var(--space-4);
   max-width: var(--max-w-prose);
-  margin: var(--space-4) auto;
+  margin: var(--space-3) auto;
   padding: var(--space-4) var(--space-5);
   background: var(--ash);
   border: 0.5px solid var(--ash-warm);
@@ -1623,10 +1623,10 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   left: var(--space-5);           /* padding-left ile aynı: şeritle hizalı */
   /* Şerit `align-self: stretch` kartın content-box'ında (padding hariç). Yani
    * kart border-box üst kenarı ile şerit üstü arasında padding-top kadar (16px)
-   * görsel gap var. `::before` gap'i (margin-top 16) + padding-top içini (16)
-   * = 32px doldur → şerit üstüne sürekli bağlan. */
-  top: calc(-1 * var(--space-4));  /* -16 dış (margin-top boyunca) */
-  height: var(--space-6);          /* 32 = margin-top 16 + padding-top 16 */
+   * görsel gap var. `::before` gap'i (margin-top space-3=12) + padding-top içini
+   * (space-4=16) = 28px doldur → şerit üstüne sürekli bağlan. */
+  top: calc(-1 * var(--space-3));                     /* -12 dış */
+  height: calc(var(--space-3) + var(--space-4));      /* 28 = margin-top 12 + padding-top 16 */
   width: 2px;
   background: var(--kor-cizgi);
   pointer-events: none;
@@ -1640,13 +1640,13 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 
 .ocak-evre:last-child::after {
   /* Son kart alttan fade-out — timeline "biter" hissi. Şerit padding-bot
-   * içinde biter (kart altına 16px kalır); `::after` şerit bitişinden
-   * başlayıp margin-bot dışına uzansın. */
+   * içinde biter (kart altına padding-bot=16px kalır); `::after` şerit
+   * bitişinden başlayıp margin-bot (space-3=12) dışına uzansın. */
   content: '';
   position: absolute;
   left: var(--space-5);
-  top: calc(100% - var(--space-4));   /* padding-bot içinde: şerit sonu */
-  height: var(--space-6);             /* padding-bot 16 (iç) + margin-bot 16 (dış) */
+  top: calc(100% - var(--space-4));               /* padding-bot içinde: şerit sonu */
+  height: calc(var(--space-4) + var(--space-3));  /* 28 = padding-bot 16 (iç) + margin-bot 12 (dış) */
   width: 2px;
   background: linear-gradient(to bottom, var(--kor-cizgi), transparent);
   pointer-events: none;
@@ -1697,7 +1697,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  /* brief-anadolu-rotus.md Madde 4: iç ritim kısıldı (space-4→space-3, 16→12). */
+  gap: var(--space-3);
 }
 
 .ocak-evre__baslik {
@@ -1736,7 +1737,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 .ocak-evre__aciklama p {
-  margin: 0 0 var(--space-3);
+  /* brief-anadolu-rotus.md Madde 4: paragraf arası nefes space-3→space-2 (12→8). */
+  margin: 0 0 var(--space-2);
   font-size: var(--text-base);
   line-height: 1.65;
   color: var(--cream-soft);
@@ -1748,13 +1750,14 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 /* Alt şerit — arketip + soru çifti, üst border'la ayrılmış.
- * brief v2 R3: padding-top space-4 → space-5 (border-top'tan sonraki nefes). */
+ * brief v2 R3: padding-top space-4→space-5 (border-top sonrası nefes).
+ * brief-anadolu-rotus.md Madde 4: rötuşta kompakt — space-5→space-4 (24→16). */
 .ocak-evre__alt {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-3);
-  padding-top: var(--space-5);
+  padding-top: var(--space-4);
   border-top: 0.5px solid var(--ash-warm);
 }
 
