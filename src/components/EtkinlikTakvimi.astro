@@ -25,9 +25,8 @@ import {
   bugundenSonra,
   groupByMonth,
   formatAyEtiketi,
-  formatEtkinlikTarihi,
 } from '../lib/format-etkinlik';
-import { formatEtiket, KATEGORI_SIRA, mekanTipi, ucretMetni } from '../lib/etkinlik-kategori';
+import { formatEtiket, KATEGORI_SIRA, mekanTipi } from '../lib/etkinlik-kategori';
 
 const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
 const tum = (await getCollection('etkinlikler'))
@@ -111,17 +110,14 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
                 </span>
                 <span class="ocak-etkinlik-takvimi__baslik">{e.baslik}</span>
                 <span class="ocak-etkinlik-takvimi__meta">
-                  <span class="ocak-etkinlik-takvimi__tarih">
-                    {formatEtkinlikTarihi(e.tarihBaslangic, e.tarihBitis, e.saat ?? e.zoomBaslangicSaati)}
-                  </span>
-                  <span class="ocak-etkinlik-takvimi__sep" aria-hidden="true">·</span>
-                  <span class="ocak-etkinlik-takvimi__mekan">
-                    {e.mekanDetay ? `${e.mekan} · ${e.mekanDetay}` : e.mekan}
-                  </span>
-                  <span class="ocak-etkinlik-takvimi__sep" aria-hidden="true">·</span>
-                  <span class="ocak-etkinlik-takvimi__ucret">
-                    {ucretMetni(e.ucret, e.paraBirimi)}
-                  </span>
+                  {[e.yoneten, e.mekan, e.saat]
+                    .filter((v): v is string => Boolean(v && v.trim()))
+                    .map((v, i) => (
+                      <Fragment>
+                        {i > 0 && <span class="ocak-etkinlik-takvimi__sep" aria-hidden="true">·</span>}
+                        <span>{v}</span>
+                      </Fragment>
+                    ))}
                 </span>
               </span>
               {/* brief-etkinlik-detay-route.md FAZ 3 — satır komple link

@@ -262,7 +262,7 @@ const etkinlikler = defineCollection({
     // taşındı; Zoom otomasyonu bu alandan bağımsız (`zoom-olustur.ts` Notion'dan
     // direkt okur). Display: `saat ?? zoomBaslangicSaati`.
     zoomBaslangicSaati: z.string().optional(),
-    mekan: z.enum(['Online', 'İzmir', 'İstanbul', 'Ege', 'Anadolu']),
+    mekan: z.enum(['Online', 'İzmir', 'İstanbul', 'Ege', 'Anadolu', 'Ankara', 'Zoom']),
     mekanDetay: z.string().optional(),
     kayitUrl: z.string().optional(), // relative URL'ler valid olmalı — .url() YOK
     durum: z.enum(['Taslak', 'Kayıt Açık', 'Dolu', 'Geçti', 'İptal']),
