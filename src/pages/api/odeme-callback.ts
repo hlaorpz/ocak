@@ -1,5 +1,5 @@
 // /api/odeme-callback — Ödeme sağlayıcısı callback'i (Brief: brief-odeme-
-// asama3b-provider-mock.md ADIM 3c). Mock şu an; iyzico Aşama 6'da bu
+// asama3b-provider-mock.md ADIM 3c). Mock şu an; PayTR Aşama 6'da bu
 // endpoint'in imzasını + body shape'ini paylaşacak (sadece imza doğrulama
 // + provider-specific field eşleme eklenir).
 //
@@ -16,7 +16,7 @@
 //  - Başarı → /odeme/tamam, iptal/hata → /odeme/iptal redirect.
 //
 // Mock akış: GET (URL query → /odeme/tamam yönlendirme) ve POST (form
-// submit) ikisi de desteklenir; iyzico genelde POST webhook + GET dönüş
+// submit) ikisi de desteklenir; PayTR genelde POST webhook + GET dönüş
 // kullanır, ikisini de hazırlayalım.
 import type { APIRoute } from 'astro';
 import { notion } from '../../lib/notion.ts';

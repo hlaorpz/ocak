@@ -1,6 +1,6 @@
 ---
 // /odeme/mock — Mock sanal POS checkout sayfası (Brief Aşama 3b ADIM 3b).
-// Gerçek para YOK. iyzico Aşama 6'da yerine gerçek checkout form gelir.
+// Gerçek para YOK. PayTR Aşama 6'da yerine gerçek checkout form gelir.
 //
 // URL params (KayitFormu submit → /api/kayit → checkoutBaslat → mockProvider
 // burayı yönlendirir):
@@ -36,7 +36,7 @@ const kodId = url.searchParams.get('kodId') ?? '';
 
     <p class="ocak-mock-uyari">
       <strong>MOCK</strong> — Bu bir test sayfasıdır. Gerçek kart bilgisi
-      istenmez, gerçek para çekilmez. Aşama 6'da yerine iyzico Sanal POS
+      istenmez, gerçek para çekilmez. Aşama 6'da yerine PayTR Sanal POS
       formu gelir.
     </p>
 
@@ -64,9 +64,9 @@ const kodId = url.searchParams.get('kodId') ?? '';
         bakar — GET ve XHR/fetch hariç. Callback `handle()` URL params'tan
         okuyor (POST body fallback'i var), backend değişmedi.
 
-        Gerçek iyzico (Aşama 6) farklı: webhook server-to-server POST atar,
-        Origin header'ı iyzico domain'i veya yok → Astro CSRF reject eder.
-        O noktada `security.checkOrigin: false` config + iyzico webhook imza
+        Gerçek PayTR (Aşama 6) farklı: webhook server-to-server POST atar,
+        Origin header'ı PayTR domain'i veya yok → Astro CSRF reject eder.
+        O noktada `security.checkOrigin: false` config + PayTR webhook imza
         doğrulama eklenir (CSRF'nin yerini imza alır). */}
     <form method="GET" action="/api/odeme-callback" class="ocak-mock-form">
       <input type="hidden" name="ref" value={ref} />
