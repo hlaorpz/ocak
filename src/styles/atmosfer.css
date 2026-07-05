@@ -1155,21 +1155,27 @@ section[data-section="kayit-cta"] {
 section[data-section="kayit-cta"] > p {
   color: var(--cream-soft);
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  /* B varyantı — davet cümlesi ~15px, buton ile tek ortalı ünite hissi
+   * (margin küçüldü: --space-4 → --space-3). */
+  font-size: 0.9375rem;
   line-height: 1.6;
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-3);
 }
 
 section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
   display: inline-block;
-  padding: 0.9rem 2rem;
+  /* B varyantı — dikey ~18px, yatay ~72px (orta-genişten geniş, davet baskın).
+   * Kabuk ortalı kalır (section max-w-prose + text-align:center); buton kendi
+   * padding'iyle büyür, tam-genişlik bar DEĞİL. */
+  padding: 1.125rem 4.5rem;
   background: var(--ember);
   border: 1px solid var(--ember);
   color: var(--coal);
   font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  /* Letter-spacing artışı (0.18 → 0.22em) — davet tonuna güç. */
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -1182,6 +1188,14 @@ section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:focus-visible {
   background: var(--ember-soft);
   box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   outline: none;
+}
+
+/* Mobilde 72px yatay padding taşabilir — hafif küçült (davet gücü korunur). */
+@media (max-width: 600px) {
+  section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
+    padding: 1rem 2.5rem;
+    letter-spacing: 0.2em;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
