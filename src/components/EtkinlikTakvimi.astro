@@ -26,7 +26,8 @@ import {
   groupByMonth,
   formatAyEtiketi,
 } from '../lib/format-etkinlik';
-import { formatEtiket, KATEGORI_SIRA, mekanTipi } from '../lib/etkinlik-kategori';
+import { formatEtiket, KATEGORI_SIRA } from '../lib/etkinlik-kategori';
+import EtkinlikKart from './EtkinlikKart.astro';
 
 const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
 const tum = (await getCollection('etkinlikler'))
@@ -88,7 +89,6 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
         <ul class="ocak-etkinlik-takvimi__liste" data-ay-key={key}>
           {etkinlikler.map((e) => {
             const rozet = tarihRozeti(e.tarihBaslangic);
-            const mTipi = mekanTipi(e.mekan);
             return (
             <li
               class={`ocak-etkinlik-takvimi__satir${e.oneCikar ? ' ocak-etkinlik-takvimi__satir--one-cikan' : ''}`}
@@ -98,28 +98,7 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
                 <span class="ocak-etkinlik-takvimi__rozet-gun">{rozet.gun}</span>
                 <span class="ocak-etkinlik-takvimi__rozet-ay">{rozet.ay}</span>
               </span>
-              <span class="ocak-etkinlik-takvimi__govde">
-                <span class="ocak-etkinlik-takvimi__ust-satir">
-                  <span class="ocak-etkinlik-takvimi__chip">{formatEtiket(e.tip)}</span>
-                  {mTipi && (
-                    <span class={`ocak-etkinlik-takvimi__rozet ocak-etkinlik-takvimi__rozet--${mTipi}`}>
-                      {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
-                    </span>
-                  )}
-                  {e.oneCikar && <span class="ocak-etkinlik-takvimi__one">öne çıkan</span>}
-                </span>
-                <span class="ocak-etkinlik-takvimi__baslik">{e.baslik}</span>
-                <span class="ocak-etkinlik-takvimi__meta">
-                  {[e.yoneten, e.mekan, e.saat]
-                    .filter((v): v is string => Boolean(v && v.trim()))
-                    .map((v, i) => (
-                      <Fragment>
-                        {i > 0 && <span class="ocak-etkinlik-takvimi__sep" aria-hidden="true">·</span>}
-                        <span>{v}</span>
-                      </Fragment>
-                    ))}
-                </span>
-              </span>
+              <EtkinlikKart etkinlik={e} baslikTag="span" showOneCikan={true} metaMode="yoneten-mekan-saat" />
               {/* brief-etkinlik-detay-route.md FAZ 3 — satır komple link
                   (stretched pattern; kayıt mikro-linki üstte). Slug yoksa
                   link basılmaz — loader zaten warn bastı. */}
@@ -353,88 +332,10 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
     margin-top: var(--space-1);
   }
 
-  /* Gövde — chip satırı + başlık + meta dikey. */
-  .ocak-etkinlik-takvimi__govde {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .ocak-etkinlik-takvimi__ust-satir {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-  }
-
-  .ocak-etkinlik-takvimi__chip {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    color: var(--ember);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-  }
-
-  /* Online / Fiziksel rozeti — chip yanı; OCAK paleti (ember çerçeve, ash zemin).
-   * Yeşil/mavi gibi yabancı renk YOK. Şehir rozete yazılmaz — meta satırı zaten
-   * `${mekan} · ${mekanDetay}` gösteriyor (brief-takvim-toparlama-uygula.md ADIM 4). */
-  .ocak-etkinlik-takvimi__rozet {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--cream-soft);
-    border: 1px solid var(--ash);
-    padding: 0.1em 0.55em;
-    line-height: 1.4;
-  }
-
-  .ocak-etkinlik-takvimi__rozet--fiziksel {
-    border-color: var(--ember);
-    color: var(--ember);
-  }
-
-  /* Ücret — meta satırında mekan'dan sonra; sembolik hâli düşük vurgu (smoke),
-   * rakamlı hâl mevcut meta ton'unda (cream-soft, --meta doğal renk üzerinden). */
-  .ocak-etkinlik-takvimi__ucret {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--cream-soft);
-  }
-
-  .ocak-etkinlik-takvimi__one {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    color: var(--coal);
-    background: var(--ember);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wide);
-    padding: 0.15em 0.6em;
-  }
-
-  .ocak-etkinlik-takvimi__baslik {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-base);
-    color: var(--cream);
-    line-height: var(--leading-snug);
-  }
-
-  .ocak-etkinlik-takvimi__meta {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--cream-soft);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: baseline;
-  }
-
-  .ocak-etkinlik-takvimi__sep {
-    color: var(--smoke);
-  }
+  /* Gövde bloğu (chip + rozet + italik başlık + meta) EtkinlikKart
+   * component'ine ekstrakte edildi (brief-faz3-ek v2 Madde 2). Buradaki
+   * eski __govde/__ust-satir/__chip/__rozet/__baslik/__meta/__sep/__one
+   * class'ları component tarafına taşındı — SonrakiBulusma ile drift keser. */
 
   .ocak-etkinlik-takvimi__kayit {
     position: relative; /* stretched link üstünde tıklanabilir kalsın */

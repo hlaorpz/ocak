@@ -1,0 +1,156 @@
+---
+// EtkinlikKart — ortak gövde bloğu (brief-faz3-ek v2 Madde 2).
+// chip + online/yüz yüze rozeti + italik başlık + meta. İki tüketici bunu
+// tüketir:
+//   - EtkinlikTakvimi satırı (dış çerçeve = flex row + sol tarih rozeti)
+//   - SonrakiBulusma kartı (dış çerçeve = --ash box + kayıt link)
+// Dış çerçeve kasıtlı farklı (satır vs box), gövde-düzeyi drift keser.
+//
+// baslikTag prop: satırda semantik heading gereksiz (span), kart varyantında
+// h3 (görsel-mantık paralel). metaMode prop: kart tarih formatlı tek meta
+// (SonrakiBulusma), satır yoneten·mekan·saat listeli meta (EtkinlikTakvimi).
+import type { CollectionEntry } from 'astro:content';
+import { formatEtiket, mekanTipi } from '../lib/etkinlik-kategori';
+import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+
+type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
+
+interface Props {
+  etkinlik: EtkinlikData;
+  baslikTag?: 'h3' | 'h4' | 'span';
+  showOneCikan?: boolean;
+  metaMode?: 'tarih' | 'yoneten-mekan-saat';
+}
+
+const {
+  etkinlik,
+  baslikTag = 'span',
+  showOneCikan = false,
+  metaMode = 'yoneten-mekan-saat',
+} = Astro.props;
+
+const mTipi = mekanTipi(etkinlik.mekan);
+const BaslikTag = baslikTag;
+---
+<div class="ocak-etkinlik-kart">
+  <div class="ocak-etkinlik-kart__ust-satir">
+    <span class="ocak-etkinlik-kart__chip">{formatEtiket(etkinlik.tip)}</span>
+    {mTipi && (
+      <span class={`ocak-etkinlik-kart__rozet ocak-etkinlik-kart__rozet--${mTipi}`}>
+        {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
+      </span>
+    )}
+    {showOneCikan && etkinlik.oneCikar && (
+      <span class="ocak-etkinlik-kart__one">öne çıkan</span>
+    )}
+  </div>
+  <BaslikTag class="ocak-etkinlik-kart__baslik">{etkinlik.baslik}</BaslikTag>
+  {metaMode === 'tarih' ? (
+    <p class="ocak-etkinlik-kart__meta">
+      <span>
+        {formatEtkinlikTarihi(
+          etkinlik.tarihBaslangic,
+          etkinlik.tarihBitis,
+          etkinlik.saat ?? etkinlik.zoomBaslangicSaati,
+        )}
+      </span>
+      <span class="ocak-etkinlik-kart__sep" aria-hidden="true">·</span>
+      <span>
+        {etkinlik.mekanDetay ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}` : etkinlik.mekan}
+      </span>
+    </p>
+  ) : (
+    <p class="ocak-etkinlik-kart__meta">
+      {[etkinlik.yoneten, etkinlik.mekan, etkinlik.saat]
+        .filter((v): v is string => Boolean(v && v.trim()))
+        .map((v, i) => (
+          <Fragment>
+            {i > 0 && <span class="ocak-etkinlik-kart__sep" aria-hidden="true">·</span>}
+            <span>{v}</span>
+          </Fragment>
+        ))}
+    </p>
+  )}
+</div>
+
+<style>
+  .ocak-etkinlik-kart {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .ocak-etkinlik-kart__ust-satir {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .ocak-etkinlik-kart__chip {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--ember);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .ocak-etkinlik-kart__rozet {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--cream-soft);
+    border: 1px solid var(--ash);
+    padding: 0.1em 0.55em;
+    line-height: 1.4;
+  }
+
+  .ocak-etkinlik-kart__rozet--fiziksel {
+    border-color: var(--ember);
+    color: var(--ember);
+  }
+
+  .ocak-etkinlik-kart__one {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--coal);
+    background: var(--ember);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    padding: 0.15em 0.6em;
+  }
+
+  .ocak-etkinlik-kart__baslik {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--cream);
+    line-height: var(--leading-snug);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  h3.ocak-etkinlik-kart__baslik,
+  h4.ocak-etkinlik-kart__baslik {
+    font-size: var(--text-h4);
+    line-height: 1.3;
+  }
+
+  .ocak-etkinlik-kart__meta {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--cream-soft);
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+
+  .ocak-etkinlik-kart__sep {
+    color: var(--smoke);
+  }
+</style>
