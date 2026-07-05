@@ -569,13 +569,16 @@ function transformIcSes(
  * Üst metin opsiyonel: `## section: kayit-cta` altına prose yazılırsa buton
  * üstünde çağrı cümlesi; yazılmazsa çıplak buton.
  *
- * Buton metni sabit: "Kayıt ol →".
+ * Buton metni brief-faz3-h4-h5 İş 3 sonrası slug'a göre değişir ("Kayıt Ol"
+ * veya "Başvur") — placeholder olarak emit edilir, loader resolveKayitCtaHref
+ * KAYIT_CTA_LABEL map'inden doldurur.
  */
 function transformKayitCta(content: RootContent[]): RootContent[] {
   // data-kayit-cta-button attribute test'lerde + CSS scope'ta marker görevi görür.
-  // href __KAYIT_CTA_HREF__ placeholder — loader resolveKayitCtaHref doldurur.
+  // href __KAYIT_CTA_HREF__, label __KAYIT_CTA_LABEL__ placeholder — loader
+  // resolveKayitCtaHref ikisini de slug bazlı doldurur (İş 3 iki-şablon).
   const buton = html(
-    '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>Kayıt ol →</a>',
+    '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
   );
   return [
     html('<section data-section="kayit-cta" class="ocak-kayit-cta">'),
