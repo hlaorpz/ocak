@@ -106,7 +106,7 @@ const heading = (() => {
       <ul class={`sonraki-bulusma__liste${isTekKart ? ' sonraki-bulusma__liste--tek' : ''}`}>
         {liste.map((etkinlik) => (
           <li class="sonraki-bulusma__item">
-            <EtkinlikKart etkinlik={etkinlik} variant="kart" baslikTag="h3" />
+            <EtkinlikKart etkinlik={etkinlik} variant="kart" baslikTag="h3" showKayitLink={!isFormatPage} />
           </li>
         ))}
       </ul>

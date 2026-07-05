@@ -26,9 +26,15 @@ interface Props {
   variant?: 'satir' | 'kart';
   /** Semantik heading tag. Satır'da span default (list item heading değil), kart'ta h3. */
   baslikTag?: 'h3' | 'h4' | 'span';
+  /**
+   * Görünür "Kayıt ol →" mikro-linki. Default true (takvim + home).
+   * Format sayfası çağrısı false — altta dev kırmızı kayıt-cta butonu var,
+   * çift-kayıt aksiyonu olmasın (stretched-link detay-route korunur).
+   */
+  showKayitLink?: boolean;
 }
 
-const { etkinlik, variant = 'kart', baslikTag } = Astro.props;
+const { etkinlik, variant = 'kart', baslikTag, showKayitLink = true } = Astro.props;
 
 const BaslikTag = baslikTag ?? (variant === 'satir' ? 'span' : 'h3');
 const mTipi = mekanTipi(etkinlik.mekan);
@@ -93,7 +99,7 @@ const kartClass = [
       </p>
     </div>
 
-    {etkinlik.kayitUrl && (
+    {etkinlik.kayitUrl && showKayitLink && (
       <a class="ocak-etkinlik-kart__kayit" href={etkinlik.kayitUrl}>
         Kayıt ol <span aria-hidden="true">→</span>
       </a>
@@ -209,7 +215,9 @@ const kartClass = [
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    /* space-2 (8px) — chip↔başlık ve başlık↔meta arası ferahlık
+     * (brief-kart-tipografi-tekkayit Madde 1: satır sıkışıklığı gitsin). */
+    gap: var(--space-2);
   }
 
   .ocak-etkinlik-kart__ust-satir {
@@ -258,22 +266,19 @@ const kartClass = [
   .ocak-etkinlik-kart__baslik {
     font-family: var(--font-display);
     font-style: italic;
-    font-size: var(--text-base);
+    /* Tek ölçek her tag'de — takvim span (küçük) + kart h3 (büyük) drift'i biter,
+     * hiyerarşi başlık ≫ meta (brief-kart-tipografi-tekkayit Madde 1). */
+    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
     color: var(--cream);
-    line-height: var(--leading-snug);
+    line-height: 1.3;
     margin: 0;
     font-weight: 400;
   }
 
-  h3.ocak-etkinlik-kart__baslik,
-  h4.ocak-etkinlik-kart__baslik {
-    font-size: var(--text-h4);
-    line-height: 1.3;
-  }
-
   .ocak-etkinlik-kart__meta {
     font-family: var(--font-body);
-    font-size: var(--text-sm);
+    /* text-xs (12px) — başlığın ~%60'ı, brief hiyerarşi hedefi. */
+    font-size: var(--text-xs);
     color: var(--cream-soft);
     margin: 0;
     display: flex;
