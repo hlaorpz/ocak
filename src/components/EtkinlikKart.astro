@@ -233,7 +233,9 @@ const kartClass = [
     letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
     color: var(--cream-soft);
-    border: 1px solid var(--ash);
+    /* Border `--smoke` — kart bg'si `--ash` ile aynı renk olmasın (kart variant'ta
+     * invisible olmasın). `--smoke` hem coal hem ash üzerinde görünür. */
+    border: 1px solid var(--smoke);
     padding: 0.1em 0.55em;
     line-height: 1.4;
   }

@@ -51,8 +51,11 @@ const kategori: EtkinlikKategori | null = isHome
   : getKategori(slug);
 const HOME_HEADING = 'İlk Kapı';
 
+// Tek-kart yüzeylerde (Home + 6 format sayfası) "En Yakın X" kronolojik olmalı:
+// öne-çıkan sticky KAPALI, tarih ASC birincil. Anadolu (isTekKart=false, LIMIT=3)
+// mevcut davranışı korur — öne-çıkan üstte.
 const sortFn = (a: EtkinlikData, b: EtkinlikData) => {
-  if (a.oneCikar !== b.oneCikar) return a.oneCikar ? -1 : 1;
+  if (!isTekKart && a.oneCikar !== b.oneCikar) return a.oneCikar ? -1 : 1;
   if (a.tarihBaslangic !== b.tarihBaslangic)
     return a.tarihBaslangic.localeCompare(b.tarihBaslangic);
   return a.baslik.localeCompare(b.baslik, 'tr');
