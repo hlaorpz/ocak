@@ -1,26 +1,32 @@
 ---
 // SonrakiBulusma — dinamik etkinlik listesi (KARAR 92, 93; KARAR 127 fragment-split).
 // Çağrı sadece PageContent fragment-split'inden: slug prop'u sayfayı tanımlar,
-// kategori + heading slug'tan otomatik türetilir (getKategori, getHeading).
+// kategori + heading slug'tan otomatik türetilir.
 //
-// Fallback davranışı (brief karar):
-//   - kategori null (Home) → tüm yaklaşan, DEFAULT_HEADING
-//   - kategori var + o kategoride etkinlik var → kategori filtresi, KATEGORI_HEADING
-//   - kategori var + o kategoride etkinlik yok → tüm yaklaşan, DEFAULT_HEADING
+// Davranış (brief-faz3-h4-h5 İş 2 — TEK KART varyantı):
+//   - 6 format sayfası (/cember, /acik-kapi, /seremoni, /atolye, /sehir-aksami,
+//     /mini-retreat) → LIMIT=1, heading "En Yakın [Format Adı]", altında
+//     "Tüm tarihler → /takvim" linki. Kategori boş ise KART YOK, prose fallback
+//     "Bir sonraki buluşma yakında duyurulacak." (heading korunur).
+//   - Home (/) → LIMIT=3, DEFAULT_HEADING, tüm yaklaşan (mevcut davranış).
+//   - Anadolu (/anadolu, yolculuk kategorisi) → LIMIT=3, mevcut davranış korunur.
+//     Kategori var + etkinlik yok → fallback tüm yaklaşan + DEFAULT_HEADING.
 //
 // brief-etkinlik-detay-route.md FAZ 1: publish filtresi gevşedi
 // (siteGoster && durum !== 'İptal') — detay route "geçmiş dahil" için. Bu
 // component artık liste için gereken 3 süzgeci (durum ∈ {Kayıt Açık, Dolu},
-// bugündenSonra, kategori) explicit uyguluyor. Aynı commit'te
-// content/config.ts'teki gevşetmeyle atomik yerleşti.
+// bugündenSonra, kategori) explicit uyguluyor.
 
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { bugundenSonra, formatEtkinlikTarihi } from '../lib/format-etkinlik';
 import {
   filterEtkinliklerByKategori,
   getKategori,
-  getHeading,
+  DEFAULT_HEADING,
+  KATEGORI_HEADING,
+  KATEGORI_EN_YAKIN,
 } from '../lib/etkinlik-kategori';
+import { isKayitFormat } from '../lib/kayit';
 
 type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
 
@@ -29,9 +35,13 @@ interface Props {
   slug: string;
 }
 
-const LIMIT = 3;
 const { slug } = Astro.props;
 const kategori = getKategori(slug);
+// 6 format sayfası mı? (kayit.ts KayitFormat: cember, acik-kapi, mini-retreat,
+// sehir-aksami, seremoni, atolye). Yolculuk (anadolu) burada değil.
+const slugSade = slug.replace(/^\/+/, '');
+const isFormatPage = isKayitFormat(slugSade);
+const LIMIT = isFormatPage ? 1 : 3;
 
 const sortFn = (a: EtkinlikData, b: EtkinlikData) => {
   if (a.oneCikar !== b.oneCikar) return a.oneCikar ? -1 : 1; // öne çıkanlar üstte
@@ -50,21 +60,28 @@ const tumu = bugundenSonra(
 const filtrelenmis = filterEtkinliklerByKategori(tumu, kategori).sort(sortFn);
 
 let liste: EtkinlikData[];
-let hasKategoriEtkinlik: boolean;
-if (kategori && filtrelenmis.length === 0) {
-  // Fallback davranışı: kategori var ama o kategoride etkinlik yok →
+if (isFormatPage) {
+  // Format sayfa: sadece kendi kategorisinden tek kart; boşsa liste boş
+  // (prose fallback görünecek — brief kart yerine prose).
+  liste = filtrelenmis.slice(0, LIMIT);
+} else if (kategori && filtrelenmis.length === 0) {
+  // Home/Anadolu: kategori var + o kategoride etkinlik yok →
   // tüm yaklaşan etkinlikleri DEFAULT_HEADING ile listele.
   liste = tumu.slice().sort(sortFn).slice(0, LIMIT);
-  hasKategoriEtkinlik = false;
 } else {
   liste = filtrelenmis.slice(0, LIMIT);
-  hasKategoriEtkinlik = !!kategori && filtrelenmis.length > 0;
 }
 
-const heading = getHeading(slug, hasKategoriEtkinlik);
 const bos = liste.length === 0;
+const heading = (() => {
+  if (!kategori) return DEFAULT_HEADING;
+  if (isFormatPage) return KATEGORI_EN_YAKIN[kategori] ?? DEFAULT_HEADING;
+  // Home/Anadolu: kategori var + etkinlik → çoğul heading; boş → DEFAULT.
+  if (bos) return DEFAULT_HEADING;
+  return KATEGORI_HEADING[kategori];
+})();
 ---
-<section class="sonraki-bulusma" data-section="sonraki-bulusma">
+<section class="sonraki-bulusma" data-section="sonraki-bulusma" data-varyant={isFormatPage ? 'tek' : 'liste'}>
   <div class="ocak-container">
     <h2 class="sonraki-bulusma__heading">{heading}</h2>
 
@@ -73,7 +90,7 @@ const bos = liste.length === 0;
         Bir sonraki buluşma yakında duyurulacak.
       </p>
     ) : (
-      <ul class="sonraki-bulusma__liste">
+      <ul class={`sonraki-bulusma__liste${isFormatPage ? ' sonraki-bulusma__liste--tek' : ''}`}>
         {liste.map((etkinlik) => (
           <li class="sonraki-bulusma__item">
             <article class="sonraki-bulusma__kart">{etkinlik.kartGorsel && (<div aria-hidden="true" style="margin:calc(var(--space-5) * -1) calc(var(--space-5) * -1) var(--space-3);aspect-ratio:16/10;overflow:hidden;background:var(--coal);"><img src={etkinlik.kartGorsel} alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;" /></div>)}
@@ -103,6 +120,12 @@ const bos = liste.length === 0;
           </li>
         ))}
       </ul>
+    )}
+
+    {isFormatPage && !bos && (
+      <p class="sonraki-bulusma__tumu">
+        <a href="/takvim">Tüm tarihler <span aria-hidden="true">→</span></a>
+      </p>
     )}
   </div>
 </section>
@@ -134,6 +157,42 @@ const bos = liste.length === 0;
     .sonraki-bulusma__liste {
       grid-template-columns: repeat(3, 1fr);
     }
+  }
+
+  /* Tek kart varyantı (brief-faz3-h4-h5 İş 2): 6 format sayfasında kart
+   * tek kolon + max-width'le ortalı — masaüstünde 3-kolon boş kalmasın. */
+  .sonraki-bulusma__liste--tek {
+    grid-template-columns: 1fr;
+    max-width: 32rem;
+    margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .sonraki-bulusma__liste--tek {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* "Tüm tarihler → /takvim" linki (İş 2): tek kartın altında, sade ortalı. */
+  .sonraki-bulusma__tumu {
+    text-align: center;
+    margin: var(--space-5) 0 0;
+  }
+
+  .sonraki-bulusma__tumu a {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    color: var(--ember);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .sonraki-bulusma__tumu a:hover,
+  .sonraki-bulusma__tumu a:focus-visible {
+    border-bottom-color: var(--ember);
   }
 
   .sonraki-bulusma__item {
