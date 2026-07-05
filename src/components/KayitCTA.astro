@@ -10,6 +10,10 @@
 //
 // introHtml (KARAR 151): Notion'dan form-anchor look-backward intro varsa
 // pasif olarak CTA üstünde render edilir.
+//
+// Buton label (brief-faz3-h4-h5 İş 3): href'ten slug türetip KAYIT_CTA_LABEL
+// map'inden çekilir — Direkt formatlar "Kayıt Ol", mini retreat "Başvur".
+import { KAYIT_CTA_LABEL, isKayitFormat } from '../lib/kayit';
 interface Props {
   /** Hedef kayıt sayfası — örn '/cember/kayit'. */
   href: string;
@@ -19,6 +23,8 @@ interface Props {
   introHtml?: string;
 }
 const { href, kategoriAdi, introHtml } = Astro.props;
+const slug = href.replace(/^\/+/, '').split('/')[0];
+const butonMetni = isKayitFormat(slug) ? KAYIT_CTA_LABEL[slug] : 'Kayıt Ol';
 ---
 <section data-section="kayit-cta" class="ocak-kayit-cta">
   {introHtml && <div class="ocak-kayit-cta__intro" set:html={introHtml} />}
@@ -27,7 +33,7 @@ const { href, kategoriAdi, introHtml } = Astro.props;
     yerini ayıralım.
   </p>
   <a class="ocak-kayit-cta__link" href={href}>
-    Kayıt ol →
+    {butonMetni} →
   </a>
 </section>
 

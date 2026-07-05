@@ -40,6 +40,23 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
 };
 
 /**
+ * Slug → kayit-cta buton metni (brief-faz3-h4-h5 İş 3).
+ * Direkt formatlar (Kapı 1 akışı) 'Kayıt Ol'; Başvuru formatı (mini retreat,
+ * Kapı 2) 'Başvur'. Kaynak: sayfa-slug bazlı sabit map (etkinlik-bazlı Kayıt
+ * Tipi'ne bakmak aşırı mühendislik olurdu — kayit-cta sayfa düzeyinde, tek
+ * karar yeterli). Hem `KayitCTA.astro` (form-anchor wiring) hem remark plugin
+ * `transformKayitCta` (## section: kayit-cta marker) bu haritayı okur.
+ */
+export const KAYIT_CTA_LABEL: Record<KayitFormat, string> = {
+  cember: 'Kayıt Ol',
+  'acik-kapi': 'Kayıt Ol',
+  'mini-retreat': 'Başvur',
+  'sehir-aksami': 'Kayıt Ol',
+  seremoni: 'Kayıt Ol',
+  atolye: 'Kayıt Ol',
+};
+
+/**
  * Aşama 2.5 — Kademeli dayanışma fiyatı (sliding scale). Etkinlikler DB tek
  * `Ücret` taşır (orta/tam fiyat); 3 kademe koddan türetilir:
  *  - Üst (Ateşi büyüten) = Ücret × 1.5
@@ -352,15 +369,16 @@ export function uygulaIndirim(
 }
 
 /**
- * kayit-cta section'ı için post-render href çözümü (Brief 4 KARAR 207).
+ * kayit-cta section'ı için post-render placeholder çözümü (Brief 4 KARAR 207
+ * + brief-faz3-h4-h5 İş 3).
  *
- * Plugin (remark-ocak-sections.ts transformKayitCta) buton href'ini
- * `__KAYIT_CTA_HREF__` placeholder olarak emit eder; plugin global instance
- * sayfa slug'ını bilmediği için. Bu helper loader (notion-pages.ts) içinde
- * her sayfanın HTML'i render edildikten sonra çağrılır.
+ * Plugin (remark-ocak-sections.ts transformKayitCta) buton href + label'ını
+ * `__KAYIT_CTA_HREF__` ve `__KAYIT_CTA_LABEL__` placeholder'larıyla emit eder;
+ * plugin global instance sayfa slug'ını bilmediği için. Bu helper loader
+ * (notion-pages.ts) içinde her sayfanın HTML'i render edildikten sonra çağrılır.
  *
  * Davranış (Adım 0 karar A — sessiz atla + warn):
- *  - Slug 6 KayitFormat'tan biri → placeholder `/${slug}/kayit` ile değiştirilir.
+ *  - Slug 6 KayitFormat'tan biri → href `/${slug}/kayit`, label KAYIT_CTA_LABEL[slug].
  *  - Slug 6 format dışı (örn. '/hikaye', '/biz', '/') →
  *    `<section data-section="kayit-cta">...</section>` tüm bloğu (üst metin
  *    dahil) regex ile kaldırılır + tek console.warn yazılır (build log'da
@@ -368,12 +386,17 @@ export function uygulaIndirim(
  *
  * Slug input formatları: '/cember', 'cember', '/cember/' hepsi tolere
  * edilir; defansif normalize.
+ *
+ * Fonksiyon adı history uğruna korunuyor (`Href`) — davranış artık href+label
+ * çözümü kapsıyor.
  */
 export function resolveKayitCtaHref(html: string, rawSlug: string): string {
   if (!html.includes('data-section="kayit-cta"')) return html;
   const slug = rawSlug.replace(/^\/+|\/+$/g, '');
   if (isKayitFormat(slug)) {
-    return html.replaceAll('__KAYIT_CTA_HREF__', `/${slug}/kayit`);
+    return html
+      .replaceAll('__KAYIT_CTA_HREF__', `/${slug}/kayit`)
+      .replaceAll('__KAYIT_CTA_LABEL__', KAYIT_CTA_LABEL[slug]);
   }
   // 6 format dışı → tüm kayit-cta bloğunu kaldır (üst metin dahil) + warn.
   // eslint-disable-next-line no-console

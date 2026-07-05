@@ -118,22 +118,30 @@ describe('parseKayitSorulari', () => {
 // placeholder'ı çözüp 6-format-dışı sayfada section'ı temizler.
 
 const SECTION_METINSIZ =
-  '<section data-section="kayit-cta" class="ocak-kayit-cta"><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>Kayıt ol →</a></section>';
+  '<section data-section="kayit-cta" class="ocak-kayit-cta"><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a></section>';
 const SECTION_METINLI =
-  '<section data-section="kayit-cta" class="ocak-kayit-cta"><p>Yerini ayır, çembere katıl.</p><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>Kayıt ol →</a></section>';
+  '<section data-section="kayit-cta" class="ocak-kayit-cta"><p>Yerini ayır, çembere katıl.</p><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a></section>';
 
-describe('resolveKayitCtaHref (Brief 4 KARAR 207)', () => {
-  it('6 formattan biri (metinsiz) → href /[slug]/kayit ile doldurur', () => {
+describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', () => {
+  it('Direkt format (metinsiz) → href /[slug]/kayit + label "Kayıt Ol"', () => {
     const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
     expect(out).toContain('href="/cember/kayit"');
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
-    // Section korunur (buton hâlâ var).
-    expect(out).toContain('Kayıt ol →');
+    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
+    expect(out).toContain('Kayıt Ol →');
   });
 
-  it('6 formattan biri (metinli) → href doldurulur, üst metin de korunur', () => {
+  it('Başvuru formatı (mini-retreat, metinsiz) → label "Başvur"', () => {
+    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/mini-retreat');
+    expect(out).toContain('href="/mini-retreat/kayit"');
+    expect(out).toContain('Başvur →');
+    expect(out).not.toContain('Kayıt Ol');
+  });
+
+  it('6 formattan biri (metinli) → href/label doldurulur, üst metin de korunur', () => {
     const out = resolveKayitCtaHref(SECTION_METINLI, '/seremoni');
     expect(out).toContain('href="/seremoni/kayit"');
+    expect(out).toContain('Kayıt Ol →');
     expect(out).toContain('<p>Yerini ayır, çembere katıl.</p>');
   });
 
@@ -148,7 +156,7 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207)', () => {
     const out = resolveKayitCtaHref(SECTION_METINSIZ, '/hikaye');
     expect(out).not.toContain('data-section="kayit-cta"');
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
-    expect(out).not.toContain('Kayıt ol');
+    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toMatch(/hikaye/);
     expect(warnSpy.mock.calls[0][0]).toMatch(/6 format dışı/);
@@ -159,7 +167,6 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207)', () => {
     const out = resolveKayitCtaHref(SECTION_METINLI, '/biz');
     expect(out).not.toContain('data-section="kayit-cta"');
     expect(out).not.toContain('Yerini ayır, çembere katıl.');
-    expect(out).not.toContain('Kayıt ol');
     // Section bloğunun kalıntısı kalmadı.
     expect(out.trim()).toBe('');
   });
@@ -184,7 +191,10 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207)', () => {
     const out = resolveKayitCtaHref(ikili, '/atolye');
     const matches = out.match(/href="\/atolye\/kayit"/g);
     expect(matches?.length).toBe(2);
+    const labels = out.match(/Kayıt Ol →/g);
+    expect(labels?.length).toBe(2);
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
+    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
   });
 });
 

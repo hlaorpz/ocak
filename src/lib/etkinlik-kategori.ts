@@ -34,18 +34,20 @@ export const formatEtiket = (tip: string): string => FORMAT_LABEL[tip] ?? tip;
 
 /**
  * /takvim tepe tab için deterministik format sırası
- * (brief-takvim-toparlama-uygula.md ADIM 3). String'ler HAM Notion Format
- * value'ları — sort ham `e.tip` üzerinde çalışır. `FORMAT_KATEGORI` key'leriyle
- * BİREBİR eşleşmeli; bir harf/boşluk farkı tabı sona atar + warn basar.
- * SADECE tepe tab; gövdedeki ay-ay timeline tarih-öncelikli kalır.
+ * (brief-takvim-toparlama-uygula.md ADIM 3 + brief-faz3-h4-h5 İş 4).
+ * String'ler HAM Notion Format value'ları — sort ham `e.tip` üzerinde çalışır.
+ * `FORMAT_KATEGORI` key'leriyle BİREBİR eşleşmeli; bir harf/boşluk farkı tabı
+ * sona atar + warn basar. SADECE tepe tab; gövdedeki ay-ay timeline tarih-
+ * öncelikli kalır. Kanonik bulusmalar sırası: Açık Kapı → Çember → Seremoni →
+ * Atölye → Şehir Akşamı → Mini Retreat (H5). Yolculuk sonda (anadolu ayrı).
  */
 export const KATEGORI_SIRA: string[] = [
   'Açık Kapı',
   'Çember',
   'Seremoni',
   'Atölye',
-  'Mini Retreat',
   'Şehir Akşamı',
+  'Mini Retreat',
   'Yolculuk',
 ];
 
@@ -129,6 +131,21 @@ export const KATEGORI_HEADING: Record<EtkinlikKategori, string> = {
   'sehir-aksami': 'Yaklaşan Şehir Akşamları',
   'mini-retreat': "Yaklaşan Mini Retreat'ler",
   yolculuk: 'Yaklaşan Yolculuklar',
+};
+
+/**
+ * brief-faz3-h4-h5 İş 2 — 6 format sayfasında sonraki-bulusma TEK KART
+ * varyantının heading'i. "En Yakın [Format Adı]" tekil form (KATEGORI_HEADING
+ * çoğul, home/anadolu için). Yolculuk burada yok — Anadolu mevcut davranışı
+ * korur (LIMIT=3, KATEGORI_HEADING).
+ */
+export const KATEGORI_EN_YAKIN: Partial<Record<EtkinlikKategori, string>> = {
+  cember: 'En Yakın Çember',
+  'acik-kapi': 'En Yakın Açık Kapı',
+  seremoni: 'En Yakın Seremoni',
+  atolye: 'En Yakın Atölye',
+  'sehir-aksami': 'En Yakın Şehir Akşamı',
+  'mini-retreat': 'En Yakın Mini Retreat',
 };
 
 /**
