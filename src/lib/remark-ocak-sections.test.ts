@@ -71,6 +71,28 @@ describe('remark-ocak-sections', () => {
     expect(html).toMatchSnapshot();
   });
 
+  it('5b. sss — B+I marker varyantları hepsi accordion (_**x**_ ve **_x_**)', () => {
+    // Notion B+I toggle'ı deseni değişkendir; node-shape parser hepsini kabul eder.
+    // Bu test parser'a ileride regex refactor'u gelirse pattern-desteği kaybını yakalar.
+    const html = process(
+      '## section: sss\n\n' +
+        '- _**Alt-tire çift-yıldız — soru bir?**_\n\n' +
+        'Cevap bir.\n\n' +
+        '- **_Çift-yıldız alt-tire — soru iki?_**\n\n' +
+        'Cevap iki.\n\n' +
+        '- ***Üç yıldız — soru üç?***\n\n' +
+        'Cevap üç.\n',
+    );
+    expect(html.match(/<details>/g)?.length).toBe(3);
+    expect(html.match(/<summary>/g)?.length).toBe(3);
+    // Summary metinleri düz metin — markdown dekorasyonu ağaç dışında kalır
+    expect(html).toContain('<summary>Alt-tire çift-yıldız — soru bir?</summary>');
+    expect(html).toContain('<summary>Çift-yıldız alt-tire — soru iki?</summary>');
+    expect(html).toContain('<summary>Üç yıldız — soru üç?</summary>');
+    // summary içinde ham <strong> veya <em> KALMAZ
+    expect(html).not.toMatch(/<summary>[^<]*<(strong|em)/);
+  });
+
   it('10. sss fallback — H3 içerik <details> üretmez, warn tetikler', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const html = process(

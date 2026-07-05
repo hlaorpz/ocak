@@ -16,12 +16,12 @@ export const ODA_MAP: Record<string, Oda> = {
   '/araclar': 'OCAK',
   '/site-rehber': 'OCAK',
   '/test': 'OCAK',                    // Kaan format referansı (lansman öncesi dev sayfa)
-  // Yasal (statik .astro, Notion DIŞI — Iyzico onay sayfaları, brief-yasal-sayfalar-adim1.md)
+  // Yasal (statik .astro, Notion DIŞI — PayTR onay sayfaları, brief-yasal-sayfalar-adim1.md)
   '/hakkimizda': 'OCAK',
   '/gizlilik': 'OCAK',
   '/mesafeli-satis': 'OCAK',
   '/teslimat-iade': 'OCAK',
-  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; iyzico Aşama 6)
+  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; PayTR Aşama 6)
   '/odeme/mock': 'OCAK',
   '/odeme/tamam': 'OCAK',
   '/odeme/iptal': 'OCAK',

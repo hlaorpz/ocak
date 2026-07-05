@@ -267,29 +267,22 @@ const isActive = (href: string) =>
     })
   );
 
-  // === OCAK wordmark easter egg — 4x hızlı tık → 💜, tek tık → navigasyon ===
-  // preventDefault + debounce: tek tık ~GECIKME_NAV sonra manuel navigasyon;
-  // pencere içinde HEDEF_TAP'a ulaşılırsa navigasyon iptal, kalp gösterilir.
+  // === OCAK wordmark easter egg — YALNIZ ANA SAYFADA (Yol A, FAZ 0 iş 2) ===
+  // Çelişki: tek-tık nav + 4-tık egg aynı elemanda birlikte yaşayamaz — ilk
+  // tık kullanıcıyı sayfadan çıkarır, egg sayısı sıfırlanır. Çözüm: ana sayfada
+  // logo zaten "burada" (nav gereksiz), sadece egg çalışır. Diğer sayfalarda
+  // brand'e hiçbir listener bağlanmaz → doğal <a href="/"> davranışı: tek tık → /.
   // pointerdown kullanıyoruz çünkü iOS Safari hızlı ardışık click'leri
-  // double-tap-zoom sanıp suppress ediyor; pointerdown her tap'te ateşliyor.
-  // (Masaüstü mouse'ta da çalışır — pointer events tüm input türlerini kapsar.)
+  // double-tap-zoom sanıp suppress ediyor.
   const brand = document.querySelector<HTMLAnchorElement>('.nav__brand');
-  if (brand) {
+  const isHome = window.location.pathname.replace(/\/$/, '') === '';
+  if (brand && isHome) {
     const PENCERE_TAP = 2000;
     const HEDEF_TAP = 4;
-    const GECIKME_NAV = 400;
 
     let sayac = 0;
     let sonTik = 0;
-    let navTimer: number | null = null;
     let aktifKalp: HTMLElement | null = null;
-
-    const iptalNav = () => {
-      if (navTimer !== null) {
-        window.clearTimeout(navTimer);
-        navTimer = null;
-      }
-    };
 
     const kalpGoster = () => {
       // Üst üste tetik: önceki kalbi temizle
@@ -338,7 +331,7 @@ const isActive = (href: string) =>
       }, 3000);
     };
 
-    // click'i tamamen susturuyoruz — pointerdown sayacı tutuyor + manuel nav yapıyor.
+    // Ana sayfada tek-tık nav gereksiz (aynı sayfa reload = kötü UX) — click susturulur.
     brand.addEventListener('click', (e) => e.preventDefault());
 
     brand.addEventListener('pointerdown', (e) => {
@@ -354,21 +347,10 @@ const isActive = (href: string) =>
       }
       sonTik = simdi;
 
-      // Her tıkta bekleyen navigasyon timer'ını sıfırla
-      iptalNav();
-
       if (sayac >= HEDEF_TAP) {
         sayac = 0;
         kalpGoster();
-        return;
       }
-
-      // Tek tık fallback: pencere içinde yeni tık gelmezse manuel git
-      const href = brand.getAttribute('href');
-      if (!href) return; // defansif
-      navTimer = window.setTimeout(() => {
-        window.location.href = href;
-      }, GECIKME_NAV);
     });
   }
 </script>

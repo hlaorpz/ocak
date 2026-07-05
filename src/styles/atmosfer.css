@@ -285,7 +285,7 @@
   cursor: pointer;
   padding: var(--space-4) 0;
   font-family: var(--font-display);
-  font-size: var(--text-h4);
+  font-size: var(--text-details);
   color: var(--cream);
   font-weight: 400;
   line-height: 1.4;
@@ -297,6 +297,18 @@
 
 [data-section="sss"] summary::-webkit-details-marker {
   display: none;
+}
+
+/* B+I marker'ı summary'ye sızarsa görsel olarak nötrle — Notion soruları
+ * bold+italik ile yazılmış sayfalar (acik-kapi vb.) ile düz metin sayfalar
+ * (site-rehber tarif) arasında ağırlık/eğim farkı olmasın. Parser marker'ı
+ * mdast'ta strip ediyor ama defansif: markdown yolu bir gün strong/em
+ * node'unu summary child'ı olarak bırakırsa tutarlılık kırılmasın. */
+[data-section="sss"] summary strong,
+[data-section="sss"] summary em {
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: inherit;
 }
 
 [data-section="sss"] summary:hover,

@@ -14,11 +14,11 @@
  */
 
 /**
- * WhatsApp asistanı tek kaynak. wa.me uluslararası format (+1). Boş chat (text param yok).
+ * WhatsApp asistanı tek kaynak. wa.me uluslararası format (+90). Boş chat (text param yok).
  * Site geneli yüzen buton (WhatsappYuzen.astro), /iletisim Kanallar kartı ve Footer
  * link'i bu sabitten okur — numara değişirse tek yer dokunulur.
  */
-export const WHATSAPP_URL = 'https://wa.me/15551911472';
+export const WHATSAPP_URL = 'https://wa.me/905325555226';
 
 /**
  * Ödemeli kayıt formları (KayitFormu component) için TEK hedef adres

@@ -1,6 +1,6 @@
 ---
-// WhatsApp linki tek kaynak: src/lib/api.ts → WHATSAPP_URL. Eski hatalı format
-// (05325555226) yerine wa.me/15551911472 — numara değişirse api.ts tek yer.
+// WhatsApp linki tek kaynak: src/lib/api.ts → WHATSAPP_URL (wa.me/905325555226).
+// Numara değişirse api.ts tek yer.
 import { WHATSAPP_URL } from '../lib/api';
 
 const year = new Date().getFullYear();
@@ -211,22 +211,33 @@ const year = new Date().getFullYear();
     justify-self: center;
   }
 
-  /* Mobil: 3 öğe baseline'da sığmaz — OCAK+© üstte yan yana, yasal alt
-   * satıra wrap. iPhone Safari + Chrome eyeball şart (KARAR 88). */
+  /* Mobil (FAZ 0 iş 3): yasal linkler ÜSTTE 2×2 grid (Hakkımızda | Gizlilik,
+   * Mesafeli Satış | Teslimat ve İade); OCAK+© EN ALTTA space-between. Nefes
+   * için row-gap. Ayraçlar (·) gizlenir — grid hücre sınırları görsel ayrımı
+   * zaten sağlar. Masaüstü baseline (3-kolon) etkilenmez.
+   * iPhone Safari + Chrome eyeball şart (KARAR 88). */
   @media (max-width: 600px) {
     .footer__bottom {
       grid-template-columns: auto auto;
       grid-template-areas:
-        'brand year'
-        'yasal yasal';
+        'yasal yasal'
+        'brand year';
       justify-content: space-between;
-      row-gap: var(--space-4);
+      row-gap: var(--space-5);
     }
     .footer__brand { grid-area: brand; }
     .footer__year { grid-area: year; }
     .footer__bottom .footer__yasal {
       grid-area: yasal;
-      justify-self: center;
+      justify-self: stretch;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-4);
+      row-gap: var(--space-2);
+      justify-items: center;
+    }
+    .footer__bottom .footer__yasal-ayrac {
+      display: none;
     }
   }
 
