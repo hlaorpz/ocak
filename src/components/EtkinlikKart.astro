@@ -1,42 +1,34 @@
 ---
-// EtkinlikKart — tek görsel dil, iki variant (brief-etkinlikkart-home Madde A).
-// Dört tüketici:
-//   - EtkinlikTakvimi satırı → variant="satir" + showTarihRozeti
-//   - SonrakiBulusma home tek-kart → variant="kart"
-//   - SonrakiBulusma format sayfası En Yakın kart → variant="kart"
-//   - SonrakiBulusma /bulusmalar → variant="kart" (aynı)
+// EtkinlikKart — tek görsel çıktı, dört yüzey (brief-tek-kart-birebir).
+// Takvim satır kartı TEK GERÇEK. Home + /bulusmalar En Yakın + format sayfası
+// En Yakın — hepsi birebir aynı iç görsel dil.
 //
-// Tek fark iki variant arasında: dış çerçeve (satır flex-row + sol tarih rozeti
-// vs box flex-column + kart görseli). Chip, online/yüz-yüze rozeti, öne-çıkan
-// ember çizgi, italik başlık, meta, "Kayıt ol →", /etkinlik/{slug} stretched
-// link — hepsi ORTAK.
+// Görsel dallanma YOK: sol tarih rozeti, chip, online/yüz yüze rozeti, öne-çıkan
+// text rozeti, öne-çıkan sol ember çizgi, italik başlık, meta, "Kayıt ol →",
+// /etkinlik/{slug} stretched — hepsi variant'tan bağımsız her yerde basılır.
 //
-// Meta şeması showTarihRozeti'den türer:
-//   showTarihRozeti=true  → "Yöneten · Mekân · Saat"  (tarih sol rozette)
-//   showTarihRozeti=false → "Tarih · Mekân[ · Detay]" (rozet yok)
+// variant prop SADECE dış kabuk için: 'satir' = transparent + border-top ash,
+// 'kart' = ash bg + border-radius (S1 kararı). İç layout ortaktır (`__ic` flex
+// row: sol rozet → gövde → kayıt sağda).
 //
-// Öne-çıkan (etkinlik.oneCikar=true) → her iki variant'ta sol ember 2px border.
-// Satır variant'ında ayrıca üst-satırda küçük "öne çıkan" etiketi (mevcut takvim
-// davranışı korunur; kart variant'ında etiket yok, sol çizgi yeterli).
+// Meta = Yöneten · Mekân · Saat(ham). Saat ham basılır — `formatEtkinlikTarihi`
+// regex-kırpması meta'da çağrılmaz ("20:00-22:00" aralık korunur). `saat` boşsa
+// `zoomBaslangicSaati` fallback (KARAR 231/282, tek helper — her yüzeyde aynı).
+// `mekanDetay` meta'da yok (KARAR 285/287 adres gizliliği).
 import type { CollectionEntry } from 'astro:content';
 import { formatEtiket, mekanTipi } from '../lib/etkinlik-kategori';
-import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
 
 type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
 
 interface Props {
   etkinlik: EtkinlikData;
+  /** Dış kabuk: 'satir' (takvim satırı) veya 'kart' (SonrakiBulusma kutu). */
   variant?: 'satir' | 'kart';
+  /** Semantik heading tag. Satır'da span default (list item heading değil), kart'ta h3. */
   baslikTag?: 'h3' | 'h4' | 'span';
-  showTarihRozeti?: boolean;
 }
 
-const {
-  etkinlik,
-  variant = 'kart',
-  baslikTag,
-  showTarihRozeti = false,
-} = Astro.props;
+const { etkinlik, variant = 'kart', baslikTag } = Astro.props;
 
 const BaslikTag = baslikTag ?? (variant === 'satir' ? 'span' : 'h3');
 const mTipi = mekanTipi(etkinlik.mekan);
@@ -47,7 +39,11 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
   if (!m) return { gun: '·', ay: '' };
   return { gun: String(Number(m[3])), ay: AY_KISA[Number(m[2]) - 1] ?? '' };
 }
-const rozet = showTarihRozeti ? tarihRozeti(etkinlik.tarihBaslangic) : null;
+const rozet = tarihRozeti(etkinlik.tarihBaslangic);
+
+// Tek saat kaynağı: Notion "Saat" ham; boşsa "Zoom Başlangıç Saati" fallback
+// (KARAR 231/282 güvenlik ağı). Aralık ("20:00-22:00") aynen basılır.
+const saatMetni = etkinlik.saat ?? etkinlik.zoomBaslangicSaati;
 
 const kartClass = [
   'ocak-etkinlik-kart',
@@ -58,37 +54,35 @@ const kartClass = [
   .join(' ');
 ---
 <article class={kartClass}>
-  {rozet && (
-    <span class="ocak-etkinlik-kart__tarih-rozeti" aria-hidden="true">
-      <span class="ocak-etkinlik-kart__rozet-gun">{rozet.gun}</span>
-      <span class="ocak-etkinlik-kart__rozet-ay">{rozet.ay}</span>
-    </span>
-  )}
-
   {variant === 'kart' && etkinlik.kartGorsel && (
     <div aria-hidden="true" class="ocak-etkinlik-kart__gorsel">
       <img src={etkinlik.kartGorsel} alt="" loading="lazy" />
     </div>
   )}
 
-  <div class="ocak-etkinlik-kart__govde">
-    <div class="ocak-etkinlik-kart__ust-satir">
-      <span class="ocak-etkinlik-kart__chip">{formatEtiket(etkinlik.tip)}</span>
-      {mTipi && (
-        <span class={`ocak-etkinlik-kart__rozet ocak-etkinlik-kart__rozet--${mTipi}`}>
-          {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
-        </span>
-      )}
-      {etkinlik.oneCikar && variant === 'satir' && (
-        <span class="ocak-etkinlik-kart__one">öne çıkan</span>
-      )}
-    </div>
+  <div class="ocak-etkinlik-kart__ic">
+    <span class="ocak-etkinlik-kart__tarih-rozeti" aria-hidden="true">
+      <span class="ocak-etkinlik-kart__rozet-gun">{rozet.gun}</span>
+      <span class="ocak-etkinlik-kart__rozet-ay">{rozet.ay}</span>
+    </span>
 
-    <BaslikTag class="ocak-etkinlik-kart__baslik">{etkinlik.baslik}</BaslikTag>
+    <div class="ocak-etkinlik-kart__govde">
+      <div class="ocak-etkinlik-kart__ust-satir">
+        <span class="ocak-etkinlik-kart__chip">{formatEtiket(etkinlik.tip)}</span>
+        {mTipi && (
+          <span class={`ocak-etkinlik-kart__rozet ocak-etkinlik-kart__rozet--${mTipi}`}>
+            {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
+          </span>
+        )}
+        {etkinlik.oneCikar && (
+          <span class="ocak-etkinlik-kart__one">öne çıkan</span>
+        )}
+      </div>
 
-    {showTarihRozeti ? (
+      <BaslikTag class="ocak-etkinlik-kart__baslik">{etkinlik.baslik}</BaslikTag>
+
       <p class="ocak-etkinlik-kart__meta">
-        {[etkinlik.yoneten, etkinlik.mekan, etkinlik.saat]
+        {[etkinlik.yoneten, etkinlik.mekan, saatMetni]
           .filter((v): v is string => Boolean(v && v.trim()))
           .map((v, i) => (
             <Fragment>
@@ -97,20 +91,12 @@ const kartClass = [
             </Fragment>
           ))}
       </p>
-    ) : (
-      <p class="ocak-etkinlik-kart__meta">
-        <span>
-          {formatEtkinlikTarihi(
-            etkinlik.tarihBaslangic,
-            etkinlik.tarihBitis,
-            etkinlik.saat ?? etkinlik.zoomBaslangicSaati,
-          )}
-        </span>
-        <span class="ocak-etkinlik-kart__sep" aria-hidden="true">·</span>
-        <span>
-          {etkinlik.mekanDetay ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}` : etkinlik.mekan}
-        </span>
-      </p>
+    </div>
+
+    {etkinlik.kayitUrl && (
+      <a class="ocak-etkinlik-kart__kayit" href={etkinlik.kayitUrl}>
+        Kayıt ol <span aria-hidden="true">→</span>
+      </a>
     )}
   </div>
 
@@ -121,25 +107,23 @@ const kartClass = [
       aria-label={`Detay: ${etkinlik.baslik}`}
     ></a>
   )}
-
-  {etkinlik.kayitUrl && (
-    <a class="ocak-etkinlik-kart__kayit" href={etkinlik.kayitUrl}>
-      Kayıt ol <span aria-hidden="true">→</span>
-    </a>
-  )}
 </article>
 
 <style>
-  /* Ortak: dış çerçeve pozisyon ankraj (stretched link için). */
+  /* ============ ORTAK: pozisyon ankraj + iç layout ============ */
   .ocak-etkinlik-kart {
     position: relative;
   }
 
-  /* ============ SATIR variant (takvim /takvim) ============ */
-  .ocak-etkinlik-kart--satir {
+  /* İç layout — hem satır hem kart için ORTAK (birebir görsel dil). */
+  .ocak-etkinlik-kart__ic {
     display: flex;
     align-items: center;
     gap: var(--space-4);
+  }
+
+  /* ============ Dış kabuk — SATIR ============ */
+  .ocak-etkinlik-kart--satir {
     padding: var(--space-4) var(--space-3);
     border-top: 1px solid var(--ash);
     transition: background-color var(--duration-fast) var(--ease-out);
@@ -149,22 +133,20 @@ const kartClass = [
     background: var(--ash-warm);
   }
 
-  /* Öne-çıkan sol ember çizgi (her iki variant'ta ortak dil). */
   .ocak-etkinlik-kart--satir.ocak-etkinlik-kart--one-cikan {
     border-left: 2px solid var(--ember);
     padding-left: calc(var(--space-3) - 2px);
   }
 
-  /* ============ KART variant (SonrakiBulusma tek-kart / En Yakın) ============ */
+  /* ============ Dış kabuk — KART (S1: ash kutu kalır) ============ */
   .ocak-etkinlik-kart--kart {
-    height: 100%;
     padding: var(--space-5);
     background: var(--ash);
     border: 1px solid transparent;
     border-radius: 2px;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-3);
     transition: border-color var(--duration-base) var(--ease-out),
                 background-color var(--duration-base) var(--ease-out);
   }
@@ -174,14 +156,15 @@ const kartClass = [
     background: var(--ash-warm);
   }
 
-  /* Öne-çıkan sol ember çizgi (satır ile tutarlı görsel dil). */
   .ocak-etkinlik-kart--kart.ocak-etkinlik-kart--one-cikan {
-    border-left: 2px solid var(--ember);
+    border-left-width: 2px;
+    border-left-color: var(--ember);
+    padding-left: calc(var(--space-5) - 1px);
   }
 
-  /* Kart üst köşesi görseli (kartGorsel property). */
+  /* Kart üst köşesi görseli (Notion "Kart Görsel" property). */
   .ocak-etkinlik-kart__gorsel {
-    margin: calc(var(--space-5) * -1) calc(var(--space-5) * -1) var(--space-3);
+    margin: calc(var(--space-5) * -1) calc(var(--space-5) * -1) 0;
     aspect-ratio: 16 / 10;
     overflow: hidden;
     background: var(--coal);
@@ -194,7 +177,7 @@ const kartClass = [
     display: block;
   }
 
-  /* ============ Sol tarih rozeti (satır only) ============ */
+  /* ============ Sol tarih rozeti — HER yüzeyde ============ */
   .ocak-etkinlik-kart__tarih-rozeti {
     flex-shrink: 0;
     width: 3rem;
@@ -318,6 +301,7 @@ const kartClass = [
   .ocak-etkinlik-kart__kayit {
     position: relative;
     z-index: 2;
+    flex-shrink: 0;
     font-family: var(--font-body);
     font-size: var(--text-sm);
     color: var(--ember);
@@ -332,35 +316,22 @@ const kartClass = [
     border-bottom-color: var(--ember);
   }
 
-  /* Satır'da kayıt sağda, flex-shrink 0. */
-  .ocak-etkinlik-kart--satir .ocak-etkinlik-kart__kayit {
-    flex-shrink: 0;
-  }
-
-  /* Kart'ta kayıt en altta (mt-auto column layout). */
-  .ocak-etkinlik-kart--kart .ocak-etkinlik-kart__kayit {
-    margin-top: auto;
-    padding-top: var(--space-3);
-    align-self: flex-start;
-    display: inline-block;
-  }
-
-  /* ============ Mobile — satır dikey kırılır ============ */
+  /* ============ Mobile — iç row dikey kırılır ============ */
   @media (max-width: 600px) {
-    .ocak-etkinlik-kart--satir {
+    .ocak-etkinlik-kart__ic {
       flex-wrap: wrap;
       gap: var(--space-3);
     }
-    .ocak-etkinlik-kart--satir .ocak-etkinlik-kart__tarih-rozeti {
+    .ocak-etkinlik-kart__tarih-rozeti {
       flex-direction: row;
       width: auto;
       gap: var(--space-2);
       align-items: baseline;
     }
-    .ocak-etkinlik-kart--satir .ocak-etkinlik-kart__rozet-ay {
+    .ocak-etkinlik-kart__rozet-ay {
       margin-top: 0;
     }
-    .ocak-etkinlik-kart--satir .ocak-etkinlik-kart__kayit {
+    .ocak-etkinlik-kart__kayit {
       width: 100%;
       padding-left: calc(3rem + var(--space-4));
     }

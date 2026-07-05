@@ -72,7 +72,7 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
         <ul class="ocak-etkinlik-takvimi__liste" data-ay-key={key}>
           {etkinlikler.map((e) => (
             <li class="ocak-etkinlik-takvimi__satir" data-tip={e.tip}>
-              <EtkinlikKart etkinlik={e} variant="satir" showTarihRozeti />
+              <EtkinlikKart etkinlik={e} variant="satir" />
             </li>
           ))}
         </ul>
