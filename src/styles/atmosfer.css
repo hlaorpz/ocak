@@ -283,18 +283,27 @@
   gap: var(--space-3);
 }
 
-/* Vitrin item: sol köz şeridi ember DEFAULT (hover beklemez — Kaan spec:
- * "köz rengi kaybolmasın"). siradaki-kapi'nin üst border + ::before ember-grow'u
- * reset. text-align:left → blok masaüstünde ortalansa da metin sola dayalı kalır
- * (brief-desenler-02b.md ADIM 1). */
+/* Vitrin item "Sıcak Zemin" (brief-desenler-02c.md):
+ *   - Sol köz şeridi 3px STATİK ember (hover/tap efekti YOK — Kaan spec:
+ *     "tıklanmayan blokta yanıp sönme anlamsız").
+ *   - Sıcak zemin: soldan sağa ember gradient .08 alpha (rgba inline —
+ *     --ember-alpha-08 token yok, brief onaylı uydurma değil).
+ *   - Sağ köşe hafif yuvarlak (border-radius 0 6px 6px 0) — sol şerit düz kalır.
+ *   - -webkit-tap-highlight-color:transparent → mobil tap yanıp sönme kesildi
+ *     (Kaan bulgusu bonus fix).
+ * siradaki-kapi'nin üst border + ::before ember-grow'u reset. text-align:left →
+ * blok masaüstünde ortalansa da metin sola dayalı kalır. */
 [data-section="temalar"] .ocak-kapi-kart,
 [data-section="turler"] .ocak-kapi-kart,
 [data-section="formatlar"] .ocak-kapi-kart {
   max-width: 56ch;
-  padding: var(--space-4) 0 var(--space-4) var(--space-4);
+  padding: var(--space-4);
   border-top: none;
-  border-left: 2px solid var(--ember);
+  border-left: 3px solid var(--ember);
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(100deg, rgba(196, 75, 47, 0.08), transparent 55%);
   text-align: left;
+  -webkit-tap-highlight-color: transparent;
 }
 
 [data-section="temalar"] .ocak-kapi-kart::before,
@@ -366,9 +375,22 @@ details[data-section^="raf-"] > p:first-of-type em {
   font-weight: 400;
 }
 
+/* Vitrin özet ayracı ALTIN (brief-desenler-02c.md V2): şerit ember (dikey) +
+ * ayraç gold (yatay) → iki sıcak ton çakışmaz. */
 [data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
 [data-section="turler"] .ocak-kapi-kart p:first-of-type::after,
-[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2.4rem;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.8;
+}
+
+/* Raf özet ayracı EMBER kalır (araçlar sayfası, brief kapsamı dışı). */
 details[data-section^="raf-"] > p:first-of-type::after {
   content: '';
   position: absolute;
