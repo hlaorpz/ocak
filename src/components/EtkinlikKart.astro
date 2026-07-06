@@ -32,9 +32,26 @@ interface Props {
    * çift-kayıt aksiyonu olmasın (stretched-link detay-route korunur).
    */
   showKayitLink?: boolean;
+  /**
+   * Başlığı render et. Default true. `false` → detay sayfası (Hero başlığı
+   * zaten var, kartta tekrar etme).
+   */
+  showBaslik?: boolean;
+  /**
+   * `/etkinlik/{slug}` stretched-link'ini render et. Default true. `false` →
+   * detay sayfası (kendi sayfasına link anlamsız).
+   */
+  showStretched?: boolean;
 }
 
-const { etkinlik, variant = 'kart', baslikTag, showKayitLink = true } = Astro.props;
+const {
+  etkinlik,
+  variant = 'kart',
+  baslikTag,
+  showKayitLink = true,
+  showBaslik = true,
+  showStretched = true,
+} = Astro.props;
 
 const BaslikTag = baslikTag ?? (variant === 'satir' ? 'span' : 'h3');
 const mTipi = mekanTipi(etkinlik.mekan);
@@ -85,7 +102,9 @@ const kartClass = [
         )}
       </div>
 
+      {showBaslik && (
       <BaslikTag class="ocak-etkinlik-kart__baslik">{etkinlik.baslik}</BaslikTag>
+    )}
 
       <p class="ocak-etkinlik-kart__meta">
         {[etkinlik.yoneten, etkinlik.mekan, saatMetni]
@@ -106,7 +125,7 @@ const kartClass = [
     )}
   </div>
 
-  {etkinlik.slug && (
+  {etkinlik.slug && showStretched && (
     <a
       class="ocak-etkinlik-kart__stretched"
       href={`/etkinlik/${etkinlik.slug}`}

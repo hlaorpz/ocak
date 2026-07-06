@@ -1149,7 +1149,9 @@ section[data-section="kayit-cta"] {
   /* Faz B: sıkışık clamp() KORUNUR (Brief 4 — mini-cta'dan dar bilinçli seçim). */
   padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
   margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
-  max-width: var(--max-w-prose);
+  /* brief-detay-sayfa-revize + format sayfası yeni düzen: kart+buton+link tek
+   * dar ortalı sütun (~460px). Beş yüzeyde kart-cta bloğu tutarlı. */
+  max-width: 28.75rem;
 }
 
 /* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
@@ -1173,10 +1175,12 @@ section[data-section="kayit-cta"] > p {
 }
 
 section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
-  display: inline-block;
-  /* B varyantı — dikey ~18px, yatay ~72px (orta-genişten geniş, davet baskın).
-   * Kabuk ortalı kalır (section max-w-prose + text-align:center); buton kendi
-   * padding'iyle büyür, tam-genişlik bar DEĞİL. */
+  /* Dar sütun içinde tam-blok buton — kart genişliğiyle birebir, tek dikey
+   * ünite hissi (brief-detay-sayfa-revize + format sayfa yeni düzen). */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  /* B varyantı — dikey ~18px, yatay ~72px iç padding. */
   padding: 1.125rem 4.5rem;
   background: var(--ember);
   border: 1px solid var(--ember);
@@ -1188,6 +1192,7 @@ section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
   transition: background var(--duration-base) var(--ease-out),
               box-shadow var(--duration-base) var(--ease-out);
@@ -1206,6 +1211,32 @@ section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:focus-visible {
     padding: 1rem 2.5rem;
     letter-spacing: 0.2em;
   }
+}
+
+/* Kart (EtkinlikKart) ile buton arasında sıkı boşluk — tek dikey davet ünitesi. */
+section[data-section="kayit-cta"] > .ocak-etkinlik-kart + .ocak-kayit-cta__buton {
+  margin-top: var(--space-2);
+}
+
+/* "Tüm buluşmalar →" linki — butonun ALTINDA, ortalı, yumuşak ton. */
+section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+}
+
+section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu a {
+  font-family: var(--font-body);
+  letter-spacing: 0.06em;
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu a:hover,
+section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu a:focus-visible {
+  border-bottom-color: var(--ember);
 }
 
 @media (prefers-reduced-motion: reduce) {
