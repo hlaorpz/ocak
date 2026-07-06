@@ -1991,6 +1991,27 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   display: none;
 }
 
+/* ---- Anadolu Şerit: mobil evre navigasyon (brief-anadolu-mobil-serit ADIM 1)
+ *
+ * Masaüstünde SVG harita coğrafi hikayeyi taşır; mobilde küçük noktalar
+ * (dot r=9, tıklanabilir ~10px) Apple 44px hedefinin altına düşüyordu.
+ * Çözüm: mobil viewport'ta SVG'yi gizle, yerine yatay numaralı evre şeridi
+ * göster. Şerit yalnızca "neredesin + git" işlevi görür — kart içeriğini
+ * TEKRARLAMAZ. Etiket: sadece evre adı (AÇILIŞ/İNİŞ/…). Yer adı HTML'de var
+ * ama default gizli; ADIM 2 aktif durakta gösterir. */
+.anadolu-serit {
+  display: none; /* masaüstünde gizli */
+}
+
+.anadolu-serit__durak {
+  /* button reset — font/border/background sıfırla, kendi stilimiz */
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 /* ---- Mobil (KARAR 187 horizontal overflow=0) ---- */
 @media (max-width: 768px) {
   .ocak-evreler-intro {
@@ -2032,14 +2053,114 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   .anadolu-harita__etiket-yer {
     font-size: 10px;
   }
+
+  /* Mobilde SVG harita gizli (dot r=9 çok küçük, 44px hedef altı) — yerine
+   * .anadolu-serit yatay şerit render edilir. brief madde 30. */
+  .anadolu-harita__cerceve {
+    display: none;
+  }
+
+  /* Şerit yatay layout — 6 durak eşit paylaşım. min-height 44px (Apple hedef).
+   * Nokta arkasında ısı hattı kor-cizgi sabit — timeline gap dolgusu ile aynı
+   * token (KARAR 199 marka dokusu). */
+  .anadolu-serit {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-3) 0 var(--space-2);
+    margin: 0;
+    gap: 0;
+  }
+
+  .anadolu-serit__durak {
+    --isi-aktif: var(--ember);
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 2px 4px;
+    text-align: center;
+    outline: none;
+  }
+
+  /* Bağlantı hattı — dot merkezinden sağ komşunun dot merkezine.
+   * top: padding-top(8) + dot-yarıçapı(14) - hat-yarıçapı(1) = 21px */
+  .anadolu-serit__durak::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 50%;
+    right: -50%;
+    height: 2px;
+    background: var(--kor-cizgi);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .anadolu-serit__durak:last-child::before {
+    display: none;
+  }
+
+  /* Nokta: ısı dolgulu 28px yuvarlak, ortasında numara. z-index üstünde ki
+   * arkadaki hat dot'a girmesin. */
+  .anadolu-serit__dot {
+    position: relative;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--isi-aktif);
+    color: var(--coal);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 8px color-mix(in oklab, var(--isi-aktif) 25%, transparent);
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .anadolu-serit__durak:hover .anadolu-serit__dot,
+  .anadolu-serit__durak:focus-visible .anadolu-serit__dot {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 14px color-mix(in oklab, var(--isi-aktif) 45%, transparent);
+  }
+
+  .anadolu-serit__ad {
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    color: var(--cream-soft);
+    white-space: nowrap;
+  }
+
+  /* Yer adı: default gizli — ADIM 2 aktif durakta gösterir */
+  .anadolu-serit__yer {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ocak-evre,
   .anadolu-harita__nokta,
   .anadolu-harita__nokta-halka,
-  .anadolu-harita__nokta-dot {
+  .anadolu-harita__nokta-dot,
+  .anadolu-serit__dot {
     transition: none;
+  }
+  .anadolu-serit__durak:hover .anadolu-serit__dot,
+  .anadolu-serit__durak:focus-visible .anadolu-serit__dot {
+    transform: none;
   }
   /* brief v2 R1: hover translateY de reduced-motion'da iptal (AlOlVer paterni). */
   .ocak-evre:hover {

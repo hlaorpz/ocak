@@ -75,6 +75,9 @@ const evreler: Evre[] = [
   <h2 id="anadolu-harita-baslik" class="anadolu-harita__baslik">Yolculuğun Haritası</h2>
   <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktayı seç, evre kartına in.</p>
 
+  {/* brief-anadolu-mobil-serit ADIM 1: mobilde SVG harita gizlenir, yerine
+     yatay evre şeridi render edilir (aşağıda). Şerit ve harita AYNI slug'ları
+     paylaşır → tek activate() fonksiyonu iki DOM kaynağına delegate eder. */}
   <div class="anadolu-harita__cerceve">
     <svg
       class="anadolu-harita__svg"
@@ -123,15 +126,58 @@ const evreler: Evre[] = [
       </g>
     </svg>
   </div>
+
+  {/* Mobil evre şeridi — masaüstünde CSS ile gizli, mobilde SVG yerine görünür.
+     Etiket: sadece evre adı (Kaan onayı: 6 durak 360px'de sığar, yer adı kart
+     başlığında zaten var, tekrar edilmez). Yer adı .anadolu-serit__yer olarak
+     HTML'de var ama default display:none — ADIM 2 aktif durakta gösterir. */}
+  <nav class="anadolu-serit" aria-label="Evre şeridi — hızlı navigasyon">
+    {evreler.map((e, i) => (
+      <button
+        class="anadolu-serit__durak"
+        type="button"
+        data-evre={e.slug}
+        style={`--isi-aktif: var(${e.isiToken});`}
+        aria-label={`${e.ad} — ${e.yer} kartına git`}
+      >
+        <span class="anadolu-serit__dot" aria-hidden="true">{i}</span>
+        <span class="anadolu-serit__ad" aria-hidden="true">{e.ad}</span>
+        <span class="anadolu-serit__yer" aria-hidden="true">{e.yer}</span>
+      </button>
+    ))}
+  </nav>
 </section>
 
 <script>
   // Harita ↔ kart bağı (brief-anadolu-yolculuk.md): nokta tıklanınca ilgili evre
   // kartına smooth scroll + geçici vurgu (border ısı + box-shadow). ESIK paterni
   // sade JS — Astro client island değil, basit DOMContentLoaded.
-  const noktalar = document.querySelectorAll<SVGGElement>('.anadolu-harita__nokta');
+  //
+  // brief-anadolu-mobil-serit ADIM 1: aynı activate() iki DOM kaynağını serve
+  // eder — masaüstü SVG noktaları + mobil şerit butonları. Aynı slug, aynı
+  // kart, aynı scroll mekanizması (yeni scroll yolu kurma).
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const activate = (slug: string | undefined) => {
+    if (!slug) return;
+    const kart = document.getElementById(`evre-${slug}`);
+    if (!kart) return;
+    kart.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      // brief v2 Bug 2: nav'ın HEMEN altına hizalansın (önce 'center' idi,
+      // kartı ekran ortasına itiyordu). 'start' + CSS scroll-margin-top
+      // var(--nav-height) ile kart nav'ın arkasına kaymaz.
+      block: 'start',
+    });
+    // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
+    kart.classList.remove('ocak-evre--vurgu');
+    // reflow tetikle ki re-add animasyonu sıfırdan başlasın
+    void (kart as HTMLElement).offsetWidth;
+    kart.classList.add('ocak-evre--vurgu');
+  };
+
+  // Masaüstü: SVG noktalar (role=button + keyboard)
+  const noktalar = document.querySelectorAll<SVGGElement>('.anadolu-harita__nokta');
   noktalar.forEach((nokta) => {
     nokta.style.cursor = 'pointer';
     nokta.setAttribute('role', 'button');
@@ -140,30 +186,18 @@ const evreler: Evre[] = [
     const label = nokta.querySelector('title')?.textContent ?? slug ?? '';
     nokta.setAttribute('aria-label', `${label} kartına git`);
 
-    const activate = () => {
-      if (!slug) return;
-      const kart = document.getElementById(`evre-${slug}`);
-      if (!kart) return;
-      kart.scrollIntoView({
-        behavior: reducedMotion ? 'auto' : 'smooth',
-        // brief v2 Bug 2: nav'ın HEMEN altına hizalansın (önce 'center' idi,
-        // kartı ekran ortasına itiyordu). 'start' + CSS scroll-margin-top
-        // var(--nav-height) ile kart nav'ın arkasına kaymaz.
-        block: 'start',
-      });
-      // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
-      kart.classList.remove('ocak-evre--vurgu');
-      // reflow tetikle ki re-add animasyonu sıfırdan başlasın
-      void (kart as HTMLElement).offsetWidth;
-      kart.classList.add('ocak-evre--vurgu');
-    };
-
-    nokta.addEventListener('click', activate);
+    nokta.addEventListener('click', () => activate(slug));
     nokta.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        activate();
+        activate(slug);
       }
     });
+  });
+
+  // Mobil: şerit butonları (native <button> click + keyboard semantiği)
+  const duraklar = document.querySelectorAll<HTMLButtonElement>('.anadolu-serit__durak');
+  duraklar.forEach((durak) => {
+    durak.addEventListener('click', () => activate(durak.dataset.evre));
   });
 </script>
