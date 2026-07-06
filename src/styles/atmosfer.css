@@ -1164,14 +1164,11 @@ section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][clas
   margin-top: 0;
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > p {
-  color: var(--cream-soft);
-  font-family: var(--font-body);
-  /* B varyantı — davet cümlesi ~15px, buton ile tek ortalı ünite hissi
-   * (margin küçüldü: --space-4 → --space-3). */
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  margin: 0 0 var(--space-3);
+/* brief-format-kayit-bitir: Notion "Bir sonraki [X]'te yerin hazır" prose'unu
+ * gizle — kayıt aksiyonu tek yerde (turuncu buton). Aşağıdaki `.__tumu` link
+ * ise buton altındaki "Sana uyan başka tarihler..." linki; korunur. */
+section[data-section="kayit-cta"][class^="ocak-"] > p:not(.ocak-kayit-cta__tumu) {
+  display: none;
 }
 
 section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {

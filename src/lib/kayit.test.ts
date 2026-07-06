@@ -145,6 +145,15 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', ()
     expect(out).toContain('<p>Yerini ayır, çembere katıl.</p>');
   });
 
+  it('6 formattan biri → butondan SONRA "Sana uyan başka tarihler..." linki enjekte edilir (brief-format-kayit-bitir)', () => {
+    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
+    expect(out).toContain('Sana uyan başka tarihler de var — hepsine bak');
+    expect(out).toContain('class="ocak-kayit-cta__tumu"');
+    expect(out).toContain('href="/takvim"');
+    // Link, butonun HEMEN ARDINDA (arada başka element yok).
+    expect(out).toMatch(/Yerini ayır →<\/a><p class="ocak-kayit-cta__tumu">/);
+  });
+
   it('slug normalize: cember / /cember / /cember/ hepsi /cember/kayit', () => {
     expect(resolveKayitCtaHref(SECTION_METINSIZ, 'cember')).toContain('/cember/kayit');
     expect(resolveKayitCtaHref(SECTION_METINSIZ, '/cember')).toContain('/cember/kayit');

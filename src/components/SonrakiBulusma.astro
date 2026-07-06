@@ -112,12 +112,11 @@ const heading = (() => {
       </ul>
     )}
 
-    {isTekKart && !bos && (
+    {/* Format sayfasında link resolveKayitCtaHref tarafından kayit-cta bloğu
+        içine enjekte edilir (buton altına). Burada sadece Home basar. */}
+    {isTekKart && !bos && isHome && (
       <p class="sonraki-bulusma__tumu">
-        <a href="/takvim">
-          {isHome ? 'Tüm buluşmalar' : 'Sana uyan başka tarihler de var — hepsine bak'}
-          {' '}<span aria-hidden="true">→</span>
-        </a>
+        <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
       </p>
     )}
   </div>
