@@ -256,48 +256,42 @@
   .ocak-kapi-kart { padding: var(--space-4); }
 }
 
-/* ===== VİTRİN GRID (temalar/turler/formatlar, brief-desenler-01.md ADIM 2/3) === */
+/* ===== VİTRİN DÜZEN A (temalar/turler/formatlar, brief-desenler-02.md) ========== */
 /* Plugin output: <section data-section="temalar|turler|formatlar">
  *   <article class="ocak-kapi-kart">
- *     <h3>Ateş</h3><p>…</p>   ← link ZORUNLU DEĞİL (siradaki-kapi'den fark)
+ *     <h3>Ateş</h3><p>…özet…</p><p>…detay…</p>   ← link ZORUNLU DEĞİL
  *   </article>
  *   … (mini-retreat 5 tema, seremoni 4 tür, acik-kapi 4 format)
  * </section>
  *
- * siradaki-kapi ile paralel: transformKapi aynı, .ocak-kapi-kart aynı görsel.
- * Fark: 2 sütun kırılım (620px) — vitrin item'ları uzun prose taşıyabilir,
- * 3 sütun mobil-ötesi sıkışır. Sol köz-şerit override: siradaki-kapi'nin üst
- * ember çizgisi yerine sol dikey ember → vitrin item'ları liste hissi (kart
- * değil). Mevcut siradaki-kapi selector'leri değiştirilmedi.
+ * Düzen A onaylı (Claude.ai mühürleme sonrası): TEK SÜTUN her viewport'ta,
+ * her öğe solunda köz şeridi, kırılım YOK (mobil=desktop). 2 sütun grid +
+ * @620px kırılım REDDEDİLDİ (mobilde zikzak, sola-sağa kaçtı, kuru).
+ *
+ * siradaki-kapi (KARAR 92: 3 sütun kart-grid) BOZULMAZ — vitrin selector'leri
+ * grup-adı scope'lu ([data-section="temalar|turler|formatlar"]), .ocak-kapi-kart
+ * baseline (siradaki-kapi üst ember çizgisi) sadece bu üç grup içinde override
+ * ediliyor. Regresyon kontrolü test 43-46'ya + Kaan eyeball'una bırakılı.
  */
 
 [data-section="temalar"],
 [data-section="turler"],
 [data-section="formatlar"] {
   padding: var(--rhythm-section-bottom) 0;
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-@media (min-width: 620px) {
-  [data-section="temalar"],
-  [data-section="turler"],
-  [data-section="formatlar"] {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Vitrin item override: siradaki-kapi'nin üst ember çizgisi yerine sol köz şerit.
- * .ocak-kapi-kart baseline (üst border + ::before grow) reset edilir, yerine
- * sol border + hover'da ember. Link opsiyonel; link yoksa margin-top:auto
- * boşluğu kalır — item flex-column ile yine hizalı. */
+/* Vitrin item override: sol köz şeridi, okuma genişliği 56ch. siradaki-kapi'nin
+ * üst border + ::before ember-grow'u reset. Hover'da şerit ash → ember. */
 [data-section="temalar"] .ocak-kapi-kart,
 [data-section="turler"] .ocak-kapi-kart,
 [data-section="formatlar"] .ocak-kapi-kart {
+  max-width: 56ch;
+  padding: var(--space-5) 0 var(--space-5) var(--space-4);
   border-top: none;
-  border-left: 2px solid var(--smoke);
-  padding-left: var(--space-5);
+  border-left: 2px solid var(--ash);
   transition: border-color var(--duration-base) var(--ease-out);
 }
 
@@ -314,6 +308,84 @@
 [data-section="turler"] .ocak-kapi-kart:focus-within,
 [data-section="formatlar"] .ocak-kapi-kart:focus-within {
   border-left-color: var(--ember);
+}
+
+/* ===== RİTİM TİPOGRAFİSİ (vitrin + raf ortak, brief-desenler-02.md ADIM 2) ==== */
+/* Vitrin kartı + raf accordion içeriği AYNI ritmi paylaşır: ilk paragraf = özet
+ * (Jost temiz 1.02rem cream + alt köz çizgi ayraç), sonraki paragraf/madde =
+ * detay (küçük .9rem cream-soft).
+ *
+ * SEMANTİK: plugin markup'ı düz <h3> + <p> + <p>… üretiyor, semantik sınıf yok.
+ * :first-of-type ile ilk <p> = özet ayrımı. Selector'ler vitrin-grup + raf-
+ * scope'lu → siradaki-kapi ve diğer prose section'lar dokunulmuyor.
+ *
+ * SAPMA: Notion araç raflarında madde işaretleri "· ..." prefix'li düz <p>
+ * (li DEĞİL). Detay selector'ü p:not(:first-of-type) — defansif olarak li
+ * de ekli (Notion ileride bullet list kullanırsa çalışsın).
+ *
+ * Raf'ın ilk <p>'sinde <em> italik (Notion özet italik yazılmış) — em normalize:
+ * font-style normal, cream. Brief Kaan isteği: "Image-1 fontu gibi temiz". */
+
+/* İlk <p> = özet: Jost temiz, belirgin, köz-çizgi ayraç */
+[data-section="temalar"] .ocak-kapi-kart p:first-of-type,
+[data-section="turler"] .ocak-kapi-kart p:first-of-type,
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type,
+details[data-section^="raf-"] > p:first-of-type {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.02rem;
+  color: var(--cream);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  position: relative;
+}
+
+/* Raf özet <em> italik'i sıyır — Jost düz temiz (Kaan spec) */
+details[data-section^="raf-"] > p:first-of-type em {
+  font-style: normal;
+  color: var(--cream);
+  font-weight: 400;
+}
+
+[data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="turler"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after,
+details[data-section^="raf-"] > p:first-of-type::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2.2rem;
+  height: 1px;
+  background: var(--ember);
+  opacity: 0.7;
+}
+
+/* SONRAKİ <p> / <li> = detay: küçük, yumuşak */
+[data-section="temalar"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="turler"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="formatlar"] .ocak-kapi-kart p:not(:first-of-type),
+details[data-section^="raf-"] > p:not(:first-of-type),
+details[data-section^="raf-"] li {
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+}
+
+/* Opsiyonel ritim şeridi (brief-desenler-02.md ADIM 3): seremoni türlerinde
+ * "Ayda bir", "Baharlarda", "Yılda dört kez" gibi ritim bilgisi. Notion'da son
+ * satır `_Yılda dört kez_` (italik) yazılırsa → gold uppercase şerit. Notion'da
+ * italik satır yoksa selector hiçbir şeyi yakalamaz (zararsız). */
+[data-section="temalar"] .ocak-kapi-kart p:last-child em,
+[data-section="turler"] .ocak-kapi-kart p:last-child em,
+[data-section="formatlar"] .ocak-kapi-kart p:last-child em {
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-style: normal;
+  display: block;
+  margin-top: var(--space-2);
 }
 
 /* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
