@@ -40,8 +40,10 @@ type Evre = {
 // DURUŞ üst -14 → -20 (halka üstünde 6px nefes), DÖNÜŞ yatay dx 12 → 24
 // (halka yanında 4px nefes).
 const evreler: Evre[] = [
+  // brief-anadolu-mobil-serit.md ADIM 3.1: kıyıya çok yakın (denize düşüyor
+  // hissi), x hafif içeri (64 → 76) — nefes alsın.
   { slug: 'acilis', ad: 'AÇILIŞ', yer: 'Ege',
-    x: 64.0, y: 258.2, isiToken: '--isi-acilis',
+    x: 76.0, y: 258.2, isiToken: '--isi-acilis',
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   { slug: 'inis', ad: 'İNİŞ', yer: 'Göbeklitepe · Harran',
     x: 681.2, y: 322.0, isiToken: '--isi-inis',
@@ -61,15 +63,17 @@ const evreler: Evre[] = [
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   // DÖNÜŞ: Kapadokya → etiket SAĞDA (DURUŞ üstte olduğu için aşağı serbest ama
   // brief: text-anchor:start sağa kaydır → daha temiz blok).
+  // brief-anadolu-mobil-serit.md ADIM 3.2: DURUŞ ile orta bölgede sıkışıklık —
+  // etiketi biraz daha sağa (dx 24 → 32) ve hafif aşağı (dy 5 → 14) it.
   { slug: 'donus', ad: 'DÖNÜŞ', yer: 'Konya · Kapadokya',
     x: 473.6, y: 239.4, isiToken: '--isi-donus',
-    labelDx: 24, labelDy: 5, labelAnchor: 'start' },
+    labelDx: 32, labelDy: 14, labelAnchor: 'start' },
 ];
 
 ---
 <section class="anadolu-harita" aria-labelledby="anadolu-harita-baslik">
   <h2 id="anadolu-harita-baslik" class="anadolu-harita__baslik">Yolculuğun Haritası</h2>
-  <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktaya dokun, evre kartına in.</p>
+  <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktayı seç, evre kartına in.</p>
 
   <div class="anadolu-harita__cerceve">
     <svg
