@@ -280,19 +280,21 @@
   padding: var(--rhythm-section-bottom) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-/* Vitrin item override: sol köz şeridi, okuma genişliği 56ch. siradaki-kapi'nin
- * üst border + ::before ember-grow'u reset. Hover'da şerit ash → ember. */
+/* Vitrin item: sol köz şeridi ember DEFAULT (hover beklemez — Kaan spec:
+ * "köz rengi kaybolmasın"). siradaki-kapi'nin üst border + ::before ember-grow'u
+ * reset. text-align:left → blok masaüstünde ortalansa da metin sola dayalı kalır
+ * (brief-desenler-02b.md ADIM 1). */
 [data-section="temalar"] .ocak-kapi-kart,
 [data-section="turler"] .ocak-kapi-kart,
 [data-section="formatlar"] .ocak-kapi-kart {
   max-width: 56ch;
-  padding: var(--space-5) 0 var(--space-5) var(--space-4);
+  padding: var(--space-4) 0 var(--space-4) var(--space-4);
   border-top: none;
-  border-left: 2px solid var(--ash);
-  transition: border-color var(--duration-base) var(--ease-out);
+  border-left: 2px solid var(--ember);
+  text-align: left;
 }
 
 [data-section="temalar"] .ocak-kapi-kart::before,
@@ -301,13 +303,29 @@
   content: none;
 }
 
-[data-section="temalar"] .ocak-kapi-kart:hover,
-[data-section="turler"] .ocak-kapi-kart:hover,
-[data-section="formatlar"] .ocak-kapi-kart:hover,
-[data-section="temalar"] .ocak-kapi-kart:focus-within,
-[data-section="turler"] .ocak-kapi-kart:focus-within,
-[data-section="formatlar"] .ocak-kapi-kart:focus-within {
-  border-left-color: var(--ember);
+/* MASAÜSTÜ: blok yatayda ortalı (sayfa ortalı kompozisyonuyla hizalı), metin +
+ * köz şerit solda kalır. Mobil: margin yok → sola dayalı (dar ekran doğal).
+ * Tek @media farkı bu — aynı bileşen, viewport hizası. */
+@media (min-width: 768px) {
+  [data-section="temalar"] .ocak-kapi-kart,
+  [data-section="turler"] .ocak-kapi-kart,
+  [data-section="formatlar"] .ocak-kapi-kart {
+    margin-inline: auto;
+  }
+}
+
+/* Intro → grup geçiş boşluğu (brief-desenler-02b.md ADIM 2): standart iki
+ * ardışık section arası ~7rem (rhythm-section-bottom 4rem + top 3rem). Intro
+ * bir öncesi grup section'ının BAŞLIĞI gibi çalışıyor, tam ayrı section olarak
+ * hissedilmesin — negatif margin ile yakınlaştır. --space-6 (2rem) kadar
+ * çekildi → net ~5rem, iki adım arası nefes.
+ *
+ * Notion intro adları (envanterden teyit): temalar-intro, zirveler-intro,
+ * formatlar-intro. Bu geçiş dışındaki hiçbir section-arası boşluk dokunulmuyor. */
+[data-section="temalar-intro"] + [data-section="temalar"],
+[data-section="zirveler-intro"] + [data-section="turler"],
+[data-section="formatlar-intro"] + [data-section="formatlar"] {
+  margin-top: calc(-1 * var(--space-6));
 }
 
 /* ===== RİTİM TİPOGRAFİSİ (vitrin + raf ortak, brief-desenler-02.md ADIM 2) ==== */
