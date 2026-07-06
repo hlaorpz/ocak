@@ -498,9 +498,12 @@ section[data-section="atolyeler"][class^="ocak-"] li {
   border-bottom: 1px solid rgba(61, 53, 50, 0.5);
 }
 
-/* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer) */
+/* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer).
+ * !important content: baseline `content:'·'` cascade sırasına rağmen kesin ez
+ * (bir önceki fix (0,3,4)>(0,2,4) yeterli olmalıydı ama Kaan hâlâ iki nokta
+ * bildirdi — belt-and-suspenders güvenlik). */
 section[data-section="atolyeler"][class^="ocak-"] ul li::before {
-  content: '';
+  content: '' !important;
   position: absolute;
   left: 0;
   top: 1.15rem;
@@ -511,6 +514,12 @@ section[data-section="atolyeler"][class^="ocak-"] ul li::before {
   opacity: 0.8;
   color: transparent;
   font-size: 0;
+}
+
+/* Native ::marker güvenliği — bazı motorlar list-style:none'a rağmen marker
+ * basabilir (Safari eski, print media). content:none garanti kapatır. */
+section[data-section="atolyeler"][class^="ocak-"] li::marker {
+  content: none;
 }
 
 /* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
