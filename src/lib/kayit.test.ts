@@ -123,25 +123,25 @@ const SECTION_METINLI =
   '<section data-section="kayit-cta" class="ocak-kayit-cta"><p>Yerini ayır, çembere katıl.</p><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a></section>';
 
 describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', () => {
-  it('Direkt format (metinsiz) → href /[slug]/kayit + label "Kayıt Ol"', () => {
+  it('Direkt format (metinsiz) → href /[slug]/kayit + label "Yerini ayır" (KARAR 307)', () => {
     const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
     expect(out).toContain('href="/cember/kayit"');
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
     expect(out).not.toContain('__KAYIT_CTA_LABEL__');
-    expect(out).toContain('Kayıt Ol →');
+    expect(out).toContain('Yerini ayır →');
   });
 
   it('Başvuru formatı (mini-retreat, metinsiz) → label "Başvur"', () => {
     const out = resolveKayitCtaHref(SECTION_METINSIZ, '/mini-retreat');
     expect(out).toContain('href="/mini-retreat/kayit"');
     expect(out).toContain('Başvur →');
-    expect(out).not.toContain('Kayıt Ol');
+    expect(out).not.toContain('Yerini ayır');
   });
 
   it('6 formattan biri (metinli) → href/label doldurulur, üst metin de korunur', () => {
     const out = resolveKayitCtaHref(SECTION_METINLI, '/seremoni');
     expect(out).toContain('href="/seremoni/kayit"');
-    expect(out).toContain('Kayıt Ol →');
+    expect(out).toContain('Yerini ayır →');
     expect(out).toContain('<p>Yerini ayır, çembere katıl.</p>');
   });
 
@@ -191,7 +191,7 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', ()
     const out = resolveKayitCtaHref(ikili, '/atolye');
     const matches = out.match(/href="\/atolye\/kayit"/g);
     expect(matches?.length).toBe(2);
-    const labels = out.match(/Kayıt Ol →/g);
+    const labels = out.match(/Yerini ayır →/g);
     expect(labels?.length).toBe(2);
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
     expect(out).not.toContain('__KAYIT_CTA_LABEL__');

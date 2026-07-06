@@ -1152,6 +1152,16 @@ section[data-section="kayit-cta"] {
   max-width: var(--max-w-prose);
 }
 
+/* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
+ * TEK DAVET AKIŞI olsun. Home'daki sonraki-bulusma → siradaki-kapi arası
+ * etkilenmez (:has() sadece kayit-cta ardışıksa tetiklenir). */
+section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-cta"]) {
+  padding-bottom: var(--space-4);
+}
+section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"] {
+  margin-top: 0;
+}
+
 section[data-section="kayit-cta"] > p {
   color: var(--cream-soft);
   font-family: var(--font-body);

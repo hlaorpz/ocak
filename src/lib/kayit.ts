@@ -40,20 +40,20 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
 };
 
 /**
- * Slug → kayit-cta buton metni (brief-faz3-h4-h5 İş 3).
- * Direkt formatlar (Kapı 1 akışı) 'Kayıt Ol'; Başvuru formatı (mini retreat,
- * Kapı 2) 'Başvur'. Kaynak: sayfa-slug bazlı sabit map (etkinlik-bazlı Kayıt
+ * Slug → kayit-cta buton metni (brief-faz3-h4-h5 İş 3 + KARAR 307 iki-şablon).
+ * Direkt formatlar (Kapı 1) → 'Yerini ayır'; Başvuru formatı (mini retreat,
+ * Kapı 2) → 'Başvur'. Kaynak: sayfa-slug bazlı sabit map (etkinlik-bazlı Kayıt
  * Tipi'ne bakmak aşırı mühendislik olurdu — kayit-cta sayfa düzeyinde, tek
  * karar yeterli). Hem `KayitCTA.astro` (form-anchor wiring) hem remark plugin
  * `transformKayitCta` (## section: kayit-cta marker) bu haritayı okur.
  */
 export const KAYIT_CTA_LABEL: Record<KayitFormat, string> = {
-  cember: 'Kayıt Ol',
-  'acik-kapi': 'Kayıt Ol',
+  cember: 'Yerini ayır',
+  'acik-kapi': 'Yerini ayır',
   'mini-retreat': 'Başvur',
-  'sehir-aksami': 'Kayıt Ol',
-  seremoni: 'Kayıt Ol',
-  atolye: 'Kayıt Ol',
+  'sehir-aksami': 'Yerini ayır',
+  seremoni: 'Yerini ayır',
+  atolye: 'Yerini ayır',
 };
 
 /**
