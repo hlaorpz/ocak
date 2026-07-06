@@ -1163,7 +1163,8 @@ section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-cta"][
 }
 section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][class^="ocak-"] {
   margin-top: 0;
-  padding-top: 0;
+  /* Kart↔buton arası çok az nefes (4px) — bitişik değil, sıkışık değil. */
+  padding-top: var(--space-1);
 }
 
 /* brief-format-kayit-bitir: Notion "Bir sonraki [X]'te yerin hazır" prose'unu
@@ -1217,11 +1218,13 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-etkinlik-kart + .ocak-
   margin-top: var(--space-2);
 }
 
-/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, ortalı, davet-fısıltısı
- * (buton baskın, link ikincil): margin sıkılaştı, font küçüldü. */
+/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, davet-fısıltısı.
+ * Font 13px (butonla yarışmaz ama okunur); yatay padding → buton kenarlarında
+ * boşluk kalır, metin butonun sağ-solundan taşmaz. */
 section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
   margin: var(--space-3) 0 0;
-  font-size: var(--text-xs);
+  padding: 0 var(--space-3);
+  font-size: 0.8125rem;
 }
 
 section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
