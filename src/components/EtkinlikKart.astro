@@ -110,10 +110,10 @@ const kartClass = [
         {[etkinlik.yoneten, etkinlik.mekan, saatMetni]
           .filter((v): v is string => Boolean(v && v.trim()))
           .map((v, i) => (
-            <Fragment>
-              {i > 0 && <span class="ocak-etkinlik-kart__sep" aria-hidden="true">·</span>}
-              <span>{v}</span>
-            </Fragment>
+            <span class="ocak-etkinlik-kart__meta-oge">
+              {i > 0 && <span class="ocak-etkinlik-kart__sep" aria-hidden="true">· </span>}
+              {v}
+            </span>
           ))}
       </p>
     </div>
@@ -172,8 +172,19 @@ const kartClass = [
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    /* Dar kutu (~24rem) — B düzeni: sola-yaslı, section text-align:center
+     * inherit'ini kes (kayit-cta section center). Uzun başlık uçurum
+     * yaratmaz. Satır variant'ı etkilenmez (kendi CSS'i ayrı). */
+    text-align: left;
     transition: border-color var(--duration-base) var(--ease-out),
                 background-color var(--duration-base) var(--ease-out);
+  }
+
+  /* Kart iç akışı: sol tarih rozeti sabit, sağ gövde dikey sola. Sol rozet
+   * ÜST hizalı — align-items:center yerine flex-start; uzun başlıkla dikey
+   * ortalanma "uçurumu" gitsin. Satır variant'ında center kalır (tek satır). */
+  .ocak-etkinlik-kart--kart .ocak-etkinlik-kart__ic {
+    align-items: flex-start;
   }
 
   .ocak-etkinlik-kart--kart:hover {
@@ -302,8 +313,15 @@ const kartClass = [
     margin: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    /* Öge içinde sep bağlı olduğu için gap küçültüldü — sep zaten aralık verir. */
+    gap: var(--space-1);
     align-items: baseline;
+  }
+
+  /* Her meta öğesi tek wrap birimi — sep önceki öğeyle beraber taşınır,
+   * "· havada kalma" sorunu gitsin (dar kutu wrap davranışı). */
+  .ocak-etkinlik-kart__meta-oge {
+    white-space: nowrap;
   }
 
   .ocak-etkinlik-kart__sep {
