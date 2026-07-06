@@ -1144,48 +1144,106 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
  * uppercase letter-spacing); Brief 4 "dolu vurgu butonu (#C44B2F)" notu birebir
  * --ember (#C44B2F = rgba(196,75,47,1)).
  * ============================================================================ */
-section[data-section="kayit-cta"] {
+section[data-section="kayit-cta"][class^="ocak-"] {
   text-align: center;
-  /* Faz B: sıkışık clamp() KORUNUR (Brief 4 — mini-cta'dan dar bilinçli seçim). */
-  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  /* brief-tum-kartlar-birebir: padding-x SIFIR — buton görsel genişliği kart
+   * section'ıyla birebir eşit (aynı `--kart-max` ortalı sütun). Padding-y sadece
+   * kart altına bitişik olmadığında (detay sayfası) hafif dikey nefes. */
+  padding: clamp(0.5rem, 1vw, 1rem) 0;
   margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
-  max-width: var(--max-w-prose);
+  /* Kart bloğuyla birebir dar sütun — tek token, tek yerden ayar. */
+  max-width: var(--kart-max);
 }
 
-section[data-section="kayit-cta"] > p {
-  color: var(--cream-soft);
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: 1.6;
-  margin: 0 0 var(--space-4);
+/* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
+ * TEK DAVET AKIŞI olsun. Home'daki sonraki-bulusma → siradaki-kapi arası
+ * etkilenmez (:has() sadece kayit-cta ardışıksa tetiklenir). */
+section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-cta"][class^="ocak-"]) {
+  padding-bottom: 0;
+}
+section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][class^="ocak-"] {
+  margin-top: 0;
+  /* Kart↔buton arası çok az nefes (4px) — bitişik değil, sıkışık değil. */
+  padding-top: var(--space-1);
 }
 
-section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
-  display: inline-block;
-  padding: 0.9rem 2rem;
+/* brief-format-kayit-bitir: Notion "Bir sonraki [X]'te yerin hazır" prose'unu
+ * gizle — kayıt aksiyonu tek yerde (turuncu buton). Aşağıdaki `.__tumu` link
+ * ise buton altındaki "Sana uyan başka tarihler..." linki; korunur. */
+section[data-section="kayit-cta"][class^="ocak-"] > p:not(.ocak-kayit-cta__tumu) {
+  display: none;
+}
+
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+  /* Dar sütun içinde tam-blok buton — kart genişliğiyle birebir, tek dikey
+   * ünite hissi (brief-detay-sayfa-revize + format sayfa yeni düzen). */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  /* B varyantı — dikey ~18px, yatay ~72px iç padding. */
+  padding: 1.125rem 4.5rem;
   background: var(--ember);
   border: 1px solid var(--ember);
   color: var(--coal);
   font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.18em;
+  /* Letter-spacing artışı (0.18 → 0.22em) — davet tonuna güç. */
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
   transition: background var(--duration-base) var(--ease-out),
               box-shadow var(--duration-base) var(--ease-out);
 }
 
-section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:hover,
-section[data-section="kayit-cta"] > .ocak-kayit-cta__buton:focus-visible {
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible {
   background: var(--ember-soft);
   box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   outline: none;
 }
 
+/* Mobilde 72px yatay padding taşabilir — hafif küçült (davet gücü korunur). */
+@media (max-width: 600px) {
+  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+    padding: 1rem 2.5rem;
+    letter-spacing: 0.2em;
+  }
+}
+
+/* Kart (EtkinlikKart) ile buton arasında sıkı boşluk — tek dikey davet ünitesi. */
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-etkinlik-kart + .ocak-kayit-cta__buton {
+  margin-top: var(--space-2);
+}
+
+/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, davet-fısıltısı.
+ * Font 13px (butonla yarışmaz ama okunur); yatay padding → buton kenarlarında
+ * boşluk kalır, metin butonun sağ-solundan taşmaz. */
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
+  margin: var(--space-3) 0 0;
+  padding: 0 var(--space-3);
+  font-size: 0.8125rem;
+}
+
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
+  font-family: var(--font-body);
+  letter-spacing: 0.06em;
+  color: var(--ember);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible {
+  border-bottom-color: var(--ember);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  section[data-section="kayit-cta"] > .ocak-kayit-cta__buton {
+  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
     transition: none;
   }
 }
@@ -1875,7 +1933,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 .anadolu-harita__nokta:hover .anadolu-harita__nokta-halka,
-.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-halka {
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-halka,
+.anadolu-harita__nokta.is-active .anadolu-harita__nokta-halka {
   opacity: 1;
 }
 
@@ -1888,7 +1947,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 .anadolu-harita__nokta:hover .anadolu-harita__nokta-dot,
-.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot {
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot,
+.anadolu-harita__nokta.is-active .anadolu-harita__nokta-dot {
   stroke: color-mix(in oklab, var(--isi-aktif) 70%, var(--cream) 30%);
   stroke-width: 2;
 }
@@ -1933,6 +1993,27 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   display: none;
 }
 
+/* ---- Anadolu Şerit: mobil evre navigasyon (brief-anadolu-mobil-serit ADIM 1)
+ *
+ * Masaüstünde SVG harita coğrafi hikayeyi taşır; mobilde küçük noktalar
+ * (dot r=9, tıklanabilir ~10px) Apple 44px hedefinin altına düşüyordu.
+ * Çözüm: mobil viewport'ta SVG'yi gizle, yerine yatay numaralı evre şeridi
+ * göster. Şerit yalnızca "neredesin + git" işlevi görür — kart içeriğini
+ * TEKRARLAMAZ. Etiket: sadece evre adı (AÇILIŞ/İNİŞ/…). Yer adı HTML'de var
+ * ama default gizli; ADIM 2 aktif durakta gösterir. */
+.anadolu-serit {
+  display: none; /* masaüstünde gizli */
+}
+
+.anadolu-serit__durak {
+  /* button reset — font/border/background sıfırla, kendi stilimiz */
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 /* ---- Mobil (KARAR 187 horizontal overflow=0) ---- */
 @media (max-width: 768px) {
   .ocak-evreler-intro {
@@ -1974,14 +2055,124 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
   .anadolu-harita__etiket-yer {
     font-size: 10px;
   }
+
+  /* Mobilde SVG harita gizli (dot r=9 çok küçük, 44px hedef altı) — yerine
+   * .anadolu-serit yatay şerit render edilir. brief madde 30. */
+  .anadolu-harita__cerceve {
+    display: none;
+  }
+
+  /* Şerit yatay layout — 6 durak eşit paylaşım. min-height 44px (Apple hedef).
+   * Nokta arkasında ısı hattı kor-cizgi sabit — timeline gap dolgusu ile aynı
+   * token (KARAR 199 marka dokusu). */
+  .anadolu-serit {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-3) 0 var(--space-2);
+    margin: 0;
+    gap: 0;
+  }
+
+  .anadolu-serit__durak {
+    --isi-aktif: var(--ember);
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 2px 4px;
+    text-align: center;
+    outline: none;
+  }
+
+  /* Bağlantı hattı — dot merkezinden sağ komşunun dot merkezine.
+   * top: padding-top(8) + dot-yarıçapı(14) - hat-yarıçapı(1) = 21px */
+  .anadolu-serit__durak::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 50%;
+    right: -50%;
+    height: 2px;
+    background: var(--kor-cizgi);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .anadolu-serit__durak:last-child::before {
+    display: none;
+  }
+
+  /* Nokta: ısı dolgulu 28px yuvarlak, ortasında numara. z-index üstünde ki
+   * arkadaki hat dot'a girmesin. */
+  .anadolu-serit__dot {
+    position: relative;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--isi-aktif);
+    color: var(--coal);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 8px color-mix(in oklab, var(--isi-aktif) 25%, transparent);
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .anadolu-serit__durak:hover .anadolu-serit__dot,
+  .anadolu-serit__durak:focus-visible .anadolu-serit__dot {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 14px color-mix(in oklab, var(--isi-aktif) 45%, transparent);
+  }
+
+  /* Aktif durak (brief-anadolu-mobil-serit ADIM 2 — IntersectionObserver
+   * scroll pozisyonuna göre): dot biraz büyür + halo yoğunlaşır, evre adı
+   * cream'e döner. Yer adı sığmadığı için gösterilmez (Kaan onayı: sığmazsa
+   * atla). Kullanıcı "3/5'teyim" hissini alır. */
+  .anadolu-serit__durak.is-active .anadolu-serit__dot {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 16px color-mix(in oklab, var(--isi-aktif) 55%, transparent);
+  }
+  .anadolu-serit__durak.is-active .anadolu-serit__ad {
+    color: var(--cream);
+    font-weight: 600;
+  }
+
+  .anadolu-serit__ad {
+    font-family: var(--font-body);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    color: var(--cream-soft);
+    white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ocak-evre,
   .anadolu-harita__nokta,
   .anadolu-harita__nokta-halka,
-  .anadolu-harita__nokta-dot {
+  .anadolu-harita__nokta-dot,
+  .anadolu-serit__dot {
     transition: none;
+  }
+  .anadolu-serit__durak:hover .anadolu-serit__dot,
+  .anadolu-serit__durak:focus-visible .anadolu-serit__dot {
+    transform: none;
   }
   /* brief v2 R1: hover translateY de reduced-motion'da iptal (AlOlVer paterni). */
   .ocak-evre:hover {

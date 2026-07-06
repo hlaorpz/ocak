@@ -31,9 +31,15 @@ if (!sayfa) {
 
 // Sekme sırası + etiket (Brief md.11). Takvim YOK — köprü/araç, format değil,
 // devam bölümünde Notion'daki yerinde kalır.
+// KARAR 313 — kanonik H5 sırası: en düşük eşik önce. Açık Kapı 1'e (mevcut
+// Çember-Açık Kapı 1↔2 swap). Sayfa yeni gelenin gözüyle okunur; hemen
+// üstündeki `ilk-davet` metni "ilk kapı: Açık Kapı" diyor — sekme Açık Kapı'yı
+// 2'de gösterince metinle çelişiyordu. Notion `format-*` section başlıkları
+// zaten numaralı ("1 · Açık Kapı" … "6 · Mini Retreat"); bu sıra o numaralarla
+// birebir hizalanır.
 const FORMAT_ORDER: Array<{ id: string; label: string }> = [
-  { id: 'format-cember', label: 'Çember' },
   { id: 'format-acik-kapi', label: 'Açık Kapı' },
+  { id: 'format-cember', label: 'Çember' },
   { id: 'format-seremoni', label: 'Seremoni' },
   { id: 'format-atolye', label: 'Atölye' },
   { id: 'format-sehir-aksami', label: 'Şehir Akşamı' },

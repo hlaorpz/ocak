@@ -24,6 +24,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
+import EtkinlikKart from '../../components/EtkinlikKart.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 
@@ -80,7 +81,13 @@ const referans = etkinlik.tarihBitis ?? etkinlik.tarihBaslangic;
 const referansTarihi = parcala(referans);
 const gecmisMi = referansTarihi ? referansTarihi < bugun : false;
 
-const tarihMetni = formatEtkinlikTarihi(etkinlik.tarihBaslangic, etkinlik.tarihBitis, etkinlik.saat ?? etkinlik.zoomBaslangicSaati);
+// Detay sayfası kart-sız düzen (Kaan kararı): Hero başlık + subtitle bağlamı
+// veriyor, kayıt için tek turuncu buton yeter. Subtitle: tarih + mekân düz cümlesi.
+const tarihMetni = formatEtkinlikTarihi(
+  etkinlik.tarihBaslangic,
+  etkinlik.tarihBitis,
+  etkinlik.saat ?? etkinlik.zoomBaslangicSaati,
+);
 const mekanMetni = etkinlik.mekanDetay
   ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}`
   : etkinlik.mekan;
@@ -103,6 +110,10 @@ const description =
   `${etkinlik.tip} — OCAK'ta bir buluşma.`;
 
 const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
+
+// Kayıt-Tipi şablonu (KARAR 307): Direkt → "Yerini ayır", Başvuru → "Başvur".
+// Notion tek kaynak: etkinlik.kayitTipi ('Direkt' | 'Başvuru', default Direkt).
+const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
 ---
 <Layout title={etkinlik.baslik} description={description} oda="Buluşmalar">
   <Hero
@@ -117,93 +128,45 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
     <div class="ocak-container" set:html={etkinlik.detayHtml} />
   )}
 
-  {gecmisMi ? (
-    <section class="etkinlik-detay__kapanis" data-section="kayit-cta">
-      <p>Bu buluşma tamamlandı. Ateş sönmedi — spiral devam ediyor.</p>
-      <a class="etkinlik-detay__kapanis-link" href={formatSayfasi}>
-        Sıradaki {kategoriAdi} →
+  {/* brief-tum-kartlar-birebir: detay sayfası KART GERİ — /acik-kapi kartıyla
+      birebir aynı görsel dil (sol ember çizgi + dar dikey B + sol tarih rozeti
+      + sağ blok + kart-genişliği buton bitişik). */}
+  <section data-section="sonraki-bulusma" data-varyant="tek" class="sonraki-bulusma">
+    <div class="ocak-container">
+      <ul class="sonraki-bulusma__liste sonraki-bulusma__liste--tek">
+        <li class="sonraki-bulusma__item">
+          <EtkinlikKart
+            etkinlik={etkinlik}
+            variant="kart"
+            showStretched={false}
+            showKayitLink={false}
+          />
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section data-section="kayit-cta" class="ocak-kayit-cta">
+    {gecmisMi ? (
+      <a class="ocak-kayit-cta__buton" href={formatSayfasi} data-kayit-cta-button>
+        Sıradaki {kategoriAdi} <span aria-hidden="true">→</span>
       </a>
-    </section>
-  ) : (
-    kayitHedefi && (
-      <section class="etkinlik-detay__kayit" data-section="kayit-cta">
-        <p>Buluşmaya katılmak istersen aşağıdan kayıt ol — yerini ayıralım.</p>
-        <a class="etkinlik-detay__kayit-link" href={kayitHedefi}>Kayıt ol →</a>
-      </section>
-    )
-  )}
+    ) : (
+      kayitHedefi && (
+        <a class="ocak-kayit-cta__buton" href={kayitHedefi} data-kayit-cta-button>
+          {butonMetni} <span aria-hidden="true">→</span>
+        </a>
+      )
+    )}
+
+    <p class="ocak-kayit-cta__tumu">
+      <a href="/takvim">Sana uyan başka tarihler de var — hepsine bak <span aria-hidden="true">→</span></a>
+    </p>
+  </section>
 </Layout>
 
-<style>
-  /* Gelecek etkinlik kayıt CTA — buluşma-spesifik davet.
-     Format sayfasındaki KayitCTA "sıradaki X" kalıbı burada yok — bu
-     spesifik buluşma zaten sıradaki. */
-  .etkinlik-detay__kayit {
-    text-align: center;
-    padding: var(--space-6) var(--space-4) var(--space-9);
-    max-width: 42rem;
-    margin: 0 auto;
-  }
-
-  .etkinlik-detay__kayit p {
-    font-family: var(--font-body);
-    font-size: var(--text-base);
-    color: var(--cream-soft);
-    margin: 0;
-  }
-
-  .etkinlik-detay__kayit-link {
-    display: inline-block;
-    margin-top: var(--space-4);
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ember);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
-    transition: border-color var(--duration-base) var(--ease-out);
-  }
-
-  .etkinlik-detay__kayit-link:hover,
-  .etkinlik-detay__kayit-link:focus-visible {
-    border-bottom-color: var(--ember);
-  }
-
-  /* Geçmiş etkinlik "tamamlandı" bloğu — satış değil davet: ton düşük, hafif
-     italik ilk cümle, ardından ince ember link "Sıradaki … →". */
-  .etkinlik-detay__kapanis {
-    text-align: center;
-    padding: var(--space-6) var(--space-4) var(--space-9);
-    max-width: 42rem;
-    margin: 0 auto;
-  }
-
-  .etkinlik-detay__kapanis p {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-base);
-    color: var(--cream-soft);
-    margin: 0;
-  }
-
-  .etkinlik-detay__kapanis-link {
-    display: inline-block;
-    margin-top: var(--space-4);
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ember);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
-    transition: border-color var(--duration-base) var(--ease-out);
-  }
-
-  .etkinlik-detay__kapanis-link:hover,
-  .etkinlik-detay__kapanis-link:focus-visible {
-    border-bottom-color: var(--ember);
-  }
-</style>
+<!-- brief-detay-sayfa-revize: sayfa-özel `.etkinlik-detay__*` class'ları
+     kaldırıldı. Kayıt aksiyonu standart `.ocak-kayit-cta__buton`'a çevrildi
+     (atmosfer.css'teki köz ember dolu buton stilini alır — format sayfası
+     kayit-cta ile BİREBİR). Section kabuk + "Tüm buluşmalar" link stili de
+     atmosfer.css `section[data-section="kayit-cta"]` altında. -->

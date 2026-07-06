@@ -40,8 +40,10 @@ type Evre = {
 // DURUŞ üst -14 → -20 (halka üstünde 6px nefes), DÖNÜŞ yatay dx 12 → 24
 // (halka yanında 4px nefes).
 const evreler: Evre[] = [
+  // brief-anadolu-mobil-serit.md ADIM 3.1: kıyıya çok yakın (denize düşüyor
+  // hissi), x hafif içeri (64 → 76) — nefes alsın.
   { slug: 'acilis', ad: 'AÇILIŞ', yer: 'Ege',
-    x: 64.0, y: 258.2, isiToken: '--isi-acilis',
+    x: 76.0, y: 258.2, isiToken: '--isi-acilis',
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   { slug: 'inis', ad: 'İNİŞ', yer: 'Göbeklitepe · Harran',
     x: 681.2, y: 322.0, isiToken: '--isi-inis',
@@ -61,16 +63,21 @@ const evreler: Evre[] = [
     labelDx: 0, labelDy: 32, labelAnchor: 'middle' },
   // DÖNÜŞ: Kapadokya → etiket SAĞDA (DURUŞ üstte olduğu için aşağı serbest ama
   // brief: text-anchor:start sağa kaydır → daha temiz blok).
+  // brief-anadolu-mobil-serit.md ADIM 3.2: DURUŞ ile orta bölgede sıkışıklık —
+  // etiketi biraz daha sağa (dx 24 → 32) ve hafif aşağı (dy 5 → 14) it.
   { slug: 'donus', ad: 'DÖNÜŞ', yer: 'Konya · Kapadokya',
     x: 473.6, y: 239.4, isiToken: '--isi-donus',
-    labelDx: 24, labelDy: 5, labelAnchor: 'start' },
+    labelDx: 32, labelDy: 14, labelAnchor: 'start' },
 ];
 
 ---
 <section class="anadolu-harita" aria-labelledby="anadolu-harita-baslik">
   <h2 id="anadolu-harita-baslik" class="anadolu-harita__baslik">Yolculuğun Haritası</h2>
-  <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktaya dokun, evre kartına in.</p>
+  <p class="anadolu-harita__altmetin">Açılış ve beş evre, kronolojik sırada — noktayı seç, evre kartına in.</p>
 
+  {/* brief-anadolu-mobil-serit ADIM 1: mobilde SVG harita gizlenir, yerine
+     yatay evre şeridi render edilir (aşağıda). Şerit ve harita AYNI slug'ları
+     paylaşır → tek activate() fonksiyonu iki DOM kaynağına delegate eder. */}
   <div class="anadolu-harita__cerceve">
     <svg
       class="anadolu-harita__svg"
@@ -119,15 +126,59 @@ const evreler: Evre[] = [
       </g>
     </svg>
   </div>
+
+  {/* Mobil evre şeridi — masaüstünde CSS ile gizli, mobilde SVG yerine görünür.
+     Etiket: sadece evre adı (Kaan onayı: 6 durak 360px'de sığar, yer adı kart
+     başlığında zaten var, tekrar edilmez). Aktif durakta yer adı gösterme brief
+     Kaan kararı olarak eklendi ama "sığmazsa atla" istisnası ile ADIM 2 sonrası
+     ATLANDI (18-22 kar uzun yer adları 360px slot'a sığmaz, absolute çözüm
+     kenarda taşar). Aktif vurgu sadece dot ölçek + evre adı rengi ile. */}
+  <nav class="anadolu-serit" aria-label="Evre şeridi — hızlı navigasyon">
+    {evreler.map((e, i) => (
+      <button
+        class="anadolu-serit__durak"
+        type="button"
+        data-evre={e.slug}
+        style={`--isi-aktif: var(${e.isiToken});`}
+        aria-label={`${e.ad} — ${e.yer} kartına git`}
+      >
+        <span class="anadolu-serit__dot" aria-hidden="true">{i}</span>
+        <span class="anadolu-serit__ad" aria-hidden="true">{e.ad}</span>
+      </button>
+    ))}
+  </nav>
 </section>
 
 <script>
   // Harita ↔ kart bağı (brief-anadolu-yolculuk.md): nokta tıklanınca ilgili evre
   // kartına smooth scroll + geçici vurgu (border ısı + box-shadow). ESIK paterni
   // sade JS — Astro client island değil, basit DOMContentLoaded.
-  const noktalar = document.querySelectorAll<SVGGElement>('.anadolu-harita__nokta');
+  //
+  // brief-anadolu-mobil-serit ADIM 1: aynı activate() iki DOM kaynağını serve
+  // eder — masaüstü SVG noktaları + mobil şerit butonları. Aynı slug, aynı
+  // kart, aynı scroll mekanizması (yeni scroll yolu kurma).
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  const activate = (slug: string | undefined) => {
+    if (!slug) return;
+    const kart = document.getElementById(`evre-${slug}`);
+    if (!kart) return;
+    kart.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      // brief v2 Bug 2: nav'ın HEMEN altına hizalansın (önce 'center' idi,
+      // kartı ekran ortasına itiyordu). 'start' + CSS scroll-margin-top
+      // var(--nav-height) ile kart nav'ın arkasına kaymaz.
+      block: 'start',
+    });
+    // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
+    kart.classList.remove('ocak-evre--vurgu');
+    // reflow tetikle ki re-add animasyonu sıfırdan başlasın
+    void (kart as HTMLElement).offsetWidth;
+    kart.classList.add('ocak-evre--vurgu');
+  };
+
+  // Masaüstü: SVG noktalar (role=button + keyboard)
+  const noktalar = document.querySelectorAll<SVGGElement>('.anadolu-harita__nokta');
   noktalar.forEach((nokta) => {
     nokta.style.cursor = 'pointer';
     nokta.setAttribute('role', 'button');
@@ -136,30 +187,74 @@ const evreler: Evre[] = [
     const label = nokta.querySelector('title')?.textContent ?? slug ?? '';
     nokta.setAttribute('aria-label', `${label} kartına git`);
 
-    const activate = () => {
-      if (!slug) return;
-      const kart = document.getElementById(`evre-${slug}`);
-      if (!kart) return;
-      kart.scrollIntoView({
-        behavior: reducedMotion ? 'auto' : 'smooth',
-        // brief v2 Bug 2: nav'ın HEMEN altına hizalansın (önce 'center' idi,
-        // kartı ekran ortasına itiyordu). 'start' + CSS scroll-margin-top
-        // var(--nav-height) ile kart nav'ın arkasına kaymaz.
-        block: 'start',
-      });
-      // Vurgu — CSS class 1.6s sonra düşer (CSS animasyonu kendi temizler)
-      kart.classList.remove('ocak-evre--vurgu');
-      // reflow tetikle ki re-add animasyonu sıfırdan başlasın
-      void (kart as HTMLElement).offsetWidth;
-      kart.classList.add('ocak-evre--vurgu');
-    };
-
-    nokta.addEventListener('click', activate);
+    nokta.addEventListener('click', () => activate(slug));
     nokta.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        activate();
+        activate(slug);
       }
     });
   });
+
+  // Mobil: şerit butonları (native <button> click + keyboard semantiği)
+  const duraklar = document.querySelectorAll<HTMLButtonElement>('.anadolu-serit__durak');
+  duraklar.forEach((durak) => {
+    durak.addEventListener('click', () => activate(durak.dataset.evre));
+  });
+
+  // brief-anadolu-mobil-serit ADIM 2: aktif evre vurgusu — IntersectionObserver
+  // ile alttaki .ocak-evre kartlarından viewport ortasında olan aktif kabul
+  // edilir. Aktif slug hem masaüstü SVG noktasına (.anadolu-harita__nokta) hem
+  // mobil şerit durağına (.anadolu-serit__durak) .is-active class'ı ekler.
+  // Tek observer, iki DOM. Kullanıcı "3/5'teyim" hissini alır.
+  const kartlar = document.querySelectorAll<HTMLElement>('.ocak-evre[data-evre]');
+  if ('IntersectionObserver' in window && kartlar.length > 0) {
+    const setActive = (slug: string | null) => {
+      document.querySelectorAll('.anadolu-harita__nokta.is-active, .anadolu-serit__durak.is-active')
+        .forEach((el) => el.classList.remove('is-active'));
+      if (!slug) return;
+      document.querySelectorAll(
+        `.anadolu-harita__nokta[data-evre="${slug}"], .anadolu-serit__durak[data-evre="${slug}"]`
+      ).forEach((el) => el.classList.add('is-active'));
+    };
+
+    let aktifSlug: string | null = null;
+    const gorunur = new Map<string, number>(); // slug → intersectionRatio
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const slug = (entry.target as HTMLElement).dataset.evre;
+          if (!slug) return;
+          if (entry.isIntersecting) {
+            gorunur.set(slug, entry.intersectionRatio);
+          } else {
+            gorunur.delete(slug);
+          }
+        });
+        // En yüksek ratio'lu kart aktif
+        let enIyiSlug: string | null = null;
+        let enIyiRatio = 0;
+        for (const [slug, ratio] of gorunur) {
+          if (ratio > enIyiRatio) {
+            enIyiSlug = slug;
+            enIyiRatio = ratio;
+          }
+        }
+        if (enIyiSlug !== aktifSlug) {
+          aktifSlug = enIyiSlug;
+          setActive(aktifSlug);
+        }
+      },
+      {
+        // Kart viewport'un merkez bandına girdiğinde aktif — nav altı için
+        // üstten %30, alttan %40 ofset (kart merkezi ekran ortasına yakın
+        // olduğunda seçilir, scroll sırasında kararlı geçiş).
+        rootMargin: '-30% 0px -40% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    kartlar.forEach((kart) => observer.observe(kart));
+  }
 </script>

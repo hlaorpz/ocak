@@ -4,29 +4,23 @@
 // SonrakiBulusma: ana sayfa + 4 buluşma sayfasında "ilk N yaklaşan" kart grid.
 // EtkinlikTakvimi: /takvim'de tüm gelecek etkinlikler ay-ay başlık altında.
 //
-// #35 değişiklikleri (KARAR — /takvim kart küçültme + filtre, Sıradaki Adımlar md.4):
-//   - Kart → KOMPAKT SATIR. Açıklama paragrafı kaldırıldı (SonrakiBulusma'dan da
-//     ince: sol gün/ay bloğu + tür chip + başlık + mekan + kayıt, hepsi tek satır).
-//     Çok etkinlikte taranabilirlik kaygısı (Kaan), kart yerine satır.
-//   - TÜR FİLTRESİ çalışır hale geldi. Notion'daki statik "tür düğmeleri" yazısının
-//     işlevsel karşılığı: üstte Tümü + her tip için düğme (e.data.tip set'inden dinamik).
-//     Client JS data-tip eşleşmeyen satırları + boşalan ay grubunu gizler. Sayfa
-//     yenilenmez. Sticky ay başlıkları KALIR (Kaan tercihi: süzünce de ay ay gruplu).
-//   - Eski ay-seçici shortcut nav KALDIRILDI — tür düğmeleri + sticky başlık yeterli,
-//     iki ayrı şerit kalabalık. (Brief H shortcut → #35'te tür filtresine evrildi.)
+// brief-etkinlikkart-home Madde A: satır GÖVDESİ tamamen EtkinlikKart component
+// içine indi (chip/rozet/başlık/meta + sol tarih rozeti + öne-çıkan ember çizgi
+// + /etkinlik/{slug} stretched-link + "Kayıt ol →"). Burada kalan: ay grubu
+// scaffolding'i, tür filtresi şeridi, sticky ay başlığı, <li>'de data-tip
+// (client filter) ve <ul> alt-çizgi ritmi.
 //
 // brief-etkinlik-detay-route.md FAZ 1: content/config.ts publish filtresi
-// gevşedi (siteGoster && durum !== 'İptal'). Bu component artık durum ∈
-// {Kayıt Açık, Dolu} + bugündenSonra süzgeçlerini kendi uyguluyor (aynı
-// commit'te collection gevşetmesiyle atomik). Geçmiş etkinlikleri gizler
-// (range'te tarihBitis öncelikli).
+// gevşedi (siteGoster && durum !== 'İptal'). Bu component durum ∈
+// {Kayıt Açık, Dolu} + bugündenSonra süzgeçlerini kendi uyguluyor.
 import { getCollection } from 'astro:content';
 import {
   bugundenSonra,
   groupByMonth,
   formatAyEtiketi,
 } from '../lib/format-etkinlik';
-import { formatEtiket, KATEGORI_SIRA, mekanTipi } from '../lib/etkinlik-kategori';
+import { formatEtiket, KATEGORI_SIRA } from '../lib/etkinlik-kategori';
+import EtkinlikKart from './EtkinlikKart.astro';
 
 const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
 const tum = (await getCollection('etkinlikler'))
@@ -39,24 +33,14 @@ const gelecekler = bugundenSonra(tum).sort((a, b) => {
 });
 const aylar = groupByMonth(gelecekler);
 
-// Tür düğmeleri — Notion'daki tip değerlerinden dinamik. Sıra `KATEGORI_SIRA`
-// dizisinden deterministik (brief-takvim-toparlama-uygula.md ADIM 3); Notion'daki
-// tarih sırasından bağımsız. Dizide olmayan tip sona düşer + warn.
-// Tek tür varsa düğme şeridi gösterilmez (filtreye gerek yok).
+// Tür düğmeleri — Notion'daki tip değerlerinden dinamik. Sıra KATEGORI_SIRA'dan
+// deterministik. Tek tür varsa şerit gösterilmez.
 const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((a, b) => {
   const ia = KATEGORI_SIRA.indexOf(a);
   const ib = KATEGORI_SIRA.indexOf(b);
   if (ia === -1) console.warn('[takvim] KATEGORI_SIRA dışı tür:', a);
   return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
 });
-
-// Sol tarih bloğu için gün + ay-kısaltma (kompakt satır başı).
-const AY_KISA = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
-function tarihRozeti(iso: string): { gun: string; ay: string } {
-  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!m) return { gun: '·', ay: '' };
-  return { gun: String(Number(m[3])), ay: AY_KISA[Number(m[2]) - 1] ?? '' };
-}
 ---
 <section data-section="etkinlik-takvimi" class="ocak-etkinlik-takvimi">
   {aylar.size === 0 ? (
@@ -86,54 +70,11 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
           data-ay-key={key}
         >{formatAyEtiketi(key)}</h2>
         <ul class="ocak-etkinlik-takvimi__liste" data-ay-key={key}>
-          {etkinlikler.map((e) => {
-            const rozet = tarihRozeti(e.tarihBaslangic);
-            const mTipi = mekanTipi(e.mekan);
-            return (
-            <li
-              class={`ocak-etkinlik-takvimi__satir${e.oneCikar ? ' ocak-etkinlik-takvimi__satir--one-cikan' : ''}`}
-              data-tip={e.tip}
-            >
-              <span class="ocak-etkinlik-takvimi__tarih-rozeti" aria-hidden="true">
-                <span class="ocak-etkinlik-takvimi__rozet-gun">{rozet.gun}</span>
-                <span class="ocak-etkinlik-takvimi__rozet-ay">{rozet.ay}</span>
-              </span>
-              <span class="ocak-etkinlik-takvimi__govde">
-                <span class="ocak-etkinlik-takvimi__ust-satir">
-                  <span class="ocak-etkinlik-takvimi__chip">{formatEtiket(e.tip)}</span>
-                  {mTipi && (
-                    <span class={`ocak-etkinlik-takvimi__rozet ocak-etkinlik-takvimi__rozet--${mTipi}`}>
-                      {mTipi === 'online' ? 'Online' : 'Yüz Yüze'}
-                    </span>
-                  )}
-                  {e.oneCikar && <span class="ocak-etkinlik-takvimi__one">öne çıkan</span>}
-                </span>
-                <span class="ocak-etkinlik-takvimi__baslik">{e.baslik}</span>
-                <span class="ocak-etkinlik-takvimi__meta">
-                  {[e.yoneten, e.mekan, e.saat]
-                    .filter((v): v is string => Boolean(v && v.trim()))
-                    .map((v, i) => (
-                      <Fragment>
-                        {i > 0 && <span class="ocak-etkinlik-takvimi__sep" aria-hidden="true">·</span>}
-                        <span>{v}</span>
-                      </Fragment>
-                    ))}
-                </span>
-              </span>
-              {/* brief-etkinlik-detay-route.md FAZ 3 — satır komple link
-                  (stretched pattern; kayıt mikro-linki üstte). Slug yoksa
-                  link basılmaz — loader zaten warn bastı. */}
-              {e.slug && (
-                <a class="ocak-etkinlik-takvimi__stretched-link" href={`/etkinlik/${e.slug}`} aria-label={`Detay: ${e.baslik}`}></a>
-              )}
-              {e.kayitUrl && (
-                <a class="ocak-etkinlik-takvimi__kayit" href={e.kayitUrl}>
-                  Kayıt ol <span aria-hidden="true">→</span>
-                </a>
-              )}
+          {etkinlikler.map((e) => (
+            <li class="ocak-etkinlik-takvimi__satir" data-tip={e.tip}>
+              <EtkinlikKart etkinlik={e} variant="satir" />
             </li>
-            );
-          })}
+          ))}
         </ul>
       </>
       ))}
@@ -145,14 +86,13 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
 </section>
 
 <script>
-  // Tür filtresi — client-side, sayfa yenilenmeden. data-tip eşleşmeyen satırlar
+  // Tür filtresi — client-side, sayfa yenilenmeden. data-tip eşleşmeyen <li>'ler
   // + içi tamamen boşalan ay grupları gizlenir. "Tümü" (data-tur="*") sıfırlar.
   const koklar = document.querySelectorAll<HTMLElement>('.ocak-etkinlik-takvimi');
   koklar.forEach((kok) => {
     const dugmeler = kok.querySelectorAll<HTMLButtonElement>('.ocak-etkinlik-takvimi__tur');
     if (dugmeler.length === 0) return;
     const satirlar = kok.querySelectorAll<HTMLElement>('.ocak-etkinlik-takvimi__satir');
-    // Sticky devirin doğru çalışması için h2 ve ul kardeş; data-ay-key ile eşli.
     const listeler = kok.querySelectorAll<HTMLUListElement>('ul.ocak-etkinlik-takvimi__liste[data-ay-key]');
     const bosFiltre = kok.querySelector<HTMLElement>('.ocak-etkinlik-takvimi__bos--filtre');
 
@@ -163,7 +103,6 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
         satir.hidden = !eslesti;
         if (eslesti) gorunenToplam++;
       });
-      // Boşalan ay gruplarında hem <ul>'u hem eşli <h2>'yi gizle.
       listeler.forEach((liste) => {
         const acik = liste.querySelector('.ocak-etkinlik-takvimi__satir:not([hidden])');
         const key = liste.dataset.ayKey ?? '';
@@ -188,13 +127,7 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
 </script>
 
 <style>
-  /* Generic baseline (KARAR 116) `section[data-section][class^="ocak-"]`
-     padding + typography baseline'ı veriyor. Buradaki ek: tür filtresi şeridi,
-     ay-grup ritmi, sticky ay başlığı, kompakt satır (#35). */
-
-  /* --- TÜR FİLTRESİ ŞERİDİ (#35) ---
-   * Notion "filtreler" yazısının hemen altında. Düğmeler ash zemin, aktif olan
-   * ember dolgu. Mobilde yatay scroll (touch swipe). */
+  /* --- TÜR FİLTRESİ ŞERİDİ (#35) --- */
   .ocak-etkinlik-takvimi__filtre {
     display: flex;
     flex-wrap: wrap;
@@ -245,12 +178,7 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
     }
   }
 
-  /* --- AY BAŞLIĞI + STICKY DEVİR ---
-   * h2 ve ul doğrudan <section>'ın kardeşleri (eskiden __ay wrapper'ı vardı —
-   * wrapper'lar arası margin sticky devirde boşluk açıyordu: Haziran container'ı
-   * bitince başlığı yukarı kaybediyordu, Eylül henüz sticky'ye girmemişti.
-   * Flatten yapı sticky'leri tek parent altında tutar → Apple Calendar tarzı
-   * Eylül-Haziran'ı doğrudan iter, ortada boşluk olmaz.) */
+  /* --- AY BAŞLIĞI + STICKY DEVİR --- */
   .ocak-etkinlik-takvimi__ay-baslik {
     position: sticky;
     top: var(--nav-height, 64px);
@@ -273,17 +201,14 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
     display: none;
   }
 
-  /* --- KOMPAKT SATIR LİSTESİ (#35) ---
-   * Kart yerine ince satır. Satırlar arası ince ash ayraç (üst border).
-   * Sol gün/ay rozeti sabit genişlik, gövde esner, kayıt sağda. */
+  /* --- KOMPAKT SATIR LİSTESİ ---
+   * <li> sadece list item marker + data-tip carrier. Satır gövdesi (chip/rozet/
+   * başlık/meta/rozet/stretched/kayıt) EtkinlikKart variant="satir" içinde. */
   .ocak-etkinlik-takvimi__liste {
     list-style: none;
     padding: 0;
     max-width: 48rem;
     margin: 0 auto var(--space-8);
-    /* Alt çizgi <ul>'da, son satırda değil — filtrede son satır [hidden] olunca
-     * `:last-child` görünmez kalan satırı seçip çizgiyi kaybediyordu. Boş ay
-     * gruplarında <ul> da [hidden] ile komple gizleniyor (flatten + JS filter). */
     border-bottom: 1px solid var(--ash);
   }
 
@@ -292,190 +217,14 @@ function tarihRozeti(iso: string): { gun: string; ay: string } {
   }
 
   .ocak-etkinlik-takvimi__satir {
-    position: relative; /* stretched link (brief FAZ 3) için */
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-4) var(--space-3);
-    border-top: 1px solid var(--ash);
-    transition: background-color var(--duration-fast) var(--ease-out);
-  }
-
-  .ocak-etkinlik-takvimi__stretched-link {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    text-indent: -9999px;
-    overflow: hidden;
-  }
-
-  .ocak-etkinlik-takvimi__stretched-link:focus-visible {
-    outline: 2px solid var(--ember);
-    outline-offset: -2px;
+    margin: 0;
   }
 
   .ocak-etkinlik-takvimi__satir[hidden] {
     display: none;
   }
 
-  .ocak-etkinlik-takvimi__satir:hover {
-    background: var(--ash-warm);
-  }
-
-  .ocak-etkinlik-takvimi__satir--one-cikan {
-    border-left: 2px solid var(--ember);
-    padding-left: calc(var(--space-3) - 2px);
-  }
-
-  /* Sol tarih rozeti — gün büyük, ay kısaltma küçük üstü. */
-  .ocak-etkinlik-takvimi__tarih-rozeti {
-    flex-shrink: 0;
-    width: 3rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-  }
-
-  .ocak-etkinlik-takvimi__rozet-gun {
-    font-family: var(--font-display);
-    font-size: var(--text-h4);
-    color: var(--cream);
-    font-weight: 500;
-  }
-
-  .ocak-etkinlik-takvimi__rozet-ay {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wide);
-    color: var(--ember);
-    margin-top: var(--space-1);
-  }
-
-  /* Gövde — chip satırı + başlık + meta dikey. */
-  .ocak-etkinlik-takvimi__govde {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .ocak-etkinlik-takvimi__ust-satir {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-  }
-
-  .ocak-etkinlik-takvimi__chip {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    color: var(--ember);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-  }
-
-  /* Online / Fiziksel rozeti — chip yanı; OCAK paleti (ember çerçeve, ash zemin).
-   * Yeşil/mavi gibi yabancı renk YOK. Şehir rozete yazılmaz — meta satırı zaten
-   * `${mekan} · ${mekanDetay}` gösteriyor (brief-takvim-toparlama-uygula.md ADIM 4). */
-  .ocak-etkinlik-takvimi__rozet {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-wide);
-    text-transform: uppercase;
-    color: var(--cream-soft);
-    border: 1px solid var(--ash);
-    padding: 0.1em 0.55em;
-    line-height: 1.4;
-  }
-
-  .ocak-etkinlik-takvimi__rozet--fiziksel {
-    border-color: var(--ember);
-    color: var(--ember);
-  }
-
-  /* Ücret — meta satırında mekan'dan sonra; sembolik hâli düşük vurgu (smoke),
-   * rakamlı hâl mevcut meta ton'unda (cream-soft, --meta doğal renk üzerinden). */
-  .ocak-etkinlik-takvimi__ucret {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--cream-soft);
-  }
-
-  .ocak-etkinlik-takvimi__one {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    color: var(--coal);
-    background: var(--ember);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wide);
-    padding: 0.15em 0.6em;
-  }
-
-  .ocak-etkinlik-takvimi__baslik {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-base);
-    color: var(--cream);
-    line-height: var(--leading-snug);
-  }
-
-  .ocak-etkinlik-takvimi__meta {
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--cream-soft);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    align-items: baseline;
-  }
-
-  .ocak-etkinlik-takvimi__sep {
-    color: var(--smoke);
-  }
-
-  .ocak-etkinlik-takvimi__kayit {
-    position: relative; /* stretched link üstünde tıklanabilir kalsın */
-    z-index: 2;
-    flex-shrink: 0;
-    font-family: var(--font-body);
-    font-size: var(--text-sm);
-    color: var(--ember);
-    text-decoration: none;
-    white-space: nowrap;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--duration-base) var(--ease-out);
-  }
-
-  .ocak-etkinlik-takvimi__kayit:hover,
-  .ocak-etkinlik-takvimi__kayit:focus-visible {
-    border-bottom-color: var(--ember);
-  }
-
-  /* Mobilde satır dikey kırılır — rozet üstte yatay, kayıt alta. */
-  @media (max-width: 600px) {
-    .ocak-etkinlik-takvimi__satir {
-      flex-wrap: wrap;
-      gap: var(--space-3);
-    }
-    .ocak-etkinlik-takvimi__tarih-rozeti {
-      flex-direction: row;
-      width: auto;
-      gap: var(--space-2);
-      align-items: baseline;
-    }
-    .ocak-etkinlik-takvimi__rozet-ay {
-      margin-top: 0;
-    }
-    .ocak-etkinlik-takvimi__kayit {
-      width: 100%;
-      padding-left: calc(3rem + var(--space-4));
-    }
-  }
-
-  /* Boş state — italik + ortalı, smoke ton (Brief H). */
+  /* Boş state — italik + ortalı, smoke ton. */
   .ocak-etkinlik-takvimi__bos {
     font-family: var(--font-display);
     font-style: italic;

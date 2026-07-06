@@ -117,6 +117,11 @@
   --max-w-prose:    38rem;   /* okuma sütunu */
   --max-w-content:  64rem;   /* genel içerik */
   --max-w-wide:     80rem;   /* nav, footer */
+  /* Kart-kayıt bloğu dar sütunu — kart max-width + buton section max-width
+   * tek yerden (brief-format-kayit-bitir + brief-tum-kartlar-birebir).
+   * `SonrakiBulusma.__liste--tek` ve `section[data-section="kayit-cta"]`
+   * eşit hizada. */
+  --kart-max:       24rem;
 
   --radius-sm:  2px;
   --radius-md:  4px;
