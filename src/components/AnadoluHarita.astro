@@ -129,8 +129,10 @@ const evreler: Evre[] = [
 
   {/* Mobil evre şeridi — masaüstünde CSS ile gizli, mobilde SVG yerine görünür.
      Etiket: sadece evre adı (Kaan onayı: 6 durak 360px'de sığar, yer adı kart
-     başlığında zaten var, tekrar edilmez). Yer adı .anadolu-serit__yer olarak
-     HTML'de var ama default display:none — ADIM 2 aktif durakta gösterir. */}
+     başlığında zaten var, tekrar edilmez). Aktif durakta yer adı gösterme brief
+     Kaan kararı olarak eklendi ama "sığmazsa atla" istisnası ile ADIM 2 sonrası
+     ATLANDI (18-22 kar uzun yer adları 360px slot'a sığmaz, absolute çözüm
+     kenarda taşar). Aktif vurgu sadece dot ölçek + evre adı rengi ile. */}
   <nav class="anadolu-serit" aria-label="Evre şeridi — hızlı navigasyon">
     {evreler.map((e, i) => (
       <button
@@ -142,7 +144,6 @@ const evreler: Evre[] = [
       >
         <span class="anadolu-serit__dot" aria-hidden="true">{i}</span>
         <span class="anadolu-serit__ad" aria-hidden="true">{e.ad}</span>
-        <span class="anadolu-serit__yer" aria-hidden="true">{e.yer}</span>
       </button>
     ))}
   </nav>
@@ -200,4 +201,60 @@ const evreler: Evre[] = [
   duraklar.forEach((durak) => {
     durak.addEventListener('click', () => activate(durak.dataset.evre));
   });
+
+  // brief-anadolu-mobil-serit ADIM 2: aktif evre vurgusu — IntersectionObserver
+  // ile alttaki .ocak-evre kartlarından viewport ortasında olan aktif kabul
+  // edilir. Aktif slug hem masaüstü SVG noktasına (.anadolu-harita__nokta) hem
+  // mobil şerit durağına (.anadolu-serit__durak) .is-active class'ı ekler.
+  // Tek observer, iki DOM. Kullanıcı "3/5'teyim" hissini alır.
+  const kartlar = document.querySelectorAll<HTMLElement>('.ocak-evre[data-evre]');
+  if ('IntersectionObserver' in window && kartlar.length > 0) {
+    const setActive = (slug: string | null) => {
+      document.querySelectorAll('.anadolu-harita__nokta.is-active, .anadolu-serit__durak.is-active')
+        .forEach((el) => el.classList.remove('is-active'));
+      if (!slug) return;
+      document.querySelectorAll(
+        `.anadolu-harita__nokta[data-evre="${slug}"], .anadolu-serit__durak[data-evre="${slug}"]`
+      ).forEach((el) => el.classList.add('is-active'));
+    };
+
+    let aktifSlug: string | null = null;
+    const gorunur = new Map<string, number>(); // slug → intersectionRatio
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const slug = (entry.target as HTMLElement).dataset.evre;
+          if (!slug) return;
+          if (entry.isIntersecting) {
+            gorunur.set(slug, entry.intersectionRatio);
+          } else {
+            gorunur.delete(slug);
+          }
+        });
+        // En yüksek ratio'lu kart aktif
+        let enIyiSlug: string | null = null;
+        let enIyiRatio = 0;
+        for (const [slug, ratio] of gorunur) {
+          if (ratio > enIyiRatio) {
+            enIyiSlug = slug;
+            enIyiRatio = ratio;
+          }
+        }
+        if (enIyiSlug !== aktifSlug) {
+          aktifSlug = enIyiSlug;
+          setActive(aktifSlug);
+        }
+      },
+      {
+        // Kart viewport'un merkez bandına girdiğinde aktif — nav altı için
+        // üstten %30, alttan %40 ofset (kart merkezi ekran ortasına yakın
+        // olduğunda seçilir, scroll sırasında kararlı geçiş).
+        rootMargin: '-30% 0px -40% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      },
+    );
+
+    kartlar.forEach((kart) => observer.observe(kart));
+  }
 </script>

@@ -1933,7 +1933,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 .anadolu-harita__nokta:hover .anadolu-harita__nokta-halka,
-.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-halka {
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-halka,
+.anadolu-harita__nokta.is-active .anadolu-harita__nokta-halka {
   opacity: 1;
 }
 
@@ -1946,7 +1947,8 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
 }
 
 .anadolu-harita__nokta:hover .anadolu-harita__nokta-dot,
-.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot {
+.anadolu-harita__nokta:focus-visible .anadolu-harita__nokta-dot,
+.anadolu-harita__nokta.is-active .anadolu-harita__nokta-dot {
   stroke: color-mix(in oklab, var(--isi-aktif) 70%, var(--cream) 30%);
   stroke-width: 2;
 }
@@ -2134,6 +2136,20 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
                 0 0 14px color-mix(in oklab, var(--isi-aktif) 45%, transparent);
   }
 
+  /* Aktif durak (brief-anadolu-mobil-serit ADIM 2 — IntersectionObserver
+   * scroll pozisyonuna göre): dot biraz büyür + halo yoğunlaşır, evre adı
+   * cream'e döner. Yer adı sığmadığı için gösterilmez (Kaan onayı: sığmazsa
+   * atla). Kullanıcı "3/5'teyim" hissini alır. */
+  .anadolu-serit__durak.is-active .anadolu-serit__dot {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 1.5px var(--coal),
+                0 0 16px color-mix(in oklab, var(--isi-aktif) 55%, transparent);
+  }
+  .anadolu-serit__durak.is-active .anadolu-serit__ad {
+    color: var(--cream);
+    font-weight: 600;
+  }
+
   .anadolu-serit__ad {
     font-family: var(--font-body);
     font-size: 10.5px;
@@ -2142,11 +2158,7 @@ section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child
     line-height: 1.15;
     color: var(--cream-soft);
     white-space: nowrap;
-  }
-
-  /* Yer adı: default gizli — ADIM 2 aktif durakta gösterir */
-  .anadolu-serit__yer {
-    display: none;
+    transition: color var(--duration-fast) var(--ease-out);
   }
 }
 
