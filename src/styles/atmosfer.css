@@ -476,6 +476,146 @@ details[data-section^="raf-"] li {
   font-style: normal;
 }
 
+/* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
+/* Plugin output: transformBesKaynak — intro + pusula-başlık + 5 yön kartı + kapanış.
+ * Yön: <article class="ocak-yon-kart[--merkez]" data-yon="SLUG">
+ *        <span __glyph>🜂</span>
+ *        <div __basliklar><span __ad>MERKEZ</span><span __cog>Anadolu</span></div>
+ *        <div __govde><p>…</p></div>
+ *        <p __yasar>Burada yaşar: …</p>
+ *      </article>
+ *
+ * MERKEZ vurgu (i===0): sol şerit altın (3px), zemin ember-alpha-15 gradient.
+ * Diğer 4: sol şerit ember (2px), hafif ember gradient (.08 vitrin dili).
+ *
+ * Pusula-başlık dekoratif kabuk (kanon-dışı, plugin sabit üretir): 5 glyph yatay
+ * sıra, üst+alt altın çizgi, merkez glyph büyük altın. */
+
+/* Section kabı: baseline prose class="ocak-bes-kadim-kaynak" zaten max-w-prose
+ * padding'ini alır. İntro H2 + p + kapanış p'ler baseline'a düşer (özel scope yok). */
+
+/* Pusula-başlık */
+.ocak-yon-pusula {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  margin: var(--space-5) auto var(--space-6);
+  max-width: var(--max-w-content);
+  border-top: 1px solid var(--gold-soft);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+.ocak-yon-pusula__glyph {
+  font-size: 1.2rem;
+  color: var(--gold-soft);
+  line-height: 1;
+}
+
+.ocak-yon-pusula__glyph--merkez {
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+/* Yön kartı — grid layout: glyph solda, içerik sağda */
+.ocak-yon-kart {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  max-width: var(--max-w-content);
+  margin: var(--space-5) auto;
+  padding: var(--space-4) var(--space-5);
+  border-left: 2px solid var(--ember);
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(100deg, rgba(196, 75, 47, 0.08), transparent 55%);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* MERKEZ vurgu — altın şerit + güçlü ember zemin */
+.ocak-yon-kart--merkez {
+  border-left: 3px solid var(--gold);
+  background: linear-gradient(100deg, var(--ember-alpha-15), transparent 60%);
+}
+
+.ocak-yon-kart__glyph {
+  font-size: 1.8rem;
+  color: var(--gold-soft);
+  line-height: 1.2;
+  padding-top: 0.15rem;
+}
+
+.ocak-yon-kart--merkez .ocak-yon-kart__glyph {
+  font-size: 2.2rem;
+  color: var(--gold);
+}
+
+.ocak-yon-kart__basliklar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: var(--space-3);
+  grid-column: 2;
+}
+
+.ocak-yon-kart__ad {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ember-soft);
+  font-weight: 500;
+}
+
+.ocak-yon-kart__cog {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--cream);
+  line-height: 1.3;
+}
+
+/* Gövde — kart-içi baseline p override (baseline prose max-w vs. kart-içi genişlik) */
+.ocak-yon-kart__govde {
+  grid-column: 2;
+}
+
+.ocak-yon-kart__govde p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0 0 var(--space-3);
+  font-weight: 300;
+}
+
+.ocak-yon-kart__govde p:last-child {
+  margin-bottom: 0;
+}
+
+/* "Burada yaşar:" — altın italic + üst ince altın çizgi */
+.ocak-yon-kart__yasar {
+  grid-column: 2;
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gold-soft);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .ocak-yon-kart {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+  .ocak-yon-pusula {
+    gap: var(--space-4);
+  }
+}
+
 /* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
 /* Plugin output: <section data-section="sss"><h2>..</h2><details><summary>Q</summary>
  * <div class="sss-cevap"><p>A</p></div></details>.. (class="sss" YOK, cevap class

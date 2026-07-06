@@ -159,6 +159,23 @@ const EVRE_ISI_TOKEN: Record<string, string> = {
 };
 
 /**
+ * YON_KANON — /hikaye `bes-kadim-kaynak` section'ındaki 5 yön (brief-desenler-03).
+ * Sıra kanon: MERKEZ/DOĞU/GÜNEY/BATI/KUZEY (KARAR adayı 299/301). Glyph'ler
+ * Unicode Alchemical Symbols (U+1F702/00/14/04/03) — kanon mührü, korunur.
+ * transformBesKaynak Notion H3 sırasıyla index eşler; MERKEZ ilk kart, vurgulu.
+ *
+ * Pusula-başlık plugin tarafından enjekte edilir (Notion'da yok, dekoratif kabuk):
+ * 5 glyph yatay sıra, merkez altın büyük, diğerleri gold-soft. Metin KANON değil.
+ */
+const YON_KANON: Array<{ slug: string; glyph: string; ad: string }> = [
+  { slug: 'merkez', glyph: '🜂', ad: 'MERKEZ' },
+  { slug: 'dogu', glyph: '🜁', ad: 'DOĞU' },
+  { slug: 'guney', glyph: '🜔', ad: 'GÜNEY' },
+  { slug: 'bati', glyph: '🜄', ad: 'BATI' },
+  { slug: 'kuzey', glyph: '🜃', ad: 'KUZEY' },
+];
+
+/**
  * OMIT_SECTIONS — plugin bu section'ları HİÇ emit ETMEZ.
  * Sayfa override'ında veya fragment-split registry'sinde component instance ile
  * render edilirler:
@@ -858,6 +875,167 @@ function transformEvre(
  * çoklu açık, graceful degradation). esikler grubu /sen-neredesin, raflar grubu
  * /araclar — farklı sayfalar, çakışma yok ama namespace ayrı temiz.
  */
+/**
+ * transformBesKaynak: /hikaye `bes-kadim-kaynak` — 5 kadim yön kartı (Varyant C).
+ *
+ * DOM (canlı Notion): H2 + intro-p + 5×[H3 "GLYPH AD — COĞ" + gövde-p + `<em>Burada
+ * yaşar: …</em>`-p] + kapanış-p + kapanış-p(link). H3 sırası MERKEZ/DOĞU/GÜNEY/BATI/
+ * KUZEY (YON_KANON ile eşleşir). Metin KANON (kırpma yasağı, KARAR 61/88) — transform
+ * SADECE SUNUM: glyph ayır, em sıyır, wrapper sar. Kelime dokunulmaz.
+ *
+ * Yapı:
+ *   - Intro: ilk H3'e kadar tüm node'lar (H2 + 1 p) → serbest üstte.
+ *   - Pusula-başlık: intro sonrası dekoratif <div class="ocak-yon-pusula"> +
+ *     5 glyph span (merkez altın büyük, diğerleri gold-soft). Notion'da YOK,
+ *     plugin sabit üretir (kanon-dışı dekoratif kabuk).
+ *   - 5 kart: her H3 sınırıyla. H3 metni codePointAt(0) ile glyph ayrılır, kalan
+ *     " — " ile split → AD + COĞRAFYA. Kart-sonu: "H3 sonrası ilk <em>-sarılı <p>"
+ *     yapısal tespit (Kaan onayı: string-bağımlı DEĞİL, esnek). em içindeki
+ *     children sıyrılır, <p class="ocak-yon-kart__yasar"> olur.
+ *   - Kapanış: son kartın <em>-p'sinden sonraki node'lar → serbest altta (Advaita
+ *     link paragrafı dahil).
+ *
+ * KANON GÜVENLİĞİ:
+ *   - Bir kartta em-sarılı <p> BULUNAMAZSA → console.warn (filename + yön sırası) +
+ *     o kartı HAM prose bırak (H3 + gövde node'ları verbatim). SESSİZ BOZMA yok
+ *     (KARAR 102 gerçeklik-spec-eziyor + Kaan onayı).
+ *   - Kartta em-p'den sonra fazladan node varsa (son kart hariç) → warn + node'lar
+ *     kart-dışı emit edilir (kanon kaybolmaz, Notion'da anomali görünür).
+ *
+ * MERKEZ vurgu: sadece i===0 kartında `ocak-yon-kart--merkez` class + data-yon="merkez".
+ */
+function transformBesKaynak(
+  content: RootContent[],
+  options: OcakSectionsOptions,
+): RootContent[] {
+  const filename = options.filename ?? 'unknown';
+
+  // 1) Intro: ilk H3'e kadar tüm node'lar
+  const firstH3 = content.findIndex((n) => n.type === 'heading' && n.depth === 3);
+  const intro = firstH3 === -1 ? content : content.slice(0, firstH3);
+  const rest = firstH3 === -1 ? [] : content.slice(firstH3);
+
+  // 2) Kartları H3 sınırıyla topla
+  const cards: RootContent[][] = [];
+  let cur: RootContent[] = [];
+  for (const node of rest) {
+    if (node.type === 'heading' && node.depth === 3) {
+      if (cur.length) cards.push(cur);
+      cur = [node];
+    } else {
+      cur.push(node);
+    }
+  }
+  if (cur.length) cards.push(cur);
+
+  // 3) Her kartı Varyant C markup'ına çevir
+  const cardNodes: RootContent[] = [];
+  const closingNodes: RootContent[] = [];
+
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const h3 = card[0];
+    const body = card.slice(1);
+
+    // H3 sonrası ilk <em>-sarılı <p> bul (yapısal tespit — Kaan onayı)
+    let yasarIdx = -1;
+    for (let j = 0; j < body.length; j++) {
+      const p = body[j] as { type?: string; children?: RootContent[] };
+      if (p.type === 'paragraph' && p.children?.length === 1) {
+        const child = p.children[0] as { type?: string };
+        if (child.type === 'emphasis') {
+          yasarIdx = j;
+          break;
+        }
+      }
+    }
+
+    const kanon = YON_KANON[i];
+    const slug = kanon?.slug ?? `yon-${i + 1}`;
+
+    // Kanon güvenliği: em-p yoksa ham prose bırak + warn
+    if (yasarIdx === -1) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[remark-ocak-sections] bes-kadim-kaynak (${filename}) yön ${i + 1} (${slug}): <em>-sarılı <p> bulunamadı, kart ham prose bırakıldı (kanon güvenliği).`,
+      );
+      cardNodes.push(...card);
+      continue;
+    }
+
+    const govde = body.slice(0, yasarIdx);
+    const yasarP = body[yasarIdx] as { children: RootContent[] };
+    const remainder = body.slice(yasarIdx + 1);
+
+    // H3 metnini parse: glyph + AD + COĞRAFYA
+    const h3Text = getText(h3).trim();
+    const cp = h3Text.codePointAt(0);
+    const glyphChar = cp ? String.fromCodePoint(cp) : '';
+    const restText = h3Text.slice(glyphChar.length).trim();
+    const parts = restText.split(/\s+—\s+/);
+    const ad = parts[0]?.trim() ?? '';
+    const cog = parts.slice(1).join(' — ').trim();
+
+    const merkezClass = i === 0 ? ' ocak-yon-kart--merkez' : '';
+
+    // em sıyırma: <p><em>text</em></p> → <p class="__yasar">text</p>
+    const emNode = yasarP.children[0] as { children: RootContent[] };
+    const emChildren = emNode.children;
+
+    cardNodes.push(
+      html(`<article class="ocak-yon-kart${merkezClass}" data-yon="${slug}">`),
+      html(
+        `<span class="ocak-yon-kart__glyph" aria-hidden="true">${escapeHtmlText(glyphChar)}</span>`,
+      ),
+      html('<div class="ocak-yon-kart__basliklar">'),
+      html(`<span class="ocak-yon-kart__ad">${escapeHtmlText(ad)}</span>`),
+      ...(cog
+        ? [html(`<span class="ocak-yon-kart__cog">${escapeHtmlText(cog)}</span>`)]
+        : []),
+      html('</div>'),
+      html('<div class="ocak-yon-kart__govde">'),
+      ...govde,
+      html('</div>'),
+      html('<p class="ocak-yon-kart__yasar">'),
+      ...emChildren,
+      html('</p>'),
+      html('</article>'),
+    );
+
+    // Kart sonrası kalan node'lar: son kartsa kapanış, değilse warn + kart-dışı
+    if (remainder.length > 0) {
+      if (i === cards.length - 1) {
+        closingNodes.push(...remainder);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[remark-ocak-sections] bes-kadim-kaynak (${filename}) yön ${i + 1} (${slug}): <em>-p sonrası fazladan node, kart-dışı emit edildi (kanon anomali).`,
+        );
+        cardNodes.push(...remainder);
+      }
+    }
+  }
+
+  // 4) Pusula-başlık (dekoratif, kanon-dışı) — intro sonrası, kartlardan önce
+  const pusulaGlyphs = YON_KANON.map((y, i) => {
+    const cls =
+      i === 0
+        ? 'ocak-yon-pusula__glyph ocak-yon-pusula__glyph--merkez'
+        : 'ocak-yon-pusula__glyph';
+    return `<span class="${cls}" aria-hidden="true">${y.glyph}</span>`;
+  }).join('');
+  const pusulaHtml = `<div class="ocak-yon-pusula" aria-hidden="true">${pusulaGlyphs}</div>`;
+
+  return [
+    html('<section data-section="bes-kadim-kaynak" class="ocak-bes-kadim-kaynak">'),
+    ...intro,
+    html(pusulaHtml),
+    ...cardNodes,
+    ...closingNodes,
+    html('</section>'),
+  ];
+}
+
 function transformEsik(
   content: RootContent[],
   name: string,
@@ -1001,6 +1179,12 @@ function transformSection(
       // /anadolu: "Altı Evre" başlığı + opsiyonel giriş, kart bloğunun
       // açılış başlığı. Default prose'tan ayrı çünkü kendine has class.
       return transformEvrelerIntro(content);
+
+    case 'bes-kadim-kaynak':
+      // /hikaye: 5 kadim yön kartı (Varyant C, brief-desenler-03).
+      // İntro + pusula-başlık + 5×[glyph/ad/coğ/gövde/yaşar] + kapanış.
+      // Kanon güvenliği: em-p bulunamazsa ham prose fallback + warn.
+      return transformBesKaynak(content, options);
 
     default: {
       // /anadolu evre kartları: 6-isimlik EVRE_SECTIONS whitelist (set match).

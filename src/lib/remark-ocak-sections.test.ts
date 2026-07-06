@@ -730,4 +730,89 @@ describe('remark-ocak-sections', () => {
     expect(fHtml).toContain('<section data-section="formatlar">');
     expect(fHtml).toContain('<article class="ocak-kapi-kart">');
   });
+
+  // brief-desenler-03 — bes-kadim-kaynak (Varyant C, 5 kadim yön)
+  it('47. bes-kadim-kaynak — intro + pusula + 2 yön (MERKEZ vurgu) + kapanış', () => {
+    const html = render('fixture-25-bes-kadim-kaynak.md');
+    // Section kabı + baseline class
+    expect(html).toContain(
+      '<section data-section="bes-kadim-kaynak" class="ocak-bes-kadim-kaynak">',
+    );
+    // İntro üstte: H2 + 1 p — kartlardan önce (test pipeline rehype-slug'sız,
+    // dist'te id var ama test'te yok — sadece H2 varlığı ve metin teyit).
+    expect(html).toContain('<h2>Dört Yön. Bir Ocak.</h2>');
+    expect(html).toMatch(/OCAK'ın bilgeliği/);
+    // Pusula-başlık: 5 glyph, merkez altın büyük class
+    expect(html).toContain('<div class="ocak-yon-pusula" aria-hidden="true">');
+    expect(html.match(/<span class="ocak-yon-pusula__glyph/g)?.length).toBe(5);
+    expect(html).toContain('ocak-yon-pusula__glyph--merkez');
+    // Kanon sırası: 5 glyph pusulada YON_KANON sırasıyla
+    expect(html).toMatch(/🜂[\s\S]*🜁[\s\S]*🜔[\s\S]*🜄[\s\S]*🜃/);
+    // 2 kart — MERKEZ + DOĞU
+    expect(html.match(/<article class="ocak-yon-kart/g)?.length).toBe(2);
+    expect(html).toContain('<article class="ocak-yon-kart ocak-yon-kart--merkez" data-yon="merkez">');
+    expect(html).toContain('<article class="ocak-yon-kart" data-yon="dogu">');
+    // Glyph ayrı span'de + AD + COĞ ayrı
+    expect(html).toContain('<span class="ocak-yon-kart__glyph" aria-hidden="true">🜂</span>');
+    expect(html).toContain('<span class="ocak-yon-kart__ad">MERKEZ</span>');
+    expect(html).toContain('<span class="ocak-yon-kart__cog">Anadolu</span>');
+    expect(html).toContain('<span class="ocak-yon-kart__glyph" aria-hidden="true">🜁</span>');
+    expect(html).toContain('<span class="ocak-yon-kart__ad">DOĞU</span>');
+    expect(html).toContain("<span class=\"ocak-yon-kart__cog\">Hindistan'dan Çin'e</span>");
+    // Gövde p kart-içi div'de
+    const merkezCard = html.match(/<article[^>]*data-yon="merkez"[\s\S]*?<\/article>/)?.[0] ?? '';
+    expect(merkezCard).toContain('Çatalhöyük');
+    expect(merkezCard).toContain('<div class="ocak-yon-kart__govde">');
+    // "Burada yaşar" em sıyrılmış → __yasar class'lı p (kanon metin tam)
+    expect(merkezCard).toContain('<p class="ocak-yon-kart__yasar">');
+    expect(merkezCard).toContain(
+      "Burada yaşar: her çemberin mumu, mevsim seremonileri, Anadolu Yolculuğu'nun toprağı.",
+    );
+    // em tag kartın __yasar içinde kalmamalı (sıyrıldı)
+    expect(merkezCard).not.toMatch(/<p class="ocak-yon-kart__yasar">\s*<em>/);
+    // Kapanış: 2 paragraf + Advaita link, kartlardan SONRA section-içinde
+    expect(html).toContain('Dört yön, başka başka dillerde');
+    expect(html).toContain('<a href="/advaita">Advaita — ateşi ilk yakan →</a>');
+    // Kapanış link paragrafı son article'ın DIŞINDA (sırayla: son article kapandı, sonra p)
+    expect(html).toMatch(
+      /<\/article>[\s\S]*Dört yön[\s\S]*Advaita — ateşi ilk yakan/,
+    );
+    expect(html).toMatchSnapshot();
+  });
+
+  it('48. bes-kadim-kaynak — em-sarılı <p> yoksa warn + kart ham prose (kanon güvenliği)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process(
+      '## section: bes-kadim-kaynak\n\n### 🜂 MERKEZ — Anadolu\n\nGövde paragrafı — em yok.\n\nİkinci p yine em yok.',
+      { filename: 'no-em.md' },
+    );
+    // Kart article olarak SARILMAMALI (fallback: ham prose)
+    expect(html).toContain('data-section="bes-kadim-kaynak"');
+    expect(html).not.toContain('<article class="ocak-yon-kart');
+    // H3 + gövde node'ları verbatim korunur (kanon)
+    expect(html).toContain('Gövde paragrafı');
+    expect(html).toContain('İkinci p yine em yok');
+    // Warn: filename + yön 1 (merkez)
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls.some((c) => String(c[0]).includes('no-em.md'))).toBe(true);
+    expect(warn.mock.calls.some((c) => String(c[0]).includes('merkez'))).toBe(true);
+    expect(
+      warn.mock.calls.some((c) => String(c[0]).includes('<em>-sarılı <p> bulunamadı')),
+    ).toBe(true);
+    warn.mockRestore();
+  });
+
+  it('49. bes-kadim-kaynak — pusula her zaman 5 glyph, YON_KANON sırası', () => {
+    // Sadece 1 yön yazılsa bile pusula 5 glyph basar (dekoratif kabuk, kanon-dışı)
+    const html = process(
+      '## section: bes-kadim-kaynak\n\n## H2\n\nintro\n\n### 🜂 MERKEZ — Anadolu\n\ngövde\n\n*yaşar*',
+    );
+    // Span sayacı — regex substring "__glyph" merkez'de iki kez match (base + --merkez),
+    // span başı ile say (5 pusula glyph span'i).
+    expect(html.match(/<span class="ocak-yon-pusula__glyph/g)?.length).toBe(5);
+    // İlk glyph merkez class'lı
+    expect(html).toMatch(
+      /<span class="ocak-yon-pusula__glyph ocak-yon-pusula__glyph--merkez"[^>]*>🜂/,
+    );
+  });
 });
