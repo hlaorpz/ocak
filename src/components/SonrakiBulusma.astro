@@ -169,10 +169,12 @@ const heading = (() => {
     }
   }
 
-  /* Tek kart varyantı: 6 format + Home. Masaüstünde tek kolon + max-width ortalı. */
+  /* Tek kart varyantı: 6 format + Home. Kayıt bloğuyla birebir dar sütun (24rem
+   * ~384px) — brief kayıt-bloğu-daraltma. atmosfer.css'teki `kayit-cta`
+   * section max-width ile eşleşir → kart + buton + link tek dar dikey ünite. */
   .sonraki-bulusma__liste--tek {
     grid-template-columns: 1fr;
-    max-width: 32rem;
+    max-width: 24rem;
     margin-inline: auto;
   }
 
