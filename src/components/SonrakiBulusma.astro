@@ -168,12 +168,13 @@ const heading = (() => {
     }
   }
 
-  /* Tek kart varyantı: 6 format + Home. Kayıt bloğuyla birebir dar sütun (24rem
-   * ~384px) — brief kayıt-bloğu-daraltma. atmosfer.css'teki `kayit-cta`
-   * section max-width ile eşleşir → kart + buton + link tek dar dikey ünite. */
+  /* Tek kart varyantı: 6 format + Home. Kayıt bloğuyla birebir dar sütun
+   * (tek token `--kart-max`). `minmax(0, 1fr)` — grid item min-content 0;
+   * uzun tek-kelime başlık (atolye: "Atölye 1107 21:00-22:00 B Zoom") kutuyu
+   * genişletemez. Kart içindeki başlık `overflow-wrap: anywhere` ile kırılır. */
   .sonraki-bulusma__liste--tek {
-    grid-template-columns: 1fr;
-    max-width: 24rem;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: var(--kart-max);
     margin-inline: auto;
   }
 

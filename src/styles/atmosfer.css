@@ -1146,22 +1146,24 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
  * ============================================================================ */
 section[data-section="kayit-cta"][class^="ocak-"] {
   text-align: center;
-  /* Faz B: sıkışık clamp() KORUNUR (Brief 4 — mini-cta'dan dar bilinçli seçim). */
-  padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
+  /* brief-tum-kartlar-birebir: padding-x SIFIR — buton görsel genişliği kart
+   * section'ıyla birebir eşit (aynı `--kart-max` ortalı sütun). Padding-y sadece
+   * kart altına bitişik olmadığında (detay sayfası) hafif dikey nefes. */
+  padding: clamp(0.5rem, 1vw, 1rem) 0;
   margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
-  /* brief-detay-sayfa-revize rötuş: kart+buton+link daha dar ortalı sütun
-   * (~384px). Beş yüzeyde kart-cta bloğu tutarlı, kompakt davet ünitesi. */
-  max-width: 24rem;
+  /* Kart bloğuyla birebir dar sütun — tek token, tek yerden ayar. */
+  max-width: var(--kart-max);
 }
 
 /* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
  * TEK DAVET AKIŞI olsun. Home'daki sonraki-bulusma → siradaki-kapi arası
  * etkilenmez (:has() sadece kayit-cta ardışıksa tetiklenir). */
 section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-cta"][class^="ocak-"]) {
-  padding-bottom: var(--space-4);
+  padding-bottom: 0;
 }
 section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][class^="ocak-"] {
   margin-top: 0;
+  padding-top: 0;
 }
 
 /* brief-format-kayit-bitir: Notion "Bir sonraki [X]'te yerin hazır" prose'unu

@@ -165,16 +165,21 @@ const kartClass = [
 
   /* ============ Dış kabuk — KART (S1: ash kutu kalır) ============ */
   .ocak-etkinlik-kart--kart {
-    padding: var(--space-5);
-    background: var(--ash);
+    /* brief-tum-kartlar-birebir: sol ember 2px SABİT — her kartta, öne-çıkan
+     * olsun olmasın (Kaan: tek gerçek /acik-kapi kartı = her kart). Öne-çıkan
+     * rozeti ayrı işaret olarak kalır (etkinliğe bağlı). */
     border: 1px solid transparent;
+    border-left: 2px solid var(--ember);
+    padding: var(--space-5);
+    padding-left: calc(var(--space-5) - 1px);
+    background: var(--ash);
     border-radius: 2px;
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    min-width: 0;
     /* Dar kutu (~24rem) — B düzeni: sola-yaslı, section text-align:center
-     * inherit'ini kes (kayit-cta section center). Uzun başlık uçurum
-     * yaratmaz. Satır variant'ı etkilenmez (kendi CSS'i ayrı). */
+     * inherit'ini kes (kayit-cta section center). */
     text-align: left;
     transition: border-color var(--duration-base) var(--ease-out),
                 background-color var(--duration-base) var(--ease-out);
@@ -192,11 +197,8 @@ const kartClass = [
     background: var(--ash-warm);
   }
 
-  .ocak-etkinlik-kart--kart.ocak-etkinlik-kart--one-cikan {
-    border-left-width: 2px;
-    border-left-color: var(--ember);
-    padding-left: calc(var(--space-5) - 1px);
-  }
+  /* Kart variant'ında sol ember çizgi ARTIK SABİT (yukarıdaki base kural) —
+   * `--one-cikan` sınıfı sadece text rozeti işareti için kalır (bkz. __one). */
 
   /* Kart üst köşesi görseli (Notion "Kart Görsel" property). */
   .ocak-etkinlik-kart__gorsel {
@@ -303,6 +305,9 @@ const kartClass = [
     line-height: 1.3;
     margin: 0;
     font-weight: 400;
+    /* Dar kutuda uzun tek-kelime başlık (atolye "Atölye 1107 21:00-22:00 B Zoom")
+     * kutuyu genişletmesin — herhangi bir yerden kırılır. */
+    overflow-wrap: anywhere;
   }
 
   .ocak-etkinlik-kart__meta {

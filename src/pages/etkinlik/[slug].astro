@@ -24,6 +24,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
+import EtkinlikKart from '../../components/EtkinlikKart.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 
@@ -127,8 +128,24 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     <div class="ocak-container" set:html={etkinlik.detayHtml} />
   )}
 
-  {/* Kart yok (Kaan kararı): Hero bağlamı zaten veriyor. Detay yazılarından
-      sonra tek turuncu buton + "Sana uyan başka tarihler…" link. */}
+  {/* brief-tum-kartlar-birebir: detay sayfası KART GERİ — /acik-kapi kartıyla
+      birebir aynı görsel dil (sol ember çizgi + dar dikey B + sol tarih rozeti
+      + sağ blok + kart-genişliği buton bitişik). */}
+  <section data-section="sonraki-bulusma" data-varyant="tek" class="sonraki-bulusma">
+    <div class="ocak-container">
+      <ul class="sonraki-bulusma__liste sonraki-bulusma__liste--tek">
+        <li class="sonraki-bulusma__item">
+          <EtkinlikKart
+            etkinlik={etkinlik}
+            variant="kart"
+            showStretched={false}
+            showKayitLink={false}
+          />
+        </li>
+      </ul>
+    </div>
+  </section>
+
   <section data-section="kayit-cta" class="ocak-kayit-cta">
     {gecmisMi ? (
       <a class="ocak-kayit-cta__buton" href={formatSayfasi} data-kayit-cta-button>
