@@ -24,7 +24,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
-import EtkinlikKart from '../../components/EtkinlikKart.astro';
+import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 
 export async function getStaticPaths() {
@@ -80,9 +80,16 @@ const referans = etkinlik.tarihBitis ?? etkinlik.tarihBaslangic;
 const referansTarihi = parcala(referans);
 const gecmisMi = referansTarihi ? referansTarihi < bugun : false;
 
-// brief-detay-sayfa-revize: Hero subtitle'daki formatEtkinlikTarihi düz cümlesi
-// kaldırıldı — saat/mekân bilgisi kart meta'sına ham devredildi (her yerde
-// ham saat prensibi). Hero sade kalır: overline (format) + başlık.
+// Detay sayfası kart-sız düzen (Kaan kararı): Hero başlık + subtitle bağlamı
+// veriyor, kayıt için tek turuncu buton yeter. Subtitle: tarih + mekân düz cümlesi.
+const tarihMetni = formatEtkinlikTarihi(
+  etkinlik.tarihBaslangic,
+  etkinlik.tarihBitis,
+  etkinlik.saat ?? etkinlik.zoomBaslangicSaati,
+);
+const mekanMetni = etkinlik.mekanDetay
+  ? `${etkinlik.mekan} · ${etkinlik.mekanDetay}`
+  : etkinlik.mekan;
 
 // SEO description: Detay ilk ~155 kar (section etiketleri strip); yoksa tipe göre
 // fallback. Notion Detay markdown → düz metin: `## section:` satırlarını at,
@@ -112,6 +119,7 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     oda="Buluşmalar"
     overline={etkinlik.tip}
     title={etkinlik.baslik}
+    subtitle={`${tarihMetni} · ${mekanMetni}`}
     showScroll={false}
   />
 
@@ -119,17 +127,9 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     <div class="ocak-container" set:html={etkinlik.detayHtml} />
   )}
 
-  {/* brief-detay-sayfa-revize: kart Notion detay yazılarından SONRA + turuncu
-      buton hemen altında + "Tüm buluşmalar" en altta. Beş yüzey tek görsel dil
-      (takvim/home/bulusmalar/format En Yakın/detay). */}
+  {/* Kart yok (Kaan kararı): Hero bağlamı zaten veriyor. Detay yazılarından
+      sonra tek turuncu buton + "Sana uyan başka tarihler…" link. */}
   <section data-section="kayit-cta" class="ocak-kayit-cta">
-    <EtkinlikKart
-      etkinlik={etkinlik}
-      variant="kart"
-      showStretched={false}
-      showKayitLink={false}
-    />
-
     {gecmisMi ? (
       <a class="ocak-kayit-cta__buton" href={formatSayfasi} data-kayit-cta-button>
         Sıradaki {kategoriAdi} <span aria-hidden="true">→</span>
