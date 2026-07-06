@@ -202,7 +202,7 @@ export const OMIT_SECTIONS = [
 ];
 
 /**
- * INTERNAL_SLUGS — Site'in 18 sayfasının slug whitelist'i (#26 Brief F).
+ * INTERNAL_SLUGS — Site'in 19 sayfasının slug whitelist'i (#26 Brief F).
  * Notion content yazılırken page mention veya inline link `https://www.notion.so/<slug>`
  * formatında çıkar; tıklanırsa kullanıcı ocak.biz'den Notion'a kayar (404/login wall).
  * Link visitor bu pattern'i tanır → slug whitelist'te ise `/<slug>`'a normalize, değilse
@@ -213,6 +213,7 @@ export const OMIT_SECTIONS = [
 export const INTERNAL_SLUGS = new Set([
   'hikaye',
   'felsefe',
+  'adimiz',
   'araclar',
   'sen-neredesin',
   'bulusmalar',

@@ -13,9 +13,9 @@ export const ODA_MAP: Record<string, Oda> = {
   '/': 'OCAK',
   '/hikaye': 'OCAK',
   '/felsefe': 'OCAK',
+  '/adimiz': 'OCAK',
   '/araclar': 'OCAK',
   '/site-rehber': 'OCAK',
-  '/test': 'OCAK',                    // Kaan format referansı (lansman öncesi dev sayfa)
   // Yasal (statik .astro, Notion DIŞI — PayTR onay sayfaları, brief-yasal-sayfalar-adim1.md)
   '/hakkimizda': 'OCAK',
   '/gizlilik': 'OCAK',
