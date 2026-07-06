@@ -1149,9 +1149,9 @@ section[data-section="kayit-cta"] {
   /* Faz B: sıkışık clamp() KORUNUR (Brief 4 — mini-cta'dan dar bilinçli seçim). */
   padding: clamp(0.5rem, 1vw, 1rem) clamp(1rem, 2vw, 2rem);
   margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
-  /* brief-detay-sayfa-revize + format sayfası yeni düzen: kart+buton+link tek
-   * dar ortalı sütun (~460px). Beş yüzeyde kart-cta bloğu tutarlı. */
-  max-width: 28.75rem;
+  /* brief-detay-sayfa-revize rötuş: kart+buton+link daha dar ortalı sütun
+   * (~384px). Beş yüzeyde kart-cta bloğu tutarlı, kompakt davet ünitesi. */
+  max-width: 24rem;
 }
 
 /* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
@@ -1218,10 +1218,11 @@ section[data-section="kayit-cta"] > .ocak-etkinlik-kart + .ocak-kayit-cta__buton
   margin-top: var(--space-2);
 }
 
-/* "Tüm buluşmalar →" linki — butonun ALTINDA, ortalı, yumuşak ton. */
+/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, ortalı, davet-fısıltısı
+ * (buton baskın, link ikincil): margin sıkılaştı, font küçüldü. */
 section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu {
-  margin: var(--space-4) 0 0;
-  font-size: var(--text-sm);
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-xs);
 }
 
 section[data-section="kayit-cta"] > .ocak-kayit-cta__tumu a {

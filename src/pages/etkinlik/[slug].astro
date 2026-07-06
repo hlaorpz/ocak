@@ -126,8 +126,6 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     <EtkinlikKart
       etkinlik={etkinlik}
       variant="kart"
-      baslikTag="span"
-      showBaslik={false}
       showStretched={false}
       showKayitLink={false}
     />
@@ -145,7 +143,7 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     )}
 
     <p class="ocak-kayit-cta__tumu">
-      <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
+      <a href="/takvim">Sana uyan başka tarihler de var — hepsine bak <span aria-hidden="true">→</span></a>
     </p>
   </section>
 </Layout>

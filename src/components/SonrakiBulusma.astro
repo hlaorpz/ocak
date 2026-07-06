@@ -114,7 +114,10 @@ const heading = (() => {
 
     {isTekKart && !bos && (
       <p class="sonraki-bulusma__tumu">
-        <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
+        <a href="/takvim">
+          {isHome ? 'Tüm buluşmalar' : 'Sana uyan başka tarihler de var — hepsine bak'}
+          {' '}<span aria-hidden="true">→</span>
+        </a>
       </p>
     )}
   </div>
@@ -179,15 +182,16 @@ const heading = (() => {
     }
   }
 
-  /* "Tüm tarihler → /takvim" linki: tek kartın altında sade ortalı. */
+  /* Takvim linki: tek kartın altında sade ortalı, davet-fısıltısı
+   * (buton baskın değil ama var, link ikincil): margin sıkı, font küçük. */
   .sonraki-bulusma__tumu {
     text-align: center;
-    margin: var(--space-5) 0 0;
+    margin: var(--space-3) 0 0;
   }
 
   .sonraki-bulusma__tumu a {
     font-family: var(--font-body);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     letter-spacing: 0.06em;
     color: var(--ember);
     text-decoration: none;
