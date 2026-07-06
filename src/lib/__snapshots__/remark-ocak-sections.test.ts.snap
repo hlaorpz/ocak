@@ -179,3 +179,20 @@ Burada yaşar: çemberin nefesi, beden pratiği, atölyeler.
 <p>Bu sentezi buraya bir kadın taşıdı. <a href="/advaita">Advaita — ateşi ilk yakan →</a></p>
 </section>"
 `;
+
+exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details name="tasiyici", H2 strip → summary 1`] = `
+"<section data-section="ne-tasiyor" class="ocak-ne-tasiyor">
+<h2>Ne Taşıyor</h2>
+<p>Bu araçlar önce Advaita'nın bedeninden geçti — ama artık OCAK'ın ortak kutusunda.</p>
+</section>
+<details name="tasiyici" data-section="tasidigi-bati"><summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary>
+<p>Sachamama geleneğinin şamanik sağaltımı, Amazon'un bitki bilgeliği. Element çalışması.</p>
+</details>
+<details name="tasiyici" data-section="tasidigi-dogu"><summary>🜁 DOĞU — Nefes ve Beden</summary>
+<p>Rishikesh'te aldığı yoga eğitmen eğitimi — Hint Vedik geleneğinin somatik özü.</p>
+</details>
+<section data-section="tasidigi-kuzey" class="ocak-tasidigi-kuzey">
+<h3>Whitelist Dışı Bir Yön</h3>
+<p>Bu section TASIYICI_SECTIONS whitelist'te yok — baseline prose'a düşer.</p>
+</section>"
+`;

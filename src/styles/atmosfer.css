@@ -991,6 +991,97 @@ details[data-section^="raf-"] summary:focus-visible {
   }
 }
 
+/* ===== TAŞIYICI ACCORDION (/advaita, 3 tasidigi-* section) ==================== */
+/* Plugin output: <details name="tasiyici" data-section="tasidigi-NAME">
+ *   <summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary> ..kalan içerik, h2 strip..
+ * </details>
+ * esik-* deseninin küçük kardeşi (brief-advaita-accordion.md): aynı görsel dil
+ * (ember sol border, + → × marker, Cormorant italik summary), farklı namespace
+ * (name="tasiyici" ↔ name="esikler"/name="raflar" exclusive gruplar bağımsız).
+ * Boşluk simetrisi (KARAR 292-293) klonda baştan gelir — o savaş tekrar etmesin.
+ * Paralel blok — mevcut esik/raf selector'lerine dokunulmadı. */
+
+details[data-section^="tasidigi-"] {
+  border-left: 3px solid var(--ash);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  margin: 0 auto;
+  max-width: var(--max-w-prose);
+  transition: border-color 0.4s ease, padding 0.4s ease;
+}
+
+details[data-section^="tasidigi-"]:hover {
+  border-left-color: var(--ember-soft);
+}
+
+details[data-section^="tasidigi-"][open] {
+  border-left-color: var(--ember);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--ash);
+}
+
+details[data-section^="tasidigi-"][open] > *:last-child {
+  margin-block-end: 0;
+}
+
+details[data-section^="tasidigi-"] summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.3;
+  color: var(--cream);
+  padding: var(--space-2) 0;
+  scroll-margin-top: var(--nav-height);
+}
+
+details[data-section^="tasidigi-"] summary::-webkit-details-marker {
+  display: none;
+}
+
+details[data-section^="tasidigi-"] summary::after {
+  content: '+';
+  font-family: 'Cormorant Garamond', serif;
+  font-style: normal;
+  font-size: 1.5rem;
+  color: var(--ember);
+  transition: transform 0.4s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+details[data-section^="tasidigi-"][open] summary::after {
+  transform: rotate(45deg);
+}
+
+details[data-section^="tasidigi-"] > *:not(summary) {
+  margin-top: var(--space-5);
+}
+
+details[data-section^="tasidigi-"] p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+details[data-section^="tasidigi-"] summary:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details[data-section^="tasidigi-"],
+  details[data-section^="tasidigi-"] summary::after {
+    transition: none;
+  }
+}
+
 /* ===== BİR SONRAKI (retarget: .bir-sonraki__quote → [data-section] > blockquote) = */
 /* Plugin output: <section data-section="bir-sonraki"><blockquote>..ham içerik..</blockquote></section>
  * .bir-sonraki__quote class YOK → dış blockquote hedeflenir. Ember sol border 3px +

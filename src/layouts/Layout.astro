@@ -133,14 +133,15 @@ const isProd = import.meta.env.PROD;
         });
       }
 
-      // Eşik accordion scroll-jump fix (/sen-neredesin, TUR-3). Exclusive
-      // <details name="esikler"> aşağıdaki maddeye tıklandığında yukarıdaki
-      // kapanır → sayfa yüksekliği ~300-445px kısalır → tıklanan başlık
+      // Exclusive-accordion scroll-jump fix. Aşağıdaki details açıldığında
+      // yukarıdaki kapanır → sayfa yüksekliği kısalır → tıklanan başlık
       // viewport'ta yukarı zıplar. Chrome scroll-anchoring bu senaryoda
       // çalışmıyor. Toggle → açılan summary'yi 'nearest' ile hizala:
       // viewport içindeyse dokunma, dışına çıktıysa asgari kaydır.
       // CSS scroll-margin-top: var(--nav-height) sticky nav altına gizlenmeyi engeller.
-      document.querySelectorAll<HTMLDetailsElement>('details[name="esikler"]').forEach((d) => {
+      // İki exclusive grup: esikler (/sen-neredesin) + tasiyici (/advaita).
+      // Not: raflar (/araclar) henüz bu handler'a dahil değil (FAZ 5 alanı).
+      document.querySelectorAll<HTMLDetailsElement>('details[name="esikler"], details[name="tasiyici"]').forEach((d) => {
         d.addEventListener('toggle', () => {
           if (d.open) {
             d.querySelector('summary')?.scrollIntoView({

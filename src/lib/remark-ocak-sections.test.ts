@@ -676,6 +676,55 @@ describe('remark-ocak-sections', () => {
     warn.mockRestore();
   });
 
+  // brief-advaita-accordion.md — /advaita 3 tasidigi-* yön kartı accordion
+  it('47. tasiyici accordion — whitelist details name="tasiyici", H2 strip → summary', () => {
+    const html = render('fixture-25-tasiyici-accordion.md');
+    // İki tasidigi section (bati, dogu) details olarak basılır — namespace "tasiyici"
+    expect(html.match(/<details name="tasiyici"/g)?.length).toBe(2);
+    expect(html).toContain('<details name="tasiyici" data-section="tasidigi-bati">');
+    expect(html).toContain('<details name="tasiyici" data-section="tasidigi-dogu">');
+    // H2 strip + summary'ye verbatim taşındı (glyph korunur)
+    expect(html).toContain('<summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary>');
+    expect(html).toContain('<summary>🜁 DOĞU — Nefes ve Beden</summary>');
+    // H2 ham olarak details body'sinde KALMAMALI (strip teyidi)
+    expect(html).not.toContain('<h2>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h2>');
+    // Section içeriği details'in içinde
+    expect(html).toContain('Sachamama geleneğinin');
+    expect(html).toContain('Rishikesh');
+    // "tasiyici" grubu esikler/raflar namespace'lerinden bağımsız
+    expect(html).not.toMatch(/<details name="esikler"[^>]*data-section="tasidigi-/);
+    expect(html).not.toMatch(/<details name="raflar"[^>]*data-section="tasidigi-/);
+    // ne-tasiyor intro baseline prose olarak açık kalır (accordion DEĞİL)
+    expect(html).toContain('<section data-section="ne-tasiyor" class="ocak-ne-tasiyor">');
+    expect(html).toMatchSnapshot();
+  });
+
+  it('48. tasiyici whitelist — `tasidigi-kuzey` (whitelist dışı) accordion DEĞİL, baseline prose kalır', () => {
+    const html = render('fixture-25-tasiyici-accordion.md');
+    // tasidigi-kuzey TASIYICI_SECTIONS'ta yok → baseline prose
+    expect(html).toContain('<section data-section="tasidigi-kuzey" class="ocak-tasidigi-kuzey">');
+    // KRİTİK: tasidigi-kuzey accordion wrap'ı ALMAMALI (silent bug regression check)
+    expect(html).not.toMatch(/<details[^>]*data-section="tasidigi-kuzey"/);
+  });
+
+  it('49. tasiyici h2 fallback — h2 yoksa warn + summary section-name', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const html = process('## section: tasidigi-bati\n\nDoğrudan paragraf, h2 yok.', {
+      filename: 'no-h2.md',
+    });
+    // Fallback: summary section-name'i (tasidigi-bati) basar, içerik korunur
+    expect(html).toContain('<details name="tasiyici" data-section="tasidigi-bati">');
+    expect(html).toContain('<summary>tasidigi-bati</summary>');
+    expect(html).toContain('Doğrudan paragraf');
+    expect(warn).toHaveBeenCalled();
+    expect(warn.mock.calls[0][0]).toContain('no-h2.md');
+    expect(warn.mock.calls[0][0]).toContain('tasidigi-bati');
+    // Warn mesajı 'tasiyici' group + h2 depth söylüyor
+    expect(warn.mock.calls[0][0]).toContain('tasiyici');
+    expect(warn.mock.calls[0][0]).toContain('h2');
+    warn.mockRestore();
+  });
+
   // brief-desenler-01.md ADIM 2 — vitrin (temalar/turler/formatlar)
   it('43. vitrin temalar — CARD_SECTIONS reuse transformKapi, 5 kart, link opsiyonel', () => {
     const html = render('fixture-24-vitrin-temalar.md');
