@@ -332,9 +332,9 @@
  * Notion intro adları (envanterden teyit): temalar-intro, zirveler-intro,
  * formatlar-intro. Bu geçiş dışındaki hiçbir section-arası boşluk dokunulmuyor. */
 [data-section="temalar-intro"] + [data-section="temalar"],
-[data-section="zirveler-intro"] + [data-section="turler"],
+[data-section="turler-intro"] + [data-section="turler"],
 [data-section="formatlar-intro"] + [data-section="formatlar"] {
-  margin-top: calc(-1 * var(--space-6));
+  margin-top: calc(-1 * var(--space-7));
 }
 
 /* ===== RİTİM TİPOGRAFİSİ (vitrin + raf ortak, brief-desenler-02.md ADIM 2) ==== */
@@ -426,6 +426,54 @@ details[data-section^="raf-"] li {
   font-style: normal;
   display: block;
   margin-top: var(--space-2);
+}
+
+/* ===== GÜNDÖNÜMÜ V2 (brief-desenler-02d REVİZE ADIM 1) ======================== */
+/* /seremoni "Mevsim Seremonileri" kartı içindeki <ul><li> gündönümü listesi.
+ * Canlı DOM (CC teşhisi 2026-07-06 curl):
+ *   [data-section="turler"] > article.ocak-kapi-kart > ul > li × 4
+ *     "Nevruz · Yeniden Doğuş (~21 Mart): DESC" — düz text, iç bold/italik YOK.
+ *
+ * Notion işaretleme sonrası (Kaan ADIM 3): her <li> içinde **isim** bold +
+ * _tarih_ italik + kalan düz. CSS strong/em yakalar → V2 hiyerarşisi:
+ *   - isim (strong): serif başlık, cream
+ *   - tarih (em): küçük altın uppercase
+ *   - açıklama (kalan): küçük cream-soft
+ *
+ * Scope KRİTİK: [data-section="turler"] .ocak-kapi-kart li — sadece seremoni
+ * turler grubu. mini-retreat temalar kartlarında <li> VAR (CC teşhisi: 5 ul/5 li),
+ * ama scope turler'a kilitli → temalar dokunulmuyor. acik-kapi formatlar <li>
+ * içermiyor. */
+
+[data-section="turler"] .ocak-kapi-kart li {
+  list-style: none;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(61, 53, 50, 0.4);
+  font-size: 0.86rem;
+  color: var(--cream-soft);
+}
+
+[data-section="turler"] .ocak-kapi-kart li:last-child {
+  border-bottom: none;
+}
+
+/* İsim: Notion'da **bold** → serif başlık, satır başına çıkar */
+[data-section="turler"] .ocak-kapi-kart li strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--cream);
+  font-weight: 500;
+  margin-bottom: 0.1rem;
+}
+
+/* Tarih: Notion'da _italik_ → küçük altın uppercase */
+[data-section="turler"] .ocak-kapi-kart li em {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-style: normal;
 }
 
 /* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
