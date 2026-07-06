@@ -507,22 +507,30 @@ section[data-section="atolyeler"][class^="ocak-"] ul {
   }
 }
 
+/* li display:flex + align-items:baseline → ::before daire ilk satır baseline'ına
+ * OTOMATİK hizalanır (font-size/line-height değişse dahi tutar). Sabit top:1.15rem
+ * kırılgandı (font akışıyla uyuşmuyordu, ~0.5rem yukarı kaçtı).
+ * padding-left kaldırıldı — flex gap ile ayrım. */
 section[data-section="atolyeler"][class^="ocak-"] li {
-  position: relative;
-  padding: 0.85rem 0 0.85rem 1.2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.85rem 0;
   margin-bottom: 0;
   border-bottom: 1px solid rgba(61, 53, 50, 0.5);
 }
 
 /* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer).
- * !important content: baseline `content:'·'` cascade sırasına rağmen kesin ez
- * (bir önceki fix (0,3,4)>(0,2,4) yeterli olmalıydı ama Kaan hâlâ iki nokta
- * bildirdi — belt-and-suspenders güvenlik). */
+ * !important content: baseline `content:'·'` cascade sırasına rağmen kesin ez.
+ * flex baseline hizası + transform ile daireyi metin x-height ortasına çek
+ * (baseline default olarak daireyi metnin alt kenarına yerleştirir; 0.4em yukarı
+ * çekmek ortaya getirir). em unit ::before'un kendi font-size'ından değil, li'nin
+ * inherited font-size'ından alınır (font-size:0'ı ::before üzerinde tutuyoruz —
+ * güvenlik için em yerine sabit rem değeri kullanmayacağız çünkü font-size:0
+ * em hesabını 0 yapar; onun yerine width/height'a göre translateY). */
 section[data-section="atolyeler"][class^="ocak-"] ul li::before {
   content: '' !important;
-  position: absolute;
-  left: 0;
-  top: 1.15rem;
+  flex: 0 0 auto;
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -530,6 +538,7 @@ section[data-section="atolyeler"][class^="ocak-"] ul li::before {
   opacity: 0.8;
   color: transparent;
   font-size: 0;
+  transform: translateY(-0.35rem);
 }
 
 /* Native ::marker güvenliği — bazı motorlar list-style:none'a rağmen marker
