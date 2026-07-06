@@ -107,6 +107,27 @@ export const RAF_SECTIONS = new Set([
 ]);
 
 /**
+ * TASIYICI_SECTIONS — /advaita `ne-tasiyor` bloğundaki 3 yön kartı
+ * (brief-advaita-accordion.md). esik-* deseninin küçük kardeşi:
+ * transformEsik reuse, `<details name="tasiyici">` exclusive accordion,
+ * headingDepth=2 (Notion glyph H2: `## 🜄 BATI — …`).
+ *
+ * Whitelist neden regex değil: ESIK/RAF paterniyle aynı gerekçe — `tasidigi-`
+ * ön ekli başka prose section (ör. bir yazıda "tasidigi-yuk") accordion'a
+ * düşmesin. Üçlü kanonik (BATI/DOĞU/MERKEZ, brief-desenler-03 YON_KANON
+ * ailesinden — dört yön içinde üçünü seçen alt küme). Yeni yön eklenmesi
+ * felsefi karar, sonuna ekle.
+ *
+ * `name="tasiyici"` grubu esikler/raflar exclusive gruplarından bağımsız —
+ * /advaita ayrı sayfa, DOM çakışması yok ama namespace ayrılığı temiz.
+ */
+export const TASIYICI_SECTIONS = new Set([
+  'tasidigi-bati',
+  'tasidigi-dogu',
+  'tasidigi-merkez',
+]);
+
+/**
  * CARD_SECTIONS — vitrin deseni (brief-desenler-01.md ADIM 2).
  * transformKapi'nin (siradaki-kapi kart-grid) tekrar kullanımı: H3 + prose +
  * opsiyonel link → grid item. Her ad TEK Notion section (mini-retreat 5 tema,
@@ -1206,6 +1227,13 @@ function transformSection(
       // ADIM 1). transformEsik reuse — groupName='raflar', headingDepth=3.
       if (RAF_SECTIONS.has(name)) {
         return transformEsik(content, name, options, 'raflar', 3);
+      }
+
+      // /advaita `ne-tasiyor` accordion: 3-isimlik TASIYICI_SECTIONS whitelist
+      // (brief-advaita-accordion.md). transformEsik reuse — groupName='tasiyici',
+      // headingDepth=2 (Notion glyph H2 kapak).
+      if (TASIYICI_SECTIONS.has(name)) {
+        return transformEsik(content, name, options, 'tasiyici', 2);
       }
 
       // Vitrin grupları: temalar/turler/formatlar (brief-desenler-01.md ADIM 2).
