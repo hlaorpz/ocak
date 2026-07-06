@@ -276,7 +276,8 @@
 
 [data-section="temalar"],
 [data-section="turler"],
-[data-section="formatlar"] {
+[data-section="formatlar"],
+[data-section="seri-atolyeler"] {
   padding: var(--rhythm-section-bottom) 0;
   display: flex;
   flex-direction: column;
@@ -295,7 +296,8 @@
  * blok masaüstünde ortalansa da metin sola dayalı kalır. */
 [data-section="temalar"] .ocak-kapi-kart,
 [data-section="turler"] .ocak-kapi-kart,
-[data-section="formatlar"] .ocak-kapi-kart {
+[data-section="formatlar"] .ocak-kapi-kart,
+[data-section="seri-atolyeler"] .ocak-kapi-kart {
   max-width: 56ch;
   padding: var(--space-4);
   border-top: none;
@@ -308,7 +310,8 @@
 
 [data-section="temalar"] .ocak-kapi-kart::before,
 [data-section="turler"] .ocak-kapi-kart::before,
-[data-section="formatlar"] .ocak-kapi-kart::before {
+[data-section="formatlar"] .ocak-kapi-kart::before,
+[data-section="seri-atolyeler"] .ocak-kapi-kart::before {
   content: none;
 }
 
@@ -318,7 +321,8 @@
 @media (min-width: 768px) {
   [data-section="temalar"] .ocak-kapi-kart,
   [data-section="turler"] .ocak-kapi-kart,
-  [data-section="formatlar"] .ocak-kapi-kart {
+  [data-section="formatlar"] .ocak-kapi-kart,
+  [data-section="seri-atolyeler"] .ocak-kapi-kart {
     margin-inline: auto;
   }
 }
@@ -333,7 +337,8 @@
  * formatlar-intro. Bu geçiş dışındaki hiçbir section-arası boşluk dokunulmuyor. */
 [data-section="temalar-intro"] + [data-section="temalar"],
 [data-section="turler-intro"] + [data-section="turler"],
-[data-section="formatlar-intro"] + [data-section="formatlar"] {
+[data-section="formatlar-intro"] + [data-section="formatlar"],
+[data-section="seri-programlar-intro"] + [data-section="seri-atolyeler"] {
   margin-top: calc(-1 * var(--space-7));
 }
 
@@ -357,6 +362,7 @@
 [data-section="temalar"] .ocak-kapi-kart p:first-of-type,
 [data-section="turler"] .ocak-kapi-kart p:first-of-type,
 [data-section="formatlar"] .ocak-kapi-kart p:first-of-type,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type,
 details[data-section^="raf-"] > p:first-of-type {
   font-family: var(--font-body);
   font-style: normal;
@@ -379,7 +385,8 @@ details[data-section^="raf-"] > p:first-of-type em {
  * ayraç gold (yatay) → iki sıcak ton çakışmaz. */
 [data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
 [data-section="turler"] .ocak-kapi-kart p:first-of-type::after,
-[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after {
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type::after {
   content: '';
   position: absolute;
   left: 0;
@@ -406,6 +413,7 @@ details[data-section^="raf-"] > p:first-of-type::after {
 [data-section="temalar"] .ocak-kapi-kart p:not(:first-of-type),
 [data-section="turler"] .ocak-kapi-kart p:not(:first-of-type),
 [data-section="formatlar"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:not(:first-of-type),
 details[data-section^="raf-"] > p:not(:first-of-type),
 details[data-section^="raf-"] li {
   font-size: 0.9rem;
@@ -418,7 +426,8 @@ details[data-section^="raf-"] li {
  * italik satır yoksa selector hiçbir şeyi yakalamaz (zararsız). */
 [data-section="temalar"] .ocak-kapi-kart p:last-child em,
 [data-section="turler"] .ocak-kapi-kart p:last-child em,
-[data-section="formatlar"] .ocak-kapi-kart p:last-child em {
+[data-section="formatlar"] .ocak-kapi-kart p:last-child em,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:last-child em {
   font-size: 0.68rem;
   letter-spacing: 0.13em;
   text-transform: uppercase;
