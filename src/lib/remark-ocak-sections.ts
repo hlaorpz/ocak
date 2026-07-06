@@ -118,9 +118,10 @@ export const RAF_SECTIONS = new Set([
  * içerik boyutuna göre değişken 4-6, warn gürültü olur — brief madde a).
  */
 export const CARD_SECTIONS = new Set([
-  'temalar',   // mini-retreat 5 tema
-  'turler',    // seremoni 4 tür
-  'formatlar', // acik-kapi 4 format
+  'temalar',        // mini-retreat 5 tema
+  'turler',         // seremoni 4 tür
+  'formatlar',      // acik-kapi 4 format
+  'seri-atolyeler', // /atolye 5 seri (Desen IV, brief-desenler-04)
 ]);
 
 /**

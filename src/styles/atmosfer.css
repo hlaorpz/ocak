@@ -453,6 +453,48 @@ details[data-section^="raf-"] li {
   border-bottom: none;
 }
 
+/* ===== ATÖLYELER DESEN III — Tek Seferlik Liste (brief-desenler-04) ============ */
+/* /atolye "atolyeler" section (default prose, class="ocak-atolyeler").
+ * Notion: <ul><li><strong>İsim</strong> — açıklama</li> × 10.
+ * İçerik-sunum sınırı (KARAR adayı 330): CSS yalnız grid + liste ritmi + köz
+ * nokta verir. İsim/açıklama RENK/YAPI dayatma YOK — Notion bold neyse o.
+ * mobil 1 sütun, ≥620px 2 sütun. Kapanış cümlesi liste dışında baseline prose. */
+
+[data-section="atolyeler"] ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0;
+}
+
+@media (min-width: 620px) {
+  [data-section="atolyeler"] ul {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2.5rem;
+  }
+}
+
+[data-section="atolyeler"] li {
+  position: relative;
+  padding: 0.85rem 0 0.85rem 1.2rem;
+  border-bottom: 1px solid rgba(61, 53, 50, 0.5);
+}
+
+/* Köz nokta — bullet marker yerine küçük ember daire */
+[data-section="atolyeler"] li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1.15rem;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ember);
+  opacity: 0.8;
+}
+
 /* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
 /* Plugin output: transformBesKaynak — intro + pusula-başlık + 5 yön kartı + kapanış.
  * Yön: <article class="ocak-yon-kart[--merkez]" data-yon="SLUG">
