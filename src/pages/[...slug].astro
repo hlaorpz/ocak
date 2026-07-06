@@ -44,16 +44,12 @@ export async function getStaticPaths() {
 }
 
 const { sayfa } = Astro.props;
-
-// /test KARAR 143 — Kaan görsel referansı, lansman sonrası da kalır, Google görmemeli.
-const isTest = Astro.params.slug === 'test';
 ---
 <Layout
   title={sayfa.data.title}
   description={sayfa.data.description}
   ogImage={sayfa.data.ogImage}
   oda={sayfa.data.oda}
-  noindex={isTest}
 >
   <PageContent slug={sayfa.data.slug} fragments={sayfa.data.fragments} />
 </Layout>

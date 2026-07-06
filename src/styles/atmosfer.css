@@ -256,6 +256,437 @@
   .ocak-kapi-kart { padding: var(--space-4); }
 }
 
+/* ===== VİTRİN DÜZEN A (temalar/turler/formatlar, brief-desenler-02.md) ========== */
+/* Plugin output: <section data-section="temalar|turler|formatlar">
+ *   <article class="ocak-kapi-kart">
+ *     <h3>Ateş</h3><p>…özet…</p><p>…detay…</p>   ← link ZORUNLU DEĞİL
+ *   </article>
+ *   … (mini-retreat 5 tema, seremoni 4 tür, acik-kapi 4 format)
+ * </section>
+ *
+ * Düzen A onaylı (Claude.ai mühürleme sonrası): TEK SÜTUN her viewport'ta,
+ * her öğe solunda köz şeridi, kırılım YOK (mobil=desktop). 2 sütun grid +
+ * @620px kırılım REDDEDİLDİ (mobilde zikzak, sola-sağa kaçtı, kuru).
+ *
+ * siradaki-kapi (KARAR 92: 3 sütun kart-grid) BOZULMAZ — vitrin selector'leri
+ * grup-adı scope'lu ([data-section="temalar|turler|formatlar"]), .ocak-kapi-kart
+ * baseline (siradaki-kapi üst ember çizgisi) sadece bu üç grup içinde override
+ * ediliyor. Regresyon kontrolü test 43-46'ya + Kaan eyeball'una bırakılı.
+ */
+
+[data-section="temalar"],
+[data-section="turler"],
+[data-section="formatlar"],
+[data-section="seri-atolyeler"] {
+  padding: var(--rhythm-section-bottom) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Vitrin item "Sıcak Zemin" (brief-desenler-02c.md):
+ *   - Sol köz şeridi 3px STATİK ember (hover/tap efekti YOK — Kaan spec:
+ *     "tıklanmayan blokta yanıp sönme anlamsız").
+ *   - Sıcak zemin: soldan sağa ember gradient .08 alpha (rgba inline —
+ *     --ember-alpha-08 token yok, brief onaylı uydurma değil).
+ *   - Sağ köşe hafif yuvarlak (border-radius 0 6px 6px 0) — sol şerit düz kalır.
+ *   - -webkit-tap-highlight-color:transparent → mobil tap yanıp sönme kesildi
+ *     (Kaan bulgusu bonus fix).
+ * siradaki-kapi'nin üst border + ::before ember-grow'u reset. text-align:left →
+ * blok masaüstünde ortalansa da metin sola dayalı kalır. */
+[data-section="temalar"] .ocak-kapi-kart,
+[data-section="turler"] .ocak-kapi-kart,
+[data-section="formatlar"] .ocak-kapi-kart,
+[data-section="seri-atolyeler"] .ocak-kapi-kart {
+  max-width: 56ch;
+  padding: var(--space-4);
+  border-top: none;
+  border-left: 3px solid var(--ember);
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(100deg, rgba(196, 75, 47, 0.08), transparent 55%);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-section="temalar"] .ocak-kapi-kart::before,
+[data-section="turler"] .ocak-kapi-kart::before,
+[data-section="formatlar"] .ocak-kapi-kart::before,
+[data-section="seri-atolyeler"] .ocak-kapi-kart::before {
+  content: none;
+}
+
+/* MASAÜSTÜ: blok yatayda ortalı (sayfa ortalı kompozisyonuyla hizalı), metin +
+ * köz şerit solda kalır. Mobil: margin yok → sola dayalı (dar ekran doğal).
+ * Tek @media farkı bu — aynı bileşen, viewport hizası. */
+@media (min-width: 768px) {
+  [data-section="temalar"] .ocak-kapi-kart,
+  [data-section="turler"] .ocak-kapi-kart,
+  [data-section="formatlar"] .ocak-kapi-kart,
+  [data-section="seri-atolyeler"] .ocak-kapi-kart {
+    margin-inline: auto;
+  }
+}
+
+/* Intro → grup geçiş boşluğu (brief-desenler-02b.md ADIM 2): standart iki
+ * ardışık section arası ~7rem (rhythm-section-bottom 4rem + top 3rem). Intro
+ * bir öncesi grup section'ının BAŞLIĞI gibi çalışıyor, tam ayrı section olarak
+ * hissedilmesin — negatif margin ile yakınlaştır. --space-6 (2rem) kadar
+ * çekildi → net ~5rem, iki adım arası nefes.
+ *
+ * Notion intro adları (envanterden teyit): temalar-intro, zirveler-intro,
+ * formatlar-intro. Bu geçiş dışındaki hiçbir section-arası boşluk dokunulmuyor. */
+[data-section="temalar-intro"] + [data-section="temalar"],
+[data-section="turler-intro"] + [data-section="turler"],
+[data-section="formatlar-intro"] + [data-section="formatlar"],
+[data-section="seri-programlar-intro"] + [data-section="seri-atolyeler"] {
+  margin-top: calc(-1 * var(--space-7));
+}
+
+/* ===== RİTİM TİPOGRAFİSİ (vitrin + raf ortak, brief-desenler-02.md ADIM 2) ==== */
+/* Vitrin kartı + raf accordion içeriği AYNI ritmi paylaşır: ilk paragraf = özet
+ * (Jost temiz 1.02rem cream + alt köz çizgi ayraç), sonraki paragraf/madde =
+ * detay (küçük .9rem cream-soft).
+ *
+ * SEMANTİK: plugin markup'ı düz <h3> + <p> + <p>… üretiyor, semantik sınıf yok.
+ * :first-of-type ile ilk <p> = özet ayrımı. Selector'ler vitrin-grup + raf-
+ * scope'lu → siradaki-kapi ve diğer prose section'lar dokunulmuyor.
+ *
+ * SAPMA: Notion araç raflarında madde işaretleri "· ..." prefix'li düz <p>
+ * (li DEĞİL). Detay selector'ü p:not(:first-of-type) — defansif olarak li
+ * de ekli (Notion ileride bullet list kullanırsa çalışsın).
+ *
+ * Raf'ın ilk <p>'sinde <em> italik (Notion özet italik yazılmış) — em normalize:
+ * font-style normal, cream. Brief Kaan isteği: "Image-1 fontu gibi temiz". */
+
+/* İlk <p> = özet: Jost temiz, belirgin, köz-çizgi ayraç */
+[data-section="temalar"] .ocak-kapi-kart p:first-of-type,
+[data-section="turler"] .ocak-kapi-kart p:first-of-type,
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type,
+details[data-section^="raf-"] > p:first-of-type {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.02rem;
+  color: var(--cream);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
+  position: relative;
+}
+
+/* Raf özet <em> italik'i sıyır — Jost düz temiz (Kaan spec) */
+details[data-section^="raf-"] > p:first-of-type em {
+  font-style: normal;
+  color: var(--cream);
+  font-weight: 400;
+}
+
+/* Seri kart tek p — özet stili iptal, detay boyutuna düşür (turler ikinci p'siyle
+ * görsel eş). turler kartında H3 + 2 p (özet + detay) yapısı var; seri kartta
+ * H3 + tek p → özet 1.02rem cream stili uzun metinde iri hissi verdi. p:only-of-
+ * type ile Kaan Notion içeriğine ikinci p ekleyene kadar detay boyutunda kalır;
+ * ikinci p eklenirse doğal olarak özet+detay ritmine döner (fix koşullu). */
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:only-of-type {
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type:only-of-type::after {
+  content: none;
+}
+
+/* Vitrin özet ayracı ALTIN (brief-desenler-02c.md V2): şerit ember (dikey) +
+ * ayraç gold (yatay) → iki sıcak ton çakışmaz. */
+[data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="turler"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2.4rem;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.8;
+}
+
+/* Raf özet ayracı EMBER kalır (araçlar sayfası, brief kapsamı dışı). */
+details[data-section^="raf-"] > p:first-of-type::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2.2rem;
+  height: 1px;
+  background: var(--ember);
+  opacity: 0.7;
+}
+
+/* SONRAKİ <p> / <li> = detay: küçük, yumuşak */
+[data-section="temalar"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="turler"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="formatlar"] .ocak-kapi-kart p:not(:first-of-type),
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:not(:first-of-type),
+details[data-section^="raf-"] > p:not(:first-of-type),
+details[data-section^="raf-"] li {
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+}
+
+/* Opsiyonel ritim şeridi (brief-desenler-02.md ADIM 3): seremoni türlerinde
+ * "Ayda bir", "Baharlarda", "Yılda dört kez" gibi ritim bilgisi. Notion'da son
+ * satır `_Yılda dört kez_` (italik) yazılırsa → gold uppercase şerit. Notion'da
+ * italik satır yoksa selector hiçbir şeyi yakalamaz (zararsız). */
+[data-section="temalar"] .ocak-kapi-kart p:last-child em,
+[data-section="turler"] .ocak-kapi-kart p:last-child em,
+[data-section="formatlar"] .ocak-kapi-kart p:last-child em,
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:last-child em {
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-style: normal;
+  display: block;
+  margin-top: var(--space-2);
+}
+
+/* ===== GÜNDÖNÜMÜ SADE (brief-desenler-02e — içerik-sunum sınırı) =============== */
+/* /seremoni "Mevsim Seremonileri" kartındaki <ul><li> gündönümü listesi.
+ *
+ * YENİ İLKE (Kaan kararı): Notion rich text (bold, italik, renk, strike) siteye
+ * DOĞAL geçer, CSS EZMEZ. Kod yalnızca liste ritmi verir (list-style + padding
+ * + alt çizgi). Vurgu ve renk facilitator'ün Notion kontrolünde.
+ *
+ * Silinen dayatmalar (desenler-02d): strong { display:block, font-family, color,
+ * font-size, font-weight, margin-bottom } × em { font-size, letter-spacing,
+ * text-transform, color, font-style } = 10 kural. Nardugan gibi kaymalar
+ * blok-kırma olmadan görünmez olur. Notion bold→bold, italik→italik, renk→renk.
+ *
+ * Scope: [data-section="turler"] .ocak-kapi-kart li — mini-retreat temalar
+ * (5 ul/5 li) + acik-kapi formatlar (0 li) etkilenmez. */
+
+[data-section="turler"] .ocak-kapi-kart li {
+  list-style: none;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid rgba(61, 53, 50, 0.4);
+}
+
+[data-section="turler"] .ocak-kapi-kart li:last-child {
+  border-bottom: none;
+}
+
+/* ===== ATÖLYELER DESEN III — Tek Seferlik Liste (brief-desenler-04) ============ */
+/* /atolye "atolyeler" section (default prose, class="ocak-atolyeler").
+ * Notion: <ul><li><strong>İsim</strong> — açıklama</li> × 10.
+ * İçerik-sunum sınırı (KARAR adayı 330): CSS yalnız grid + liste ritmi + köz
+ * nokta verir. İsim/açıklama RENK/YAPI dayatma YOK — Notion bold neyse o.
+ * mobil 1 sütun, ≥620px 2 sütun. Kapanış cümlesi liste dışında baseline prose.
+ *
+ * Specificity notu: baseline `section[data-section][class^="ocak-"] ul li::before`
+ * (:1194) `content:'·'` middle-dot basıyor (0,2,4). Bizim ember daire ile ÇAKIŞMA
+ * → iki nokta görünüyor. Fix: `section[data-section="atolyeler"][class^="ocak-"]`
+ * prefix ile specificity (0,3,4) → baseline'ı ezer, TEK ember daire kalır.
+ * Aynı prefix ul + li kurallarında da baseline padding/margin'i ezmek için. */
+
+section[data-section="atolyeler"][class^="ocak-"] ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: var(--space-4) 0;
+}
+
+@media (min-width: 620px) {
+  section[data-section="atolyeler"][class^="ocak-"] ul {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2.5rem;
+  }
+}
+
+/* li display:flex + align-items:baseline → ::before daire ilk satır baseline'ına
+ * OTOMATİK hizalanır (font-size/line-height değişse dahi tutar). Sabit top:1.15rem
+ * kırılgandı (font akışıyla uyuşmuyordu, ~0.5rem yukarı kaçtı).
+ * padding-left kaldırıldı — flex gap ile ayrım. */
+section[data-section="atolyeler"][class^="ocak-"] li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  padding: 0.85rem 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(61, 53, 50, 0.5);
+}
+
+/* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer).
+ * !important content: baseline `content:'·'` cascade sırasına rağmen kesin ez.
+ * flex baseline hizası + transform ile daireyi metin x-height ortasına çek
+ * (baseline default olarak daireyi metnin alt kenarına yerleştirir; 0.4em yukarı
+ * çekmek ortaya getirir). em unit ::before'un kendi font-size'ından değil, li'nin
+ * inherited font-size'ından alınır (font-size:0'ı ::before üzerinde tutuyoruz —
+ * güvenlik için em yerine sabit rem değeri kullanmayacağız çünkü font-size:0
+ * em hesabını 0 yapar; onun yerine width/height'a göre translateY). */
+section[data-section="atolyeler"][class^="ocak-"] ul li::before {
+  content: '' !important;
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ember);
+  opacity: 0.8;
+  color: transparent;
+  font-size: 0;
+  transform: translateY(-0.35rem);
+}
+
+/* Native ::marker güvenliği — bazı motorlar list-style:none'a rağmen marker
+ * basabilir (Safari eski, print media). content:none garanti kapatır. */
+section[data-section="atolyeler"][class^="ocak-"] li::marker {
+  content: none;
+}
+
+/* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
+/* Plugin output: transformBesKaynak — intro + pusula-başlık + 5 yön kartı + kapanış.
+ * Yön: <article class="ocak-yon-kart[--merkez]" data-yon="SLUG">
+ *        <span __glyph>🜂</span>
+ *        <div __basliklar><span __ad>MERKEZ</span><span __cog>Anadolu</span></div>
+ *        <div __govde><p>…</p></div>
+ *        <p __yasar>Burada yaşar: …</p>
+ *      </article>
+ *
+ * MERKEZ vurgu (i===0): sol şerit altın (3px), zemin ember-alpha-15 gradient.
+ * Diğer 4: sol şerit ember (2px), hafif ember gradient (.08 vitrin dili).
+ *
+ * Pusula-başlık dekoratif kabuk (kanon-dışı, plugin sabit üretir): 5 glyph yatay
+ * sıra, üst+alt altın çizgi, merkez glyph büyük altın. */
+
+/* Section kabı: baseline prose class="ocak-bes-kadim-kaynak" zaten max-w-prose
+ * padding'ini alır. İntro H2 + p + kapanış p'ler baseline'a düşer (özel scope yok). */
+
+/* Pusula-başlık */
+.ocak-yon-pusula {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: var(--space-5);
+  padding: var(--space-4) 0;
+  margin: var(--space-5) auto var(--space-6);
+  max-width: var(--max-w-content);
+  border-top: 1px solid var(--gold-soft);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+.ocak-yon-pusula__glyph {
+  font-size: 1.2rem;
+  color: var(--gold-soft);
+  line-height: 1;
+}
+
+.ocak-yon-pusula__glyph--merkez {
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+/* Yön kartı — grid layout: glyph solda, içerik sağda */
+.ocak-yon-kart {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  max-width: var(--max-w-content);
+  margin: var(--space-5) auto;
+  padding: var(--space-4) var(--space-5);
+  border-left: 2px solid var(--ember);
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(100deg, rgba(196, 75, 47, 0.08), transparent 55%);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* MERKEZ vurgu — altın şerit + güçlü ember zemin */
+.ocak-yon-kart--merkez {
+  border-left: 3px solid var(--gold);
+  background: linear-gradient(100deg, var(--ember-alpha-15), transparent 60%);
+}
+
+.ocak-yon-kart__glyph {
+  font-size: 1.8rem;
+  color: var(--gold-soft);
+  line-height: 1.2;
+  padding-top: 0.15rem;
+}
+
+.ocak-yon-kart--merkez .ocak-yon-kart__glyph {
+  font-size: 2.2rem;
+  color: var(--gold);
+}
+
+.ocak-yon-kart__basliklar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: var(--space-3);
+  grid-column: 2;
+}
+
+.ocak-yon-kart__ad {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ember-soft);
+  font-weight: 500;
+}
+
+.ocak-yon-kart__cog {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--cream);
+  line-height: 1.3;
+}
+
+/* Gövde — kart-içi baseline p override (baseline prose max-w vs. kart-içi genişlik) */
+.ocak-yon-kart__govde {
+  grid-column: 2;
+}
+
+.ocak-yon-kart__govde p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--cream-soft);
+  line-height: 1.7;
+  margin: 0 0 var(--space-3);
+  font-weight: 300;
+}
+
+.ocak-yon-kart__govde p:last-child {
+  margin-bottom: 0;
+}
+
+/* "Burada yaşar:" — altın italic + üst ince altın çizgi */
+.ocak-yon-kart__yasar {
+  grid-column: 2;
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gold-soft);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .ocak-yon-kart {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+  .ocak-yon-pusula {
+    gap: var(--space-4);
+  }
+}
+
 /* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
 /* Plugin output: <section data-section="sss"><h2>..</h2><details><summary>Q</summary>
  * <div class="sss-cevap"><p>A</p></div></details>.. (class="sss" YOK, cevap class
@@ -466,6 +897,96 @@ details[data-section^="esik-"] summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   details[data-section^="esik-"],
   details[data-section^="esik-"] summary::after {
+    transition: none;
+  }
+}
+
+/* ===== RAF ACCORDION (/araclar, 7 raf-* section) ============================== */
+/* Plugin output: <details name="raflar" data-section="raf-NAME">
+ *   <summary>1 · Çekirdek Araçlar</summary> ..kalan içerik, h3 strip..
+ * </details>
+ * esik-* deseninin ikizi (brief-desenler-01.md ADIM 3): aynı görsel dil (ember
+ * sol border, + → × marker, Cormorant italik summary), farklı namespace
+ * (name="raflar" ↔ name="esikler" exclusive gruplar bağımsız).
+ * Paralel blok — mevcut esik selector'lerine dokunulmadı. */
+
+details[data-section^="raf-"] {
+  border-left: 3px solid var(--ash);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  margin: 0 auto;
+  max-width: var(--max-w-prose);
+  transition: border-color 0.4s ease, padding 0.4s ease;
+}
+
+details[data-section^="raf-"]:hover {
+  border-left-color: var(--ember-soft);
+}
+
+details[data-section^="raf-"][open] {
+  border-left-color: var(--ember);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--ash);
+}
+
+details[data-section^="raf-"][open] > *:last-child {
+  margin-block-end: 0;
+}
+
+details[data-section^="raf-"] summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.3;
+  color: var(--cream);
+  padding: var(--space-2) 0;
+  scroll-margin-top: var(--nav-height);
+}
+
+details[data-section^="raf-"] summary::-webkit-details-marker {
+  display: none;
+}
+
+details[data-section^="raf-"] summary::after {
+  content: '+';
+  font-family: 'Cormorant Garamond', serif;
+  font-style: normal;
+  font-size: 1.5rem;
+  color: var(--ember);
+  transition: transform 0.4s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+details[data-section^="raf-"][open] summary::after {
+  transform: rotate(45deg);
+}
+
+details[data-section^="raf-"] > *:not(summary) {
+  margin-top: var(--space-5);
+}
+
+details[data-section^="raf-"] p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+details[data-section^="raf-"] summary:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details[data-section^="raf-"],
+  details[data-section^="raf-"] summary::after {
     transition: none;
   }
 }

@@ -103,3 +103,79 @@ exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C d
 <p>Yolculuk başlıyor.</p>
 </section>"
 `;
+
+exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", H3 strip → summary 1`] = `
+"<details name="raflar" data-section="raf-cekirdek"><summary>1 · Çekirdek Araçlar</summary>
+<p>OCAK'ın temeline giden araçlar. Nefes, niyet, sessizlik.</p>
+<p>Kısa gündelik uygulamalar.</p>
+</details>
+<details name="raflar" data-section="raf-beden"><summary>2 · Beden Araçları</summary>
+<p>Bedeni dinleme, gerginlik açma, temas kurma araçları.</p>
+</details>
+<section data-section="raf-diger" class="ocak-raf-diger">
+<h3>Whitelist Dışı Bir Raf</h3>
+<p>Bu section RAF_SECTIONS whitelist'te yok — baseline prose'a düşer.</p>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS reuse transformKapi, 5 kart, link opsiyonel 1`] = `
+"<section data-section="temalar">
+<article class="ocak-kapi-kart">
+<h3>Ateş</h3>
+<p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Sessizlik</h3>
+<p>Boşluğu doldurmadan durmak. Nefesin arkasındaki sesi duymak.</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Beden</h3>
+<p>Dokunuş, ritim, temas. Bedeni okuma dili.</p>
+<p><a href="/atolye">Beden atölyesine bak →</a></p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Kök</h3>
+<p>Soy, toprak, aidiyet. Nereden geliyorsun — hangi soydan?</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Yaratıcı</h3>
+<p>İfade, oyun, form verme. Kelimeyle, çizgiyle, sesle.</p>
+</article>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 47. bes-kadim-kaynak — intro + pusula + 2 yön (MERKEZ vurgu) + kapanış 1`] = `
+"<section data-section="bes-kadim-kaynak" class="ocak-bes-kadim-kaynak">
+<h2>Dört Yön. Bir Ocak.</h2>
+<p>OCAK'ın bilgeliği dünyanın dört yönünden geldi — ve bu toprakların ocağında tek ateş oldu.</p>
+<div class="ocak-yon-pusula" aria-hidden="true"><span class="ocak-yon-pusula__glyph ocak-yon-pusula__glyph--merkez" aria-hidden="true">🜂</span><span class="ocak-yon-pusula__glyph" aria-hidden="true">🜁</span><span class="ocak-yon-pusula__glyph" aria-hidden="true">🜔</span><span class="ocak-yon-pusula__glyph" aria-hidden="true">🜄</span><span class="ocak-yon-pusula__glyph" aria-hidden="true">🜃</span></div>
+<article class="ocak-yon-kart ocak-yon-kart--merkez" data-yon="merkez">
+<span class="ocak-yon-kart__glyph" aria-hidden="true">🜂</span>
+<div class="ocak-yon-kart__basliklar">
+<span class="ocak-yon-kart__ad">MERKEZ</span>
+<span class="ocak-yon-kart__cog">Anadolu</span>
+</div>
+<div class="ocak-yon-kart__govde">
+<p>Ocağın kurulduğu yer. Çatalhöyük'ün ana figüründen Kibele'ye.</p>
+</div>
+<p class="ocak-yon-kart__yasar">
+Burada yaşar: her çemberin mumu, mevsim seremonileri, Anadolu Yolculuğu'nun toprağı.
+</p>
+</article>
+<article class="ocak-yon-kart" data-yon="dogu">
+<span class="ocak-yon-kart__glyph" aria-hidden="true">🜁</span>
+<div class="ocak-yon-kart__basliklar">
+<span class="ocak-yon-kart__ad">DOĞU</span>
+<span class="ocak-yon-kart__cog">Hindistan'dan Çin'e</span>
+</div>
+<div class="ocak-yon-kart__govde">
+<p>Şafak yönü: nefes. Nefesin iki kadim adı — prana ve çi.</p>
+</div>
+<p class="ocak-yon-kart__yasar">
+Burada yaşar: çemberin nefesi, beden pratiği, atölyeler.
+</p>
+</article>
+<p>Dört yön, başka başka dillerde aynı cümleyi söylüyor.</p>
+<p>Bu sentezi buraya bir kadın taşıdı. <a href="/advaita">Advaita — ateşi ilk yakan →</a></p>
+</section>"
+`;
