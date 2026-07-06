@@ -83,6 +83,47 @@ export const ESIK_SECTIONS = new Set([
 ]);
 
 /**
+ * RAF_SECTIONS — /araclar sayfasındaki 7 raf (brief-desenler-01.md ADIM 1).
+ * esik-* deseninin ikizi: transformEsik reuse edilir, `<details name="raflar">`
+ * exclusive accordion (esik grubu ile bağımsız — /sen-neredesin ile /araclar
+ * ayrı sayfalar, çakışma yok ama namespace ayrı tutmak gelecek çoklu-grup
+ * ihtimaline karşı temiz).
+ *
+ * Whitelist neden regex değil: ESIK paterniyle aynı gerekçe — `raf-` ön ekli
+ * bir prose section başka sayfada olursa (örn. bir yazıda "raf-kitaplik") yanlışlıkla
+ * accordion'a düşmesin. 7 ad kanonik; yeni raf eklenmesi felsefi karar, sonuna ekle.
+ *
+ * Heading farkı: esik-* Notion'da H2 kullanır (0 · UYKU), raf-* H3 kullanır
+ * (1 · Çekirdek Araçlar) — transformEsik'e headingDepth parametresi eklendi.
+ */
+export const RAF_SECTIONS = new Set([
+  'raf-cekirdek',
+  'raf-beden',
+  'raf-enerji',
+  'raf-psikoloji',
+  'raf-doga',
+  'raf-ses',
+  'raf-yaratici',
+]);
+
+/**
+ * CARD_SECTIONS — vitrin deseni (brief-desenler-01.md ADIM 2).
+ * transformKapi'nin (siradaki-kapi kart-grid) tekrar kullanımı: H3 + prose +
+ * opsiyonel link → grid item. Her ad TEK Notion section (mini-retreat 5 tema,
+ * seremoni 4 tür, açık-kapı 4 format tek section'a toplanır — Notion tarafı
+ * Kaan yapacak, kod tarafı önden hazır).
+ *
+ * Kart-sayısı warn eşiği (1 || ≥5) SADECE 'siradaki-kapi' için tetiklenir
+ * (KARAR 102 semantiği: siradaki-kapi 3 kanonik, 2-4 tolere; vitrin grupları
+ * içerik boyutuna göre değişken 4-6, warn gürültü olur — brief madde a).
+ */
+export const CARD_SECTIONS = new Set([
+  'temalar',   // mini-retreat 5 tema
+  'turler',    // seremoni 4 tür
+  'formatlar', // acik-kapi 4 format
+]);
+
+/**
  * EVRE_SECTIONS — /anadolu Anadolu Yolculuğu altı evre kartı (brief-anadolu-yolculuk.md).
  * Plugin bu set'teki section'ları `<article class="ocak-evre ocak-evre-NAME">` Varyant C
  * dolu kart markup'ına çevirir (ESIK paterni KARAR 154 paralel — whitelist + parse +
@@ -302,8 +343,23 @@ function extractOverline(
   return { overline: null, rest: content };
 }
 
-/** siradaki-kapi: H3 ile başlayan kartlara böler, her kartı <article>'a sarar. */
-function transformKapi(content: RootContent[], options: OcakSectionsOptions): RootContent[] {
+/**
+ * transformKapi: H3 ile başlayan kartlara böler, her kartı <article>'a sarar.
+ *
+ * siradaki-kapi (KARAR 92, 93) tarih-taş kanonik: 3 kart, link zorunlu.
+ * brief-desenler-01.md ADIM 2 sonrası CARD_SECTIONS grupları (temalar/turler/
+ * formatlar) da aynı transform'u kullanır — link opsiyonel (H3+prose yeter).
+ *
+ * sectionName parametresi çıkış `<section data-section>` attr'ini belirler.
+ * Warn eşiği (1 kart, ≥5 kart) SADECE siradaki-kapi için tetiklenir; vitrin
+ * grupları 4-6 kart tipik (mini-retreat 5 tema, seremoni 4 tür, acik-kapi 4
+ * format), warn gürültü olur.
+ */
+function transformKapi(
+  content: RootContent[],
+  options: OcakSectionsOptions,
+  sectionName: string = 'siradaki-kapi',
+): RootContent[] {
   const cards: RootContent[][] = [];
   for (const node of content) {
     if (node.type === 'heading' && node.depth === 3) {
@@ -314,7 +370,7 @@ function transformKapi(content: RootContent[], options: OcakSectionsOptions): Ro
   }
 
   const count = cards.length;
-  if (count === 1 || count >= 5) {
+  if (sectionName === 'siradaki-kapi' && (count === 1 || count >= 5)) {
     const where = options.filename ?? 'unknown';
     // eslint-disable-next-line no-console
     console.warn(
@@ -322,7 +378,7 @@ function transformKapi(content: RootContent[], options: OcakSectionsOptions): Ro
     );
   }
 
-  const out: RootContent[] = [html('<section data-section="siradaki-kapi">')];
+  const out: RootContent[] = [html(`<section data-section="${sectionName}">`)];
   for (const card of cards) {
     out.push(html('<article class="ocak-kapi-kart">'), ...card, html('</article>'));
   }
@@ -791,36 +847,50 @@ function transformEvre(
   ];
 }
 
+/**
+ * transformEsik: exclusive accordion (esik-* + raf-* ailelerinin ortak transformu).
+ *
+ * groupName + headingDepth parametreleri esik ↔ raf farkını taşır:
+ *   - esik (default): groupName='esikler', headingDepth=2 (Notion H2, "0 · UYKU")
+ *   - raf: groupName='raflar',  headingDepth=3 (Notion H3, "1 · Çekirdek Araçlar")
+ * `<details name="${groupName}">` HTML5 exclusive accordion — aynı isim grubunda
+ * sadece bir details açık kalır (Chrome 120+/Safari 17.4+/FF 123+; eski tarayıcı
+ * çoklu açık, graceful degradation). esikler grubu /sen-neredesin, raflar grubu
+ * /araclar — farklı sayfalar, çakışma yok ama namespace ayrı temiz.
+ */
 function transformEsik(
   content: RootContent[],
   name: string,
   options: OcakSectionsOptions,
+  groupName: string = 'esikler',
+  headingDepth: number = 2,
 ): RootContent[] {
   const filename = options.filename ?? 'unknown';
-  // İlk h2'yi bul (section: prefix değil — getSectionName zaten dışarıda harcadı).
-  let h2Index = -1;
-  let h2Text = '';
+  // İlk headingDepth heading'i bul (section: prefix değil — getSectionName zaten
+  // dışarıda section başlığını harcadı; içerideki ilk H2/H3 summary'ye taşınır).
+  let hIndex = -1;
+  let hText = '';
   for (let i = 0; i < content.length; i++) {
     const node = content[i];
-    if (node.type === 'heading' && node.depth === 2) {
-      h2Index = i;
-      h2Text = getText(node).trim();
+    if (node.type === 'heading' && node.depth === headingDepth) {
+      hIndex = i;
+      hText = getText(node).trim();
       break;
     }
   }
 
-  if (h2Index === -1) {
+  if (hIndex === -1) {
     // eslint-disable-next-line no-console
     console.warn(
-      `[remark-ocak-sections] esik (${filename}) ${name}: ilk h2 bulunamadı, summary section-name'den türetildi.`,
+      `[remark-ocak-sections] ${groupName} (${filename}) ${name}: ilk h${headingDepth} bulunamadı, summary section-name'den türetildi.`,
     );
-    h2Text = name; // ham fallback — CSS hâlâ italik serif basar, içerik bozulmaz
+    hText = name; // ham fallback — CSS hâlâ italik serif basar, içerik bozulmaz
   }
 
-  const rest = h2Index === -1 ? content : [...content.slice(0, h2Index), ...content.slice(h2Index + 1)];
+  const rest = hIndex === -1 ? content : [...content.slice(0, hIndex), ...content.slice(hIndex + 1)];
 
   return [
-    html(`<details name="esikler" data-section="${name}"><summary>${h2Text}</summary>`),
+    html(`<details name="${groupName}" data-section="${name}"><summary>${hText}</summary>`),
     ...rest,
     html('</details>'),
   ];
@@ -944,6 +1014,21 @@ function transformSection(
       // davranış korunur — /, /hikaye, /site-rehber sayfaları etkilenmez).
       if (ESIK_SECTIONS.has(name)) {
         return transformEsik(content, name, options);
+      }
+
+      // /araclar raf accordion: 7-isimlik RAF_SECTIONS whitelist (brief-desenler-01.md
+      // ADIM 1). transformEsik reuse — groupName='raflar', headingDepth=3.
+      if (RAF_SECTIONS.has(name)) {
+        return transformEsik(content, name, options, 'raflar', 3);
+      }
+
+      // Vitrin grupları: temalar/turler/formatlar (brief-desenler-01.md ADIM 2).
+      // transformKapi reuse — link opsiyonel, warn eşiği siradaki-kapi'ye özgü.
+      // Notion tarafı (Kaan): mini-retreat tema-* / seremoni zirve-* / acik-kapi
+      // format-* section'ları tek `## section: temalar|turler|formatlar` altına
+      // toplayacak; kod deploy sonrası aktif olur.
+      if (CARD_SECTIONS.has(name)) {
+        return transformKapi(content, options, name);
       }
 
       // Kanonik dışı: serbest prose (manifesto, al-ol-ver, cekirdek-vaat, esik-kadini …).

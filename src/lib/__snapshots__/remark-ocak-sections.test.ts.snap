@@ -103,3 +103,43 @@ exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C d
 <p>Yolculuk başlıyor.</p>
 </section>"
 `;
+
+exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", H3 strip → summary 1`] = `
+"<details name="raflar" data-section="raf-cekirdek"><summary>1 · Çekirdek Araçlar</summary>
+<p>OCAK'ın temeline giden araçlar. Nefes, niyet, sessizlik.</p>
+<p>Kısa gündelik uygulamalar.</p>
+</details>
+<details name="raflar" data-section="raf-beden"><summary>2 · Beden Araçları</summary>
+<p>Bedeni dinleme, gerginlik açma, temas kurma araçları.</p>
+</details>
+<section data-section="raf-diger" class="ocak-raf-diger">
+<h3>Whitelist Dışı Bir Raf</h3>
+<p>Bu section RAF_SECTIONS whitelist'te yok — baseline prose'a düşer.</p>
+</section>"
+`;
+
+exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS reuse transformKapi, 5 kart, link opsiyonel 1`] = `
+"<section data-section="temalar">
+<article class="ocak-kapi-kart">
+<h3>Ateş</h3>
+<p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Sessizlik</h3>
+<p>Boşluğu doldurmadan durmak. Nefesin arkasındaki sesi duymak.</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Beden</h3>
+<p>Dokunuş, ritim, temas. Bedeni okuma dili.</p>
+<p><a href="/atolye">Beden atölyesine bak →</a></p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Kök</h3>
+<p>Soy, toprak, aidiyet. Nereden geliyorsun — hangi soydan?</p>
+</article>
+<article class="ocak-kapi-kart">
+<h3>Yaratıcı</h3>
+<p>İfade, oyun, form verme. Kelimeyle, çizgiyle, sesle.</p>
+</article>
+</section>"
+`;

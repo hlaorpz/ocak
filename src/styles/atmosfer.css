@@ -256,6 +256,66 @@
   .ocak-kapi-kart { padding: var(--space-4); }
 }
 
+/* ===== VİTRİN GRID (temalar/turler/formatlar, brief-desenler-01.md ADIM 2/3) === */
+/* Plugin output: <section data-section="temalar|turler|formatlar">
+ *   <article class="ocak-kapi-kart">
+ *     <h3>Ateş</h3><p>…</p>   ← link ZORUNLU DEĞİL (siradaki-kapi'den fark)
+ *   </article>
+ *   … (mini-retreat 5 tema, seremoni 4 tür, acik-kapi 4 format)
+ * </section>
+ *
+ * siradaki-kapi ile paralel: transformKapi aynı, .ocak-kapi-kart aynı görsel.
+ * Fark: 2 sütun kırılım (620px) — vitrin item'ları uzun prose taşıyabilir,
+ * 3 sütun mobil-ötesi sıkışır. Sol köz-şerit override: siradaki-kapi'nin üst
+ * ember çizgisi yerine sol dikey ember → vitrin item'ları liste hissi (kart
+ * değil). Mevcut siradaki-kapi selector'leri değiştirilmedi.
+ */
+
+[data-section="temalar"],
+[data-section="turler"],
+[data-section="formatlar"] {
+  padding: var(--rhythm-section-bottom) 0;
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 620px) {
+  [data-section="temalar"],
+  [data-section="turler"],
+  [data-section="formatlar"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Vitrin item override: siradaki-kapi'nin üst ember çizgisi yerine sol köz şerit.
+ * .ocak-kapi-kart baseline (üst border + ::before grow) reset edilir, yerine
+ * sol border + hover'da ember. Link opsiyonel; link yoksa margin-top:auto
+ * boşluğu kalır — item flex-column ile yine hizalı. */
+[data-section="temalar"] .ocak-kapi-kart,
+[data-section="turler"] .ocak-kapi-kart,
+[data-section="formatlar"] .ocak-kapi-kart {
+  border-top: none;
+  border-left: 2px solid var(--smoke);
+  padding-left: var(--space-5);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+[data-section="temalar"] .ocak-kapi-kart::before,
+[data-section="turler"] .ocak-kapi-kart::before,
+[data-section="formatlar"] .ocak-kapi-kart::before {
+  content: none;
+}
+
+[data-section="temalar"] .ocak-kapi-kart:hover,
+[data-section="turler"] .ocak-kapi-kart:hover,
+[data-section="formatlar"] .ocak-kapi-kart:hover,
+[data-section="temalar"] .ocak-kapi-kart:focus-within,
+[data-section="turler"] .ocak-kapi-kart:focus-within,
+[data-section="formatlar"] .ocak-kapi-kart:focus-within {
+  border-left-color: var(--ember);
+}
+
 /* ===== SSS (retarget: .sss → [data-section="sss"]; .sss__cevap → .sss-cevap) === */
 /* Plugin output: <section data-section="sss"><h2>..</h2><details><summary>Q</summary>
  * <div class="sss-cevap"><p>A</p></div></details>.. (class="sss" YOK, cevap class
@@ -466,6 +526,96 @@ details[data-section^="esik-"] summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   details[data-section^="esik-"],
   details[data-section^="esik-"] summary::after {
+    transition: none;
+  }
+}
+
+/* ===== RAF ACCORDION (/araclar, 7 raf-* section) ============================== */
+/* Plugin output: <details name="raflar" data-section="raf-NAME">
+ *   <summary>1 · Çekirdek Araçlar</summary> ..kalan içerik, h3 strip..
+ * </details>
+ * esik-* deseninin ikizi (brief-desenler-01.md ADIM 3): aynı görsel dil (ember
+ * sol border, + → × marker, Cormorant italik summary), farklı namespace
+ * (name="raflar" ↔ name="esikler" exclusive gruplar bağımsız).
+ * Paralel blok — mevcut esik selector'lerine dokunulmadı. */
+
+details[data-section^="raf-"] {
+  border-left: 3px solid var(--ash);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  margin: 0 auto;
+  max-width: var(--max-w-prose);
+  transition: border-color 0.4s ease, padding 0.4s ease;
+}
+
+details[data-section^="raf-"]:hover {
+  border-left-color: var(--ember-soft);
+}
+
+details[data-section^="raf-"][open] {
+  border-left-color: var(--ember);
+  padding: var(--space-5) 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--ash);
+}
+
+details[data-section^="raf-"][open] > *:last-child {
+  margin-block-end: 0;
+}
+
+details[data-section^="raf-"] summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.3;
+  color: var(--cream);
+  padding: var(--space-2) 0;
+  scroll-margin-top: var(--nav-height);
+}
+
+details[data-section^="raf-"] summary::-webkit-details-marker {
+  display: none;
+}
+
+details[data-section^="raf-"] summary::after {
+  content: '+';
+  font-family: 'Cormorant Garamond', serif;
+  font-style: normal;
+  font-size: 1.5rem;
+  color: var(--ember);
+  transition: transform 0.4s ease, color 0.3s ease;
+  flex-shrink: 0;
+}
+
+details[data-section^="raf-"][open] summary::after {
+  transform: rotate(45deg);
+}
+
+details[data-section^="raf-"] > *:not(summary) {
+  margin-top: var(--space-5);
+}
+
+details[data-section^="raf-"] p {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-prose);
+  color: var(--cream-soft);
+  font-weight: 300;
+}
+
+details[data-section^="raf-"] summary:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  details[data-section^="raf-"],
+  details[data-section^="raf-"] summary::after {
     transition: none;
   }
 }
