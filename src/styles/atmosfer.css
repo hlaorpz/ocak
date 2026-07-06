@@ -467,9 +467,15 @@ details[data-section^="raf-"] li {
  * Notion: <ul><li><strong>İsim</strong> — açıklama</li> × 10.
  * İçerik-sunum sınırı (KARAR adayı 330): CSS yalnız grid + liste ritmi + köz
  * nokta verir. İsim/açıklama RENK/YAPI dayatma YOK — Notion bold neyse o.
- * mobil 1 sütun, ≥620px 2 sütun. Kapanış cümlesi liste dışında baseline prose. */
+ * mobil 1 sütun, ≥620px 2 sütun. Kapanış cümlesi liste dışında baseline prose.
+ *
+ * Specificity notu: baseline `section[data-section][class^="ocak-"] ul li::before`
+ * (:1194) `content:'·'` middle-dot basıyor (0,2,4). Bizim ember daire ile ÇAKIŞMA
+ * → iki nokta görünüyor. Fix: `section[data-section="atolyeler"][class^="ocak-"]`
+ * prefix ile specificity (0,3,4) → baseline'ı ezer, TEK ember daire kalır.
+ * Aynı prefix ul + li kurallarında da baseline padding/margin'i ezmek için. */
 
-[data-section="atolyeler"] ul {
+section[data-section="atolyeler"][class^="ocak-"] ul {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
@@ -479,20 +485,21 @@ details[data-section^="raf-"] li {
 }
 
 @media (min-width: 620px) {
-  [data-section="atolyeler"] ul {
+  section[data-section="atolyeler"][class^="ocak-"] ul {
     grid-template-columns: 1fr 1fr;
     column-gap: 2.5rem;
   }
 }
 
-[data-section="atolyeler"] li {
+section[data-section="atolyeler"][class^="ocak-"] li {
   position: relative;
   padding: 0.85rem 0 0.85rem 1.2rem;
+  margin-bottom: 0;
   border-bottom: 1px solid rgba(61, 53, 50, 0.5);
 }
 
-/* Köz nokta — bullet marker yerine küçük ember daire */
-[data-section="atolyeler"] li::before {
+/* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer) */
+section[data-section="atolyeler"][class^="ocak-"] ul li::before {
   content: '';
   position: absolute;
   left: 0;
@@ -502,6 +509,8 @@ details[data-section^="raf-"] li {
   border-radius: 50%;
   background: var(--ember);
   opacity: 0.8;
+  color: transparent;
+  font-size: 0;
 }
 
 /* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
