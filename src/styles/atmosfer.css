@@ -381,6 +381,22 @@ details[data-section^="raf-"] > p:first-of-type em {
   font-weight: 400;
 }
 
+/* Seri kart tek p — özet stili iptal, detay boyutuna düşür (turler ikinci p'siyle
+ * görsel eş). turler kartında H3 + 2 p (özet + detay) yapısı var; seri kartta
+ * H3 + tek p → özet 1.02rem cream stili uzun metinde iri hissi verdi. p:only-of-
+ * type ile Kaan Notion içeriğine ikinci p ekleyene kadar detay boyutunda kalır;
+ * ikinci p eklenirse doğal olarak özet+detay ritmine döner (fix koşullu). */
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:only-of-type {
+  font-size: 0.9rem;
+  color: var(--cream-soft);
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type:only-of-type::after {
+  content: none;
+}
+
 /* Vitrin özet ayracı ALTIN (brief-desenler-02c.md V2): şerit ember (dikey) +
  * ayraç gold (yatay) → iki sıcak ton çakışmaz. */
 [data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
