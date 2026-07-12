@@ -19,6 +19,7 @@
   --ash-warm: #443C38;                           /* hover background */
   --ember-soft: #D4603F;                         /* ember hover state */
   --ember-alpha-15: rgba(196, 75, 47, 0.15);     /* ambient çizgi, soft glow */
+  --ember-alpha-32: rgba(196, 75, 47, 0.32);     /* hero CTA silik çerçeve idle (brief-hero-v2 ADIM 3) */
   --ember-alpha-85: rgba(196, 75, 47, 0.85);     /* hero dip çizgisi orta durak (brief-hero-v2 ADIM 2) */
   --cream-soft: rgba(242, 234, 226, 0.85);       /* alt metin, ikincil */
   --gold-soft: rgba(212, 168, 85, 0.6);          /* ikincil vurgu */

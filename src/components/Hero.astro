@@ -158,25 +158,40 @@ const {
     max-width: 32ch;
   }
 
+  /* CTA Varyant C — silik köz çerçeve, hover'da belirginleşir. brief-hero-v2 ADIM 3.
+   * v1 dolu köz zemin (hover) satış-butonu diliydi; davet ≠ satış, ayrıca hero
+   * dibindeki köz çizgisiyle yarışıyordu. Şimdi hem tek hal (masaüstü/mobil aynı),
+   * hem daha yumuşak. */
   .hero__cta {
     display: inline-block;
     padding: var(--space-3) var(--space-6);
     margin-top: var(--space-3);
     font-family: var(--font-body);
-    font-size: var(--text-base);
-    color: var(--cream);
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+    color: var(--warm-gray);
     background: transparent;
-    border: 1px solid var(--ember);
+    border: 1px solid var(--ember-alpha-32);
     border-radius: 2px;
     text-decoration: none;
-    transition: background-color var(--duration-base) var(--ease-out),
+    transition: border-color var(--duration-base) var(--ease-out),
                 color var(--duration-base) var(--ease-out);
   }
 
-  .hero__cta:hover,
+  /* Hover kuralı @media (hover: hover) içinde — iOS Safari :hover yapışma bugı
+   * (dokunma sonrası hover state kalıcı yanık kalıyor, KARAR 186 iOS ailesi). */
+  @media (hover: hover) {
+    .hero__cta:hover {
+      border-color: var(--ember);
+      color: var(--cream);
+    }
+  }
+
+  /* Dokunmatik + klavye anlık geri bildirim — :hover yerine :active/:focus-visible. */
+  .hero__cta:active,
   .hero__cta:focus-visible {
-    background: var(--ember);
-    color: var(--coal);
+    border-color: var(--ember);
+    color: var(--cream);
   }
 
   /* === SCROLL INDICATOR — hero dibinde köz akış çizgisi ===
