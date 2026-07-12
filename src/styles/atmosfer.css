@@ -59,17 +59,20 @@
  * aşıp gövdeye doğal sızsın. blur YOK, drift YOK. [data-section="hero"]
  * overflow:hidden ile alttan kırpılır.
  *
- * bottom -38% → -36% kuyruk düzeltme: -38%'de hero_bottom radial oranı %67.3
- * (%70 stop öncesi) → alpha ~0.003 sızıntı, overflow:hidden keskin kesim ince
- * yatay şerit oluşturuyordu (#manifesto scroll durağında viewport tepesi).
- * -36% ile oran %71.3 (%70 stop ötesi) → hero_bottom alpha 0, kesim temiz.
+ * bottom yüzde → sabit -172.5px (v2 kuyruk düzeltme, H-agnostic): yüzde tabanlı
+ * bottom viewport yüksekliğine bağlıydı, hero_bottom'da normalized elliptical
+ * distance H'ye göre değişiyordu — mobilde alpha ~0.019 (OK), masaüstünde
+ * 0.024-0.040 → overflow:hidden keskin kesimi %2-4 opasitede yatay bant olarak
+ * göründü (#manifesto scroll durağında viewport tepesi). Sabit -172.5px ile
+ * element.center = hero_bottom - 402.5 her ekranda; hero_bottom normalized
+ * distance = 402.5/575 = tam %70 stop → alpha 0. Kesim her ekranda temiz.
  *
  * Default soft (5 oda); OCAK strong override. (KARAR 102 sapma 2)
  * Hero.astro .hero__glow ile birebir aynı geometri/stop (iki dosya hizalı). */
 [data-section="hero"]::after {
   content: '';
   position: absolute;
-  bottom: -36%;
+  bottom: -172.5px;
   left: 50%;
   transform: translateX(-50%);
   width: 1100px;
