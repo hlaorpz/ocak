@@ -84,10 +84,15 @@ const {
    * banding riski nedeniyle dokunulmaz, Safari halka sorunu KARAR 131).
    * Geometri brief-hero-v2-duzeltme.md ADIM 1 ile büyütüldü: kuyruk uzasın, ışık
    * hero sınırını aşıp gövdeye doğal sızsın, hero-altı devam sinyali glow'un
-   * kendi kuyruğundan gelsin (ayrı gradyan katmanı YOK). blur YOK, drift YOK. */
+   * kendi kuyruğundan gelsin (ayrı gradyan katmanı YOK). blur YOK, drift YOK.
+   *
+   * bottom -38% → -36% kuyruğu (v2 kuyruk düzeltme): -38%'de hero_bottom radial
+   * oranı %67.3 (%70 stop öncesi) → alpha ~0.003, overflow:hidden keskin kesim
+   * ince yatay şerit oluşturuyordu (#manifesto scroll durağında viewport tepesi).
+   * -36% ile oran %71.3 (%70 stop ötesi) → hero_bottom alpha 0, kesim temiz. */
   .hero__glow {
     position: absolute;
-    bottom: -38%;
+    bottom: -36%;
     left: 50%;
     transform: translateX(-50%);
     width: 1100px;
