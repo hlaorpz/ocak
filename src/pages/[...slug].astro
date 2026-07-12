@@ -17,7 +17,7 @@ import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
 
 export async function getStaticPaths() {
-  // brief-davet-sistemi + Eyeball #4 Fix 2d: 6 kayıt formatı davet linkinin
+  // brief-davet-sistemi + Eyeball #4 Fix 2d: 7 kayıt formatı davet linkinin
   // hedefi (`?etkinlik=&ref=`). Her formatın override dosyası prerender=false
   // ile SSR (geçmiş-etkinlik güvenlik ağı için); statik index.html'ler
   // üretilmemeli ki Vercel filesystem handler statik dosyaya düşürüp SSR'ı
@@ -31,6 +31,7 @@ export async function getStaticPaths() {
     '/mini-retreat',
     '/sehir-aksami',
     '/atolye',
+    '/yolculuk',
   ]);
   const sayfalar = await getCollection('sayfalar');
   return sayfalar

@@ -43,8 +43,9 @@ export async function getStaticPaths() {
 
 const { etkinlik } = Astro.props;
 
-// Format → 6 KayitFormat sluğu ters çevrimi (config.ts'teki eşleyicinin ikizi).
-// Yolculuk vb. → undefined; CTA'yı kayitUrl yoksa basmayız.
+// Format → KayitFormat sluğu ters çevrimi (config.ts'teki eşleyicinin ikizi).
+// 'Anadolu Yolculuğu' → undefined (kayıt route'u ayrı: /anadolu/basvuru);
+// CTA'yı kayitUrl yoksa basmayız.
 const NOTION_FORMAT_KAYIT_SLUG = Object.fromEntries(
   Object.entries(FORMAT_NOTION_FORMAT).map(([slug, notionFmt]) => [notionFmt, slug as KayitFormat]),
 ) as Record<string, KayitFormat | undefined>;
@@ -59,7 +60,8 @@ const KATEGORI_ADI: Record<string, string> = {
   Seremoni: 'seremoni',
   'Şehir Akşamı': 'şehir akşamı',
   Atölye: 'atölye',
-  Yolculuk: 'Anadolu Yolculuğu',
+  Yolculuk: 'Yolculuk',
+  'Anadolu Yolculuğu': 'Anadolu Yolculuğu',
 };
 
 const kayitSlugu = NOTION_FORMAT_KAYIT_SLUG[etkinlik.tip];

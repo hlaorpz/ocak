@@ -52,14 +52,15 @@ describe('getKategori — slug → kategori türetme (KARAR 127 genişletme)', (
     expect(getKategori('/')).toBe(null);
   });
 
-  it('oda sayfaları (4 hard-coded markerlı + 3 defansif) → ilgili kategori', () => {
+  it('oda sayfaları → ilgili kategori', () => {
     expect(getKategori('/mini-retreat')).toBe('mini-retreat');
     expect(getKategori('/seremoni')).toBe('seremoni');
     expect(getKategori('/atolye')).toBe('atolye');
     expect(getKategori('/sehir-aksami')).toBe('sehir-aksami');
     expect(getKategori('/cember')).toBe('cember');
     expect(getKategori('/acik-kapi')).toBe('acik-kapi');
-    expect(getKategori('/anadolu')).toBe('yolculuk');
+    expect(getKategori('/yolculuk')).toBe('yolculuk');
+    expect(getKategori('/anadolu')).toBe('anadolu');
   });
 
   it('bilinmeyen slug → null fallback + warn', () => {

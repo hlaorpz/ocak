@@ -1,0 +1,31 @@
+---
+// /yolculuk/kayit — Yolculuk (online) ödemeli kayıt (Direkt akışı, brief-cc-yolculuk-format-v2).
+// mini-retreat/kayit.astro kalıbı birebir. "Yolculuk" 7. kapı — online ürün,
+// Anadolu Yolculuğu (fiziksel) ile karışmaz (ayrı Format enum: 'Anadolu Yolculuğu').
+import Layout from '../../layouts/Layout.astro';
+import Hero from '../../components/Hero.astro';
+import KayitFormu from '../../components/KayitFormu.astro';
+import { loadKayitData } from '../../lib/kayit-sayfa';
+
+const data = await loadKayitData('yolculuk');
+---
+<Layout
+  title="Yolculuk Kaydı"
+  description="Sıradaki Yolculuk'a kaydını yap. Tarih seç, kısa bir niyet yaz, katılım payını ilet."
+  oda="Buluşmalar"
+>
+  <Hero
+    oda="Buluşmalar"
+    overline="YOLCULUK"
+    title="Bir Yolculuk'a katıl."
+    subtitle="Tarih seç, kısa bir niyet yaz, katılım payını ilet — ateşin yanında sana yer ayıralım."
+    showScroll={false}
+  />
+  <KayitFormu
+    format="yolculuk"
+    etkinlikler={data.etkinlikler}
+    havaleIban={data.havaleIban}
+    havaleAd={data.havaleAd}
+    askiReferanslari={data.askiReferanslari}
+  />
+</Layout>

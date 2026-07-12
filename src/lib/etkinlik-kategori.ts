@@ -11,7 +11,8 @@ export type EtkinlikKategori =
   | 'atolye'
   | 'sehir-aksami'
   | 'mini-retreat'
-  | 'yolculuk';
+  | 'yolculuk'
+  | 'anadolu';
 
 export const FORMAT_KATEGORI: Record<string, EtkinlikKategori> = {
   'Çember': 'cember',
@@ -21,6 +22,7 @@ export const FORMAT_KATEGORI: Record<string, EtkinlikKategori> = {
   'Şehir Akşamı': 'sehir-aksami',
   'Mini Retreat': 'mini-retreat',
   Yolculuk: 'yolculuk',
+  'Anadolu Yolculuğu': 'anadolu',
 };
 
 /**
@@ -39,7 +41,8 @@ export const formatEtiket = (tip: string): string => FORMAT_LABEL[tip] ?? tip;
  * `FORMAT_KATEGORI` key'leriyle BİREBİR eşleşmeli; bir harf/boşluk farkı tabı
  * sona atar + warn basar. SADECE tepe tab; gövdedeki ay-ay timeline tarih-
  * öncelikli kalır. Kanonik bulusmalar sırası: Açık Kapı → Çember → Seremoni →
- * Atölye → Şehir Akşamı → Mini Retreat (H5). Yolculuk sonda (anadolu ayrı).
+ * Atölye → Şehir Akşamı → Mini Retreat (H5). Yolculuk 7. kapı; Anadolu Yolculuğu
+ * kapı değil ama takvimde en ağır — ikisi de sona.
  */
 export const KATEGORI_SIRA: string[] = [
   'Açık Kapı',
@@ -49,6 +52,7 @@ export const KATEGORI_SIRA: string[] = [
   'Şehir Akşamı',
   'Mini Retreat',
   'Yolculuk',
+  'Anadolu Yolculuğu',
 ];
 
 /**
@@ -112,7 +116,8 @@ export const SLUG_KATEGORI: Record<string, EtkinlikKategori | null> = {
   '/sehir-aksami': 'sehir-aksami',
   '/cember': 'cember',
   '/acik-kapi': 'acik-kapi',
-  '/anadolu': 'yolculuk',
+  '/yolculuk': 'yolculuk',
+  '/anadolu': 'anadolu',
 };
 
 /**
@@ -130,14 +135,15 @@ export const KATEGORI_HEADING: Record<EtkinlikKategori, string> = {
   atolye: 'Yaklaşan Atölyeler',
   'sehir-aksami': 'Yaklaşan Şehir Akşamları',
   'mini-retreat': "Yaklaşan Mini Retreat'ler",
-  yolculuk: 'Yaklaşan Yolculuklar',
+  yolculuk: 'Yaklaşan Yolculuk',
+  anadolu: 'Yaklaşan Anadolu Yolculuğu',
 };
 
 /**
- * brief-faz3-h4-h5 İş 2 — 6 format sayfasında sonraki-bulusma TEK KART
+ * brief-faz3-h4-h5 İş 2 — format sayfalarında sonraki-bulusma TEK KART
  * varyantının heading'i. "En Yakın [Format Adı]" tekil form (KATEGORI_HEADING
- * çoğul, home/anadolu için). Yolculuk burada yok — Anadolu mevcut davranışı
- * korur (LIMIT=3, KATEGORI_HEADING).
+ * çoğul, home/anadolu için). anadolu burada yok — mevcut Anadolu Yolculuğu
+ * davranışı korunur (LIMIT=3, KATEGORI_HEADING).
  */
 export const KATEGORI_EN_YAKIN: Partial<Record<EtkinlikKategori, string>> = {
   cember: 'En Yakın Çember',
@@ -146,6 +152,7 @@ export const KATEGORI_EN_YAKIN: Partial<Record<EtkinlikKategori, string>> = {
   atolye: 'En Yakın Atölye',
   'sehir-aksami': 'En Yakın Şehir Akşamı',
   'mini-retreat': 'En Yakın Mini Retreat',
+  yolculuk: 'En Yakın Yolculuk',
 };
 
 /**

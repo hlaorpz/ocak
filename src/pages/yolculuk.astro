@@ -1,0 +1,36 @@
+---
+// yolculuk.astro — /yolculuk sayfa override (Yolculuk 7. kapı, brief-cc-yolculuk-format-v2).
+// mini-retreat.astro kalıbıyla birebir: `[...slug].astro` yerine SSR override —
+// davet linki ?etkinlik= param'ı server-side okunur; geçmiş etkinlik → banner +
+// kayıt sayfasına köprü. form-anchor-registry `/yolculuk` → KayitCTA.
+export const prerender = false;
+
+import { getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import PageContent from '../components/PageContent.astro';
+import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
+import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
+
+const sayfa = await getEntry('sayfalar', '/yolculuk');
+if (!sayfa) {
+  throw new Error("yolculuk.astro: 'sayfalar' collection'ında '/yolculuk' slug'ı bulunamadı.");
+}
+
+const etkinlikId = (Astro.url.searchParams.get('etkinlik') ?? '').trim();
+const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
+---
+<Layout
+  title={sayfa.data.title}
+  description={sayfa.data.description}
+  ogImage={sayfa.data.ogImage}
+  oda={sayfa.data.oda}
+>
+  {etkinlikGecmis && (
+    <DavetGecmisEtkinlikUyari
+      ctaMetin="Sıradaki Yolculuk'a bak →"
+      ctaHref="/yolculuk/kayit"
+    />
+  )}
+
+  <PageContent slug="/yolculuk" fragments={sayfa.data.fragments} />
+</Layout>
