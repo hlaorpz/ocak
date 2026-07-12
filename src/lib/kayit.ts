@@ -15,7 +15,8 @@ export type KayitFormat =
   | 'mini-retreat'
   | 'sehir-aksami'
   | 'seremoni'
-  | 'atolye';
+  | 'atolye'
+  | 'yolculuk';
 
 // Slug → Notion Başvurular DB "Tip" select option name.
 export const FORMAT_TIP: Record<KayitFormat, string> = {
@@ -25,6 +26,7 @@ export const FORMAT_TIP: Record<KayitFormat, string> = {
   'sehir-aksami': 'Şehir Akşamı',
   seremoni: 'Seremoni',
   atolye: 'Atölye',
+  yolculuk: 'Yolculuk',
 };
 
 // Slug → Notion Etkinlikler DB "Format" select option name.
@@ -37,6 +39,7 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
   'sehir-aksami': 'Şehir Akşamı',
   seremoni: 'Seremoni',
   atolye: 'Atölye',
+  yolculuk: 'Yolculuk',
 };
 
 /**
@@ -54,6 +57,7 @@ export const KAYIT_CTA_LABEL: Record<KayitFormat, string> = {
   'sehir-aksami': 'Yerini ayır',
   seremoni: 'Yerini ayır',
   atolye: 'Yerini ayır',
+  yolculuk: 'Yerini ayır',
 };
 
 /**
@@ -138,6 +142,7 @@ export const FORMAT_MAILERLITE_GROUP: Record<KayitFormat, string> = {
   'sehir-aksami': '189209188425008761',
   seremoni: '189209224470857710',
   atolye: '189209178380699119',
+  yolculuk: '192780641731871836',
 };
 
 export function isKayitFormat(s: unknown): s is KayitFormat {

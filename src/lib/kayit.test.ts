@@ -19,9 +19,10 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-// Brief 3 KARAR 206 — 6 formatın hepsinin map'lerde tam olduğunu kapsar.
-// Eksik bir format eklersek (Brief 4'te yeni format, Anadolu hariç),
-// her dört map'in de güncellenmesini bu testler zorunlu kılar.
+// Brief 3 KARAR 206 + brief-cc-yolculuk-format-v2 — 7 formatın hepsinin
+// map'lerde tam olduğunu kapsar. Eksik bir format eklersek, her dört map'in
+// de güncellenmesini bu testler zorunlu kılar. 'Anadolu Yolculuğu' KayitFormat
+// DEĞİL — kayıt route'u ayrı (/anadolu/basvuru), Format enum'unda ama slug map'lerinde yok.
 
 const TUM_FORMATLAR: KayitFormat[] = [
   'cember',
@@ -30,15 +31,15 @@ const TUM_FORMATLAR: KayitFormat[] = [
   'sehir-aksami',
   'seremoni',
   'atolye',
+  'yolculuk',
 ];
 
-describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
-  it('isKayitFormat 6 format için true', () => {
+describe('kayit map\'leri (Brief 2A + Brief 3 + Yolculuk v2)', () => {
+  it('isKayitFormat 7 format için true', () => {
     for (const f of TUM_FORMATLAR) expect(isKayitFormat(f)).toBe(true);
   });
 
   it('isKayitFormat bilinmeyen için false', () => {
-    expect(isKayitFormat('yolculuk')).toBe(false);
     expect(isKayitFormat('anadolu')).toBe(false);
     expect(isKayitFormat('')).toBe(false);
     expect(isKayitFormat(null)).toBe(false);
@@ -46,7 +47,7 @@ describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
     expect(isKayitFormat(42)).toBe(false);
   });
 
-  it('FORMAT_TIP — 6 format, Notion Başvurular DB Tip enum (S2 sonrası tek ad)', () => {
+  it('FORMAT_TIP — 7 format, Notion Başvurular DB Tip enum', () => {
     expect(FORMAT_TIP).toEqual({
       cember: 'Çember',
       'acik-kapi': 'Açık Kapı',
@@ -54,10 +55,11 @@ describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
       'sehir-aksami': 'Şehir Akşamı',
       seremoni: 'Seremoni',
       atolye: 'Atölye',
+      yolculuk: 'Yolculuk',
     });
   });
 
-  it('FORMAT_NOTION_FORMAT — 6 format, Notion Etkinlikler DB Format enum (S2 sonrası tek ad)', () => {
+  it('FORMAT_NOTION_FORMAT — 7 format, Notion Etkinlikler DB Format enum', () => {
     expect(FORMAT_NOTION_FORMAT).toEqual({
       cember: 'Çember',
       'acik-kapi': 'Açık Kapı',
@@ -65,10 +67,11 @@ describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
       'sehir-aksami': 'Şehir Akşamı',
       seremoni: 'Seremoni',
       atolye: 'Atölye',
+      yolculuk: 'Yolculuk',
     });
   });
 
-  it('FORMAT_MAILERLITE_GROUP — 6 format, hepsi dolu sayısal string (Brief 3 KARAR 206)', () => {
+  it('FORMAT_MAILERLITE_GROUP — 7 format, hepsi dolu sayısal string (Brief 3 KARAR 206)', () => {
     for (const f of TUM_FORMATLAR) {
       const id = FORMAT_MAILERLITE_GROUP[f];
       expect(typeof id).toBe('string');
@@ -76,6 +79,8 @@ describe('kayit map\'leri (Brief 2A + Brief 3)', () => {
     }
     // Pilot Çember (Brief 2A'da set edildi) — değer kayması varsa yakala.
     expect(FORMAT_MAILERLITE_GROUP.cember).toBe('187798293576681151');
+    // Yolculuk v2 — brief mühürlü grup ID (192780641731871836).
+    expect(FORMAT_MAILERLITE_GROUP.yolculuk).toBe('192780641731871836');
   });
 
   it('FORMAT_MAILERLITE_GROUP — ID\'ler ayrık (karışmamış)', () => {

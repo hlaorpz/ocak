@@ -166,11 +166,11 @@ const sayfalar = defineCollection({
  * SonrakiBulusma section'ı Brief 5'te bu collection'a bağlanacak (KARAR 93).
  * Şema Brief 1 keşfindeki Notion gerçeğine eşli; relative kayitUrl için .url() YOK.
  */
-// brief-etkinlik-detay-route.md FAZ 1 — Notion Format select → 6 KayitFormat
-// slug'ı. FORMAT_NOTION_FORMAT (slug→Format) tersinin türetilmişi. Yolculuk
-// KayitFormat dışı → undefined döner (detay içindeki `## section: kayit-cta`
-// resolveKayitCtaHref tarafından slug-format eşleşmediği için kaldırılır +
-// warn). Detay markdown zinciri için kullanılır.
+// brief-etkinlik-detay-route.md FAZ 1 — Notion Format select → KayitFormat
+// slug'ı. FORMAT_NOTION_FORMAT (slug→Format) tersinin türetilmişi. `Anadolu
+// Yolculuğu` KayitFormat dışı → undefined döner (kayıt route'u ayrı:
+// /anadolu/basvuru). Detay içindeki `## section: kayit-cta` resolveKayitCtaHref
+// tarafından slug-format eşleşmediği için kaldırılır + warn.
 const NOTION_FORMAT_KAYIT_SLUG = Object.fromEntries(
   Object.entries(FORMAT_NOTION_FORMAT).map(([slug, notionFmt]) => [notionFmt, slug as KayitFormat]),
 ) as Record<string, KayitFormat | undefined>;
@@ -219,8 +219,8 @@ const etkinlikler = defineCollection({
         // href olduğu gibi kalır, build kırılmaz). resolveKayitCtaHref
         // etkinliğin Format'ından türetilen kayıt slug'ıyla çağrılır: Notion
         // Detay içindeki `## section: kayit-cta` etiketi doğru `/{format}/kayit`
-        // hedefine yönlenir; format 6 KayitFormat dışıysa (Yolculuk) block
-        // kaldırılır + warn (KARAR 207).
+        // hedefine yönlenir; format KayitFormat dışıysa (Anadolu Yolculuğu)
+        // block kaldırılır + warn (KARAR 207).
         let detayHtml: string | undefined;
         if (fm.detay) {
           const rendered = await renderMarkdown(fm.detay);
@@ -248,6 +248,7 @@ const etkinlikler = defineCollection({
     baslik: z.string(),
     tip: z.enum([
       'Yolculuk',
+      'Anadolu Yolculuğu',
       'Mini Retreat',
       'Şehir Akşamı',
       'Atölye',
