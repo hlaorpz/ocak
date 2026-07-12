@@ -147,8 +147,9 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toContain('data-overline="OCAK"');
     expect(html).not.toContain('ates-mektuplari');
     expect(html).not.toContain('[FORM]');
-    // aradaki normal section korunur
-    expect(html).toContain('<section data-section="manifesto" class="ocak-manifesto">');
+    // aradaki normal section korunur — id="manifesto" ADIM 3 hero CTA hedefi
+    // (brief-hero-gecis.md), dar-emit KARAR 87 kapalı set.
+    expect(html).toContain('<section id="manifesto" data-section="manifesto" class="ocak-manifesto">');
     expect(html).toContain('Manifesto metni.');
   });
 
