@@ -19,12 +19,6 @@
   --ash-warm: #443C38;                           /* hover background */
   --ember-soft: #D4603F;                         /* ember hover state */
   --ember-alpha-15: rgba(196, 75, 47, 0.15);     /* ambient çizgi, soft glow */
-  /* Ember sızıntı ailesi — hero eşiği ember gradyan (brief-hero-gecis.md ADIM 1).
-   * Tek main::before katmanında 5 durak: transparent → sizinti-1 → sizinti-2
-   * (eşik peak) → sizinti-3 → transparent. Kalibrasyon iPhone eyeball sonrası. */
-  --ember-sizinti-1: rgba(196, 75, 47, 0.035);   /* hero içi başlangıç */
-  --ember-sizinti-2: rgba(196, 75, 47, 0.075);   /* hero eşiği, en güçlü nokta */
-  --ember-sizinti-3: rgba(196, 75, 47, 0.03);    /* gövdede sönüş */
   --cream-soft: rgba(242, 234, 226, 0.85);       /* alt metin, ikincil */
   --gold-soft: rgba(212, 168, 85, 0.6);          /* ikincil vurgu */
 
@@ -153,12 +147,6 @@
    * (1.75rem, line-height:1) → ~60-64px. EtkinlikTakvimi ay başlığı sticky'de
    * nav altına otursun. */
   --nav-height: 64px;
-
-  /* ===== HERO YÜKSEKLİĞİ (brief-hero-gecis.md ADIM 1) =====
-   * Peek 90svh: hero tam ekranı doldurmasın, altındaki içerik ipucu görünsün.
-   * Fallback vh Hero.astro + atmosfer.css'te iki min-height kaskadıyla verilir.
-   * main::before pseudo top offset'i buradan beslenir — tek gerçek. */
-  --hero-height: calc(90svh - var(--nav-height));
 }
 
 /* Reduced motion — atmosferi sönümle */

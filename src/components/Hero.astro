@@ -66,10 +66,9 @@ const {
 <style>
   .hero {
     position: relative;
-    /* Peek — hero tam ekranı doldurmasın, altındaki içerik ipucu görünsün.
-     * brief-hero-gecis.md ADIM 1. Fallback 90vh (Safari eski sürüm), sonra svh. */
-    min-height: calc(90vh - var(--nav-height));
-    min-height: var(--hero-height);
+    /* Tam ekran hero — fallback 100vh (Safari eski), sonra 100svh (adres çubuğu payı). */
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
