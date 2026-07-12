@@ -38,7 +38,9 @@
 
 [data-section="hero"] {
   position: relative;
-  min-height: 100vh;
+  /* Peek — brief-hero-gecis.md ADIM 1. Fallback 90vh (Safari eski), sonra svh. */
+  min-height: calc(90vh - var(--nav-height));
+  min-height: var(--hero-height);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,23 +87,41 @@
   );
 }
 
-/* Bottom fade (Hero B kararı, #30 Brief F sonu Item 6b) — glow alt kenarındaki sert
- * sınırı maskeler + Hero altı coal section'a yumuşak geçiş. fade-out z-index 1 →
- * glow ::after (z-index 0) üstünde, content > * (z-index 1, DOM sonrası) fade'in
- * üstünde. Pseudo ::after children'dan sonra render olur — DOM order çözmek için
- * explicit z-index gerekli. */
-[data-section="hero"] .hero-fade-out {
+/* Ember sızıntı — hero eşiğinden ~180px yukarı başlar, eşikten ~260px aşağı söner.
+ * brief-hero-gecis.md ADIM 1. Tek main::before pseudo, div bağımlısı yok — plugin
+ * çıktısı ve Hero.astro instance'ı otomatik hizalanır. Coal fade (eski .hero-fade-out
+ * div + iki CSS ailesi) silindi: hero'yu koyulaştırıyordu, "sayfa bitti" sinyali
+ * güçlendiriyordu. Yerine ember sıcaklık aşağı sızıyor.
+ *
+ * 5 durak (yukarıdan aşağı): transparent → sizinti-1 → sizinti-2 (eşik peak) →
+ * sizinti-3 → transparent. Konumlar hero eşiğine göre:
+ *   0px   (top)     transparent    (hero içi, eşiğin 180px yukarısı)
+ *   99px  (22.5%)   sizinti-1      (~180px × 55% içinde)
+ *   180px (~41%)    sizinti-2      (hero eşiği — en güçlü nokta)
+ *   270px (~61%)    sizinti-3      (hero altı 90px içinde)
+ *   440px (100%)    transparent    (hero altı 260px içinde sönüş)
+ * main position:relative gerekli — pseudo main'e göre absolute hizalanır. */
+main {
+  position: relative;
+}
+
+main::before {
+  content: '';
   position: absolute;
-  bottom: 0;
   left: 0;
   right: 0;
-  /* %25 → %40 (#30 Brief F sonu Item 6b-revize): glow center Hero altından ~220px
-     (~%24 Hero), radial 70% stop'a kadar ~500px (~%55). %25 yalnız glow alt yarısını
-     kapsıyordu — parlak ember üst yarısı fade dışında sert görünüyordu. */
-  height: 40%;
+  top: calc(var(--hero-height) - 180px);
+  height: 440px;
   pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(to bottom, transparent, var(--coal));
+  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--ember-sizinti-1) 22.5%,
+    var(--ember-sizinti-2) 41%,
+    var(--ember-sizinti-3) 61%,
+    transparent 100%
+  );
 }
 
 /* İçerik glow'un üstünde */

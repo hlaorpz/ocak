@@ -38,7 +38,6 @@ const {
 ---
 <section class="hero" data-section="hero" data-oda={oda}>{bgImage && (<div aria-hidden="true" style={`position:absolute;inset:0;background-image:url('${bgImage}');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;`}><div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(26,18,16,0.55) 0%,rgba(26,18,16,0.35) 45%,rgba(26,18,16,0.85) 100%);"></div></div>)}
   <div class="hero__glow" aria-hidden="true"></div>
-  <div class="hero__fade-out" aria-hidden="true"></div>
 
   <div class="hero__content ocak-container">
     {overline && (
@@ -66,7 +65,10 @@ const {
 <style>
   .hero {
     position: relative;
-    min-height: 100vh;
+    /* Peek — hero tam ekranı doldurmasın, altındaki içerik ipucu görünsün.
+     * brief-hero-gecis.md ADIM 1. Fallback 90vh (Safari eski sürüm), sonra svh. */
+    min-height: calc(90vh - var(--nav-height));
+    min-height: var(--hero-height);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,26 +116,6 @@ const {
       rgba(212, 168, 85, 0.02) 50%,
       transparent 70%
     );
-  }
-
-  /* === BOTTOM FADE (Hero B kararı, #30 Brief F sonu Item 6b) ===
-     Hero alt %25'inde linear-gradient transparent → coal. Glow alt kenarındaki
-     sert sınırı maskeler + Hero altı coal section'a yumuşak geçiş.
-     DOM order: glow → fade-out → content → scroll. fade-out z-index 0 (glow ile aynı),
-     DOM'da sonra → glow'un ÜSTÜNDE. content + scroll z-index 1 → fade-out üstünde. */
-  .hero__fade-out {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* %25 → %40 (#30 Brief F sonu Item 6b-revize): glow center Hero altından ~220px
-       (~%24 Hero), radial 70% stop'a kadar ~500px (~%55). %25 yalnız glow alt yarısını
-       kapsıyordu — parlak ember üst yarısı fade dışında sert görünüyordu. %40 ile glow
-       merkezi fade içinde, üst sınırda radial zaten transparent. */
-    height: 40%;
-    pointer-events: none;
-    z-index: 1;
-    background: linear-gradient(to bottom, transparent, var(--coal));
   }
 
   /* === CONTENT LAYOUT === */
@@ -204,8 +186,7 @@ const {
     bottom: var(--space-6);
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2;                /* fade-out (z-index 1) üstünde — alt %25'in
-                                  ortasındaki coal koyulaşma scroll cue'sunu yutmasın */
+    z-index: 2;
   }
 
   .hero__scroll-line {
