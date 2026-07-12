@@ -5,7 +5,8 @@
 //   - diğer 5 oda → soft (0.10 / 0.04 / 0.02)
 // Glow inline radial-gradient (legacy verbatim, blur YOK, drift YOK)
 // fadeUp staggered intro: eyebrow .3s / title .6s / subtitle .9s / cta 1.2s / scroll 1.8s
-// Scroll indicator: legacy scrollPulse (opacity 0.3↔0.8, 2s ease infinite, smoke gradient)
+// Scroll indicator: scrollAkis (transform-origin:top scaleY 0→.35→1 + opacity 0→1→.85→0,
+//   2s ease-out infinite, smoke gradient) — brief-hero-gecis.md ADIM 2 pulse→akış geçişi.
 
 export type Oda = 'OCAK' | 'Yol' | 'Buluşmalar' | 'Yolculuk' | 'Biz' | 'İletişim';
 
@@ -178,8 +179,9 @@ const {
     color: var(--coal);
   }
 
-  /* === SCROLL INDICATOR (legacy verbatim: scrollPulse, smoke gradient) === */
-  /* legacy/index.html: .scroll-line 1px×40px, smoke→transparent, scrollPulse 2s ease infinite */
+  /* === SCROLL INDICATOR (brief-hero-gecis.md ADIM 2: pulse → akış) === */
+  /* Çizgi geometrisi verbatim (1px×40px, smoke→transparent). Animasyon değişti:
+   * yukarıdan doğar, aşağı uzar, aşağıda söner, başa döner. Ok/akış hissi. */
 
   .hero__scroll {
     position: absolute;
@@ -194,12 +196,15 @@ const {
     width: 1px;
     height: 40px;
     background: linear-gradient(to bottom, var(--smoke), transparent);
-    animation: scrollPulse 2s ease infinite;
+    transform-origin: top;
+    animation: scrollAkis 2s ease-out infinite;
   }
 
-  @keyframes scrollPulse {
-    0%, 100% { opacity: 0.3; }
-    50%      { opacity: 0.8; }
+  @keyframes scrollAkis {
+    0%   { transform: scaleY(0);    opacity: 0;    }
+    20%  { transform: scaleY(0.35); opacity: 1;    }
+    70%  { transform: scaleY(1);    opacity: 0.85; }
+    100% { transform: scaleY(1);    opacity: 0;    }
   }
 
   /* === STAGGERED INTRO (legacy verbatim: 0.3 / 0.6 / 0.9 / 1.2 / 1.8s) === */
@@ -233,6 +238,9 @@ const {
     }
     .hero__scroll-line {
       animation: none;
+      /* Statik + tam boy + sabit opacity — akış animasyonunun "durgun" hali. */
+      transform: scaleY(1);
+      opacity: 0.5;
     }
   }
 
