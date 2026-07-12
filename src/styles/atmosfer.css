@@ -1478,6 +1478,13 @@ section[data-section][class^="ocak-"][data-overline]::before {
    Anlatı şart koşan blokların text-align center + manifesto font + büyük kapanış vurgusu.
    ───────────────────────────────────────────────────────────────────── */
 
+/* Ana sayfa hero CTA `#manifesto` hedefi — nav sticky altına gizlenmesin.
+ * brief-hero-gecis.md ADIM 3, KARAR 293 (eşik fix) pattern. Dar hedefli:
+ * manifesto tek anchor hedefi, baseline prose'a genellenmiyor. */
+section[data-section="manifesto"] {
+  scroll-margin-top: var(--nav-height);
+}
+
 section[data-section="manifesto"][class^="ocak-"],
 section[data-section="cekirdek-vaat"][class^="ocak-"],
 section[data-section="esik-kadini"][class^="ocak-"] {

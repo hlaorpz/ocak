@@ -1209,6 +1209,20 @@ function transformSection(
       // Kanon güvenliği: em-p bulunamazsa ham prose fallback + warn.
       return transformBesKaynak(content, options);
 
+    case 'manifesto': {
+      // brief-hero-gecis.md ADIM 3 — ana sayfa hero CTA `#manifesto` hedefi için
+      // id şart (anchor navigasyon yapısal tutamağı). Dar emit: sadece manifesto,
+      // genel id kaskadına kayma yok (KARAR 87 kapalı set ruhu). Kalan alan
+      // default prose ile aynı: extractOverline + ocak-manifesto class'ı.
+      const { overline, rest } = extractOverline(content);
+      const overlineAttr = overline ? ` data-overline="${overline}"` : '';
+      return [
+        html(`<section id="manifesto" data-section="manifesto" class="ocak-manifesto"${overlineAttr}>`),
+        ...rest,
+        html('</section>'),
+      ];
+    }
+
     default: {
       // /anadolu evre kartları: 6-isimlik EVRE_SECTIONS whitelist (set match).
       // Default'tan önce check; brief brief-anadolu-yolculuk.md Varyant C.
