@@ -207,7 +207,12 @@ const {
 
   .hero__scroll {
     position: absolute;
-    bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+    /* 48px minimum — masaüstünde tarayıcı chrome payı, mobilde home indicator
+     * (safe-area ~34px) 48px altında kalır → 48px kazanır. Çizgi 64px yüksek,
+     * 48px offset ile toplam 112px hero içinde kalıyor → overflow:hidden'da
+     * kırpma yok (glow taşma koruması KARAR 114 dokunulmaz).
+     * v1: 8px'ti → viewport dibinde sıkışıp mobilde chrome altına kayıyordu. */
+    bottom: max(env(safe-area-inset-bottom, 0px), 48px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
