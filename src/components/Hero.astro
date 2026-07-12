@@ -55,13 +55,16 @@ const {
     {ctaText && ctaHref && (
       <a class="hero__cta" href={ctaHref}>{ctaText}</a>
     )}
-
-    {showScroll && (
-      <div class="hero__scroll" aria-hidden="true">
-        <span class="hero__scroll-line"></span>
-      </div>
-    )}
   </div>
+
+  {/* Scroll indicator hero'nun DOĞRUDAN çocuğu — .hero__content wrapper içinde
+      olursa absolute konumu content'e göre alır ve hero'nun ortasında görünür.
+      brief-hero-v2-duzeltme.md düzeltme turu tanı. */}
+  {showScroll && (
+    <div class="hero__scroll" aria-hidden="true">
+      <span class="hero__scroll-line"></span>
+    </div>
+  )}
 </section>
 
 <style>
