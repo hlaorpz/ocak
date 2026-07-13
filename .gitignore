@@ -40,5 +40,9 @@ scripts/*-dump.txt
 
 # ocak-site-icerik.md — site içerik snapshot (site-icerik-dump.mjs üretir, eskir)
 ocak-site-icerik.md
+
+# Fable (copywriter) dump — tek seferlik, prod'dan üretilir; commit edilmez
+ocak-site-dump-fable-*.md
+scripts/dump-fable.mjs
 .env*
 !.env.example
