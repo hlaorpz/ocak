@@ -11,7 +11,14 @@ body {
   font-weight: 400;
   letter-spacing: var(--tracking-normal);
   position: relative;
-  overflow-x: hidden;
+  /* KARAR ADAYI 363: hidden → clip. overflow:hidden layout extent'i silmez
+   * (scrollWidth 745, viewport 390 → iOS Safari zoom-out'a izin verirdi);
+   * clip siler. Scroll container yaratmaz → sticky nav + KARAR 293
+   * scroll-anchoring korunur. Hero 1100px glow'un dış kapsayıcıda
+   * kırpılması buradan geçer. 2dea189 commit varsayımı ("yatay taşma
+   * body{overflow-x:hidden} tarafında") bu yüzden yanlıştı — sahte
+   * güvenlik ağıydı. */
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -128,6 +135,22 @@ html {
   scrollbar-color: var(--ash) var(--coal);
   /* #32 Brief H — /takvim shortcut anchor navigation yumuşak scroll. */
   scroll-behavior: smooth;
+  /* KARAR ADAYI 363: body clip'ini <html> katmanında dubleliyoruz. iOS
+   * Safari'de body-only overflow-x root scroll'unu tam kapatmaz; iki
+   * katman garantili. clip scroll container yaratmaz — sticky nav +
+   * KARAR 293 anchoring bozulmaz. */
+  overflow-x: clip;
+}
+
+/* iOS 16 öncesi + eski Safari'de `overflow-x: clip` yok; hidden'a düş.
+ * Uyarı: hidden layout extent'i SİLMEZ (KARAR ADAYI 363 dersi). Yani bu
+ * fallback'te zoom-out taşması eski iOS'ta bilinçli olarak KABUL edilir —
+ * baseline Ocak site desteği modern Safari; eski cihazlarda glow kırpması
+ * (görsel katman) çalışmaya devam eder, sadece zoom-out açık kalır.
+ * Marka içerik güvende, erişilebilirlik ihlali yok (user-scalable=no
+ * yasaklı — brief). */
+@supports not (overflow-x: clip) {
+  html, body { overflow-x: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
