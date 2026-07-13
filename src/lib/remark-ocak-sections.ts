@@ -1107,15 +1107,12 @@ function transformSection(
     case 'hero': {
       // İlk paragraph "overline: AD" ise: node'u ayıkla, değeri data-overline'a taşı.
       // AD verbatim taşınır (ALL CAPS dahil) — plugin transform etmez.
-      // hero-fade-out katmanı: glow alt kenarı + Hero altı coal section'a yumuşak geçiş
-      // (#30 Brief F sonu Item 6b, Hero B kararı). atmosfer.css `.hero-fade-out` global.
       // hero__scroll akış çizgisi: component Hero.astro ile aynı DOM emit — CSS tek
       // noktada atmosfer.css'te (double-alignment KARAR 113/114 dersi).
       const { overline, rest } = extractOverline(content);
       const overlineAttr = overline ? ` data-overline="${overline}"` : '';
       return [
         html(`<section data-section="hero"${overlineAttr}>`),
-        html('<div class="hero-fade-out" aria-hidden="true"></div>'),
         ...rest,
         html('<div class="hero__scroll" aria-hidden="true"><span class="hero__scroll-line"></span></div>'),
         html('</section>'),

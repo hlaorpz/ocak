@@ -2,7 +2,6 @@
 
 exports[`remark-ocak-sections > 1. hero — <section data-section="hero"> ile sarar, h1 içerir 1`] = `
 "<section data-section="hero">
-<div class="hero-fade-out" aria-hidden="true"></div>
 <h1><em>Ay döner, biz toplanırız.</em></h1>
 <p>Her ay bir kez. On iki kadın. Bir ateş.</p>
 <div class="hero__scroll" aria-hidden="true"><span class="hero__scroll-line"></span></div>
