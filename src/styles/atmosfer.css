@@ -49,7 +49,12 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-5);
-  overflow: hidden;
+  /* overflow:hidden KALDIRILDI: hero_bottom'da glow alpha zaten 0 (%70 stop
+   * ötesi), clip görünür işlev yapmıyordu. Clip edge subpixel/antialiasing
+   * artefaktı olarak #manifesto scroll durağında 1px'lik açık şerit üretiyordu
+   * (Test A doğrulaması). Yatay taşma koruması body { overflow-x: hidden }
+   * (global.css:14) tarafında zaten var. Glow kuyruğu artık gövdeye sızabilir
+   * (v2 brief niyeti — alpha 0 olduğu için görünür renk katkısı yok). */
   text-align: center;
   /* Faz B: hero root padding token'a — üst-alt --rhythm-section-bottom (4rem
    * simetrik hero karakteri korunur), yatay 1.5rem (hero özel dar padding). */
@@ -59,16 +64,15 @@
 /* Glow — KARAR 114 stop yapısı VERBATIM korundu (4 stop, aynı yüzde/alpha —
  * banding riski Safari halka sorunu KARAR 131). Geometri brief-hero-v2-duzeltme.md
  * ADIM 1 ile büyütüldü (800x800 → 1100x1150): kuyruk uzasın, ışık hero sınırını
- * aşıp gövdeye doğal sızsın. blur YOK, drift YOK. [data-section="hero"]
- * overflow:hidden ile alttan kırpılır.
+ * aşıp gövdeye doğal sızsın (overflow:hidden kaldırıldı — asıl v2 niyeti bu).
+ * blur YOK, drift YOK.
  *
- * bottom yüzde → sabit -172.5px (v2 kuyruk düzeltme, H-agnostic): yüzde tabanlı
- * bottom viewport yüksekliğine bağlıydı, hero_bottom'da normalized elliptical
- * distance H'ye göre değişiyordu — mobilde alpha ~0.019 (OK), masaüstünde
- * 0.024-0.040 → overflow:hidden keskin kesimi %2-4 opasitede yatay bant olarak
- * göründü (#manifesto scroll durağında viewport tepesi). Sabit -172.5px ile
- * element.center = hero_bottom - 402.5 her ekranda; hero_bottom normalized
- * distance = 402.5/575 = tam %70 stop → alpha 0. Kesim her ekranda temiz.
+ * bottom yüzde → sabit -172.5px (H-agnostic): yüzde tabanlı bottom viewport
+ * yüksekliğine bağlıydı, hero_bottom'da normalized elliptical distance H'ye
+ * göre değişiyordu. Sabit -172.5px ile element.center = hero_bottom - 402.5
+ * her ekranda; hero_bottom normalized distance = 402.5/575 = tam %70 stop →
+ * alpha 0. Kuyruk (172.5px) hero'nun dışına doğal sızar, ama alpha yine 0 —
+ * görsel katkısı yok, sadece "hiçbir kesim yok" garantisi.
  *
  * Default soft (5 oda); OCAK strong override. (KARAR 102 sapma 2)
  * Hero.astro .hero__glow ile birebir aynı geometri/stop (iki dosya hizalı). */

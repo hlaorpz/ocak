@@ -76,24 +76,24 @@ const {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    /* overflow:hidden KALDIRILDI (Test A doğrulaması): clip edge #manifesto
+     * scroll durağında subpixel artefaktı olarak açık şerit üretiyordu.
+     * hero_bottom'da glow alpha zaten 0 → clip fonksiyonu yoktu. Yatay taşma
+     * body { overflow-x: hidden } (global.css:14) tarafında. atmosfer.css
+     * [data-section="hero"] ile çift-hizalı. */
   }
 
   /* === GLOW (KARAR 102 sapma 2 — oda-bazlı) === */
   /* KARAR 114 stop yapısı korundu (4 stop, aynı yüzdeler ve alpha değerleri —
    * banding riski nedeniyle dokunulmaz, Safari halka sorunu KARAR 131).
    * Geometri brief-hero-v2-duzeltme.md ADIM 1 ile büyütüldü: kuyruk uzasın, ışık
-   * hero sınırını aşıp gövdeye doğal sızsın, hero-altı devam sinyali glow'un
-   * kendi kuyruğundan gelsin (ayrı gradyan katmanı YOK). blur YOK, drift YOK.
+   * hero sınırını aşıp gövdeye doğal sızsın (overflow:hidden kaldırıldı —
+   * asıl v2 niyeti bu). blur YOK, drift YOK.
    *
-   * bottom yüzde → sabit -172.5px (v2 kuyruk düzeltme, H-agnostic):
-   * Yüzde tabanlı bottom viewport yüksekliğine (100svh) bağlıydı, hero_bottom'da
-   * radial normalized distance H'ye bağlı değişiyordu — mobilde (H~700) alpha
-   * ~0.019 (görsel OK), masaüstünde (H~800-1000+) alpha 0.024-0.040 → keskin
-   * yatay bant görünür. Sabit -172.5px ile element.center = hero_bottom - 402.5
-   * her ekranda; hero_bottom noktası ellipse'te tam %70 stop = alpha 0. Kesim
-   * her ekranda temiz. (Element hero dışına 172.5px taşıyor, overflow:hidden
-   * hâlâ gizliyor — kuyruk niyeti fonksiyonel olarak korunuyor.) */
+   * bottom: sabit -172.5px (H-agnostic): element.center = hero_bottom - 402.5
+   * her ekranda; hero_bottom normalized distance = 402.5/575 = tam %70 stop →
+   * alpha 0. Kuyruk hero dışına 172.5px sızıyor ama o bölgede de alpha 0 —
+   * görsel katkısı yok, sadece "hiçbir kesim yok" garantisi. */
   .hero__glow {
     position: absolute;
     bottom: -172.5px;
