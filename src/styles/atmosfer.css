@@ -38,7 +38,9 @@
 
 [data-section="hero"] {
   position: relative;
+  /* Tam ekran hero — fallback 100vh (Safari eski), sonra 100svh (adres çubuğu payı). */
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,19 +53,30 @@
   padding: var(--rhythm-section-bottom) var(--space-5);
 }
 
-/* Glow — legacy/index.html .hero::before VERBATIM (Brief 2b): 800x800 box,
- * bottom -20% left 50% translateX(-50%), radial ellipse at center, stop 0/30/50/70.
- * [data-section="hero"] overflow:hidden ile alttan kırpılır. blur YOK, drift YOK.
+/* Glow — KARAR 114 stop yapısı VERBATIM korundu (4 stop, aynı yüzde/alpha —
+ * banding riski Safari halka sorunu KARAR 131). Geometri brief-hero-v2-duzeltme.md
+ * ADIM 1 ile büyütüldü (800x800 → 1100x1150): kuyruk uzasın, ışık hero sınırını
+ * aşıp gövdeye doğal sızsın. blur YOK, drift YOK. [data-section="hero"]
+ * overflow:hidden ile alttan kırpılır.
+ *
+ * bottom yüzde → sabit -172.5px (v2 kuyruk düzeltme, H-agnostic): yüzde tabanlı
+ * bottom viewport yüksekliğine bağlıydı, hero_bottom'da normalized elliptical
+ * distance H'ye göre değişiyordu — mobilde alpha ~0.019 (OK), masaüstünde
+ * 0.024-0.040 → overflow:hidden keskin kesimi %2-4 opasitede yatay bant olarak
+ * göründü (#manifesto scroll durağında viewport tepesi). Sabit -172.5px ile
+ * element.center = hero_bottom - 402.5 her ekranda; hero_bottom normalized
+ * distance = 402.5/575 = tam %70 stop → alpha 0. Kesim her ekranda temiz.
+ *
  * Default soft (5 oda); OCAK strong override. (KARAR 102 sapma 2)
  * Hero.astro .hero__glow ile birebir aynı geometri/stop (iki dosya hizalı). */
 [data-section="hero"]::after {
   content: '';
   position: absolute;
-  bottom: -20%;
+  bottom: -172.5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 800px;
-  height: 800px;
+  width: 1100px;
+  height: 1150px;
   pointer-events: none;
   z-index: 0;
   background: radial-gradient(
@@ -83,25 +96,6 @@
     rgba(212, 168, 85, 0.02) 50%,
     transparent 70%
   );
-}
-
-/* Bottom fade (Hero B kararı, #30 Brief F sonu Item 6b) — glow alt kenarındaki sert
- * sınırı maskeler + Hero altı coal section'a yumuşak geçiş. fade-out z-index 1 →
- * glow ::after (z-index 0) üstünde, content > * (z-index 1, DOM sonrası) fade'in
- * üstünde. Pseudo ::after children'dan sonra render olur — DOM order çözmek için
- * explicit z-index gerekli. */
-[data-section="hero"] .hero-fade-out {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  /* %25 → %40 (#30 Brief F sonu Item 6b-revize): glow center Hero altından ~220px
-     (~%24 Hero), radial 70% stop'a kadar ~500px (~%55). %25 yalnız glow alt yarısını
-     kapsıyordu — parlak ember üst yarısı fade dışında sert görünüyordu. */
-  height: 40%;
-  pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(to bottom, transparent, var(--coal));
 }
 
 /* İçerik glow'un üstünde */
@@ -1457,6 +1451,13 @@ section[data-section][class^="ocak-"][data-overline]::before {
    Selector: `section[data-section="X"][class^="ocak-"]` → 0,3,2 (baseline 0,2,2 > ezer)
    Anlatı şart koşan blokların text-align center + manifesto font + büyük kapanış vurgusu.
    ───────────────────────────────────────────────────────────────────── */
+
+/* Ana sayfa hero CTA `#manifesto` hedefi — nav sticky altına gizlenmesin.
+ * brief-hero-gecis.md ADIM 3, KARAR 293 (eşik fix) pattern. Dar hedefli:
+ * manifesto tek anchor hedefi, baseline prose'a genellenmiyor. */
+section[data-section="manifesto"] {
+  scroll-margin-top: var(--nav-height);
+}
 
 section[data-section="manifesto"][class^="ocak-"],
 section[data-section="cekirdek-vaat"][class^="ocak-"],
