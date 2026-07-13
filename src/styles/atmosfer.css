@@ -32,9 +32,12 @@
  * #main::before BLOĞU SİLİNDİ — tek otorite Nav.astro'da. */
 
 /* ===== HERO (retarget: .hero* → [data-section="hero"]) ===================== */
-/* Plugin output: <section data-section="hero" data-overline="X"><h1><em>..</h1><p>..</p></section>
+/* Plugin output: <section data-section="hero" data-overline="X"><h1><em>..</h1><p>..</p>
+ *   <div class="hero__scroll"><span class="hero__scroll-line"></span></div></section>
  * .hero__glow div YOK → glow ::after pseudo; overline element YOK → ::before attr;
- * CTA/scroll YOK (component-only, ana sayfa override Brief 3). */
+ * CTA YOK (component-only, ana sayfa override Brief 3).
+ * hero__scroll akış çizgisi hem plugin hem component tarafında EMIT ediliyor;
+ * kural bu dosyada tek noktada — component Hero.astro scoped'ından kaldırıldı. */
 
 [data-section="hero"] {
   position: relative;
@@ -164,6 +167,60 @@
 
 @media (max-width: 768px) {
   [data-section="hero"] { gap: var(--space-4); }
+}
+
+/* ===== HERO SCROLL LINE (component + plugin ortak yüzey) =================== */
+/* brief-hero-v2-duzeltme.md ADIM 2 + ADIM 0-inceleme. Component Hero.astro ve
+ * plugin remark-ocak-sections.ts 'hero' case'i aynı DOM emit ediyor:
+ *   <div class="hero__scroll" aria-hidden><span class="hero__scroll-line"></span></div>
+ * Kural bu tek noktada global: iki dosyada iki kural = drift riski (KARAR 113/114).
+ * Selector [data-section="hero"] .hero__scroll{,-line} → (0,2,0), mevcut
+ * [data-section="hero"] > * (0,1,0) rule'unu yener, position:absolute korunur.
+ *
+ * Delay 1.8s → 0.8s: 1.8s'de kullanıcı zaten kaydırmış olabilir, çizgiyi ilk
+ * görüşün önce olması için gecikmeyi kısalt (staggered intro yerinde kalır,
+ * çizgi kendi scrollAkis'iyle doğar). */
+
+[data-section="hero"] .hero__scroll {
+  position: absolute;
+  /* 48px minimum — masaüstünde chrome payı, mobilde home indicator ~34px altında
+   * kalır → 48px kazanır. Çizgi 64px + 48px offset = 112px hero içinde, overflow
+   * kırpma yok (glow taşma KARAR 114 dokunulmaz). */
+  bottom: max(env(safe-area-inset-bottom, 0px), 48px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+[data-section="hero"] .hero__scroll-line {
+  display: block;
+  width: 1px;
+  height: 64px;
+  /* Yukarısı sönük, aşağısı tam köz — akış yönünü çizgi rengiyle de göster. */
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--ember-alpha-85) 45%,
+    var(--ember) 100%
+  );
+  transform-origin: top center;
+  animation: scrollAkis 2.4s ease-out 0.8s infinite;
+}
+
+@keyframes scrollAkis {
+  0%   { transform: scaleY(0);   opacity: 0;   }
+  18%  { transform: scaleY(0.3); opacity: 1;   }
+  70%  { transform: scaleY(1);   opacity: 0.9; }
+  100% { transform: scaleY(1);   opacity: 0;   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-section="hero"] .hero__scroll-line {
+    animation: none;
+    /* Statik + tam boy + sabit opacity — akış animasyonunun "durgun" hali. */
+    transform: scaleY(1);
+    opacity: 0.55;
+  }
 }
 
 /* ===== SİRADAKİ KAPI (retarget: grid → [data-section]; .ocak-kapi-kart match) === */

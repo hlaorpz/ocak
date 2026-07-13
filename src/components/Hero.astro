@@ -4,10 +4,10 @@
 //   - OCAK → strong (0.12 / 0.05 / 0.02)
 //   - diğer 5 oda → soft (0.10 / 0.04 / 0.02)
 // Glow inline radial-gradient (legacy verbatim, blur YOK, drift YOK)
-// fadeUp staggered intro: eyebrow .3s / title .6s / subtitle .9s / cta 1.2s / scroll 1.8s
-// Scroll indicator: hero dibinde köz akış çizgisi — scrollAkis (transform-origin:top center
-//   scaleY 0→.3→1 + opacity 0→1→.9→0, 2.4s ease-out delay 1.8s infinite,
-//   transparent→ember-alpha-85→ember gradient). brief-hero-v2-duzeltme.md ADIM 2.
+// fadeUp staggered intro: eyebrow .3s / title .6s / subtitle .9s / cta 1.2s
+// Scroll indicator: hero dibinde köz akış çizgisi — .hero__scroll{,-line}. CSS
+//   src/styles/atmosfer.css'te tek noktada (component + plugin ortak). Plugin
+//   remark-ocak-sections.ts 'hero' case'i aynı DOM'u emit eder.
 
 export type Oda = 'OCAK' | 'Yol' | 'Buluşmalar' | 'Yolculuk' | 'Biz' | 'İletişim';
 
@@ -206,57 +206,17 @@ const {
     color: var(--cream);
   }
 
-  /* === SCROLL INDICATOR — hero dibinde köz akış çizgisi ===
-   * brief-hero-v2-duzeltme.md ADIM 2. v1'de hero'nun ortasındaydı (butonun üstünde,
-   * silik gri) — yeri ve gücü yanlıştı. Şimdi hero'nun en alt kenarında, güçlü
-   * köz gradient (aşağı doğru toplanıyor, akış yönü belirgin).
-   *
-   * Safe-area: iOS home indicator olan cihazlarda alt boşluk otomatik dolar;
-   * olmayan cihazlarda 8px minimum nefes payı — max() ile birleştirildi. */
+  /* Scroll indicator .hero__scroll{,-line} kuralları atmosfer.css'te tek
+   * noktada (component + plugin ortak). Element emit'i altta showScroll
+   * prop'una bağlı; showScroll={false} kayıt/form sayfalarında (12 sayfa)
+   * çizgiyi bastırır. */
 
-  .hero__scroll {
-    position: absolute;
-    /* 48px minimum — masaüstünde tarayıcı chrome payı, mobilde home indicator
-     * (safe-area ~34px) 48px altında kalır → 48px kazanır. Çizgi 64px yüksek,
-     * 48px offset ile toplam 112px hero içinde kalıyor → overflow:hidden'da
-     * kırpma yok (glow taşma koruması KARAR 114 dokunulmaz).
-     * v1: 8px'ti → viewport dibinde sıkışıp mobilde chrome altına kayıyordu. */
-    bottom: max(env(safe-area-inset-bottom, 0px), 48px);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-  }
-
-  .hero__scroll-line {
-    display: block;
-    width: 1px;
-    height: 64px;
-    /* Yukarısı sönük, aşağısı tam köz — akış yönünü çizgi rengiyle de göster. */
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      var(--ember-alpha-85) 45%,
-      var(--ember) 100%
-    );
-    transform-origin: top center;
-    /* Staggered intro son eleman: 1.8s delay (legacy sıra korunur). Line kendi
-     * scrollAkis'i ile hem doğar (0% opacity 0) hem sürer — wrapper'a fadeUp
-     * uygulanmaz (fadeUp translateY(0) wrapper'ın translateX(-50%)'ini ezerdi). */
-    animation: scrollAkis 2.4s ease-out 1.8s infinite;
-  }
-
-  @keyframes scrollAkis {
-    0%   { transform: scaleY(0);   opacity: 0;   }
-    18%  { transform: scaleY(0.3); opacity: 1;   }
-    70%  { transform: scaleY(1);   opacity: 0.9; }
-    100% { transform: scaleY(1);   opacity: 0;   }
-  }
-
-  /* === STAGGERED INTRO (legacy verbatim: 0.3 / 0.6 / 0.9 / 1.2 / 1.8s) === */
+  /* === STAGGERED INTRO (legacy verbatim: 0.3 / 0.6 / 0.9 / 1.2s) === */
   /* fadeUp keyframes global.css'te (Brief 4a) */
 
   /* .hero__scroll bu block dışında: fadeUp translateY(0) wrapper'ın translateX
-   * ortalamasını ezerdi. Line kendi scrollAkis'iyle intro yapar (delay 1.8s). */
+   * ortalamasını ezerdi. Line kendi scrollAkis'iyle intro yapar (delay 0.8s,
+   * kural atmosfer.css'te). */
   .hero__overline,
   .hero__title,
   .hero__subtitle,
@@ -280,12 +240,7 @@ const {
       opacity: 1;
       animation: none;
     }
-    .hero__scroll-line {
-      animation: none;
-      /* Statik + tam boy + sabit opacity — akış animasyonunun "durgun" hali. */
-      transform: scaleY(1);
-      opacity: 0.55;
-    }
+    /* .hero__scroll-line reduced-motion durumu atmosfer.css'te (tek noktada). */
   }
 
   /* === RESPONSIVE === */
