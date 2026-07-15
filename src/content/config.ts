@@ -258,6 +258,11 @@ const etkinlikler = defineCollection({
     ]),
     tarihBaslangic: z.string(),
     tarihBitis: z.string().optional(),
+    // Çift-uçlu görünürlük penceresi (brief-kayit-penceresi-v2):
+    // kayitAcilis boşsa hemen görünür, doluysa bugün >= kayitAcilis (o gün dahil).
+    // kayitKapanis ?? tarihBaslangic > bugün (strict, başlangıç günü sabahı düşer).
+    kayitAcilis: z.string().optional(),
+    kayitKapanis: z.string().optional(),
     saat: z.string().optional(),
     // brief-takvim-toparlama-uygula.md ADIM 1 — display fallback için loader'a
     // taşındı; Zoom otomasyonu bu alandan bağımsız (`zoom-olustur.ts` Notion'dan

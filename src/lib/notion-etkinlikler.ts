@@ -21,6 +21,12 @@ export type EtkinlikFrontmatter = {
   tarihBaslangic: string;
   /** Notion date.end — range etkinlikler için; tek günlükte undefined. */
   tarihBitis?: string;
+  /** Notion "Kayıt Açılış Tarihi" — görünürlük ALT ucu.
+   *  Boş → hemen görünür. Dolu → bugün >= kayitAcilis olunca görünmeye başlar (`>=`, o gün dahil). */
+  kayitAcilis?: string;
+  /** Notion "Kayıt Kapanış Tarihi" — cutoff (görünürlük ÜST ucu) referansı.
+   *  Boş → tarihBaslangic referans alınır; cutoff `> bugün` (strict) → başlangıç günü sabahı düşer. Tarihten gün ÇIKARMA. */
+  kayitKapanis?: string;
   saat?: string;
   /**
    * Notion "Zoom Başlangıç Saati" rich_text — Zoom otomasyonu için makine alanı
@@ -152,6 +158,8 @@ export async function fetchEtkinlikler(
 /** Bir Notion etkinlik satırını frontmatter objesine dönüştürür (body yok). */
 export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter {
   const tarih = dateRange(page, 'Tarih');
+  const kayitAcilisRange = dateRange(page, 'Kayıt Açılış Tarihi');
+  const kayitKapanisRange = dateRange(page, 'Kayıt Kapanış Tarihi');
   const saat = richText(page, 'Saat').trim();
   const zoomBaslangicSaati = richText(page, 'Zoom Başlangıç Saati').trim();
   const mekanDetay = richText(page, 'Konum Detay').trim();
@@ -181,6 +189,8 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     notion_id: page.id,
     kayitTipi,
     ...(tarih?.end ? { tarihBitis: tarih.end } : {}),
+    ...(kayitAcilisRange?.start ? { kayitAcilis: kayitAcilisRange.start } : {}),
+    ...(kayitKapanisRange?.start ? { kayitKapanis: kayitKapanisRange.start } : {}),
     ...(saat ? { saat } : {}),
     ...(zoomBaslangicSaati ? { zoomBaslangicSaati } : {}),
     ...(mekanDetay ? { mekanDetay } : {}),

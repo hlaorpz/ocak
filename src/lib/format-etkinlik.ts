@@ -14,10 +14,68 @@ const AYLAR = [
   'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
 ];
 
-/** Bir helper'ın kabul ettiği minimum etkinlik shape'i — collection-agnostik. */
+/** Bir helper'ın kabul ettiği minimum etkinlik shape'i — collection-agnostik.
+ *  Çift-uçlu görünürlük penceresi (brief-kayit-penceresi-v2): kayitAcilis alt uç
+ *  (>= dahil), kayitKapanis ?? tarihBaslangic üst uç (> strict, hariç). tarihBitis
+ *  cutoff'ta REFERANS DEĞİL — sadece detay range gösterimi için (formatEtkinlikTarihi). */
 interface TarihliEtkinlik {
   tarihBaslangic: string;
   tarihBitis?: string;
+  kayitAcilis?: string;
+  kayitKapanis?: string;
+}
+
+/**
+ * Etkinlik `bugun` itibariyle görünürlük penceresinde mi?
+ *
+ * Alt uç (açılış): `kayitAcilis` boşsa koşul yok (hemen görünür). Doluysa
+ *   `bugun >= kayitAcilis` (o gün DAHİL, `>=`).
+ * Üst uç — kayitKapanis varlığına göre asimetri (brief-kapanis-asimetri-duzeltme):
+ *   - VAR:  `kayitKapanis >= bugun` (kapanış günü DAHİL, son dakika kayıt için tam açık).
+ *   - YOK:  `tarihBaslangic > bugun` (başlangıç günü HARİÇ, o gün 00:00 build'inde düşer).
+ *   Ayrım kasıtlı: Kaan'ın kapanışa yazdığı tarih "son gün tam açık"; başlangıç
+ *   fallback'inde ise etkinlik günü sabahı zaten yetişilemez → o gün düşer.
+ *
+ * Parse-fail → defansif göster (o uçtan eleme yapma; içerik hatası UI'da görünür).
+ *
+ * Ortak helper: bugundenSonra + filterDropdownEtkinlikleri + yaklasanUcretliler
+ * üçü de bu fonksiyonu çağırır. Drift riskini kapatmak için tek kaynak.
+ */
+export function pencereIcinde(
+  e: { tarihBaslangic: string; kayitAcilis?: string; kayitKapanis?: string },
+  bugun: Date = new Date(),
+): boolean {
+  const sinir = new Date(bugun);
+  sinir.setHours(0, 0, 0, 0);
+
+  // Üst uç — kayitKapanis var/yok ayrımı (asimetrik).
+  if (e.kayitKapanis) {
+    const pk = parcala(e.kayitKapanis);
+    if (pk) {
+      const dk = new Date(pk.yil, pk.ayIdx, pk.gun);
+      if (!(dk >= sinir)) return false;  // kapanış günü DAHİL (>=)
+    }
+    // parse fail → defansif, eleme yok.
+  } else {
+    const pb = parcala(e.tarihBaslangic);
+    if (pb) {
+      const db = new Date(pb.yil, pb.ayIdx, pb.gun);
+      if (!(db > sinir)) return false;   // başlangıç günü HARİÇ (strict >)
+    }
+    // parse fail → defansif, eleme yok.
+  }
+
+  // Alt uç (açılış) — sadece doluysa; `>=`, açılış günü dahil.
+  if (e.kayitAcilis) {
+    const pa = parcala(e.kayitAcilis);
+    if (pa) {
+      const da = new Date(pa.yil, pa.ayIdx, pa.gun);
+      if (!(sinir >= da)) return false;
+    }
+    // parse fail → defansif, alt uçtan eleme yapma.
+  }
+
+  return true;
 }
 
 /** ISO YYYY-MM-DD(...) → { gun, ayIdx, yil }; parse edilemezse null. */
@@ -61,25 +119,18 @@ export function formatEtkinlikTarihi(baslangic: string, bitis?: string, saat?: s
 }
 
 /**
- * Bugün veya sonrasında gerçekleşecek etkinlikleri döndürür.
- * Range etkinliklerde `tarihBitis` öncelikli (15 Eylül - 6 Ekim aralığında bugün
- * 1 Ekim ise hâlâ aktif, gizlenmez). Tek günlüklerde `tarihBaslangic` referans.
- * Parse edilemeyen tarih → defansif olarak göster (içerik hatası UI'da görünür).
+ * Bugün itibariyle görünürlük penceresinde olan etkinlikleri döndürür.
+ * Çift-uçlu pencere: `kayitAcilis` (varsa, `>=`) alt uç, `kayitKapanis ?? tarihBaslangic`
+ * (strict `>`) üst uç. Uzun range etkinlikte (Yolculuk) `tarihBitis` REFERANS DEĞİL;
+ * başlangıç gününde düşer — "giremeyeceğin etkinlik takvimde durmasın" ilkesi (brief v2).
+ * Parse edilemeyen tarih → defansif olarak göster (o uçtan eleme yapma).
  * @param bugun opsiyonel — test için sabit gün injekte edilir; default `new Date()`.
  */
 export function bugundenSonra<T extends TarihliEtkinlik>(
   etkinlikler: T[],
   bugun: Date = new Date(),
 ): T[] {
-  const sinir = new Date(bugun);
-  sinir.setHours(0, 0, 0, 0);
-  return etkinlikler.filter((e) => {
-    const referans = e.tarihBitis ?? e.tarihBaslangic;
-    const p = parcala(referans);
-    if (!p) return true; // parse fail → defansif göster
-    const d = new Date(p.yil, p.ayIdx, p.gun);
-    return d >= sinir;
-  });
+  return etkinlikler.filter((e) => pencereIcinde(e, bugun));
 }
 
 /**
@@ -111,17 +162,23 @@ export function formatAyEtiketi(key: string): string {
 
 /**
  * /cember + /acik-kapi tarih dropdown'ları için filtre+sort (KARAR — Brief F.6).
- * tip eşleşen + durum∈{Kayıt Açık, Dolu} + bugünden sonraki entry'leri
- * tarihBaslangic'e göre artan sıralı döner.
+ * tip eşleşen + durum∈{Kayıt Açık, Dolu} + görünürlük penceresinde (pencereIcinde)
+ * entry'leri tarihBaslangic'e göre artan sıralı döner.
  *
- * Tasarım turu 3 (ADIM 5) — tarih filtresi eklendi: Notion'da durum hâlâ
- * "Kayıt Açık" kalan geçmiş etkinlikler dropdown'da görünmesin. `bugundenSonra`
- * helper'ı tarihBitis (range varsa) veya tarihBaslangic referansıyla bugünle
- * karşılaştırır; parse hatasında defansif olarak gösterir (içerik hatası UI'da görünür).
- * Notion'daki durum güncellemesi unutulursa kod güvenlik şeridi olur.
+ * Brief v2 (kayit-penceresi): cutoff mantığı `pencereIcinde` ortak helper'a taşındı;
+ * bu helper artık çift-uçlu pencereyi (kayitAcilis ≤ bugün < (kayitKapanis ?? tarihBaslangic))
+ * uygular. Notion'daki durum güncellemesi unutulursa kod güvenlik şeridi olur
+ * (durum filtresi + tarih cutoff'u iki-hatlı).
  */
 interface DropdownEntry {
-  data: { tip: string; durum: string; tarihBaslangic: string; tarihBitis?: string };
+  data: {
+    tip: string;
+    durum: string;
+    tarihBaslangic: string;
+    tarihBitis?: string;
+    kayitAcilis?: string;
+    kayitKapanis?: string;
+  };
 }
 
 export function filterDropdownEtkinlikleri<T extends DropdownEntry>(
@@ -129,21 +186,10 @@ export function filterDropdownEtkinlikleri<T extends DropdownEntry>(
   tip: string,
   bugun: Date = new Date(),
 ): T[] {
-  const sinir = new Date(bugun);
-  sinir.setHours(0, 0, 0, 0);
   return entries
     .filter((e) => e.data.tip === tip)
     .filter((e) => e.data.durum === 'Kayıt Açık' || e.data.durum === 'Dolu')
-    .filter((e) => {
-      // Tasarım turu 3 (ADIM 5) — bugünden eski etkinlikler dropdown'a düşmez.
-      // Range'te tarihBitis öncelik (15 Eyl–6 Eki aralığında 1 Eki ise hâlâ
-      // aktif). Parse hatası → defansif göster.
-      const referans = e.data.tarihBitis ?? e.data.tarihBaslangic;
-      const p = parcala(referans);
-      if (!p) return true;
-      const d = new Date(p.yil, p.ayIdx, p.gun);
-      return d >= sinir;
-    })
+    .filter((e) => pencereIcinde(e.data, bugun))
     .sort(
       (a, b) =>
         new Date(a.data.tarihBaslangic).getTime() -
@@ -155,16 +201,18 @@ export function filterDropdownEtkinlikleri<T extends DropdownEntry>(
  * KayitFormu "Bir kor daha taşı" bölümünde fikir verici referans listesi
  * için yaklaşan ücretli etkinlikler (Brief: brief-odeme-asama2-form-aski-ui.md).
  *
- * Filtre: `Statü == 'Kayıt Açık'` AND `Ücret > 0` AND tarih bugünden sonra.
- * Sıralı (artan), ilk `limit` adet (default 3). Etkinlik formatı/türü bağımsız —
- * askı genel havuz, "şu programa şu kadar" demez; sadece fiyat aralığı için
- * bir his verir.
+ * Filtre: `Statü == 'Kayıt Açık'` AND `Ücret > 0` AND görünürlük penceresinde
+ * (`pencereIcinde` — brief v2 çift-uçlu). Sıralı (artan), ilk `limit` adet
+ * (default 3). Etkinlik formatı/türü bağımsız — askı genel havuz, "şu programa
+ * şu kadar" demez; sadece fiyat aralığı için bir his verir.
  */
 interface YaklasanUcretliEntry {
   data: {
     durum: string;
     tarihBaslangic: string;
     tarihBitis?: string;
+    kayitAcilis?: string;
+    kayitKapanis?: string;
     ucret?: number;
   };
 }
@@ -174,16 +222,9 @@ export function yaklasanUcretliler<T extends YaklasanUcretliEntry>(
   limit = 3,
   bugun: Date = new Date(),
 ): T[] {
-  const sinir = new Date(bugun);
-  sinir.setHours(0, 0, 0, 0);
   return entries
     .filter((e) => e.data.durum === 'Kayıt Açık' && (e.data.ucret ?? 0) > 0)
-    .filter((e) => {
-      const referans = e.data.tarihBitis ?? e.data.tarihBaslangic;
-      const p = parcala(referans);
-      if (!p) return true; // parse fail → defansif göster (bugundenSonra ile aynı politika)
-      return new Date(p.yil, p.ayIdx, p.gun) >= sinir;
-    })
+    .filter((e) => pencereIcinde(e.data, bugun))
     .sort(
       (a, b) =>
         new Date(a.data.tarihBaslangic).getTime() -
