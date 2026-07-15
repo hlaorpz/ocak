@@ -25,18 +25,43 @@ interface TarihliEtkinlik {
   kayitKapanis?: string;
 }
 
+/** Notion date.start formatına uyan YYYY-MM-DD prefix'i (leksikografik = kronolojik). */
+const ISO_GUN = /^\d{4}-\d{2}-\d{2}/;
+
+/** Europe/Istanbul'da verilen Date'in YYYY-MM-DD gün damgası. TZ/DST-güvenli.
+ *  en-CA locale deterministik "YYYY-MM-DD" verir; Notion date.start ile birebir formatta. */
+function trGun(d: Date): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Istanbul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(d);
+}
+
+/** "Bugün" TR gününde, YYYY-MM-DD. Testlerde sabit Date injekte edilir. */
+function bugunTR(bugun: Date = new Date()): string {
+  return trGun(bugun);
+}
+
 /**
  * Etkinlik `bugun` itibariyle görünürlük penceresinde mi?
  *
+ * TR-yerel gün karşılaştırması (brief-tz-duzeltme-europe-istanbul):
+ * Vercel server UTC → eski `new Date()` + `setHours(0,0,0,0)` naïve karşılaştırma
+ * TR 00:00-03:00 arası bir gün geride kalıyordu. Çözüm: "bugün" ve
+ * kayitKapanis/tarihBaslangic hepsi YYYY-MM-DD string → leksikografik karşılaştırma
+ * = kronolojik (Notion date.start zaten bu formatta). Date matematiği yok.
+ *
  * Alt uç (açılış): `kayitAcilis` boşsa koşul yok (hemen görünür). Doluysa
- *   `bugun >= kayitAcilis` (o gün DAHİL, `>=`).
- * Üst uç — kayitKapanis varlığına göre asimetri (brief-kapanis-asimetri-duzeltme):
+ *   `bugun >= kayitAcilis` (o gün DAHİL).
+ * Üst uç — kayitKapanis varlığına göre asimetri:
  *   - VAR:  `kayitKapanis >= bugun` (kapanış günü DAHİL, son dakika kayıt için tam açık).
  *   - YOK:  `tarihBaslangic > bugun` (başlangıç günü HARİÇ, o gün 00:00 build'inde düşer).
  *   Ayrım kasıtlı: Kaan'ın kapanışa yazdığı tarih "son gün tam açık"; başlangıç
  *   fallback'inde ise etkinlik günü sabahı zaten yetişilemez → o gün düşer.
  *
- * Parse-fail → defansif göster (o uçtan eleme yapma; içerik hatası UI'da görünür).
+ * Format-fail → defansif göster (o uçtan eleme yapma; içerik hatası UI'da görünür).
  *
  * Ortak helper: bugundenSonra + filterDropdownEtkinlikleri + yaklasanUcretliler
  * üçü de bu fonksiyonu çağırır. Drift riskini kapatmak için tek kaynak.
@@ -45,35 +70,24 @@ export function pencereIcinde(
   e: { tarihBaslangic: string; kayitAcilis?: string; kayitKapanis?: string },
   bugun: Date = new Date(),
 ): boolean {
-  const sinir = new Date(bugun);
-  sinir.setHours(0, 0, 0, 0);
+  const bugunStr = bugunTR(bugun);
 
   // Üst uç — kayitKapanis var/yok ayrımı (asimetrik).
   if (e.kayitKapanis) {
-    const pk = parcala(e.kayitKapanis);
-    if (pk) {
-      const dk = new Date(pk.yil, pk.ayIdx, pk.gun);
-      if (!(dk >= sinir)) return false;  // kapanış günü DAHİL (>=)
+    // kayitKapanis dolu ama bozuk → defansif, eleme yok (fallback'e DÜŞME — eski davranış).
+    if (ISO_GUN.test(e.kayitKapanis)) {
+      if (!(e.kayitKapanis >= bugunStr)) return false;  // kapanış günü DAHİL (>=)
     }
-    // parse fail → defansif, eleme yok.
-  } else {
-    const pb = parcala(e.tarihBaslangic);
-    if (pb) {
-      const db = new Date(pb.yil, pb.ayIdx, pb.gun);
-      if (!(db > sinir)) return false;   // başlangıç günü HARİÇ (strict >)
-    }
-    // parse fail → defansif, eleme yok.
+  } else if (e.tarihBaslangic && ISO_GUN.test(e.tarihBaslangic)) {
+    if (!(e.tarihBaslangic > bugunStr)) return false;   // başlangıç günü HARİÇ (strict >)
   }
+  // Boş/bozuk üst uç → defansif göster.
 
   // Alt uç (açılış) — sadece doluysa; `>=`, açılış günü dahil.
-  if (e.kayitAcilis) {
-    const pa = parcala(e.kayitAcilis);
-    if (pa) {
-      const da = new Date(pa.yil, pa.ayIdx, pa.gun);
-      if (!(sinir >= da)) return false;
-    }
-    // parse fail → defansif, alt uçtan eleme yapma.
+  if (e.kayitAcilis && ISO_GUN.test(e.kayitAcilis)) {
+    if (!(bugunStr >= e.kayitAcilis)) return false;
   }
+  // Boş/bozuk alt uç → defansif göster.
 
   return true;
 }

@@ -14,81 +14,119 @@ interface MockEtkinlik {
   baslik?: string;
 }
 
-describe('etkinlik helpers — brief v2 çift-uçlu pencere', () => {
-  // Brief v2 senaryosu 1: açılış boş + kapanış boş + başlangıç 14 Ekim.
-  // 13 Ekim'e kadar görünür, 14 Ekim 00:00 build'inde düşer (strict > başlangıç).
+// Test literalleri — hepsi TR öğle saatiyle +03:00 offset. Öğle seçimi:
+// gün sınırından uzak, hiçbir CI TZ'inde (UTC/PST/JST) kaymaz. TR günü sabit kalır.
+const trOgle = (iso: string) => new Date(`${iso}T12:00:00+03:00`);
+
+describe('etkinlik helpers — brief v2 çift-uçlu pencere + TR-yerel string-gün', () => {
+  // Cutoff boş + başlangıç 14 Ekim → 13 Ekim görünür, 14 Ekim düşer (strict >).
   it('cutoff boş — başlangıç günü sabahı düşer (strict >)', () => {
     const liste: MockEtkinlik[] = [
       { tarihBaslangic: '2026-10-14', baslik: 'etkinlik' },
     ];
-    // 13 Ekim: hâlâ görünür (14 > 13 = true).
-    expect(bugundenSonra(liste, new Date(2026, 9, 13)).map((e) => e.baslik)).toEqual(['etkinlik']);
-    // 14 Ekim (etkinlik günü): düşer (14 > 14 = false).
-    expect(bugundenSonra(liste, new Date(2026, 9, 14))).toEqual([]);
+    // 13 Ekim: hâlâ görünür ("2026-10-14" > "2026-10-13" = true).
+    expect(bugundenSonra(liste, trOgle('2026-10-13')).map((e) => e.baslik)).toEqual(['etkinlik']);
+    // 14 Ekim: düşer ("2026-10-14" > "2026-10-14" = false).
+    expect(bugundenSonra(liste, trOgle('2026-10-14'))).toEqual([]);
   });
 
-  // Brief v2 + asimetri düzeltmesi: kayitKapanis günü DAHİL (>=), ertesi gün düşer.
-  // Kaan niyeti: son dakika kayıt için kapanışa yazdığı gün tam açık kalsın.
+  // kayitKapanis günü DAHİL (>=), ertesi gün düşer.
   it('kayitKapanis dolu — kapanış günü tam açık, ertesi gün düşer (>=)', () => {
     const liste: MockEtkinlik[] = [
       { tarihBaslangic: '2026-10-14', kayitKapanis: '2026-10-12', baslik: 'etkinlik' },
     ];
-    // 11 Ekim: pencere içi (12 >= 11 = true).
-    expect(bugundenSonra(liste, new Date(2026, 9, 11)).map((e) => e.baslik)).toEqual(['etkinlik']);
-    // 12 Ekim (kapanış günü): DAHİL (12 >= 12 = true), tam gün açık.
-    expect(bugundenSonra(liste, new Date(2026, 9, 12)).map((e) => e.baslik)).toEqual(['etkinlik']);
-    // 13 Ekim: düşer (12 >= 13 = false).
-    expect(bugundenSonra(liste, new Date(2026, 9, 13))).toEqual([]);
+    // 11 Ekim: pencere içi ("2026-10-12" >= "2026-10-11" = true).
+    expect(bugundenSonra(liste, trOgle('2026-10-11')).map((e) => e.baslik)).toEqual(['etkinlik']);
+    // 12 Ekim (kapanış günü): DAHİL, tam gün açık.
+    expect(bugundenSonra(liste, trOgle('2026-10-12')).map((e) => e.baslik)).toEqual(['etkinlik']);
+    // 13 Ekim: düşer ("2026-10-12" >= "2026-10-13" = false).
+    expect(bugundenSonra(liste, trOgle('2026-10-13'))).toEqual([]);
   });
 
-  // Brief v2 senaryosu 3: uzun range (Yolculuk) başlayınca düşer.
-  // tarihBitis ARTIK cutoff referansı DEĞİL — sadece tarihBaslangic.
+  // Uzun range başlayınca düşer — tarihBitis referans DEĞİL.
   it('uzun range — başlangıç gününde düşer (tarihBitis referans değil)', () => {
     const liste: MockEtkinlik[] = [
       { tarihBaslangic: '2026-10-14', tarihBitis: '2026-11-06', baslik: 'yolculuk' },
     ];
-    // 13 Ekim: görünür (14 > 13 = true).
-    expect(bugundenSonra(liste, new Date(2026, 9, 13)).map((e) => e.baslik)).toEqual(['yolculuk']);
-    // 14 Ekim (başlangıç): düşer (14 > 14 = false), tarihBitis 6 Kasım'a bakmaz.
-    expect(bugundenSonra(liste, new Date(2026, 9, 14))).toEqual([]);
-    // 20 Ekim (range ortası): hâlâ düşük.
-    expect(bugundenSonra(liste, new Date(2026, 9, 20))).toEqual([]);
+    expect(bugundenSonra(liste, trOgle('2026-10-13')).map((e) => e.baslik)).toEqual(['yolculuk']);
+    expect(bugundenSonra(liste, trOgle('2026-10-14'))).toEqual([]);
+    expect(bugundenSonra(liste, trOgle('2026-10-20'))).toEqual([]);
   });
 
-  // Brief v2 açılış senaryosu: kayitAcilis 10 Ekim → 9 Ekim görünmez, 10 Ekim görünür.
+  // kayitAcilis 10 Ekim → 9 Ekim görünmez, 10 Ekim görünür.
   it('kayitAcilis dolu — açılış günü dahil (>=), önceki gün görünmez', () => {
     const liste: MockEtkinlik[] = [
       { tarihBaslangic: '2026-10-14', kayitAcilis: '2026-10-10', baslik: 'etkinlik' },
     ];
-    // 9 Ekim: 9 >= 10 = false → görünmez.
-    expect(bugundenSonra(liste, new Date(2026, 9, 9))).toEqual([]);
-    // 10 Ekim (açılış günü): 10 >= 10 = true → görünür.
-    expect(bugundenSonra(liste, new Date(2026, 9, 10)).map((e) => e.baslik)).toEqual(['etkinlik']);
-    // 13 Ekim (arifel): görünür (üst uç 14 > 13 = true).
-    expect(bugundenSonra(liste, new Date(2026, 9, 13)).map((e) => e.baslik)).toEqual(['etkinlik']);
+    expect(bugundenSonra(liste, trOgle('2026-10-09'))).toEqual([]);
+    expect(bugundenSonra(liste, trOgle('2026-10-10')).map((e) => e.baslik)).toEqual(['etkinlik']);
+    expect(bugundenSonra(liste, trOgle('2026-10-13')).map((e) => e.baslik)).toEqual(['etkinlik']);
   });
 
-  // Brief v2 + asimetri: açılış 10 + kapanış 12 → pencere 10-12 Ekim DAHİL.
+  // Çift-uç: açılış 10 + kapanış 12 → pencere 10-12 Ekim DAHİL.
   it('çift-uç — açılış 10 + kapanış 12, pencere 10-12 dahil, 13 düşer', () => {
     const liste: MockEtkinlik[] = [
       { tarihBaslangic: '2026-10-14', kayitAcilis: '2026-10-10', kayitKapanis: '2026-10-12', baslik: 'etkinlik' },
     ];
-    expect(bugundenSonra(liste, new Date(2026, 9, 9))).toEqual([]);           // alt uçtan önce
-    expect(bugundenSonra(liste, new Date(2026, 9, 10)).length).toBe(1);       // alt uç dahil (>=)
-    expect(bugundenSonra(liste, new Date(2026, 9, 11)).length).toBe(1);       // pencere içi
-    expect(bugundenSonra(liste, new Date(2026, 9, 12)).length).toBe(1);       // üst uç dahil (12 >= 12)
-    expect(bugundenSonra(liste, new Date(2026, 9, 13))).toEqual([]);          // pencere sonrası (12 >= 13 false)
+    expect(bugundenSonra(liste, trOgle('2026-10-09'))).toEqual([]);
+    expect(bugundenSonra(liste, trOgle('2026-10-10')).length).toBe(1);
+    expect(bugundenSonra(liste, trOgle('2026-10-11')).length).toBe(1);
+    expect(bugundenSonra(liste, trOgle('2026-10-12')).length).toBe(1);
+    expect(bugundenSonra(liste, trOgle('2026-10-13'))).toEqual([]);
   });
 
-  // pencereIcinde helper doğrudan test (public API).
-  it('pencereIcinde — parse-fail defansif göster (bozuk tarih)', () => {
-    // Bozuk üst uç → defansif, üst uçtan eleme yapma; sonuç true.
-    expect(pencereIcinde({ tarihBaslangic: 'bozuk-tarih' }, new Date(2026, 9, 14))).toBe(true);
-    // Bozuk alt uç + geçerli üst uç ileride → true.
+  // ═══════════════════════════════════════════════════════════════════════════
+  // KRİTİK — UTC/TR sınır (Vercel bug'ının birebir senaryosu)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Vercel server UTC 15 Tem 21:29 = TR 16 Tem 00:29. Naïve `new Date()` +
+  // `setHours(0,0,0,0)` server-yerel (UTC) çalışıyordu → sinir = 15 Tem 00:00Z,
+  // kayitKapanis 15 Tem >= 15 Tem = true → düşmeliyken KALIYORDU. TR-yerel
+  // string-gün karşılaştırması bunu düzeltir: bugunTR = "2026-07-16", kayitKapanis
+  // = "2026-07-15" → "2026-07-15" >= "2026-07-16" = false → DÜŞER.
+  it('UTC/TR sınır — Vercel UTC hâlâ 15 Tem, TR 16 Tem → kapanış 15 Tem DÜŞMELİ', () => {
+    const liste: MockEtkinlik[] = [
+      { tarihBaslangic: '2026-07-26', kayitKapanis: '2026-07-15', baslik: 'seremoni' },
+    ];
+    // TR 16 Tem 00:29 = UTC 15 Tem 21:29 (Kaan bug'ının deployment timestamp'i).
+    const bugun = new Date('2026-07-15T21:29:00Z');
+    expect(bugundenSonra(liste, bugun)).toEqual([]);
+  });
+
+  it('UTC/TR sınır — aynı bugun, kapanış 16 Tem → KALIR', () => {
+    const liste: MockEtkinlik[] = [
+      { tarihBaslangic: '2026-07-26', kayitKapanis: '2026-07-16', baslik: 'seremoni' },
+    ];
+    const bugun = new Date('2026-07-15T21:29:00Z');
+    // bugunTR = "2026-07-16", kayitKapanis = "2026-07-16" → dahil, kalır.
+    expect(bugundenSonra(liste, bugun).map((e) => e.baslik)).toEqual(['seremoni']);
+  });
+
+  it('UTC/TR sınır — TR 23:59 hâlâ aynı gün (UTC ertesi gün 20:59)', () => {
+    const liste: MockEtkinlik[] = [
+      { tarihBaslangic: '2026-07-16', kayitKapanis: '2026-07-15', baslik: 'seremoni' },
+    ];
+    // TR 15 Tem 23:59 = UTC 15 Tem 20:59. Naïve kod TR gün "16 Tem" sayardı,
+    // TR-yerel doğru "15 Tem" der → kayitKapanis 15 >= 15 = true → kalır.
+    const bugun = new Date('2026-07-15T20:59:00Z');
+    expect(bugundenSonra(liste, bugun).map((e) => e.baslik)).toEqual(['seremoni']);
+  });
+
+  // pencereIcinde defansif — bozuk tarih formatı gösterilmeli (eleme yok).
+  it('pencereIcinde — format-fail defansif göster (bozuk tarih)', () => {
+    // Bozuk üst uç (kayitKapanis) → defansif, eleme yok; sonuç true.
+    expect(
+      pencereIcinde(
+        { tarihBaslangic: '2026-12-01', kayitKapanis: 'bozuk' },
+        trOgle('2026-10-14'),
+      ),
+    ).toBe(true);
+    // Bozuk tarihBaslangic (kayitKapanis boş, fallback bozuk) → defansif göster.
+    expect(pencereIcinde({ tarihBaslangic: 'bozuk-tarih' }, trOgle('2026-10-14'))).toBe(true);
+    // Bozuk alt uç (kayitAcilis) → defansif, alt uçtan eleme yok.
     expect(
       pencereIcinde(
         { tarihBaslangic: '2026-12-01', kayitAcilis: 'bozuk' },
-        new Date(2026, 9, 14),
+        trOgle('2026-10-14'),
       ),
     ).toBe(true);
   });
