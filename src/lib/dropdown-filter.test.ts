@@ -21,7 +21,8 @@ const mk = (id: string, tip: string, durum: string, tarih: string): MockEntry =>
 
 // Tasarım turu 3 ADIM 5 sonrası filterDropdownEtkinlikleri tarih-bağımlı;
 // testler tip/durum/sort iddialarını değişmez `bugun` ile deterministik tutar.
-const BUGUN = new Date('2026-01-01');
+// TR öğle saati + +03:00 offset: TR günü sabit, CI TZ'inden bağımsız (brief-tz-duzeltme).
+const BUGUN = new Date('2026-01-01T12:00:00+03:00');
 
 describe('filterDropdownEtkinlikleri — tip filter', () => {
   it('Çember: sadece tip="Çember" entry\'leri döner, diğer tipler elenir', () => {
