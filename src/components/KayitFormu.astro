@@ -428,10 +428,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               </p>
             </div>
 
-            {/* Güven şeridi KALDIRILDI (PayTR geçişi, KARAR 260 geri alındı).
-                PayTR görseli hazır olunca yerine yeni şerit gelecek; şimdilik
-                ödeme bloğu şeritsiz. Mesafeli onay checkbox ayrı blok
-                (KARAR 261 yasal zorunluluk) — o dokunulmadı. */}
           </div>
         </div>
       </details>
@@ -478,6 +474,26 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       <button type="submit" class="kayit-formu__submit">Kaydımı Gönder</button>
 
       <p class="kayit-formu__error" role="alert" hidden></p>
+
+      {/* KARAR 363 — Yasal link şeridi (footer→lokal). SSR gate:
+          formdaDirektEtkinlikVar true → 4 link; false → 2 link.
+          Runtime: satış-linkleri (Mesafeli + Teslimat) mesafeli checkbox
+          ile aynı görünürlük — syncMesafeliGorunum toggle eder.
+          Success state: form JSX'i içinde → success'te form gizlenirken
+          şerit de otomatik gizlenir. */}
+      <nav class="kayit-formu__yasal" aria-label="Yasal">
+        <a href="/hakkimizda">Hakkımızda</a>
+        <span class="kayit-formu__yasal-ayrac" aria-hidden="true">·</span>
+        <a href="/gizlilik">Gizlilik ve KVKK</a>
+        {formdaDirektEtkinlikVar && (
+          <span class="kayit-formu__yasal-satis" data-kf-yasal-satis hidden>
+            <span class="kayit-formu__yasal-ayrac" aria-hidden="true">·</span>
+            <a href="/mesafeli-satis">Mesafeli Satış</a>
+            <span class="kayit-formu__yasal-ayrac" aria-hidden="true">·</span>
+            <a href="/teslimat-iade">Teslimat ve İade</a>
+          </span>
+        )}
+      </nav>
     </form>
     )}
 
@@ -848,10 +864,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     outline: none;
   }
 
-  /* === Ödeme güven şeridi KALDIRILDI (PayTR geçişi, KARAR 260 geri alındı).
-   * Eski `.kayit-formu__guven` blokları silindi; PayTR görseli hazır olunca
-   * yeni şerit için yeniden CSS yazılacak. Mesafeli checkbox ayrı — dokunulmadı. */
-
   /* === Aşama 5 (KARAR 253 + 255 aday) — Mesafeli Satış onayı ============
    * KVKK ile aynı pattern, ayrı checkbox. Görünürlük JS ile (direkt &&
    * ücret>0 && !tam-burs). Hidden-required tuzağı önlemi: gizli iken
@@ -897,6 +909,40 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     color: var(--cream-soft);
     outline: none;
   }
+
+  /* === KARAR 363 — Yasal link şeridi (footer→lokal) ====================
+   * Global footer'daki eski `.footer__yasal` desenini taşır: ayraç `·`
+   * (KARAR 201), nötr text-muted, hover cream-soft (ember DEĞİL — dikkat
+   * çekmemeli). Runtime `[data-kf-yasal-satis]` mesafeli ile aynı gate. */
+  .kayit-formu__yasal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0 var(--space-3);
+    margin-top: var(--space-5);
+    font-size: var(--text-xs);
+    line-height: 1.5;
+  }
+  .kayit-formu__yasal a {
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .kayit-formu__yasal a:hover,
+  .kayit-formu__yasal a:focus-visible {
+    color: var(--cream-soft);
+    outline: none;
+  }
+  .kayit-formu__yasal-ayrac {
+    color: var(--text-muted);
+    opacity: 0.6;
+    user-select: none;
+  }
+  .kayit-formu__yasal-satis {
+    display: contents;
+  }
+  .kayit-formu__yasal-satis[hidden] { display: none; }
 
   /* === Submit === */
   .kayit-formu__submit {
@@ -1669,6 +1715,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // engellenir + kullanıcı hata mesajını göremez → ölü kilit).
     const mesafeliBlok = form.querySelector<HTMLElement>('[data-kf-mesafeli]');
     const mesafeliCb = form.querySelector<HTMLInputElement>('[data-kf-mesafeli-cb]');
+    // KARAR 363 — Yasal şerit satış-linkleri (Mesafeli + Teslimat) mesafeli
+    // ile aynı görünürlük gate'inde. SSR gate false ise DOM'da yoktur.
+    const yasalSatisBlok = form.querySelector<HTMLElement>('[data-kf-yasal-satis]');
     function mesafeliGerekliMi(): boolean {
       const { ucret } = aktifUcret();
       const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
@@ -1678,6 +1727,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       if (!mesafeliBlok || !mesafeliCb) return;
       const gorunur = mesafeliGerekliMi();
       mesafeliBlok.hidden = !gorunur;
+      if (yasalSatisBlok) yasalSatisBlok.hidden = !gorunur;
       if (gorunur) {
         mesafeliCb.setAttribute('required', '');
       } else {
