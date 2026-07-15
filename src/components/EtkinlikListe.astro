@@ -1,0 +1,72 @@
+---
+// EtkinlikListe — takvim + sonraki-bulusma render KABUĞU (brief-tani-tek-kabuk Yol B).
+// İki yüzey (EtkinlikTakvimi ay grubu × N, SonrakiBulusma tek liste) aynı list+item
+// markup + CSS'i paylaşır. Fark sadece hangi etkinlik seti çekiliyor.
+//
+// KARAR 329 tek-gerçek: liste yapısı TEK dosyada — drift matematiksel imkansız.
+// Baseline bullet (`section[data-section][class^="ocak-"] ul li::before`) sadece
+// burada reset edilir (atmosfer.css `.ocak-etkinlik-liste li::before content:none`).
+//
+// Kart başlığı her yerde `<span>` (default `variant='satir'`): baseline
+// `section... h3` prose kural kart başlığına saldırmasın (dikey ritim tutmuyordu).
+// Semantik h2 "İlk Kıvılcım" / "En Yakın X" / ay-baslik'te; kart span yeter.
+import type { CollectionEntry } from 'astro:content';
+import EtkinlikKart from './EtkinlikKart.astro';
+
+type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
+
+interface Props {
+  etkinlikler: EtkinlikData[];
+  /** Kart sağında "Kayıt ol →" mikro-linki. Home + takvim true; format sayfası
+   *  false (buton ayrı kayit-cta bloğunda — KARAR 332). */
+  showKayitLink?: boolean;
+  /** Takvim ay grubu key'i (`2026-07`). Client tür filtresi bu attr'dan ay
+   *  gruplarını buluyor. Sonraki-bulusma tek liste, prop atlanır → attr yok. */
+  ayKey?: string;
+}
+
+const { etkinlikler, showKayitLink = true, ayKey } = Astro.props;
+---
+<ul class="ocak-etkinlik-liste" data-ay-key={ayKey}>
+  {etkinlikler.map((e) => (
+    <li class="ocak-etkinlik-liste__satir" data-tip={e.tip}>
+      <EtkinlikKart etkinlik={e} variant="satir" showKayitLink={showKayitLink} />
+    </li>
+  ))}
+</ul>
+
+<style>
+  /* Liste ritmi — takvim ay-grup + sonraki-bulusma tek liste ORTAK.
+   * Üst + alt gri ayraç <ul> border'ında (brief-kart-cizgi-koz-dugme): kartın
+   * kendi border-top'u ember border-left ile köşede 45° kesişip 2px içeriden
+   * başlıyordu → ul-level border ile üst/alt uçlar közün sol edge'ine hizalı,
+   * köz iki çizginin sol ucunu birleştirir. Satırlar arası paylaşılan tek
+   * ayraç: adjacent sibling `border-top`. max-width parent section (baseline
+   * `--max-w-prose` 38rem) daraltır — burada max-width GEREKSİZ. */
+  .ocak-etkinlik-liste {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto var(--space-8);
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+  }
+
+  .ocak-etkinlik-liste[hidden] {
+    display: none;
+  }
+
+  .ocak-etkinlik-liste__satir {
+    margin: 0;
+  }
+
+  /* Satırlar arası paylaşılan tek gri ayraç — 1. satır ul border-top'unu alır;
+   * 2. ve sonraki satırlar kendi border-top'u. Son satırın altında ul
+   * border-bottom var. Ayraçlar hep tekli. */
+  .ocak-etkinlik-liste__satir + .ocak-etkinlik-liste__satir {
+    border-top: 1px solid var(--ash);
+  }
+
+  .ocak-etkinlik-liste__satir[hidden] {
+    display: none;
+  }
+</style>

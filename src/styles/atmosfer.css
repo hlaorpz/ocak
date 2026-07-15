@@ -1390,6 +1390,26 @@ section[data-section][class^="ocak-"] ul li::before {
   line-height: 1;
 }
 
+/* Etkinlik liste kabuğu (EtkinlikListe component — takvim + sonraki-bulusma
+ * ortak, brief-tani-tek-kabuk) bu prose bullet'ı istemez. EtkinlikKart--satir
+ * kendi kabuğunu verir (sol ember bar + üst ayraç). Tek reset, iki yüzey.
+ * Specificity: baseline `section[data-section][class^="ocak-"] ul li::before`
+ * (0,2,4)'ü aşmak için parent chain (0,3,5). */
+section[data-section][class^="ocak-"] .ocak-etkinlik-liste li::before {
+  content: none;
+}
+
+/* EtkinlikListe satırı prose li ritmini devralmasın — baseline
+ * `section[data-section][class^="ocak-"] li` (0,2,3) `padding-left: 32px`
+ * (közün ul border sol edge'inden içeri itilmesi = hizasız çizgi) ve
+ * `margin-bottom: 2rem` (satırlar arası fazla boşluk + çift çizgi ilüzyonu)
+ * bizim satır kabuğuna uymuyor. Aynı specificity paterni (0,3,4) parent
+ * chain ile baseline'ı ez (brief-baslik-dil-cizgi-takvim İş 4/5/6 tek fix). */
+section[data-section][class^="ocak-"] .ocak-etkinlik-liste__satir {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
 section[data-section][class^="ocak-"] ol {
   counter-reset: ocak-list;
 }
@@ -1633,6 +1653,7 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
      * --rhythm-section-top (3rem) alt — aslında mobilde bir kademe küçük. */
     padding: var(--rhythm-heading-before-m) var(--space-5) var(--rhythm-section-top);
   }
+
   /* Prose bloklar mobilde bir tık sıkışır — --rhythm-block-mobile (1.5rem). */
   section[data-section][class^="ocak-"] p,
   section[data-section][class^="ocak-"] li,
@@ -1647,6 +1668,33 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
   section[data-section][class^="ocak-"] h2,
   section[data-section][class^="ocak-"] h3 {
     margin-top: var(--rhythm-heading-before-m);
+  }
+}
+
+/* Kart section'ları üçlemenin (siradaki-kapi) ORTA KOLON genişliğinde + ortalı —
+ * kart alttaki orta kartla alt alta gri çizgiler birebir hizalanır
+ * (brief-kart-orta-kolon-FINAL). Mobil (<768px, siradaki-kapi 1-kolon) → cap
+ * yok, tam viewport. Desktop → (viewport − 2 × grid-gap) / 3, gap dahil hesap.
+ * grid-gap `var(--space-4)` siradaki-kapi ile ORTAK token → tek kaynak.
+ *
+ * Baseline (satır 1261 `section[data-section][class^="ocak-"]` max-width 38rem
+ * + padding-inline 2rem) ve mobil baseline (satır 1650 padding-x 1.5rem) —
+ * ikisi de aynı specificity (0,2,1); bu blok mobil baseline'ın SONRASINDA →
+ * source-order tie-break kazanır (etkinlik-takvimi + sonraki-bulusma +
+ * kayit-cta üçlüsü için hem mobil hem desktop). */
+section[data-section="etkinlik-takvimi"][class^="ocak-"],
+section[data-section="sonraki-bulusma"][class^="ocak-"],
+section[data-section="kayit-cta"][class^="ocak-"] {
+  max-width: none;
+  padding-inline: 0;
+}
+
+@media (min-width: 768px) {
+  section[data-section="etkinlik-takvimi"][class^="ocak-"],
+  section[data-section="sonraki-bulusma"][class^="ocak-"],
+  section[data-section="kayit-cta"][class^="ocak-"] {
+    max-width: calc((100vw - 2 * var(--space-4)) / 3);
+    margin-inline: auto;
   }
 }
 
@@ -1820,13 +1868,13 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
  * ============================================================================ */
 section[data-section="kayit-cta"][class^="ocak-"] {
   text-align: center;
-  /* brief-tum-kartlar-birebir: padding-x SIFIR — buton görsel genişliği kart
-   * section'ıyla birebir eşit (aynı `--kart-max` ortalı sütun). Padding-y sadece
-   * kart altına bitişik olmadığında (detay sayfası) hafif dikey nefes. */
+  /* Padding-x SIFIR — buton görsel genişliği kart section'ıyla birebir eşit.
+   * Padding-y kart altına bitişik olmadığında (detay sayfası) hafif dikey
+   * nefes. max-width + margin-inline yatay kural bu dosyanın yukarısındaki
+   * üçlü section override'ında (brief-kart-orta-kolon-FINAL) — orta kolon
+   * genişliğinde ortalı, `--kart-max` sabiti düştü. */
   padding: clamp(0.5rem, 1vw, 1rem) 0;
-  margin: clamp(0.75rem, 1.5vw, 1.5rem) auto;
-  /* Kart bloğuyla birebir dar sütun — tek token, tek yerden ayar. */
-  max-width: var(--kart-max);
+  margin-block: clamp(0.75rem, 1.5vw, 1.5rem);
 }
 
 /* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton

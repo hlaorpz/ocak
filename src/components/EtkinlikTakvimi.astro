@@ -20,7 +20,7 @@ import {
   formatAyEtiketi,
 } from '../lib/format-etkinlik';
 import { formatEtiket, KATEGORI_SIRA } from '../lib/etkinlik-kategori';
-import EtkinlikKart from './EtkinlikKart.astro';
+import EtkinlikListe from './EtkinlikListe.astro';
 
 const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
 const tum = (await getCollection('etkinlikler'))
@@ -69,13 +69,7 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
           id={`ay-${key}`}
           data-ay-key={key}
         >{formatAyEtiketi(key)}</h2>
-        <ul class="ocak-etkinlik-takvimi__liste" data-ay-key={key}>
-          {etkinlikler.map((e) => (
-            <li class="ocak-etkinlik-takvimi__satir" data-tip={e.tip}>
-              <EtkinlikKart etkinlik={e} variant="satir" />
-            </li>
-          ))}
-        </ul>
+        <EtkinlikListe etkinlikler={etkinlikler} ayKey={key} />
       </>
       ))}
       <p class="ocak-etkinlik-takvimi__bos ocak-etkinlik-takvimi__bos--filtre" hidden>
@@ -92,8 +86,8 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
   koklar.forEach((kok) => {
     const dugmeler = kok.querySelectorAll<HTMLButtonElement>('.ocak-etkinlik-takvimi__tur');
     if (dugmeler.length === 0) return;
-    const satirlar = kok.querySelectorAll<HTMLElement>('.ocak-etkinlik-takvimi__satir');
-    const listeler = kok.querySelectorAll<HTMLUListElement>('ul.ocak-etkinlik-takvimi__liste[data-ay-key]');
+    const satirlar = kok.querySelectorAll<HTMLElement>('.ocak-etkinlik-liste__satir');
+    const listeler = kok.querySelectorAll<HTMLUListElement>('ul.ocak-etkinlik-liste[data-ay-key]');
     const bosFiltre = kok.querySelector<HTMLElement>('.ocak-etkinlik-takvimi__bos--filtre');
 
     function uygula(secilen: string) {
@@ -104,7 +98,7 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
         if (eslesti) gorunenToplam++;
       });
       listeler.forEach((liste) => {
-        const acik = liste.querySelector('.ocak-etkinlik-takvimi__satir:not([hidden])');
+        const acik = liste.querySelector('.ocak-etkinlik-liste__satir:not([hidden])');
         const key = liste.dataset.ayKey ?? '';
         const baslik = kok.querySelector<HTMLElement>(`h2.ocak-etkinlik-takvimi__ay-baslik[data-ay-key="${key}"]`);
         liste.hidden = !acik;
@@ -201,28 +195,10 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
     display: none;
   }
 
-  /* --- KOMPAKT SATIR LİSTESİ ---
-   * <li> sadece list item marker + data-tip carrier. Satır gövdesi (chip/rozet/
-   * başlık/meta/rozet/stretched/kayıt) EtkinlikKart variant="satir" içinde. */
-  .ocak-etkinlik-takvimi__liste {
-    list-style: none;
-    padding: 0;
-    max-width: 48rem;
-    margin: 0 auto var(--space-8);
-    border-bottom: 1px solid var(--ash);
-  }
-
-  .ocak-etkinlik-takvimi__liste[hidden] {
-    display: none;
-  }
-
-  .ocak-etkinlik-takvimi__satir {
-    margin: 0;
-  }
-
-  .ocak-etkinlik-takvimi__satir[hidden] {
-    display: none;
-  }
+  /* KOMPAKT SATIR LİSTESİ: EtkinlikListe component (ortak kabuk) tarafından
+   * render ediliyor — brief-tani-tek-kabuk Yol B. Buradaki __liste + __satir
+   * CSS'i EtkinlikListe scoped'e taşındı; sınıflar .ocak-etkinlik-liste* oldu.
+   * Client tür filtresi selector'ları da güncellendi. */
 
   /* Boş state — italik + ortalı, smoke ton. */
   .ocak-etkinlik-takvimi__bos {

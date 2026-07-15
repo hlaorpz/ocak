@@ -147,20 +147,23 @@ const kartClass = [
     gap: var(--space-4);
   }
 
-  /* ============ Dış kabuk — SATIR ============ */
+  /* ============ Dış kabuk — SATIR ============
+   * KARAR 336 satir'e de genişletildi: sol ember bar HER satırda. `--one` text
+   * rozeti öne-çıkanda kalır. Padding-left 2px kompanse — bar iç metni itmesin.
+   *
+   * Üst/alt gri ayraç EtkinlikListe (ul + adjacent sibling) tarafından verilir
+   * (brief-kart-cizgi-koz-dugme): kart border-top köşede ember border-left ile
+   * 45° kesişince çizgi 2px içeriden başlıyordu — ul-level çizgi ile uçlar
+   * közün sol edge'ine hizalanır, köz çizgileri birleştirir. */
   .ocak-etkinlik-kart--satir {
     padding: var(--space-4) var(--space-3);
-    border-top: 1px solid var(--ash);
+    padding-left: calc(var(--space-3) - 2px);
+    border-left: 2px solid var(--ember);
     transition: background-color var(--duration-fast) var(--ease-out);
   }
 
   .ocak-etkinlik-kart--satir:hover {
     background: var(--ash-warm);
-  }
-
-  .ocak-etkinlik-kart--satir.ocak-etkinlik-kart--one-cikan {
-    border-left: 2px solid var(--ember);
-    padding-left: calc(var(--space-3) - 2px);
   }
 
   /* ============ Dış kabuk — KART (S1: ash kutu kalır) ============ */

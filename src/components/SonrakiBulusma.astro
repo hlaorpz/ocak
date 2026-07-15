@@ -29,7 +29,7 @@ import {
   type EtkinlikKategori,
 } from '../lib/etkinlik-kategori';
 import { isKayitFormat } from '../lib/kayit';
-import EtkinlikKart from './EtkinlikKart.astro';
+import EtkinlikListe from './EtkinlikListe.astro';
 
 type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
 
@@ -49,7 +49,6 @@ const LIMIT = isTekKart ? 1 : 3;
 const kategori: EtkinlikKategori | null = isHome
   ? 'acik-kapi'
   : getKategori(slug);
-const HOME_HEADING = 'İlk Kıvılcım';
 
 // Tek-kart yüzeylerde (Home + 6 format sayfası) "En Yakın X" kronolojik olmalı:
 // öne-çıkan sticky KAPALI, tarih ASC birincil. Anadolu (isTekKart=false, LIMIT=3)
@@ -84,14 +83,26 @@ if (isFormatPage || isHome) {
 
 const bos = liste.length === 0;
 const heading = (() => {
-  if (isHome) return HOME_HEADING;
-  if (!kategori) return DEFAULT_HEADING;
-  if (isFormatPage) return KATEGORI_EN_YAKIN[kategori] ?? DEFAULT_HEADING;
-  if (bos) return DEFAULT_HEADING;
+  // Home + format sayfaları: "En Yakın X" (Home = "En Yakın Açık Kapı",
+  // brief-baslik-dil-cizgi-takvim İş 1). Eski home özel "İlk Kıvılcım"
+  // düştü — başlık↔düğme dil tutarlılığı için.
+  if (isTekKart && kategori) return KATEGORI_EN_YAKIN[kategori] ?? DEFAULT_HEADING;
+  if (!kategori || bos) return DEFAULT_HEADING;
   return KATEGORI_HEADING[kategori];
 })();
+
+// Home kayit-cta (brief-kart-cizgi-koz-dugme İş 2): kartın gösterdiği
+// etkinliğin kayıt hedefi. Notion'da özel `kayitUrl` varsa o; yoksa
+// `/acik-kapi/kayit` fallback (Home = acik-kapi sabit, KARAR 331).
+// Format sayfalarında kayit-cta Notion içeriğinden gelir (## section: kayit-cta
+// marker → resolveKayitCtaHref); home Notion'da yok, buradan enjekte edilir.
+const homeKayitHedefi = isHome && !bos
+  ? (liste[0].kayitUrl?.trim() || '/acik-kapi/kayit')
+  : null;
 ---
-<section class="sonraki-bulusma" data-section="sonraki-bulusma" data-varyant={isTekKart ? 'tek' : 'liste'}>
+{/* `ocak-` prefix'i İLK class olmalı — baseline `section[data-section][class^="ocak-"]`
+    aksi halde sessizce düşer (attribute VALUE prefix match, word-match değil). */}
+<section class="ocak-sonraki-bulusma sonraki-bulusma" data-section="sonraki-bulusma" data-varyant={isTekKart ? 'tek' : 'liste'}>
   <div class="ocak-container">
     <h2 class="sonraki-bulusma__heading">{heading}</h2>
 
@@ -103,29 +114,33 @@ const heading = (() => {
         <a href="/#ates-mektuplari">Ateş Mektupları'na katıl</a>, ilk duyuruyu sen al.
       </p>
     ) : (
-      <ul class={`sonraki-bulusma__liste${isTekKart ? ' sonraki-bulusma__liste--tek' : ''}`}>
-        {liste.map((etkinlik) => (
-          <li class="sonraki-bulusma__item">
-            <EtkinlikKart etkinlik={etkinlik} variant="kart" baslikTag="h3" showKayitLink={!isFormatPage} />
-          </li>
-        ))}
-      </ul>
-    )}
-
-    {/* Format sayfasında link resolveKayitCtaHref tarafından kayit-cta bloğu
-        içine enjekte edilir (buton altına). Burada sadece Home basar. */}
-    {isTekKart && !bos && isHome && (
-      <p class="sonraki-bulusma__tumu">
-        <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
-      </p>
+      <EtkinlikListe etkinlikler={liste} showKayitLink={false} />
     )}
   </div>
 </section>
 
+{/* Home kayit-cta: kart + turuncu düğme + "Tüm buluşmalar →" — En Yakın
+    format sayfası düzeniyle birebir. Format sayfası kayit-cta'sı Notion
+    içeriğinden gelir; home'da yok, buradan. Buton dili Direkt kayıt: home
+    acik-kapi Direkt → 'Yerini ayır' (brief-baslik-dil-cizgi-takvim İş 2 geri). */}
+{homeKayitHedefi && (
+  <section data-section="kayit-cta" class="ocak-kayit-cta">
+    <a class="ocak-kayit-cta__buton" href={homeKayitHedefi} data-kayit-cta-button>
+      Yerini ayır <span aria-hidden="true">→</span>
+    </a>
+    <p class="ocak-kayit-cta__tumu">
+      <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
+    </p>
+  </section>
+)}
+
 <style>
-  .sonraki-bulusma {
-    padding: var(--space-8) 0;
-  }
+  /* Section kabuk baseline'dan geliyor: `section[data-section][class^="ocak-"]`
+   * → max-width `--max-w-prose` + padding `--rhythm-section-top/x/bottom`.
+   * Çift class `sonraki-bulusma ocak-sonraki-bulusma`: baseline `.ocak-` prefix'i
+   * yakalar, scoped `.sonraki-bulusma__*` selektörleri de çalışır. Takvim ile
+   * masaüstü genişlik + dikey ritim BİREBİR — tek gerçek baseline
+   * (brief-kivilcim-tur2-kabuk-esitle). */
 
   .sonraki-bulusma__heading {
     font-family: var(--font-display);
@@ -153,61 +168,11 @@ const heading = (() => {
     color: var(--ember);
   }
 
-  .sonraki-bulusma__liste {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-4);
-    grid-template-columns: 1fr;
-  }
+  /* Liste kabuğu (ul + li + kart) EtkinlikListe component'inde — takvim ile
+   * ORTAK render (brief-tani-tek-kabuk Yol B). Buradaki __liste + __item
+   * CSS'i EtkinlikListe'ye taşındı; drift matematiksel imkansız. */
 
-  @media (min-width: 768px) {
-    .sonraki-bulusma__liste {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  /* Tek kart varyantı: 6 format + Home. Kayıt bloğuyla birebir dar sütun
-   * (tek token `--kart-max`). `minmax(0, 1fr)` — grid item min-content 0;
-   * uzun tek-kelime başlık (atolye: "Atölye 1107 21:00-22:00 B Zoom") kutuyu
-   * genişletemez. Kart içindeki başlık `overflow-wrap: anywhere` ile kırılır. */
-  .sonraki-bulusma__liste--tek {
-    grid-template-columns: minmax(0, 1fr);
-    max-width: var(--kart-max);
-    margin-inline: auto;
-  }
-
-  @media (min-width: 768px) {
-    .sonraki-bulusma__liste--tek {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* Takvim linki: tek kartın altında sade ortalı, davet-fısıltısı
-   * (buton baskın değil ama var, link ikincil): margin sıkı, font küçük. */
-  .sonraki-bulusma__tumu {
-    text-align: center;
-    margin: var(--space-3) 0 0;
-  }
-
-  .sonraki-bulusma__tumu a {
-    font-family: var(--font-body);
-    font-size: var(--text-xs);
-    letter-spacing: 0.06em;
-    color: var(--ember);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 2px;
-    transition: border-color var(--duration-base) var(--ease-out);
-  }
-
-  .sonraki-bulusma__tumu a:hover,
-  .sonraki-bulusma__tumu a:focus-visible {
-    border-bottom-color: var(--ember);
-  }
-
-  .sonraki-bulusma__item {
-    margin: 0;
-  }
+  /* Eski `.sonraki-bulusma__tumu` link (Tüm buluşmalar →) home kayit-cta
+   * bloğuna taşındı (brief-kart-cizgi-koz-dugme İş 2): metin "Diğer
+   * buluşmalar", stil `.ocak-kayit-cta__tumu` atmosfer.css'te tanımlı. */
 </style>
