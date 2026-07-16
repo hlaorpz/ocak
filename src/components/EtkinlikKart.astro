@@ -27,7 +27,7 @@ interface Props {
   /** Semantik heading tag. Satır'da span default (list item heading değil), kart'ta h3. */
   baslikTag?: 'h3' | 'h4' | 'span';
   /**
-   * Görünür "Kayıt ol →" mikro-linki. Default true (takvim + home).
+   * Görünür "Yerini ayır →" mikro-linki. Default true (takvim + home).
    * Format sayfası çağrısı false — altta dev kırmızı kayıt-cta butonu var,
    * çift-kayıt aksiyonu olmasın (stretched-link detay-route korunur).
    */
@@ -120,7 +120,7 @@ const kartClass = [
 
     {etkinlik.kayitUrl && showKayitLink && (
       <a class="ocak-etkinlik-kart__kayit" href={etkinlik.kayitUrl}>
-        Kayıt ol <span aria-hidden="true">→</span>
+        Yerini ayır <span aria-hidden="true">→</span>
       </a>
     )}
   </div>

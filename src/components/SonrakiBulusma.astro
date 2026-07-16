@@ -26,6 +26,8 @@ import {
   DEFAULT_HEADING,
   KATEGORI_HEADING,
   KATEGORI_EN_YAKIN,
+  BOS_STATE_HEP_HTML,
+  BOS_STATE_KAPI_HTML,
   type EtkinlikKategori,
 } from '../lib/etkinlik-kategori';
 import { isKayitFormat } from '../lib/kayit';
@@ -107,12 +109,10 @@ const homeKayitHedefi = isHome && !bos
     <h2 class="sonraki-bulusma__heading">{heading}</h2>
 
     {bos ? (
-      <p class="sonraki-bulusma__bos">
-        {isFormatPage || isHome
-          ? 'Bu kapının yaklaşan tarihi henüz duyurulmadı. '
-          : 'Yaklaşan bir buluşma henüz duyurulmadı. '}
-        <a href="/#ates-mektuplari">Ateş Mektupları'na katıl</a>, ilk duyuruyu sen al.
-      </p>
+      <p
+        class="sonraki-bulusma__bos"
+        set:html={isFormatPage || isHome ? BOS_STATE_KAPI_HTML : BOS_STATE_HEP_HTML}
+      />
     ) : (
       <EtkinlikListe etkinlikler={liste} showKayitLink={false} />
     )}

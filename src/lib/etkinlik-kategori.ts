@@ -180,3 +180,43 @@ export function getHeading(slug: string, hasKategoriEtkinlik: boolean): string {
   if (!hasKategoriEtkinlik) return DEFAULT_HEADING;
   return KATEGORI_HEADING[k];
 }
+
+/**
+ * Boş-state metinleri — /takvim (EtkinlikTakvimi) + format sayfaları
+ * (SonrakiBulusma) ortak. Tek kaynak: string drift'i imkansız (set:html ile
+ * basılır, jsx içi anchor tekrarı yok).
+ *
+ *   HEP   → hiç yaklaşan etkinlik yok (Takvim: aylar boş)
+ *   KAPI  → belirli tip/format için yaklaşan yok (Takvim: tip filtresi seçili
+ *           ve eşleşme sıfır · Format sayfası SonrakiBulusma: kendi
+ *           kategorisinde etkinlik yok)
+ */
+export const BOS_STATE_HEP_HTML =
+  'Yaklaşan tarihler henüz duyurulmadı. <a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a>, ilk duyuruyu sen al.';
+export const BOS_STATE_KAPI_HTML =
+  'Bu kapının yaklaşan tarihi henüz duyurulmadı. <a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a>, ilk duyuruyu sen al.';
+
+/**
+ * KayitCTA "boşa-davet" gizlemesi (MADDE 2) — SonrakiBulusma zaten üstte
+ * "tarih yok" cümlesini bastığı için, KayitCTA bloğu buton yerine kısa
+ * köprü basar: bir sonraki duyuruya doğrudan davet.
+ */
+export const BOS_KAPI_DAVET_HTML =
+  '<a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a> — bu kapının ilk duyurusu sana gelsin.';
+
+/**
+ * Verili kategori için yaklaşan (bugünden sonra) aktif etkinlik var mı?
+ * KayitCTA form-agnostik boşa-davet gate'i — kategori boşsa CTA'yı gizle.
+ * SonrakiBulusma'nın "bos" mantığıyla birebir aynı disiplin: AKTIF_DURUM ∈
+ * {Kayıt Açık, Dolu} ∩ bugündenSonra ∩ filterEtkinliklerByKategori.
+ */
+export async function kategoriEtkinlikVarMi(kategori: EtkinlikKategori): Promise<boolean> {
+  const { getCollection } = await import('astro:content');
+  const { bugundenSonra } = await import('./format-etkinlik');
+  const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
+  const tumu = (await getCollection('etkinlikler'))
+    .map((e) => e.data)
+    .filter((e) => AKTIF_DURUM.has(e.durum));
+  const gelecekler = bugundenSonra(tumu);
+  return filterEtkinliklerByKategori(gelecekler, kategori).length > 0;
+}

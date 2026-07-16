@@ -19,7 +19,12 @@ import {
   groupByMonth,
   formatAyEtiketi,
 } from '../lib/format-etkinlik';
-import { formatEtiket, KATEGORI_SIRA } from '../lib/etkinlik-kategori';
+import {
+  formatEtiket,
+  KATEGORI_SIRA,
+  BOS_STATE_HEP_HTML,
+  BOS_STATE_KAPI_HTML,
+} from '../lib/etkinlik-kategori';
 import EtkinlikListe from './EtkinlikListe.astro';
 
 const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
@@ -44,10 +49,7 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
 ---
 <section data-section="etkinlik-takvimi" class="ocak-etkinlik-takvimi">
   {aylar.size === 0 ? (
-    <p class="ocak-etkinlik-takvimi__bos">
-      Henüz duyurulmuş etkinlik yok.{' '}
-      <a href="/#ates-mektuplari">Ateş mektuplarına katıl</a>, ilk duyurudan haberdar ol.
-    </p>
+    <p class="ocak-etkinlik-takvimi__bos" set:html={BOS_STATE_HEP_HTML} />
   ) : (
     <>
       {turler.length > 1 && (
@@ -72,9 +74,7 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
         <EtkinlikListe etkinlikler={etkinlikler} ayKey={key} />
       </>
       ))}
-      <p class="ocak-etkinlik-takvimi__bos ocak-etkinlik-takvimi__bos--filtre" hidden>
-        Bu türde yaklaşan etkinlik yok.
-      </p>
+      <p class="ocak-etkinlik-takvimi__bos ocak-etkinlik-takvimi__bos--filtre" hidden set:html={BOS_STATE_KAPI_HTML} />
     </>
   )}
 </section>

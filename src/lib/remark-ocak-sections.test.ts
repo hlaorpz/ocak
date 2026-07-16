@@ -257,12 +257,21 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain('href="/anadolu/basvuru"');
     // Nested basvuru whitelist dışı → korunur + warn
     expect(html).toContain('href="https://ocak.biz/basvuru/unknown-2026"');
+    // app.notion.com page-mention (MADDE 5) — tek-parça + çok-parça slug whitelist içi
+    expect(html).toContain('href="/ekip"');
+    expect(html).toContain('href="/sehir-aksami"');
+    // app.notion.com whitelist dışı → korunur + warn
+    expect(html).toContain(
+      'href="https://app.notion.com/p/external-app-abc123def456abc123def456abc123de?pvs=21"',
+    );
     // Warn çağrıları: 2 notion.so external + 1 ocak.biz external + 1 ocak.biz basvuru/ external
+    // + 1 app.notion.com external
     const calls = warn.mock.calls.map((c) => c[0]).filter((m) => typeof m === 'string');
     expect(calls.some((m) => m.includes('external-page-xyz'))).toBe(true);
     expect(calls.some((m) => m.includes('yaz-acik-kapi-2026'))).toBe(true);
     expect(calls.some((m) => m.includes('eski-sayfa') && m.includes('ocak.biz'))).toBe(true);
     expect(calls.some((m) => m.includes('unknown-2026') && m.includes('basvuru'))).toBe(true);
+    expect(calls.some((m) => m.includes('external-app') && m.includes('app.notion.com'))).toBe(true);
     warn.mockRestore();
   });
 

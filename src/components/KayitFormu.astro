@@ -16,6 +16,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { parseKayitSorulari, type KayitFormat } from '../lib/kayit';
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
+import { BOS_STATE_KAPI_HTML } from '../lib/etkinlik-kategori';
 import DavetKutusu from './DavetKutusu.astro';
 
 interface Props {
@@ -76,11 +77,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   <div class="kayit-formu__container">
     {bosForm ? (
     <div class="kayit-formu__bos-durum">
-      <p>
-        Şu anda açık kayıt yok. Bir sonraki çağrı için
-        <a href="/takvim">takvime</a> bak ya da
-        <a href="/#ates-mektuplari">Ateş Mektupları</a>'na katıl.
-      </p>
+      <p set:html={BOS_STATE_KAPI_HTML} />
     </div>
     ) : (
     <form

@@ -23,3 +23,9 @@ Notion nested basvuru/<slug>-<yıl> (whitelist içi): [Anadolu başvuru notion](
 ocak.biz nested basvuru/<slug>-<yıl> (whitelist içi): [Anadolu başvuru canonical](https://www.ocak.biz/basvuru/anadolu-2026)
 
 ocak.biz nested basvuru/<slug>-<yıl> whitelist dışı (korunur + warn): [Bilinmeyen başvuru](https://ocak.biz/basvuru/unknown-2026)
+
+app.notion.com page-mention tek-parça slug (whitelist içi): [Ekip](https://app.notion.com/p/ekip-abc123def456abc123def456abc123de?pvs=21)
+
+app.notion.com çok-parça slug (whitelist içi): [Şehir Akşamı](https://app.notion.com/p/sehir-aksami-abc123def456abc123def456abc123de?pvs=21)
+
+app.notion.com whitelist dışı (korunur + warn): [Dış app](https://app.notion.com/p/external-app-abc123def456abc123def456abc123de?pvs=21)

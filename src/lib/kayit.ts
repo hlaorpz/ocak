@@ -60,6 +60,15 @@ export const KAYIT_CTA_LABEL: Record<KayitFormat, string> = {
 };
 
 /**
+ * Dayanışma ön-izleme satırı — 7 format sayfasının kayit-cta bloğunda
+ * butonun üstünde. /anadolu KayitCTA çağırmaz (form-anchor-registry'de yok),
+ * dolayısıyla oraya sızmaz — Anadolu'da rakam görüşmede konuşuluyor, kademe
+ * dili girmez.
+ */
+export const DAYANISMA_METNI =
+  'Katılım payı kademeli — hangi kademeyi seçeceğine sen karar verirsin.';
+
+/**
  * Aşama 2.5 — Kademeli dayanışma fiyatı (sliding scale). Etkinlikler DB tek
  * `Ücret` taşır (orta/tam fiyat); 3 kademe koddan türetilir:
  *  - Üst (Ateşi büyüten) = Ücret × 1.5
