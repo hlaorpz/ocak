@@ -265,6 +265,16 @@ const NOTION_URL_RE =
   /^https:\/\/www\.notion\.so\/(?:[^/]+\/)?([a-z0-9-]+?)(?:-[a-f0-9]{32})?$/;
 
 /**
+ * Notion page-mention'ın yeni URL formu (2026-07 gözlemi, /sehir-aksami canlı
+ * örnek). Kaan Notion'da inline link olarak yapıştırdığında `app.notion.com/p/
+ * <slug>-<32hex>?pvs=21` üretiliyor — login duvarına gider, kullanıcı takılır.
+ * NOTION_URL_RE kardeşi olarak whitelist match'te `/<slug>` normalize edilir.
+ * `?pvs=21` gibi query string toleransı; `#hash` de tolere.
+ */
+const APP_NOTION_URL_RE =
+  /^https:\/\/app\.notion\.com\/p\/([a-z0-9-]+?)-[a-f0-9]{32}(?:\?[^#]*)?(?:#.*)?$/;
+
+/**
  * ocak.biz absolute URL pattern (#29 Brief F.5, KARAR 120 visitor genişletme).
  * Kaan Notion içeriklerine canonical link olarak `https://ocak.biz/<slug>` yazıyor;
  * preview build veya dev'de absolute prefix kullanıcıyı prod'a sıçratır. Visitor
@@ -1310,6 +1320,20 @@ const remarkOcakSections: Plugin<[OcakSectionsOptions?], Root> = (options = {}) 
             console.warn(
               `[remark-ocak-sections] Notion link whitelist dışı (${filename}): ${node.url}`,
             );
+          }
+        } else {
+          // (3b) app.notion.com/p/<slug>-<32hex>?pvs=21 (2026-07 page-mention formu)
+          const ma = node.url.match(APP_NOTION_URL_RE);
+          if (ma) {
+            const slug = ma[1];
+            if (INTERNAL_SLUGS.has(slug)) {
+              node.url = '/' + slug;
+            } else {
+              // eslint-disable-next-line no-console
+              console.warn(
+                `[remark-ocak-sections] app.notion.com link whitelist dışı (${filename}): ${node.url}`,
+              );
+            }
           }
         }
       }
