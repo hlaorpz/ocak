@@ -26,6 +26,21 @@ export const FORMAT_KATEGORI: Record<string, EtkinlikKategori> = {
 };
 
 /**
+ * FORMAT_KATEGORI'nin ters yönü — slug → ham Notion Format değeri.
+ * /takvim hash filtresi client script'i `#<slug>` hash'ini
+ * `data-tur="<ham>"` tab attribute değerine çözer. Paralel map YAZILMAZ —
+ * FORMAT_KATEGORI'den bir kez türetilir (tek gerçek, KARAR 284 dersi).
+ * Bilinmeyen slug → null (client `console.warn` + no-op default).
+ */
+const SLUG_FORMAT_HAM: Record<EtkinlikKategori, string> = Object.fromEntries(
+  Object.entries(FORMAT_KATEGORI).map(([ham, slug]) => [slug, ham]),
+) as Record<EtkinlikKategori, string>;
+
+export function slugToFormatHam(slug: string): string | null {
+  return (SLUG_FORMAT_HAM as Record<string, string | undefined>)[slug] ?? null;
+}
+
+/**
  * Format ham Notion değeri → görünür etiket (brief-takvim-toparlama-uygula.md ADIM 2).
  * Slug rename brief (2026-07-03) sonrası Notion Format enum'u zaten "Seremoni"
  * kısasına geçtiği için map artık boş — helper kimlik fonksiyonuna düşer.
@@ -204,19 +219,7 @@ export const BOS_STATE_KAPI_HTML =
 export const BOS_KAPI_DAVET_HTML =
   '<a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a> — bu kapının ilk duyurusu sana gelsin.';
 
-/**
- * Verili kategori için yaklaşan (bugünden sonra) aktif etkinlik var mı?
- * KayitCTA form-agnostik boşa-davet gate'i — kategori boşsa CTA'yı gizle.
- * SonrakiBulusma'nın "bos" mantığıyla birebir aynı disiplin: AKTIF_DURUM ∈
- * {Kayıt Açık, Dolu} ∩ bugündenSonra ∩ filterEtkinliklerByKategori.
- */
-export async function kategoriEtkinlikVarMi(kategori: EtkinlikKategori): Promise<boolean> {
-  const { getCollection } = await import('astro:content');
-  const { bugundenSonra } = await import('./format-etkinlik');
-  const AKTIF_DURUM = new Set(['Kayıt Açık', 'Dolu']);
-  const tumu = (await getCollection('etkinlikler'))
-    .map((e) => e.data)
-    .filter((e) => AKTIF_DURUM.has(e.durum));
-  const gelecekler = bugundenSonra(tumu);
-  return filterEtkinliklerByKategori(gelecekler, kategori).length > 0;
-}
+// kategoriEtkinlikVarMi (server-only, astro:content bağımlı) → ./etkinlik-server.ts
+// Client bundle (EtkinlikTakvimi <script>) bu dosyayı slugToFormatHam için
+// import ediyor; server-only helper burada kalsa Vite dynamic import'u yakalıyor
+// (astro:content client'te yok). Ayırma teknik zorunluluk.

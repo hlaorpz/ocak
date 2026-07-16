@@ -154,7 +154,9 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', ()
     const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
     expect(out).toContain('Tüm buluşmalar →');
     expect(out).toContain('class="ocak-kayit-cta__tumu"');
-    expect(out).toContain('href="/takvim"');
+    // Sayfa formatı bilinir → takvim linki `/takvim#<slug>` hash'li (client
+    // script tab'ı ön-seçer).
+    expect(out).toContain('href="/takvim#cember"');
     // Link, butonun HEMEN ARDINDA (arada başka element yok).
     expect(out).toMatch(/Yerini ayır →<\/a><p class="ocak-kayit-cta__tumu">/);
   });

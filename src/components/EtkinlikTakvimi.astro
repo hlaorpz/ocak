@@ -82,6 +82,8 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
 <script>
   // Tür filtresi — client-side, sayfa yenilenmeden. data-tip eşleşmeyen <li>'ler
   // + içi tamamen boşalan ay grupları gizlenir. "Tümü" (data-tur="*") sıfırlar.
+  import { slugToFormatHam } from '../lib/etkinlik-kategori';
+
   const koklar = document.querySelectorAll<HTMLElement>('.ocak-etkinlik-takvimi');
   koklar.forEach((kok) => {
     const dugmeler = kok.querySelectorAll<HTMLButtonElement>('.ocak-etkinlik-takvimi__tur');
@@ -118,6 +120,27 @@ const turler = [...new Set(gelecekler.map((e) => e.tip).filter(Boolean))].sort((
       });
     });
   });
+
+  // Load-time hash filtre: /takvim#<slug> → slugToFormatHam(slug) →
+  // data-tur="<ham>" tab'ına programatik click. Filtre mantığı, aktif-tab
+  // görseli ve aria state mevcut handler'dan akar (idempotent). Hash okuma +
+  // slug çözümü forEach DIŞINDA bir kez; buton araması tek geçiş. hashchange
+  // KAPSAM DIŞI — yalnız load-time (brief kararı).
+  const hashSlug = location.hash.slice(1);
+  const hashHam = hashSlug ? slugToFormatHam(hashSlug) : null;
+  if (hashSlug && hashHam) {
+    const hedef = document.querySelector<HTMLButtonElement>(
+      `.ocak-etkinlik-takvimi__tur[data-tur="${hashHam}"]`,
+    );
+    if (hedef) {
+      hedef.click();
+    } else {
+      // Slug geçerli ama sayfada o türün tab'ı yok (o dönem etkinliği yok).
+      // eslint-disable-next-line no-console
+      console.warn(`[takvim] hash türü sayfada yok: ${hashSlug}`);
+    }
+  }
+  // hashSlug var + hashHam null (bilinmeyen slug) → sessiz, default Tümü kalır.
 </script>
 
 <style>

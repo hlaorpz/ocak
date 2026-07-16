@@ -19,10 +19,10 @@
 // MADDE 4 (dayanışma ön-izleme): butonun üstünde tek satır kademe cümlesi.
 import { KAYIT_CTA_LABEL, isKayitFormat, DAYANISMA_METNI } from '../lib/kayit';
 import {
-  kategoriEtkinlikVarMi,
   BOS_KAPI_DAVET_HTML,
   type EtkinlikKategori,
 } from '../lib/etkinlik-kategori';
+import { kategoriEtkinlikVarMi } from '../lib/etkinlik-server';
 interface Props {
   /** Hedef kayıt sayfası — örn '/cember/kayit'. */
   href: string;

@@ -143,14 +143,22 @@ const { formats } = Astro.props;
    * Eski "her blok üstüne durak hairline" pattern'inin TEK konuma uygulanmış
    * hâli (Brief Ek — Panel Sonrası Ayraç): centered ember-alpha, dekoratif
    * değil işlevsel ("pencere bitti, ortak zemin başlıyor"). Sol-rail değil
-   * centered — baseline'ın centered tipografi ailesiyle uyumlu (KARAR 116). */
+   * centered — baseline'ın centered tipografi ailesiyle uyumlu (KARAR 116).
+   * Köz gradient (Varyant B): 180px genişlik, --ember-alpha-85 orta durak,
+   * kenarlar transparent → köz sıcaklığı merkezde yoğun. Hover/animasyon
+   * YOK (statik, KARAR 350 ruhu). Dikey ritim değişmez. */
   .ocak-format-sekmeler::after {
     content: '';
     display: block;
-    width: 4rem;
+    width: 180px;
     height: 1px;
     margin: 0 auto;
-    background: var(--ember-alpha-15);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--ember-alpha-85) 50%,
+      transparent 100%
+    );
   }
 
   /* Tablist — EtkinlikTakvimi __tur görsel dili (ash zemin, ember hover/aktif),
