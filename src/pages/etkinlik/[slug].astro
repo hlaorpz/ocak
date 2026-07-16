@@ -27,6 +27,7 @@ import Hero from '../../components/Hero.astro';
 import EtkinlikKart from '../../components/EtkinlikKart.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
+import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori';
 
 export async function getStaticPaths() {
   const tumu = await getCollection('etkinlikler');
@@ -66,6 +67,12 @@ const KATEGORI_ADI: Record<string, string> = {
 
 const kayitSlugu = NOTION_FORMAT_KAYIT_SLUG[etkinlik.tip];
 const formatSayfasi = kayitSlugu ? `/${kayitSlugu}` : '/bulusmalar';
+
+// Takvim linki: sayfa formatı bilinir → `/takvim#<slug>` hash'li (client
+// script tab'ı ön-seçer). FORMAT_KATEGORI Anadolu Yolculuğu'nu da kapsar,
+// bilinmeyen tip → düz `/takvim` (defansif).
+const takvimSlugu = FORMAT_KATEGORI[etkinlik.tip];
+const takvimHref = takvimSlugu ? `/takvim#${takvimSlugu}` : '/takvim';
 
 // Kayıt CTA hedefi: Notion'daki kayitUrl doluysa (bir dış/alt link olabilir) o;
 // yoksa 6 format sayfasında `/{slug}/kayit`; yoksa (Yolculuk) CTA basma.
@@ -162,7 +169,7 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
     )}
 
     <p class="ocak-kayit-cta__tumu">
-      <a href="/takvim">Sana uyan başka tarihler de var — hepsine bak <span aria-hidden="true">→</span></a>
+      <a href={takvimHref}>Sana uyan başka tarihler de var — hepsine bak <span aria-hidden="true">→</span></a>
     </p>
   </section>
 </Layout>

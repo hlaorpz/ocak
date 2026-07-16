@@ -412,10 +412,11 @@ export function resolveKayitCtaHref(html: string, rawSlug: string): string {
       .replaceAll('__KAYIT_CTA_LABEL__', KAYIT_CTA_LABEL[slug]);
     // Her butondan SONRA "Tüm buluşmalar →" linki enjekte et — home + format
     // sayfa + detay yüzeyi aynı metin (brief-baslik-dil-cizgi-takvim İş 3;
-    // "Sana uyan..." sahte kişiselleştirme atıldı).
+    // "Sana uyan..." sahte kişiselleştirme atıldı). Sayfa formatı bilinir →
+    // takvim linki `/takvim#<slug>` hash'li (client script tab'ı ön-seçer).
     return replaced.replace(
       /(<a class="ocak-kayit-cta__buton"[^>]*>[\s\S]*?<\/a>)/g,
-      '$1<p class="ocak-kayit-cta__tumu"><a href="/takvim">Tüm buluşmalar →</a></p>',
+      `$1<p class="ocak-kayit-cta__tumu"><a href="/takvim#${slug}">Tüm buluşmalar →</a></p>`,
     );
   }
   // 6 format dışı → tüm kayit-cta bloğunu kaldır (üst metin dahil) + warn.

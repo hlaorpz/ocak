@@ -6,6 +6,7 @@ import {
   getHeading,
   DEFAULT_HEADING,
   KATEGORI_HEADING,
+  slugToFormatHam,
   type EtkinlikKategori,
 } from './etkinlik-kategori';
 
@@ -92,5 +93,28 @@ describe('getHeading — fallback davranışı (brief karar)', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     expect(getHeading('/bilinmeyen', true)).toBe(DEFAULT_HEADING);
     warn.mockRestore();
+  });
+});
+
+describe('slugToFormatHam — /takvim hash filtresi çözümleyici', () => {
+  it('geçerli 8 slug → FORMAT_KATEGORI ham değerini döndürür', () => {
+    expect(slugToFormatHam('cember')).toBe('Çember');
+    expect(slugToFormatHam('acik-kapi')).toBe('Açık Kapı');
+    expect(slugToFormatHam('seremoni')).toBe('Seremoni');
+    expect(slugToFormatHam('atolye')).toBe('Atölye');
+    expect(slugToFormatHam('sehir-aksami')).toBe('Şehir Akşamı');
+    expect(slugToFormatHam('mini-retreat')).toBe('Mini Retreat');
+    expect(slugToFormatHam('yolculuk')).toBe('Yolculuk');
+    expect(slugToFormatHam('anadolu')).toBe('Anadolu Yolculuğu');
+  });
+
+  it('bilinmeyen slug → null (client no-op default)', () => {
+    expect(slugToFormatHam('bilinmeyen')).toBeNull();
+    expect(slugToFormatHam('CEMBER')).toBeNull(); // case-sensitive
+    expect(slugToFormatHam('cember-')).toBeNull();
+  });
+
+  it('boş string → null', () => {
+    expect(slugToFormatHam('')).toBeNull();
   });
 });
