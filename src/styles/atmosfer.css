@@ -1327,6 +1327,18 @@ section[data-section][class^="ocak-"] s {
   font-size: inherit;
 }
 
+/* del/s içindeki em/strong — üstteki gold'u inherit etsin. em'in genel color
+   kuralı (yukarıdaki `... em { color: cream }`, spec 0,2,1) del contents için
+   gold'u ezerdi; bu 0,2,2 selector wrapper renk semantiğini korur.
+   (Notion pattern: `<p><del><em>tek cümle</em></del></p>` italik-altın —
+   /araclar AL·OL·VER üç satır.) */
+section[data-section][class^="ocak-"] del em,
+section[data-section][class^="ocak-"] del strong,
+section[data-section][class^="ocak-"] s em,
+section[data-section][class^="ocak-"] s strong {
+  color: inherit;
+}
+
 /* Başlıklar — h2 italic kapanış vurgusu, h3 normal */
 
 section[data-section][class^="ocak-"] h2 {
