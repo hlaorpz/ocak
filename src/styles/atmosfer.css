@@ -1339,6 +1339,16 @@ section[data-section][class^="ocak-"] s strong {
   color: inherit;
 }
 
+/* del/s içindeki em — gerçek italik display font (Jost italik yok, faux-oblique
+   optik olarak küçük görünüyor; Cormorant Garamond italik var). font-size lg
+   (1.375rem) — altındaki body p (--text-base, Jost 300 upright) ile optik
+   olarak "aynı boyda" okuma hedefi. /araclar AL·OL·VER üç satır. */
+section[data-section][class^="ocak-"] del em,
+section[data-section][class^="ocak-"] s em {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
 /* Başlıklar — h2 italic kapanış vurgusu, h3 normal */
 
 section[data-section][class^="ocak-"] h2 {
