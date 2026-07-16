@@ -216,6 +216,9 @@ const { formats } = Astro.props;
     .ocak-format-sekmeler__tus {
       flex-shrink: 0;
       white-space: nowrap;
+      /* Dokunma hedefi ≥44px — WCAG 2.5.5 pattern (takvim filtresi ikiziyle
+       * aynı satır, aynı zamanda eklendi; drift'i engelle). */
+      min-height: 44px;
     }
   }
 
