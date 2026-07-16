@@ -180,3 +180,18 @@ export function getHeading(slug: string, hasKategoriEtkinlik: boolean): string {
   if (!hasKategoriEtkinlik) return DEFAULT_HEADING;
   return KATEGORI_HEADING[k];
 }
+
+/**
+ * Boş-state metinleri — /takvim (EtkinlikTakvimi) + format sayfaları
+ * (SonrakiBulusma) ortak. Tek kaynak: string drift'i imkansız (set:html ile
+ * basılır, jsx içi anchor tekrarı yok).
+ *
+ *   HEP   → hiç yaklaşan etkinlik yok (Takvim: aylar boş)
+ *   KAPI  → belirli tip/format için yaklaşan yok (Takvim: tip filtresi seçili
+ *           ve eşleşme sıfır · Format sayfası SonrakiBulusma: kendi
+ *           kategorisinde etkinlik yok)
+ */
+export const BOS_STATE_HEP_HTML =
+  'Yaklaşan tarihler henüz duyurulmadı. <a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a>, ilk duyuruyu sen al.';
+export const BOS_STATE_KAPI_HTML =
+  'Bu kapının yaklaşan tarihi henüz duyurulmadı. <a href="/#ates-mektuplari">Ateş Mektupları\'na katıl</a>, ilk duyuruyu sen al.';
