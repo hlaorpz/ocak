@@ -73,7 +73,8 @@ export type BodyFragmentRaw =
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
   | { kind: 'kanallar' }
-  | { kind: 'harita-anadolu' };
+  | { kind: 'harita-anadolu' }
+  | { kind: 'kayit-cta'; intro?: string };
 
 export type BodyFragment =
   | { kind: 'markdown'; html: string }
@@ -83,17 +84,26 @@ export type BodyFragment =
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
   | { kind: 'kanallar' }
-  | { kind: 'harita-anadolu' };
+  | { kind: 'harita-anadolu' }
+  | { kind: 'kayit-cta'; introHtml?: string };
 
 /**
  * Body markdown'ını `## section: <name>` marker satırlarında parçalar.
- * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma, etkinlik-takvimi, yolculuk-eksen, kanallar.
+ * Tanınan marker'lar: form-anchor (indeksli, çoklu), al-ol-ver, sonraki-bulusma,
+ * etkinlik-takvimi, yolculuk-eksen, kanallar, harita-anadolu, kayit-cta.
  * Marker satırları çıkarılır; her marker uygun kind ile fragment olarak emit edilir.
  * Diğer `## section: NAME` markerları (manifesto, esik-kadini, vb.) markdown
  * chunk'ında kalır → plugin remarkOcakSections tarafından prose section'a sarılır.
  *
  * Cazip alternatif (HTML post-split) reddedildi: HTML split regex-fragile.
  * Markdown split deterministik: satır başında marker benzersiz.
+ *
+ * kayit-cta (Madde 2/4 fix — B çözümü): marker'dan sonraki + bir sonraki section
+ * marker'ına kadar olan içerik `intro` alanına toplanır (section-içi üst metin).
+ * Config loader `intro`'yu renderMarkdown edip fragment'ı `{kind:'kayit-cta',
+ * introHtml}` olarak yayar; PageContent bunu `<KayitCTA introHtml={..} />`
+ * component instance'ına verir. MADDE 2 gate + MADDE 4 dayanışma satırı böylece
+ * canlıya bağlanır. Plugin `transformKayitCta` fallback olarak durur.
  */
 export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
   const lines = body.split('\n');
@@ -111,6 +121,21 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
     const md = chunk.join('\n').trim();
     if (md) fragments.push({ kind: 'markdown', content: md + '\n' });
     chunk = [];
+  };
+
+  /** kayit-cta modu: marker gördükten sonra bir sonraki section marker'a kadar
+   *  gelen satırları intro'ya biriktir. Section marker gelince flush + normal işleme. */
+  let kayitCtaPending = false;
+  let kayitCtaIntroLines: string[] = [];
+  const flushKayitCta = () => {
+    const intro = kayitCtaIntroLines.join('\n').trim();
+    fragments.push(
+      intro
+        ? { kind: 'kayit-cta', intro: intro + '\n' }
+        : { kind: 'kayit-cta' },
+    );
+    kayitCtaIntroLines = [];
+    kayitCtaPending = false;
   };
 
   /** form-anchor look-backward (KARAR 151): chunk buffer'ında SONDAN başa doğru en
@@ -142,7 +167,23 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
   };
 
   for (const line of lines) {
-    if (/^##\s+section:\s+form-anchor\s*$/.test(line)) {
+    // kayit-cta modu içindeyken herhangi bir `## section:` marker geldiğinde
+    // önce kayit-cta fragment'ını flush et. Marker satırı aşağıdaki if-else'de
+    // normal işlenmeye devam eder.
+    if (kayitCtaPending && SECTION_RE.test(line)) {
+      flushKayitCta();
+    }
+
+    if (/^##\s+section:\s+kayit-cta\s*$/.test(line)) {
+      // Madde 2/4 fix — B: bu marker'ın altındaki içerik intro olarak
+      // toplanır (bir sonraki section marker'a kadar). KayitCTA.astro
+      // component'i introHtml prop'una alır.
+      flush();
+      // Eğer önceki kayit-cta hâlâ pending ise (aynı sayfada iki kayit-cta
+      // marker'ı — defansif) önce onu flush et.
+      if (kayitCtaPending) flushKayitCta();
+      kayitCtaPending = true;
+    } else if (/^##\s+section:\s+form-anchor\s*$/.test(line)) {
       const intro = flushWithIntroLookBackward();
       fragments.push(
         intro
@@ -176,10 +217,15 @@ export function splitBodyByMarkers(body: string): BodyFragmentRaw[] {
       // eksen paterni birebir — loader keser, PageContent <AnadoluHarita /> basar.
       flush();
       fragments.push({ kind: 'harita-anadolu' });
+    } else if (kayitCtaPending) {
+      // kayit-cta modu içinde non-marker satır → intro'ya biriktir.
+      kayitCtaIntroLines.push(line);
     } else {
       chunk.push(line);
     }
   }
+  // EOF: bekleyen kayit-cta varsa kapat, sonra normal chunk flush.
+  if (kayitCtaPending) flushKayitCta();
   flush();
 
   return fragments;

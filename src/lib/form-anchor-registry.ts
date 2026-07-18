@@ -67,3 +67,20 @@ export const formAnchorProps: Record<string, Array<Record<string, unknown>>> = {
   // Kayıt sayfası olmayanlar — AtesMektuplariCTA
   '/takvim': [{ kategoriAdi: 'OCAK buluşması' }],
 };
+
+/**
+ * Madde 2/4 fix — B: `## section: kayit-cta` marker'ı gördüğünde PageContent
+ * bu map'ten prop'ları alıp KayitCTA.astro basar. formAnchorProps'un 7 format
+ * entry'sinin index=0 girişiyle birebir aynı (tek gerçek: iki path'in
+ * çıktısı aynı component, aynı prop şablonu). Ayrı map açıklıkta anlam
+ * verir: kayit-cta marker'ı slug × single, form-anchor slug × index array.
+ */
+export const kayitCtaProps: Record<string, { href: string; kategoriAdi: string }> = {
+  '/cember': { href: '/cember/kayit', kategoriAdi: 'Çember' },
+  '/acik-kapi': { href: '/acik-kapi/kayit', kategoriAdi: 'Açık Kapı' },
+  '/mini-retreat': { href: '/mini-retreat/kayit', kategoriAdi: 'mini retreat' },
+  '/seremoni': { href: '/seremoni/kayit', kategoriAdi: 'mevsim seremonisi' },
+  '/sehir-aksami': { href: '/sehir-aksami/kayit', kategoriAdi: 'şehir akşamı' },
+  '/atolye': { href: '/atolye/kayit', kategoriAdi: 'atölye' },
+  '/yolculuk': { href: '/yolculuk/kayit', kategoriAdi: 'Yolculuk' },
+};

@@ -79,6 +79,16 @@ const sayfalar = defineCollection({
                 introHtml: resolveNotionPageLinks(r.html, pageIdToSlug, slug),
               };
             }
+            // Madde 2/4 fix — B: kayit-cta section-içi üst metin (kontenjan
+            // paragrafı, [Yerini ayır] linki, vb.) intro olarak KayitCTA.astro'ya
+            // introHtml prop'una taşınır. renderMarkdown aynı pipeline.
+            if (frag.kind === 'kayit-cta' && frag.intro) {
+              const r = await renderMarkdown(frag.intro);
+              return {
+                kind: 'kayit-cta' as const,
+                introHtml: resolveNotionPageLinks(r.html, pageIdToSlug, slug),
+              };
+            }
             return frag;
           }),
         );
@@ -156,6 +166,12 @@ const sayfalar = defineCollection({
         z.object({ kind: z.literal('yolculuk-eksen') }),
         z.object({ kind: z.literal('kanallar') }),
         z.object({ kind: z.literal('harita-anadolu') }),
+        // Madde 2/4 fix — B: kayit-cta marker component instance'a delege
+        // (KayitCTA.astro). introHtml section-içi üst metin.
+        z.object({
+          kind: z.literal('kayit-cta'),
+          introHtml: z.string().optional(),
+        }),
       ]),
     ),
   }),

@@ -665,6 +665,15 @@ function transformIcSes(
 /**
  * kayit-cta (KARAR 207 / Brief 4): köz dolu vurgu butonu + opsiyonel üst metin.
  *
+ * FALLBACK PATH (Madde 2/4 fix — B sonrası): Sayfalar collection loader'ı
+ * `splitBodyByMarkers` içinde `kayit-cta` marker'ını kesip fragment'a çevirdiği
+ * için PageContent normalde bu marker'ı `<KayitCTA />` component instance ile
+ * basar (MADDE 2 gate + MADDE 4 dayanışma satırı orada). Bu transform SADECE
+ * loader/fragment-split'ten kaçan durumlarda tetiklenir — /etkinlik/[slug]
+ * detay sayfasındaki `## section: kayit-cta` gibi. Section'a
+ * `<!-- kayit-cta-fallback -->` HTML yorumu iliştirilir; build sonrası grep
+ * ile fallback'e düşen sayfalar tespit edilebilir.
+ *
  * Plugin sayfa slug'ını bilmez (global instance, options'sız wiring). href'i
  * placeholder olarak yazar; notion-pages.ts'deki resolveKayitCtaHref
  * post-render adımı 6 format slug'u ise placeholder'ı `/${slug}/kayit` ile
@@ -687,7 +696,7 @@ function transformKayitCta(content: RootContent[]): RootContent[] {
     '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
   );
   return [
-    html('<section data-section="kayit-cta" class="ocak-kayit-cta">'),
+    html('<section data-section="kayit-cta" class="ocak-kayit-cta"><!-- kayit-cta-fallback -->'),
     ...content,
     buton,
     html('</section>'),
