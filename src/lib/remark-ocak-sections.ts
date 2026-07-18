@@ -675,9 +675,9 @@ function transformIcSes(
  * Üst metin opsiyonel: `## section: kayit-cta` altına prose yazılırsa buton
  * üstünde çağrı cümlesi; yazılmazsa çıplak buton.
  *
- * Buton metni brief-faz3-h4-h5 İş 3 sonrası slug'a göre değişir ("Kayıt Ol"
- * veya "Başvur") — placeholder olarak emit edilir, loader resolveKayitCtaHref
- * KAYIT_CTA_LABEL map'inden doldurur.
+ * Buton metni slug'a göre değişir ("Yerini ayır" veya "Başvur") — placeholder
+ * olarak emit edilir, loader resolveKayitCtaHref KAYIT_CTA_LABEL map'inden
+ * doldurur.
  */
 function transformKayitCta(content: RootContent[]): RootContent[] {
   // data-kayit-cta-button attribute test'lerde + CSS scope'ta marker görevi görür.
