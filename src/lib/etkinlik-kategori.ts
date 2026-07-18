@@ -171,16 +171,25 @@ export const KATEGORI_EN_YAKIN: Partial<Record<EtkinlikKategori, string>> = {
 };
 
 /**
- * Slug'tan kategori türetir. Map miss → warn + null.
+ * Bilinen istisna slug'lar — SLUG_KATEGORI dışı ama warn susturulur (null
+ * fallback = "tüm yaklaşan" davranışı bilinçli). Diğer bilinmeyen slug'lar
+ * warn vermeye devam eder; sinyal korunur.
+ */
+const SILENT_MISS_SLUGS: ReadonlySet<string> = new Set(['/site-rehber']);
+
+/**
+ * Slug'tan kategori türetir. Map miss → warn + null (SILENT_MISS_SLUGS hariç).
  * Notion'da `## section: sonraki-bulusma` marker'ı olan her sayfa burada olmalı.
  */
 export function getKategori(slug: string): EtkinlikKategori | null {
   if (slug in SLUG_KATEGORI) return SLUG_KATEGORI[slug];
-  // eslint-disable-next-line no-console
-  console.warn(
-    `[getKategori] bilinmeyen slug "${slug}" — SLUG_KATEGORI map'inde yok, null fallback. ` +
-      `Notion'da sonraki-bulusma marker'ı bu sayfaya eklendiyse SLUG_KATEGORI'yi güncelle.`,
-  );
+  if (!SILENT_MISS_SLUGS.has(slug)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[getKategori] bilinmeyen slug "${slug}" — SLUG_KATEGORI map'inde yok, null fallback. ` +
+        `Notion'da sonraki-bulusma marker'ı bu sayfaya eklendiyse SLUG_KATEGORI'yi güncelle.`,
+    );
+  }
   return null;
 }
 
