@@ -104,12 +104,12 @@ exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C d
 </section>"
 `;
 
-exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", H3 strip → summary 1`] = `
-"<details name="raflar" data-section="raf-cekirdek"><summary>1 · Çekirdek Araçlar</summary>
+exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", liste ailesi class seti 1`] = `
+"<details name="raflar" data-section="raf-cekirdek" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">1 · Çekirdek Araçlar</h3><span class="liste__sag"><span class="liste__isaret" aria-hidden="true"></span></span></summary>
 <p>OCAK'ın temeline giden araçlar. Nefes, niyet, sessizlik.</p>
 <p>Kısa gündelik uygulamalar.</p>
 </details>
-<details name="raflar" data-section="raf-beden"><summary>2 · Beden Araçları</summary>
+<details name="raflar" data-section="raf-beden" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">2 · Beden Araçları</h3><span class="liste__sag"><span class="liste__isaret" aria-hidden="true"></span></span></summary>
 <p>Bedeni dinleme, gerginlik açma, temas kurma araçları.</p>
 </details>
 <section data-section="raf-diger" class="ocak-raf-diger">
@@ -118,27 +118,27 @@ exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="ra
 </section>"
 `;
 
-exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS reuse transformKapi, 5 kart, link opsiyonel 1`] = `
+exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS liste ailesi, 5 öğe, link opsiyonel 1`] = `
 "<section data-section="temalar">
-<article class="ocak-kapi-kart">
-<h3>Ateş</h3>
+<article class="liste__oge">
+<div class="liste__baslik-satir"><h3 class="liste__baslik">Ateş</h3></div>
 <p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
 </article>
-<article class="ocak-kapi-kart">
-<h3>Sessizlik</h3>
+<article class="liste__oge">
+<div class="liste__baslik-satir"><h3 class="liste__baslik">Sessizlik</h3></div>
 <p>Boşluğu doldurmadan durmak. Nefesin arkasındaki sesi duymak.</p>
 </article>
-<article class="ocak-kapi-kart">
-<h3>Beden</h3>
+<article class="liste__oge">
+<div class="liste__baslik-satir"><h3 class="liste__baslik">Beden</h3></div>
 <p>Dokunuş, ritim, temas. Bedeni okuma dili.</p>
 <p><a href="/atolye">Beden atölyesine bak →</a></p>
 </article>
-<article class="ocak-kapi-kart">
-<h3>Kök</h3>
+<article class="liste__oge">
+<div class="liste__baslik-satir"><h3 class="liste__baslik">Kök</h3></div>
 <p>Soy, toprak, aidiyet. Nereden geliyorsun — hangi soydan?</p>
 </article>
-<article class="ocak-kapi-kart">
-<h3>Yaratıcı</h3>
+<article class="liste__oge">
+<div class="liste__baslik-satir"><h3 class="liste__baslik">Yaratıcı</h3></div>
 <p>İfade, oyun, form verme. Kelimeyle, çizgiyle, sesle.</p>
 </article>
 </section>"
@@ -180,15 +180,15 @@ Burada yaşar: çemberin nefesi, beden pratiği, atölyeler.
 </section>"
 `;
 
-exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details name="tasiyici", H2 strip → summary 1`] = `
+exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details name="tasiyici", liste ailesi, meta parse KAPALI 1`] = `
 "<section data-section="ne-tasiyor" class="ocak-ne-tasiyor">
 <h2>Ne Taşıyor</h2>
 <p>Bu araçlar önce Advaita'nın bedeninden geçti — ama artık OCAK'ın ortak kutusunda.</p>
 </section>
-<details name="tasiyici" data-section="tasidigi-bati"><summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary>
+<details name="tasiyici" data-section="tasidigi-bati" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h3><span class="liste__sag"><span class="liste__isaret" aria-hidden="true"></span></span></summary>
 <p>Sachamama geleneğinin şamanik sağaltımı, Amazon'un bitki bilgeliği. Element çalışması.</p>
 </details>
-<details name="tasiyici" data-section="tasidigi-dogu"><summary>🜁 DOĞU — Nefes ve Beden</summary>
+<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">🜁 DOĞU — Nefes ve Beden</h3><span class="liste__sag"><span class="liste__isaret" aria-hidden="true"></span></span></summary>
 <p>Rishikesh'te aldığı yoga eğitmen eğitimi — Hint Vedik geleneğinin somatik özü.</p>
 </details>
 <section data-section="tasidigi-kuzey" class="ocak-tasidigi-kuzey">
