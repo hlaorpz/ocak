@@ -438,79 +438,62 @@ function transformKapi(
  * statik açık öğe emit. Sayfalar: /seremoni türleri, /atolye konuları
  * (tek + seri), /mini-retreat temaları, /acik-kapi formatları.
  *
- * İki farklı Notion yapısı, tek çıktı:
- *   - CARD_SECTIONS (H3 group): temalar/turler/formatlar/seri-atolyeler
- *   - 'atolyeler' (ul/li): tek-seferlik atölye listesi ("İsim — açıklama")
+ * TEK Notion yapısı, tek çıktı: H3 group. atolyeler (tek-seferlik) +
+ * CARD_SECTIONS (temalar/turler/formatlar/seri-atolyeler) ortak parser.
+ * Notion (2026-07-19 sonrası): H3 + tagline P + gövde P.
+ *
+ * Section wrap: <section data-section="X" class="ocak-X"> → baseline
+ * `section[data-section][class^="ocak-"]` max-w-prose + margin auto +
+ * rhythm padding kuralına girer (merdiven/hiza sorunları çözülür).
  *
  * Gramer (Kaan kararı, göz turu 2026-07-19): meta slot yok.
  *   başlık / italik tagline / ember çizgi / gövde
- * stripSuffix guard KORU — Notion başlığında "— 6 Hafta" gibi kalıntı varsa
- * göze görünmesin (baslik'ten silinir, meta olarak render EDİLMEZ).
+ * Suffix strip guard KORUNUR — Notion başlığındaki "— 6 Hafta" kalıntısı
+ * baslikten silinir, meta olarak render EDİLMEZ.
+ *
+ * H3'ten önceki üst-düzey node'lar (intro paragraflar) verbatim geçer.
  */
 function transformListeStatik(
   content: RootContent[],
   sectionName: string,
 ): RootContent[] {
-  const out: RootContent[] = [html(`<section data-section="${sectionName}">`)];
+  const out: RootContent[] = [
+    html(`<section data-section="${sectionName}" class="ocak-${sectionName}">`),
+  ];
 
-  if (sectionName === 'atolyeler') {
-    // Notion: <ul><li><strong>İsim</strong> — açıklama</li>… + kapanış cümlesi(ler)
-    // ul olmayan üst-düzey node'lar verbatim geçer (baseline prose).
-    for (const node of content) {
-      if (node.type !== 'list') {
-        out.push(node);
-        continue;
-      }
-      const items = (node as { children?: RootContent[] }).children ?? [];
-      for (const item of items) {
-        const text = getText(item).trim();
-        // "İsim — açıklama" ayrımı (em-dash + boşluk); em-dash yoksa tümü başlık.
-        const dashIdx = text.indexOf(' — ');
-        const baslik = dashIdx >= 0 ? text.slice(0, dashIdx).trim() : text;
-        const govde = dashIdx >= 0 ? text.slice(dashIdx + 3).trim() : '';
-        out.push(html('<article class="liste__oge">'));
-        out.push(
-          html(
-            '<div class="liste__baslik-satir">' +
-              `<h3 class="liste__baslik">${escapeHtmlText(baslik)}</h3>` +
-              '</div>',
-          ),
-        );
-        if (govde) {
-          out.push(html(`<p>${escapeHtmlText(govde)}</p>`));
-        }
-        out.push(html('</article>'));
-      }
+  // İntro içerik (ilk H3'ten önceki node'lar) verbatim; H3'ten itibaren kart.
+  const cards: RootContent[][] = [];
+  const intro: RootContent[] = [];
+  let seenH3 = false;
+  for (const node of content) {
+    if (node.type === 'heading' && node.depth === 3) {
+      cards.push([node]);
+      seenH3 = true;
+    } else if (seenH3) {
+      cards[cards.length - 1].push(node);
+    } else {
+      intro.push(node);
     }
-  } else {
-    // CARD_SECTIONS: H3 ile kart gruplama
-    const cards: RootContent[][] = [];
-    for (const node of content) {
-      if (node.type === 'heading' && node.depth === 3) {
-        cards.push([node]);
-      } else if (cards.length > 0) {
-        cards[cards.length - 1].push(node);
-      }
-    }
+  }
+  out.push(...intro);
 
-    for (const card of cards) {
-      const h3Node = card[0];
-      const rest = card.slice(1);
-      const h3Text = getText(h3Node).trim();
-      // Suffix strip guard: Notion başlığındaki "— 6 Hafta" gibi kalıntıyı
-      // baslik'ten sil; meta olarak render EDİLMEZ (Kaan kararı 2026-07-19).
-      const parsed = parseMetaSuffix(h3Text);
-      out.push(html('<article class="liste__oge">'));
-      out.push(
-        html(
-          '<div class="liste__baslik-satir">' +
-            `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
-            '</div>',
-        ),
-      );
-      out.push(...rest);
-      out.push(html('</article>'));
-    }
+  for (const card of cards) {
+    const h3Node = card[0];
+    const rest = card.slice(1);
+    const h3Text = getText(h3Node).trim();
+    // Suffix strip guard: Notion başlığındaki "— 6 Hafta" kalıntısını sil;
+    // meta olarak render EDİLMEZ (Kaan kararı 2026-07-19).
+    const parsed = parseMetaSuffix(h3Text);
+    out.push(html('<article class="liste__oge">'));
+    out.push(
+      html(
+        '<div class="liste__baslik-satir">' +
+          `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
+          '</div>',
+      ),
+    );
+    out.push(...rest);
+    out.push(html('</article>'));
   }
 
   out.push(html('</section>'));

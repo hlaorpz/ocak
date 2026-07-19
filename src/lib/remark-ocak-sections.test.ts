@@ -772,11 +772,12 @@ describe('remark-ocak-sections', () => {
   });
 
   // brief-desenler-01.md ADIM 2 — vitrin (temalar/turler/formatlar)
-  // Madde 8 liste ailesi (2026-07-17): transformListeStatik → .liste__oge
+  // Madde 8 liste ailesi (2026-07-19): transformListeStatik → .liste__oge
+  // Section class="ocak-{name}" → baseline max-w-prose + margin auto (KARAR A).
   it('43. vitrin temalar — CARD_SECTIONS liste ailesi, 5 öğe, link opsiyonel', () => {
     const html = render('fixture-24-vitrin-temalar.md');
-    // Section wrapper adı temalar (siradaki-kapi değil)
-    expect(html).toContain('<section data-section="temalar">');
+    // Section wrapper adı temalar (siradaki-kapi değil), class="ocak-temalar"
+    expect(html).toContain('<section data-section="temalar" class="ocak-temalar">');
     expect(html).not.toContain('<section data-section="siradaki-kapi">');
     // 5 öğe: yeni class .liste__oge (eski .ocak-kapi-kart siradaki-kapi'ye özgü)
     expect(html.match(/<article class="liste__oge">/g)?.length).toBe(5);
@@ -799,7 +800,7 @@ describe('remark-ocak-sections', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     // 5 kart: siradaki-kapi olsa warn ederdi (count >= 5), temalar warn ETMEZ
     const html = render('fixture-24-vitrin-temalar.md', { filename: 'temalar-5-kart.md' });
-    expect(html).toContain('<section data-section="temalar">');
+    expect(html).toContain('<section data-section="temalar" class="ocak-temalar">');
     // Warn spy: siradaki-kapi mesajı ÇAĞRILMAMALI
     const kapiWarnCalls = warn.mock.calls.filter((c) =>
       String(c[0]).includes('siradaki-kapi (temalar-5-kart.md)'),
@@ -823,11 +824,11 @@ describe('remark-ocak-sections', () => {
 
   it('46. vitrin turler + formatlar — CARD_SECTIONS Set üç grup adı da tanır', () => {
     const tHtml = process('## section: turler\n\n### Kakao\n\nKakao seremonisi.');
-    expect(tHtml).toContain('<section data-section="turler">');
+    expect(tHtml).toContain('<section data-section="turler" class="ocak-turler">');
     expect(tHtml).toContain('<article class="liste__oge">');
 
     const fHtml = process('## section: formatlar\n\n### Bir Nefes\n\nAçık kapı bir nefes.');
-    expect(fHtml).toContain('<section data-section="formatlar">');
+    expect(fHtml).toContain('<section data-section="formatlar" class="ocak-formatlar">');
     expect(fHtml).toContain('<article class="liste__oge">');
   });
 
@@ -836,6 +837,9 @@ describe('remark-ocak-sections', () => {
   it('46b. vitrin suffix strip — "— 6 hafta" başlıktan silinir, meta render yok', () => {
     const html = process(
       '## section: seri-atolyeler\n\n### Beden Sabahları — 6 hafta\n\nÖzet.\n\nDetay paragrafı.',
+    );
+    expect(html).toContain(
+      '<section data-section="seri-atolyeler" class="ocak-seri-atolyeler">',
     );
     expect(html).toContain('<article class="liste__oge">');
     // Baslik strip'li, em-dash suffix göze görünmez
@@ -846,20 +850,24 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toContain('<h3 class="liste__baslik">Beden Sabahları — 6 hafta</h3>');
   });
 
-  // Madde 8 (revize 2026-07-19): atolyeler ul/li → art arda .liste__oge (meta yok)
-  it('46c. atolyeler — ul/li her li bir .liste__oge (meta slot yok)', () => {
+  // Madde 8 (Notion H3+P güncel, 2026-07-19): atolyeler CARD_SECTIONS ile
+  // ortak H3 parser'ında. İntro (H2+P) verbatim, sonrası .liste__oge kart.
+  it('46c. atolyeler — H3+P yapısında art arda .liste__oge (KARAR A: section class)', () => {
     const html = process(
-      '## section: atolyeler\n\n- **Nefes Yolu** — Bir akşam nefes.\n- **Sessiz Otur** — İçe dönüş atölyesi.\n\nKapanış cümlesi.',
+      '## section: atolyeler\n\n## Tek Seferlik\n\nİntro paragraf.\n\n### Kakao ve Sohbet\n\nKakaonun tarihi.\n\n### Ayurveda ve Kadın\n\nÜç dosha, kadın bedeni.\n\nKapanış cümlesi.',
     );
-    expect(html).toContain('<section data-section="atolyeler">');
-    // Her li bir article.liste__oge
+    // Section class="ocak-atolyeler" (KARAR A — baseline max-w-prose)
+    expect(html).toContain('<section data-section="atolyeler" class="ocak-atolyeler">');
+    // İntro (H2 + p) verbatim, article'lardan önce
+    expect(html).toMatch(/İntro paragraf/);
+    // Her H3 bir article.liste__oge
     expect(html.match(/<article class="liste__oge">/g)?.length).toBe(2);
-    expect(html).toContain('<h3 class="liste__baslik">Nefes Yolu</h3>');
-    expect(html).toContain('<h3 class="liste__baslik">Sessiz Otur</h3>');
-    // Meta slot yok — 'tek akşam' sabiti KALDIRILDI (Kaan kararı)
+    expect(html).toContain('<h3 class="liste__baslik">Kakao ve Sohbet</h3>');
+    expect(html).toContain('<h3 class="liste__baslik">Ayurveda ve Kadın</h3>');
+    // Meta slot yok
     expect(html).not.toContain('class="liste__meta"');
     expect(html).not.toContain('tek akşam');
-    // Kapanış cümlesi article dışında (baseline prose'a verbatim geçer)
+    // Kapanış cümlesi son article'ın içinde (sonraki H3 yok → rest'e gider)
     expect(html).toMatch(/Kapanış cümlesi/);
   });
 

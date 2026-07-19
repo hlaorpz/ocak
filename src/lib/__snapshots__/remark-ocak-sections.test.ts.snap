@@ -119,7 +119,7 @@ exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="ra
 `;
 
 exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS liste ailesi, 5 öğe, link opsiyonel 1`] = `
-"<section data-section="temalar">
+"<section data-section="temalar" class="ocak-temalar">
 <article class="liste__oge">
 <div class="liste__baslik-satir"><h3 class="liste__baslik">Ateş</h3></div>
 <p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
