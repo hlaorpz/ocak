@@ -325,17 +325,13 @@
  *   Statik: <article class="liste__oge">
  *             <div class="liste__baslik-satir">
  *               <h3 class="liste__baslik">…</h3>
- *               [<span class="liste__meta">…</span>]
  *             </div>
  *             <p>tagline…</p><p>gövde…</p>
  *           </article>
  *   Accordion: <details class="liste__oge" name="…" data-section="…">
  *                <summary class="liste__baslik-satir">
  *                  <h3 class="liste__baslik">…</h3>
- *                  <span class="liste__sag">
- *                    [<span class="liste__meta">…</span>]
- *                    <span class="liste__isaret"></span>
- *                  </span>
+ *                  <span class="liste__isaret"></span>
  *                </summary>
  *                <p>tagline…</p><p>gövde…</p>
  *              </details>
@@ -422,27 +418,6 @@ details.liste__oge > summary.liste__baslik-satir:focus-visible {
   font-size: var(--text-h3);
   line-height: 1.3;
   color: var(--cream);
-}
-
-/* Sağ blok (accordion) — meta + isaret yan yana */
-.liste__sag {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  flex-shrink: 0;
-}
-
-/* Meta — bilgi, vurgu değil: Cormorant italik cream-soft */
-.liste__meta {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: var(--text-base);
-  color: var(--cream-soft);
-  flex-shrink: 0;
-}
-
-.liste__meta:empty {
-  display: none;
 }
 
 /* Accordion işareti +/× — 20px ember Cormorant */

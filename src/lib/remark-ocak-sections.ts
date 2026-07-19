@@ -442,9 +442,10 @@ function transformKapi(
  *   - CARD_SECTIONS (H3 group): temalar/turler/formatlar/seri-atolyeler
  *   - 'atolyeler' (ul/li): tek-seferlik atölye listesi ("İsim — açıklama")
  *
- * Meta parse: H3 sonundaki "— suffix" (örn. "1 · Çekirdek — 6 hafta") sağa
- * geçer. atolyeler'de meta plugin sabiti: 'tek akşam'. Meta yoksa .liste__meta
- * DOM'da yer almaz.
+ * Gramer (Kaan kararı, göz turu 2026-07-19): meta slot yok.
+ *   başlık / italik tagline / ember çizgi / gövde
+ * stripSuffix guard KORU — Notion başlığında "— 6 Hafta" gibi kalıntı varsa
+ * göze görünmesin (baslik'ten silinir, meta olarak render EDİLMEZ).
  */
 function transformListeStatik(
   content: RootContent[],
@@ -472,7 +473,6 @@ function transformListeStatik(
           html(
             '<div class="liste__baslik-satir">' +
               `<h3 class="liste__baslik">${escapeHtmlText(baslik)}</h3>` +
-              '<span class="liste__meta">tek akşam</span>' +
               '</div>',
           ),
         );
@@ -497,15 +497,14 @@ function transformListeStatik(
       const h3Node = card[0];
       const rest = card.slice(1);
       const h3Text = getText(h3Node).trim();
+      // Suffix strip guard: Notion başlığındaki "— 6 Hafta" gibi kalıntıyı
+      // baslik'ten sil; meta olarak render EDİLMEZ (Kaan kararı 2026-07-19).
       const parsed = parseMetaSuffix(h3Text);
       out.push(html('<article class="liste__oge">'));
       out.push(
         html(
           '<div class="liste__baslik-satir">' +
             `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
-            (parsed.meta
-              ? `<span class="liste__meta">${escapeHtmlText(parsed.meta)}</span>`
-              : '') +
             '</div>',
         ),
       );
@@ -520,7 +519,8 @@ function transformListeStatik(
 
 /**
  * H3/H2 metninin sonundaki "— suffix" ayır. Greedy: son em-dash'ten böl —
- * başlıkta em-dash yoksa meta null. Liste ailesi meta-etiket parse'ı.
+ * başlıkta em-dash yoksa meta null. Liste ailesi meta-etiket parse'ı;
+ * meta render EDİLMEZ (Kaan kararı 2026-07-19), sadece başlık strip guard'ı.
  */
 function parseMetaSuffix(text: string): { baslik: string; meta: string | null } {
   const match = text.match(/^(.+)\s+—\s+(.+?)$/);
@@ -1207,18 +1207,16 @@ function transformEsik(
   // düşer — summary'ye class + h3.liste__baslik + isaret span emit et. Esik
   // grubu (family=false) DOKUNULMAZ, mevcut summary text davranışı korunur.
   if (familyClasses) {
+    // Meta slot yok (Kaan kararı 2026-07-19) — baslik strip guard tut,
+    // sağda sadece isaret span (+/×) kalır. parseMeta=true parametresi
+    // Notion başlığındaki "— 6 hafta" kalıntı stripi için hâlâ değerli.
     const parsed = parseMeta ? parseMetaSuffix(hText) : { baslik: hText, meta: null };
     return [
       html(
         `<details name="${groupName}" data-section="${name}" class="liste__oge">` +
           '<summary class="liste__baslik-satir">' +
           `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
-          '<span class="liste__sag">' +
-          (parsed.meta
-            ? `<span class="liste__meta">${escapeHtmlText(parsed.meta)}</span>`
-            : '') +
           '<span class="liste__isaret" aria-hidden="true"></span>' +
-          '</span>' +
           '</summary>',
       ),
       ...rest,

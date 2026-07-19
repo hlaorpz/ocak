@@ -641,7 +641,7 @@ describe('remark-ocak-sections', () => {
   });
 
   // brief-desenler-01.md ADIM 1 — raf-accordion (/araclar 7 raf ailesi)
-  // Madde 8 liste ailesi refaktörü (2026-07-17): familyClasses=true → .liste__oge
+  // Madde 8 liste ailesi refaktörü (2026-07-19): meta slot yok, sadece isaret.
   it('40. raf accordion — whitelist details name="raflar", liste ailesi class seti', () => {
     const html = render('fixture-23-raf-accordion.md');
     // İki raf section (cekirdek, beden) details olarak basılır — namespace "raflar"
@@ -653,13 +653,15 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain(
       '<details name="raflar" data-section="raf-beden" class="liste__oge">',
     );
-    // Summary yeni yapı: .liste__baslik-satir + h3.liste__baslik + .liste__sag
+    // Summary yeni yapı: .liste__baslik-satir + h3.liste__baslik + isaret (meta yok)
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">1 · Çekirdek Araçlar</h3>',
+      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">1 · Çekirdek Araçlar</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">2 · Beden Araçları</h3>',
+      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">2 · Beden Araçları</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
+    // Meta slot yok (Kaan kararı 2026-07-19) — .liste__meta hiçbir yerde
+    expect(html).not.toContain('class="liste__meta"');
     // İsaret span her summary'de var (+/× CSS ile basılır)
     expect(html.match(/<span class="liste__isaret" aria-hidden="true"><\/span>/g)?.length).toBe(2);
     // H3 ham olarak details body'sinde KALMAMALI (strip teyidi)
@@ -686,12 +688,12 @@ describe('remark-ocak-sections', () => {
       filename: 'no-h3.md',
     });
     // Fallback: summary section-name'i (raf-cekirdek) basar, içerik korunur
-    // Madde 8: familyClasses → summary yeni yapıda h3.liste__baslik
+    // Madde 8: familyClasses → summary yeni yapıda h3.liste__baslik + isaret
     expect(html).toContain(
       '<details name="raflar" data-section="raf-cekirdek" class="liste__oge">',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">raf-cekirdek</h3>',
+      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">raf-cekirdek</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain('Doğrudan paragraf');
     expect(warn).toHaveBeenCalled();
@@ -704,9 +706,9 @@ describe('remark-ocak-sections', () => {
   });
 
   // brief-advaita-accordion.md — /advaita 3 tasidigi-* yön kartı accordion
-  // Madde 8 liste ailesi (2026-07-17): familyClasses=true, parseMeta=false
-  // (em-dash alt-başlık ayracı, meta değil).
-  it('47. tasiyici accordion — whitelist details name="tasiyici", liste ailesi, meta parse KAPALI', () => {
+  // Madde 8 liste ailesi (2026-07-19): familyClasses=true, parseMeta=false
+  // (em-dash alt-başlık ayracı, meta değil); meta slot tamamen yok.
+  it('47. tasiyici accordion — whitelist details name="tasiyici", liste ailesi, meta yok', () => {
     const html = render('fixture-25-tasiyici-accordion.md');
     // İki tasidigi section (bati, dogu) details olarak basılır — namespace "tasiyici"
     expect(html.match(/<details name="tasiyici"/g)?.length).toBe(2);
@@ -716,13 +718,15 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain(
       '<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge">',
     );
-    // Summary yeni yapı: parseMeta=false → em-dash başlığın tamamında kalır (meta yok)
+    // Summary yeni yapı: parseMeta=false → em-dash başlığın tamamında kalır
     expect(html).toContain(
       '<h3 class="liste__baslik">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h3>',
     );
     expect(html).toContain('<h3 class="liste__baslik">🜁 DOĞU — Nefes ve Beden</h3>');
-    // Meta span emit EDİLMEMELİ (parseMeta=false + alt başlık em-dash)
-    expect(html).not.toMatch(/data-section="tasidigi-bati"[\s\S]*?class="liste__meta"/);
+    // Meta slot yok (Kaan kararı 2026-07-19)
+    expect(html).not.toContain('class="liste__meta"');
+    // İsaret span her summary'de var
+    expect(html.match(/<span class="liste__isaret" aria-hidden="true"><\/span>/g)?.length).toBe(2);
     // H2 ham olarak details body'sinde KALMAMALI (strip teyidi)
     expect(html).not.toContain('<h2>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h2>');
     // Section içeriği details'in içinde
@@ -827,21 +831,23 @@ describe('remark-ocak-sections', () => {
     expect(fHtml).toContain('<article class="liste__oge">');
   });
 
-  // Madde 8 yeni davranış: H3 sonundaki "— suffix" meta olarak ayrılır
-  it('46b. vitrin meta suffix — "— 6 hafta" H3 sonundan liste__meta\'ya ayrılır', () => {
+  // Madde 8 (revize 2026-07-19): H3 sonundaki "— suffix" baslikten STRIP edilir
+  // ama meta olarak render EDİLMEZ (Kaan kararı: meta slot yok).
+  it('46b. vitrin suffix strip — "— 6 hafta" başlıktan silinir, meta render yok', () => {
     const html = process(
       '## section: seri-atolyeler\n\n### Beden Sabahları — 6 hafta\n\nÖzet.\n\nDetay paragrafı.',
     );
     expect(html).toContain('<article class="liste__oge">');
-    // Meta ayrıldı, baslik'te em-dash suffix YOK
+    // Baslik strip'li, em-dash suffix göze görünmez
     expect(html).toContain('<h3 class="liste__baslik">Beden Sabahları</h3>');
-    expect(html).toContain('<span class="liste__meta">6 hafta</span>');
+    // Meta slot yok — .liste__meta span'i hiç render edilmez
+    expect(html).not.toContain('class="liste__meta"');
     // Ham başlıkta em-dash suffix'in bulunmadığı teyidi
     expect(html).not.toContain('<h3 class="liste__baslik">Beden Sabahları — 6 hafta</h3>');
   });
 
-  // Madde 8 yeni: atolyeler ul/li → art arda .liste__oge (tek akşam meta sabit)
-  it('46c. atolyeler — ul/li her li bir .liste__oge (tek akşam meta sabit)', () => {
+  // Madde 8 (revize 2026-07-19): atolyeler ul/li → art arda .liste__oge (meta yok)
+  it('46c. atolyeler — ul/li her li bir .liste__oge (meta slot yok)', () => {
     const html = process(
       '## section: atolyeler\n\n- **Nefes Yolu** — Bir akşam nefes.\n- **Sessiz Otur** — İçe dönüş atölyesi.\n\nKapanış cümlesi.',
     );
@@ -850,8 +856,9 @@ describe('remark-ocak-sections', () => {
     expect(html.match(/<article class="liste__oge">/g)?.length).toBe(2);
     expect(html).toContain('<h3 class="liste__baslik">Nefes Yolu</h3>');
     expect(html).toContain('<h3 class="liste__baslik">Sessiz Otur</h3>');
-    // "tek akşam" plugin sabit meta her öğede
-    expect(html.match(/<span class="liste__meta">tek akşam<\/span>/g)?.length).toBe(2);
+    // Meta slot yok — 'tek akşam' sabiti KALDIRILDI (Kaan kararı)
+    expect(html).not.toContain('class="liste__meta"');
+    expect(html).not.toContain('tek akşam');
     // Kapanış cümlesi article dışında (baseline prose'a verbatim geçer)
     expect(html).toMatch(/Kapanış cümlesi/);
   });
