@@ -139,9 +139,10 @@ const isProd = import.meta.env.PROD;
       // çalışmıyor. Toggle → açılan summary'yi 'nearest' ile hizala:
       // viewport içindeyse dokunma, dışına çıktıysa asgari kaydır.
       // CSS scroll-margin-top: var(--nav-height) sticky nav altına gizlenmeyi engeller.
-      // İki exclusive grup: esikler (/sen-neredesin) + tasiyici (/advaita).
+      // Exclusive gruplar: esikler (/sen-neredesin) + tasiyici (/advaita)
+      // + atolyeler (/atolye, Madde 8 accordion mod, 2026-07-19).
       // Not: raflar (/araclar) henüz bu handler'a dahil değil (FAZ 5 alanı).
-      document.querySelectorAll<HTMLDetailsElement>('details[name="esikler"], details[name="tasiyici"]').forEach((d) => {
+      document.querySelectorAll<HTMLDetailsElement>('details[name="esikler"], details[name="tasiyici"], details[name="atolyeler"]').forEach((d) => {
         d.addEventListener('toggle', () => {
           if (d.open) {
             d.querySelector('summary')?.scrollIntoView({

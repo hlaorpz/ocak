@@ -850,25 +850,56 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toContain('<h3 class="liste__baslik">Beden Sabahları — 6 hafta</h3>');
   });
 
-  // Madde 8 (Notion H3+P güncel, 2026-07-19): atolyeler CARD_SECTIONS ile
-  // ortak H3 parser'ında. İntro (H2+P) verbatim, sonrası .liste__oge kart.
-  it('46c. atolyeler — H3+P yapısında art arda .liste__oge (KARAR A: section class)', () => {
+  // Madde 8 (revize 2026-07-19): atolyeler ACCORDION moduna geçti
+  // (collapsible=true). name="atolyeler" grubu kendi başına — /araclar
+  // "raflar" ve /advaita "tasiyici" gruplarından bağımsız. seri-atolyeler
+  // aynı sayfada statik açık kalır (karma mod).
+  it('46c. atolyeler — accordion mod, name="atolyeler" grubu, .liste__oge details', () => {
     const html = process(
-      '## section: atolyeler\n\n## Tek Seferlik\n\nİntro paragraf.\n\n### Kakao ve Sohbet\n\nKakaonun tarihi.\n\n### Ayurveda ve Kadın\n\nÜç dosha, kadın bedeni.\n\nKapanış cümlesi.',
+      '## section: atolyeler\n\n## Tek Seferlik\n\nİntro paragraf.\n\n### Kakao ve Sohbet\n\nKakaonun tarihi.\n\n### Ayurveda ve Kadın\n\nÜç dosha, kadın bedeni.',
     );
     // Section class="ocak-atolyeler" (KARAR A — baseline max-w-prose)
     expect(html).toContain('<section data-section="atolyeler" class="ocak-atolyeler">');
-    // İntro (H2 + p) verbatim, article'lardan önce
+    // İntro (H2 + p) verbatim, details'lerden önce
     expect(html).toMatch(/İntro paragraf/);
-    // Her H3 bir article.liste__oge
-    expect(html.match(/<article class="liste__oge">/g)?.length).toBe(2);
-    expect(html).toContain('<h3 class="liste__baslik">Kakao ve Sohbet</h3>');
-    expect(html).toContain('<h3 class="liste__baslik">Ayurveda ve Kadın</h3>');
-    // Meta slot yok
+    // Her H3 bir details.liste__oge — accordion mod
+    expect(html.match(/<details name="atolyeler"/g)?.length).toBe(2);
+    expect(html).toContain(
+      '<details name="atolyeler" data-section="atolyeler-0" class="liste__oge">',
+    );
+    expect(html).toContain(
+      '<details name="atolyeler" data-section="atolyeler-1" class="liste__oge">',
+    );
+    // Summary yeni yapı: .liste__baslik-satir + h3.liste__baslik + isaret
+    expect(html).toContain(
+      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">Kakao ve Sohbet</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+    );
+    expect(html).toContain(
+      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">Ayurveda ve Kadın</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+    );
+    // Meta slot yok — 'tek akşam' sabiti kaldırıldı
     expect(html).not.toContain('class="liste__meta"');
     expect(html).not.toContain('tek akşam');
-    // Kapanış cümlesi son article'ın içinde (sonraki H3 yok → rest'e gider)
-    expect(html).toMatch(/Kapanış cümlesi/);
+    // Statik article emit EDİLMEZ (article.liste__oge yok atolyeler'de)
+    expect(html).not.toContain('<article class="liste__oge">');
+    // name grubu bağımsız — raflar/tasiyici ile karışmaz
+    expect(html).not.toMatch(/<details name="raflar"[^>]*data-section="atolyeler-/);
+    expect(html).not.toMatch(/<details name="tasiyici"[^>]*data-section="atolyeler-/);
+  });
+
+  // Karma sayfa teyidi: /atolye'de atolyeler ACCORDION + seri-atolyeler STATİK
+  // aynı sayfada. Kaan brief 2026-07-19.
+  it('46d. /atolye karma mod — atolyeler details + seri-atolyeler article', () => {
+    const html = process(
+      '## section: atolyeler\n\n### Kakao\n\nİçerik.\n\n## section: seri-atolyeler\n\n### Nefes Yolu\n\nAltı hafta nefes.',
+    );
+    // atolyeler details (collapsible)
+    expect(html).toContain('<details name="atolyeler" data-section="atolyeler-0"');
+    // seri-atolyeler article (statik)
+    expect(html).toContain('<article class="liste__oge">');
+    expect(html).toContain('<h3 class="liste__baslik">Nefes Yolu</h3>');
+    // seri-atolyeler details'e KAYMAMALI
+    expect(html).not.toMatch(/<details name="seri-atolyeler"/);
   });
 
   // brief-desenler-03 — bes-kadim-kaynak (Varyant C, 5 kadim yön)

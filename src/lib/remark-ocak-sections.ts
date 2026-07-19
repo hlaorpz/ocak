@@ -435,27 +435,51 @@ function transformKapi(
 
 /**
  * transformListeStatik: liste ailesi tek gramer refaktörü (Madde 8) —
- * statik açık öğe emit. Sayfalar: /seremoni türleri, /atolye konuları
- * (tek + seri), /mini-retreat temaları, /acik-kapi formatları.
+ * statik açık VEYA accordion öğe emit. `collapsible` bayrağı iki mod arasında
+ * geçiş yapar; markup ortak `.liste__oge` class'ında birleşir.
  *
- * TEK Notion yapısı, tek çıktı: H3 group. atolyeler (tek-seferlik) +
- * CARD_SECTIONS (temalar/turler/formatlar/seri-atolyeler) ortak parser.
- * Notion (2026-07-19 sonrası): H3 + tagline P + gövde P.
+ * Sayfalar (statik): /seremoni turler · /mini-retreat temalar · /acik-kapi
+ *   formatlar · /atolye seri-atolyeler.
+ * Sayfalar (accordion — collapsible=true): /atolye atolyeler (Kaan kararı
+ *   2026-07-19, KARAR 361 selector zinciri gezildi).
  *
- * Section wrap: <section data-section="X" class="ocak-X"> → baseline
- * `section[data-section][class^="ocak-"]` max-w-prose + margin auto +
- * rhythm padding kuralına girer (merdiven/hiza sorunları çözülür).
+ * Notion yapısı: H3 (öğe başlığı) + tagline P + gövde P. Ortak parser.
  *
- * Gramer (Kaan kararı, göz turu 2026-07-19): meta slot yok.
- *   başlık / italik tagline / ember çizgi / gövde
- * Suffix strip guard KORUNUR — Notion başlığındaki "— 6 Hafta" kalıntısı
- * baslikten silinir, meta olarak render EDİLMEZ.
+ * Statik çıkışı:
+ *   <section data-section="X" class="ocak-X">
+ *     [intro node'ları verbatim]
+ *     <article class="liste__oge">
+ *       <div class="liste__baslik-satir"><h3 class="liste__baslik">…</h3></div>
+ *       …rest (tagline P + gövde P)
+ *     </article>
+ *     …
+ *
+ * Accordion çıkışı:
+ *   <section data-section="X" class="ocak-X">
+ *     [intro node'ları verbatim]
+ *     <details name="X" data-section="X-{i}" class="liste__oge">
+ *       <summary class="liste__baslik-satir">
+ *         <h3 class="liste__baslik">…</h3>
+ *         <span class="liste__isaret" aria-hidden="true"></span>
+ *       </summary>
+ *       …rest
+ *     </details>
+ *     …
+ *   `name="X"` grubu section-adı ile aynı — /araclar "raflar" ve /advaita
+ *   "tasiyici" gruplarından bağımsız (namespace ayrılığı temiz).
+ *
+ * Section wrap: baseline `section[data-section][class^="ocak-"]` max-w-prose
+ * + margin auto + rhythm padding kuralına GİRER (KARAR A, merdiven kapatır).
+ *
+ * Meta slot yok (Kaan kararı 2026-07-19). Suffix strip guard KORUNUR —
+ * Notion başlığındaki "— 6 Hafta" kalıntısı baslikten silinir, render EDİLMEZ.
  *
  * H3'ten önceki üst-düzey node'lar (intro paragraflar) verbatim geçer.
  */
 function transformListeStatik(
   content: RootContent[],
   sectionName: string,
+  collapsible: boolean = false,
 ): RootContent[] {
   const out: RootContent[] = [
     html(`<section data-section="${sectionName}" class="ocak-${sectionName}">`),
@@ -477,23 +501,39 @@ function transformListeStatik(
   }
   out.push(...intro);
 
-  for (const card of cards) {
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
     const h3Node = card[0];
     const rest = card.slice(1);
     const h3Text = getText(h3Node).trim();
-    // Suffix strip guard: Notion başlığındaki "— 6 Hafta" kalıntısını sil;
-    // meta olarak render EDİLMEZ (Kaan kararı 2026-07-19).
     const parsed = parseMetaSuffix(h3Text);
-    out.push(html('<article class="liste__oge">'));
-    out.push(
-      html(
-        '<div class="liste__baslik-satir">' +
-          `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
-          '</div>',
-      ),
-    );
-    out.push(...rest);
-    out.push(html('</article>'));
+
+    if (collapsible) {
+      // Accordion mod: <details> + <summary> + isaret. name grubu section-adı.
+      out.push(
+        html(
+          `<details name="${sectionName}" data-section="${sectionName}-${i}" class="liste__oge">` +
+            '<summary class="liste__baslik-satir">' +
+            `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
+            '<span class="liste__isaret" aria-hidden="true"></span>' +
+            '</summary>',
+        ),
+      );
+      out.push(...rest);
+      out.push(html('</details>'));
+    } else {
+      // Statik açık mod: <article> + başlık-satır (isaret yok).
+      out.push(html('<article class="liste__oge">'));
+      out.push(
+        html(
+          '<div class="liste__baslik-satir">' +
+            `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
+            '</div>',
+        ),
+      );
+      out.push(...rest);
+      out.push(html('</article>'));
+    }
   }
 
   out.push(html('</section>'));
@@ -1298,9 +1338,11 @@ function transformSection(
       return transformKapi(content, options);
 
     case 'atolyeler':
-      // Liste ailesi tek gramer (Madde 8): tek-seferlik atölye ul/li → liste
-      // öğesi. seri-atolyeler ile art arda aynı gramerde render eder.
-      return transformListeStatik(content, 'atolyeler');
+      // Liste ailesi (Madde 8): tek-seferlik atölye listesi ACCORDION moduna
+      // taşındı (Kaan kararı 2026-07-19). name grubu "atolyeler" — kendi
+      // başına, /araclar "raflar" + /advaita "tasiyici" gruplarından bağımsız.
+      // seri-atolyeler statik açık kalır (aynı sayfada karma mod).
+      return transformListeStatik(content, 'atolyeler', true);
 
     case 'sss':
       return transformSss(content, options);
