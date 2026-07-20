@@ -25,11 +25,13 @@ interface Props {
   etkinlik?: EtkinlikProp;
   /** Mod B — nötr: sabit "Yerini ayır" + `/[format]/kayit`. */
   format?: KayitFormat | EtkinlikKategori;
-  /** Buton altına "Diğer tarihler → /takvim#[format]" linki bassın mı. */
+  /** Buton altına "Diğer tarihler →" linki bassın mı. */
   digerTarihler?: boolean;
+  /** "Diğer tarihler" hedefi — default `/takvim#[slug]`. Home dalı düz `/takvim` verir. */
+  digerTarihlerHref?: string;
 }
 
-const { etkinlik, format, digerTarihler = false } = Astro.props;
+const { etkinlik, format, digerTarihler = false, digerTarihlerHref } = Astro.props;
 
 // Slug + metin türetimi. Mod A öncelikli.
 let slug: string | null = null;
@@ -42,16 +44,16 @@ if (etkinlik) {
 }
 
 const href = slug ? `/${slug}/kayit` : null;
-const takvimHref = slug ? `/takvim#${slug}` : null;
+const takvimHref = digerTarihlerHref ?? (slug ? `/takvim#${slug}` : null);
 ---
 {href && (
   <section data-section="kayit-cta" class="ocak-kayit-cta">
     <a class="ocak-kayit-cta__buton" href={href} data-kayit-cta-button>
-      {metin} <span aria-hidden="true">→</span>
+      {metin}{' '}<span aria-hidden="true">→</span>
     </a>
     {digerTarihler && takvimHref && (
       <p class="ocak-kayit-cta__tumu">
-        <a href={takvimHref}>Diğer tarihler <span aria-hidden="true">→</span></a>
+        <a href={takvimHref}>Diğer tarihler{' '}<span aria-hidden="true">→</span></a>
       </p>
     )}
   </section>
