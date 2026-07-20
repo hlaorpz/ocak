@@ -311,19 +311,31 @@ describe('remark-ocak-sections', () => {
     expect(iS).toBeGreaterThan(a1);
   });
 
-  it('22. mini-cta — content olduğu gibi + __MINI_CTA_BUTON__ placeholder (Faz 3)', () => {
+  it('22. mini-cta — son child link TÜKETİLİR (çift CTA yok), prose kalır + placeholder', () => {
     const html = render('fixture-16-mini-cta.md');
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('<p>Hangi formatın');
-    // Fixture'daki elle-yazılı link fixture content'inde olduğu gibi kalır
-    // (post-render helper resolveMiniCtaBtn butonu placeholder yerine basar;
-    // fixture testinde placeholder ham olarak görünür).
+    // duzeltme-buton-eyeball-v2 S2: fixture'daki `[Açık Kapı'ya gel](/acik-kapi)`
+    // son child link TÜKETİLİR — buton placeholder tarafından basıldığı için
+    // ayrı metin linki KALMAMALI (çift-CTA bulgusu).
+    expect(html).not.toContain('Açık Kapı\'ya gel');
+    expect(html).not.toContain('href="/acik-kapi"');
     expect(html).toContain('__MINI_CTA_BUTON__</section>');
   });
 
-  it('23. mini-cta — link yoksa da sarma + placeholder emit (warn KALDIRILDI, buton post-render)', () => {
+  it('23. mini-cta — boş marker + link yoksa: sadece placeholder (warn/hata yok)', () => {
+    // duzeltme-buton-eyeball-v2 S2: Kaan'ın Notion'da mini-cta gövdesini
+    // TEMİZLEMESİ meşru — /cember gibi. Transform hata vermez, sadece buton basar.
+    const html = process('## section: mini-cta', { filename: 'bos.md' });
+    expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
+    // Metinsiz body — prose paragraph yok.
+    expect(html).not.toMatch(/<p>[^<]+<\/p>/);
+  });
+
+  it('23b. mini-cta — prose kalır, link YOK ise dokunulmaz', () => {
     const html = process('## section: mini-cta\n\nSadece metin, link yok.', {
-      filename: 'no-link.md',
+      filename: 'sadece-prose.md',
     });
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('Sadece metin');

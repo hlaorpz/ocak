@@ -1560,34 +1560,18 @@ section[data-section="kayit-btn"][class^="ocak-"] {
  * kullanılan rotalarda boş <section> emit edilmez, ama back-compat için tutulur.
  * ============================================================================*/
 
-/* === mini-cta — ash-warm kart + ember sol border + render-side ok =========== */
-section[data-section="mini-cta"] {
-  background: var(--ash-warm);
-  border-left: 3px solid var(--ember);
-  /* Faz B: clamp() responsive karakter KORUNUR (KRİTİK — mobil sıkışma tasarım).
-   * Sabit değer olmadığı için token bağı burada geçerli değil; ancak vurgu
-   * ailesinde tutarlı clamp kalıbı olarak kalır. */
-  padding: clamp(1.25rem, 2vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
-  margin: clamp(2rem, 4vw, 3rem) auto;
-  max-width: var(--max-w-prose);
-  border-radius: var(--radius-sm);
-}
-
-section[data-section="mini-cta"] > p {
-  color: var(--cream);
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  margin: 0 0 var(--space-4);
-}
-
-section[data-section="mini-cta"] > p:last-of-type {
-  margin-bottom: var(--space-3);
-}
+/* === mini-cta — sade kırmızı buton, komşu prose ritmine oturmuş ============
+ * duzeltme-buton-eyeball-v2 S3: eski ash-warm kart + ember sol border + fazla
+ * padding kaldırıldı. mini-cta artık `section[data-section][class^="ocak-"]`
+ * baseline kabuğunu devralır — max-width prose, --rhythm-section padding,
+ * sonraki-bulusma + KayitBtn primitive ile aynı dikey ritim. Prose p'nin
+ * cream-soft rengi ve --rhythm-block margin'i baseline'dan gelir.
+ * Buton (.ocak-kayit-cta__buton) tam-blok kuralı aşağıdaki genişletilmiş
+ * kayit-btn bloğunda (mini-cta wrapper de kapsamda). */
 
 /* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
  * içinde kalan Notion link'leri) — soluk render. `.ocak-kayit-cta__buton`
- * (Faz 3 dolu buton) hariç tutulur; onun kuralı aşağıdaki genişletilmiş
- * kayit-cta bloğunda. */
+ * (dolu buton) hariç tutulur; onun kuralı aşağıdaki kayit-btn bloğunda. */
 section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton) {
   display: inline-block;
   color: var(--ember);

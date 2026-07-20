@@ -642,13 +642,14 @@ function transformSss(content: RootContent[], options: OcakSectionsOptions): Roo
 }
 
 /**
- * mini-cta (brief-kayit-buton-FINAL Faz 3): prose + kırmızı buton + opsiyonel
- * "Diğer tarihler →" linki. Elle yazılı son-child link kaldırıldı — buton
- * post-render aşamada `resolveMiniCtaBtn` helper'ı tarafından slug bağlamına
- * göre basılır. `__MINI_CTA_BUTON__` placeholder loader'da çözülür (kayit-cta
- * placeholder pattern paraleli).
+ * mini-cta (brief-kayit-buton-FINAL Faz 3 + duzeltme-buton-eyeball-v2 S2):
+ * prose + kırmızı buton + opsiyonel "Diğer tarihler →" linki. Elle yazılı
+ * eski link (son child "paragraph > link") varsa TÜKETİLİR — çift CTA olmaz;
+ * yoksa boş marker olarak kabul edilir (Kaan Notion'da elle silmek zorunda
+ * kalmasın). Her iki durumda çıktı tek kırmızı buton; buton metni Notion
+ * link metnini KOPYALAMAZ — kendi sözlüğünü kullanır (resolveMiniCtaBtn).
  *
- * Context sözlüğü (resolver):
+ * Placeholder pipeline:
  *   - slug KayitFormat + etkinlik context (kayitTipi) → tip-bazlı metin
  *     ("Yerini ayır" / "Başvur") + `/[format]/kayit` + "Diğer tarihler →"
  *   - slug KayitFormat + etkinlik context yok → nötr "Yerini ayır" +
@@ -657,9 +658,21 @@ function transformSss(content: RootContent[], options: OcakSectionsOptions): Roo
  *     değiştirilir; content prose olarak kalır (bypass, mevcut davranış).
  */
 function transformMiniCta(content: RootContent[]): RootContent[] {
+  // Son child "tek-link paragraph" (paragraph > link) ise TÜKET — eski
+  // Notion elle yazılı "Çembere kayıt ol →" gibi link'ler placeholder buton
+  // ile çift CTA'ya yol açmasın. Diğer child'lar (prose, blockquote) aynen
+  // korunur — mini-cta gövdesi üst metin bağlamı olarak kalabilir.
+  const lastIdx = content.length - 1;
+  const last = content[lastIdx] as { type?: string; children?: RootContent[] } | undefined;
+  const lastChildren = last?.children;
+  const isTailLinkPara =
+    last?.type === 'paragraph' &&
+    lastChildren?.length === 1 &&
+    (lastChildren[0] as { type?: string }).type === 'link';
+  const body = isTailLinkPara ? content.slice(0, lastIdx) : content;
   return [
     html('<section data-section="mini-cta" class="ocak-mini-cta">'),
-    ...content,
+    ...body,
     html('__MINI_CTA_BUTON__</section>'),
   ];
 }
