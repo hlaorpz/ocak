@@ -1429,11 +1429,13 @@ function transformSection(
         return transformEsik(content, name, options, 'tasiyici', 2, true, false);
       }
 
-      // Vitrin grupları: temalar/turler/formatlar/seri-atolyeler → liste
-      // ailesi statik açık öğe (Madde 8 refaktörü). Meta suffix ("— 6 hafta")
-      // H3 sonundan parse edilir; kart yerine .liste__oge markup'ı emit.
+      // Karar sayfası listeleri (Kaan brief 2026-07-20): temalar/turler/
+      // formatlar/seri-atolyeler → ACCORDION (collapsible=true), atolyeler
+      // ile aynı gramer. Her section kendi name grubu (isolation), scroll
+      // toggle Layout.astro'da eklendi. Statik-açık listeleme kalmadı;
+      // tüm karar sayfaları accordion.
       if (CARD_SECTIONS.has(name)) {
-        return transformListeStatik(content, name);
+        return transformListeStatik(content, name, true);
       }
 
       // Kanonik dışı: serbest prose (manifesto, al-ol-ver, cekirdek-vaat, esik-kadini …).

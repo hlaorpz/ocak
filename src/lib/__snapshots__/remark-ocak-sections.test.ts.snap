@@ -118,29 +118,24 @@ exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="ra
 </section>"
 `;
 
-exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS liste ailesi, 5 öğe, link opsiyonel 1`] = `
+exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS accordion, 5 details, name="temalar" 1`] = `
 "<section data-section="temalar" class="ocak-temalar">
-<article class="liste__oge">
-<div class="liste__baslik-satir"><h3 class="liste__baslik">Ateş</h3></div>
+<details name="temalar" data-section="temalar-0" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Ateş</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
-</article>
-<article class="liste__oge">
-<div class="liste__baslik-satir"><h3 class="liste__baslik">Sessizlik</h3></div>
+</details>
+<details name="temalar" data-section="temalar-1" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Sessizlik</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Boşluğu doldurmadan durmak. Nefesin arkasındaki sesi duymak.</p>
-</article>
-<article class="liste__oge">
-<div class="liste__baslik-satir"><h3 class="liste__baslik">Beden</h3></div>
+</details>
+<details name="temalar" data-section="temalar-2" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Beden</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Dokunuş, ritim, temas. Bedeni okuma dili.</p>
 <p><a href="/atolye">Beden atölyesine bak →</a></p>
-</article>
-<article class="liste__oge">
-<div class="liste__baslik-satir"><h3 class="liste__baslik">Kök</h3></div>
+</details>
+<details name="temalar" data-section="temalar-3" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Kök</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Soy, toprak, aidiyet. Nereden geliyorsun — hangi soydan?</p>
-</article>
-<article class="liste__oge">
-<div class="liste__baslik-satir"><h3 class="liste__baslik">Yaratıcı</h3></div>
+</details>
+<details name="temalar" data-section="temalar-4" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Yaratıcı</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>İfade, oyun, form verme. Kelimeyle, çizgiyle, sesle.</p>
-</article>
+</details>
 </section>"
 `;
 

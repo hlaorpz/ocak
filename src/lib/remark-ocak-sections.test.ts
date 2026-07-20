@@ -779,27 +779,36 @@ describe('remark-ocak-sections', () => {
   });
 
   // brief-desenler-01.md ADIM 2 — vitrin (temalar/turler/formatlar)
-  // Madde 8 liste ailesi (2026-07-19): transformListeStatik → .liste__oge
-  // Section class="ocak-{name}" → baseline max-w-prose + margin auto (KARAR A).
-  it('43. vitrin temalar — CARD_SECTIONS liste ailesi, 5 öğe, link opsiyonel', () => {
+  // Madde 8 (Kaan brief 2026-07-20): tüm karar sayfası listeleri ACCORDION.
+  // transformListeStatik(collapsible=true) → details.liste__oge + summary
+  // içi span[role=heading]. atolyeler ile aynı gramer.
+  it('43. vitrin temalar — CARD_SECTIONS accordion, 5 details, name="temalar"', () => {
     const html = render('fixture-24-vitrin-temalar.md');
-    // Section wrapper adı temalar (siradaki-kapi değil), class="ocak-temalar"
+    // Section wrapper adı temalar, class="ocak-temalar"
     expect(html).toContain('<section data-section="temalar" class="ocak-temalar">');
     expect(html).not.toContain('<section data-section="siradaki-kapi">');
-    // 5 öğe: yeni class .liste__oge (eski .ocak-kapi-kart siradaki-kapi'ye özgü)
-    expect(html.match(/<article class="liste__oge">/g)?.length).toBe(5);
+    // 5 details: name="temalar" grubu (exclusive accordion)
+    expect(html.match(/<details name="temalar"/g)?.length).toBe(5);
+    // Article emit EDİLMEZ (statik-açık artık yok karar sayfalarında)
+    expect(html).not.toContain('<article class="liste__oge">');
     expect(html).not.toContain('<article class="ocak-kapi-kart">');
-    // Başlık satırı yeni yapı: h3.liste__baslik (id/class yok, "Ateş" — meta yok)
-    expect(html).toContain('<h3 class="liste__baslik">Ateş</h3>');
-    expect(html).toContain('<h3 class="liste__baslik">Sessizlik</h3>');
+    // Summary içi span[role=heading] (h3 spec ihlali fix, 2026-07-20)
+    expect(html).toContain(
+      '<span class="liste__baslik" role="heading" aria-level="3">Ateş</span>',
+    );
+    expect(html).toContain(
+      '<span class="liste__baslik" role="heading" aria-level="3">Sessizlik</span>',
+    );
     expect(html).toContain('<a href="/atolye">Beden atölyesine bak →</a>');
-    // Link'siz öğe de article içinde açılır (fallback yok)
-    const ateşCard =
+    // Summary içinde <h3> KULLANILMAMALI
+    expect(html).not.toMatch(/<summary[^>]*>[^<]*<h3/);
+    // Ateş details içerik
+    const ateşDetails =
       html.match(
-        /<article class="liste__oge">\s*<div class="liste__baslik-satir"><h3 class="liste__baslik">Ateş<\/h3>[\s\S]*?<\/article>/,
+        /<details name="temalar" data-section="temalar-0"[\s\S]*?<\/details>/,
       )?.[0] ?? '';
-    expect(ateşCard).toContain('İçindeki közü tanı');
-    expect(ateşCard).not.toContain('<a href');
+    expect(ateşDetails).toContain('İçindeki közü tanı');
+    expect(ateşDetails).not.toContain('<a href');
     expect(html).toMatchSnapshot();
   });
 
@@ -829,32 +838,40 @@ describe('remark-ocak-sections', () => {
     warn.mockRestore();
   });
 
-  it('46. vitrin turler + formatlar — CARD_SECTIONS Set üç grup adı da tanır', () => {
+  it('46. vitrin turler + formatlar — CARD_SECTIONS accordion, name grubu section adı', () => {
     const tHtml = process('## section: turler\n\n### Kakao\n\nKakao seremonisi.');
     expect(tHtml).toContain('<section data-section="turler" class="ocak-turler">');
-    expect(tHtml).toContain('<article class="liste__oge">');
+    expect(tHtml).toContain('<details name="turler" data-section="turler-0" class="liste__oge">');
+    expect(tHtml).not.toContain('<article class="liste__oge">');
 
     const fHtml = process('## section: formatlar\n\n### Bir Nefes\n\nAçık kapı bir nefes.');
     expect(fHtml).toContain('<section data-section="formatlar" class="ocak-formatlar">');
-    expect(fHtml).toContain('<article class="liste__oge">');
+    expect(fHtml).toContain('<details name="formatlar" data-section="formatlar-0" class="liste__oge">');
+    expect(fHtml).not.toContain('<article class="liste__oge">');
   });
 
-  // Madde 8 (revize 2026-07-19): H3 sonundaki "— suffix" baslikten STRIP edilir
-  // ama meta olarak render EDİLMEZ (Kaan kararı: meta slot yok).
-  it('46b. vitrin suffix strip — "— 6 hafta" başlıktan silinir, meta render yok', () => {
+  // Madde 8 (Kaan brief 2026-07-20): seri-atolyeler ACCORDION.
+  // H3 sonundaki "— suffix" baslikten STRIP edilir, meta render EDİLMEZ.
+  it('46b. seri-atolyeler suffix strip — "— 6 hafta" başlıktan silinir, meta render yok', () => {
     const html = process(
       '## section: seri-atolyeler\n\n### Beden Sabahları — 6 hafta\n\nÖzet.\n\nDetay paragrafı.',
     );
     expect(html).toContain(
       '<section data-section="seri-atolyeler" class="ocak-seri-atolyeler">',
     );
-    expect(html).toContain('<article class="liste__oge">');
-    // Baslik strip'li, em-dash suffix göze görünmez
-    expect(html).toContain('<h3 class="liste__baslik">Beden Sabahları</h3>');
+    // Accordion mod: details, article DEĞİL
+    expect(html).toContain(
+      '<details name="seri-atolyeler" data-section="seri-atolyeler-0" class="liste__oge">',
+    );
+    expect(html).not.toContain('<article class="liste__oge">');
+    // Baslik strip'li, span[role=heading] — h3 spec ihlali fix (2026-07-20)
+    expect(html).toContain(
+      '<span class="liste__baslik" role="heading" aria-level="3">Beden Sabahları</span>',
+    );
     // Meta slot yok — .liste__meta span'i hiç render edilmez
     expect(html).not.toContain('class="liste__meta"');
     // Ham başlıkta em-dash suffix'in bulunmadığı teyidi
-    expect(html).not.toContain('<h3 class="liste__baslik">Beden Sabahları — 6 hafta</h3>');
+    expect(html).not.toContain('Beden Sabahları — 6 hafta</span>');
   });
 
   // Madde 8 (revize 2026-07-19): atolyeler ACCORDION moduna geçti
@@ -896,19 +913,21 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toMatch(/<details name="tasiyici"[^>]*data-section="atolyeler-/);
   });
 
-  // Karma sayfa teyidi: /atolye'de atolyeler ACCORDION + seri-atolyeler STATİK
-  // aynı sayfada. Kaan brief 2026-07-19.
-  it('46d. /atolye karma mod — atolyeler details + seri-atolyeler article', () => {
+  // Kaan brief 2026-07-20: /atolye'de karma mod BİTTİ — hem atolyeler hem
+  // seri-atolyeler accordion. Her iki section bağımsız name grubu.
+  it('46d. /atolye — atolyeler + seri-atolyeler ayrı accordion grupları', () => {
     const html = process(
       '## section: atolyeler\n\n### Kakao\n\nİçerik.\n\n## section: seri-atolyeler\n\n### Nefes Yolu\n\nAltı hafta nefes.',
     );
-    // atolyeler details (collapsible)
+    // atolyeler details
     expect(html).toContain('<details name="atolyeler" data-section="atolyeler-0"');
-    // seri-atolyeler article (statik)
-    expect(html).toContain('<article class="liste__oge">');
-    expect(html).toContain('<h3 class="liste__baslik">Nefes Yolu</h3>');
-    // seri-atolyeler details'e KAYMAMALI
-    expect(html).not.toMatch(/<details name="seri-atolyeler"/);
+    // seri-atolyeler ARTIK details (statik değil)
+    expect(html).toContain('<details name="seri-atolyeler" data-section="seri-atolyeler-0"');
+    // Hiçbir yerde article emit YOK (statik kart kalmadı karar sayfalarında)
+    expect(html).not.toContain('<article class="liste__oge">');
+    // Name grupları bağımsız
+    expect(html).not.toMatch(/<details name="atolyeler"[^>]*data-section="seri-atolyeler-/);
+    expect(html).not.toMatch(/<details name="seri-atolyeler"[^>]*data-section="atolyeler-/);
   });
 
   // brief-desenler-03 — bes-kadim-kaynak (Varyant C, 5 kadim yön)

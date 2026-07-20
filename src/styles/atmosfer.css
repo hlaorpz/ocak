@@ -355,17 +355,9 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-5);
-}
-
-/* Accordion mod (atolyeler) — kapalı öğe kompakt ritmi (Kaan brief 2026-07-19).
- * Statik moda ait --space-5 gap accordion kapalı details'lerde ekstra 24px
- * boşluk yaratıyordu → "dev blok" hissi. Gap iptali → /araclar rafları
- * paraleli, bitişik details ritmi. Accordion açıkken de sonraki kapalı öğe
- * ile boşluk yok — statik mod (seri-atolyeler) etkilenmez, kendi gap'iyle
- * çalışır. Regresyon: /araclar outer section YOK, bu selector match etmez. */
-[data-section="atolyeler"] {
-  gap: 0;
+  gap: 0;                              /* accordion sıkı ritim — Kaan brief 2026-07-20:
+                                          5 karar sayfası listesi hepsi accordion,
+                                          kapalı details bitişik (/araclar rafları paraleli). */
 }
 
 /* Intro → grup geçiş boşluğu (brief-desenler-02b): standart iki ardışık section
