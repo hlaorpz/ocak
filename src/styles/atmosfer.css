@@ -1569,14 +1569,15 @@ section[data-section="mini-cta"][class^="ocak-"] {
  * sonraki-bulusma kart-altı butonuyla BİREBİR aynı genişlikte
  * (duzeltme-buton-tur2 S2 genişlik fix).
  *
- * Simetrik dikey nefes: hem üst hem alt `--space-2` (0.5rem) — buton
- * komşu prose ile ilişkili, "üstündeki paragrafın altında" hissi;
- * altındaki başlıkla da aynı sıkı bağ (Kaan mikro tur 2: üst ve alt
- * eşit). Baseline `--rhythm-section-top/bottom` (3/4rem) override edilir.
+ * Üst nefes: baseline `--rhythm-section-top` (3rem) yerine kompakt
+ * `--space-2` (0.5rem) — buton üstündeki paragrafla sıkı ama yapışık-
+ * olmayan bağ (Kaan mikro tur 3: bir kademe daha yakınlaştır). Alt
+ * boşluk baseline `--rhythm-section-bottom` (4rem) KORUNUR — sonraki
+ * başlığa nefes kalır (simetri değil, asimetrik "yakın üst / rahat alt").
  * Buton (.ocak-kayit-cta__buton) tam-blok kuralı aşağıdaki genişletilmiş
  * kayit-btn bloğunda (mini-cta wrapper de kapsamda). */
 section[data-section="mini-cta"][class^="ocak-"] {
-  padding-block: var(--space-2);
+  padding-top: var(--space-2);
 }
 
 /* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
