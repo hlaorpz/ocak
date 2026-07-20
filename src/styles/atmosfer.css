@@ -393,14 +393,20 @@ details.liste__oge[open] {
   border-left-color: var(--ember);
 }
 
-/* Başlık satırı — başlık ↔ meta/işaret space-between */
+/* Başlık satırı — h3 sola dayalı, isaret sağa (margin-left:auto ile).
+ * `justify-content: space-between` uygulama tuhaflığı (2026-07-20 SS: h3
+ * ekran ortasında yüzüyordu — `<summary>` içinde `<h3>` spec ihlali,
+ * tarayıcı toleransı space-between'ı ortala hissi yaratabiliyor).
+ * Savunmacı fix: flex-start + isaret auto margin — h3 kesin ray'ın hemen
+ * sağında (/araclar rafları paraleli). Article'da (tek h3) davranış aynı. */
 .liste__baslik-satir {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: baseline;
   gap: var(--space-4);
   margin: 0;
   padding: 0;
+  text-align: left;
 }
 
 /* Details summary native marker + cursor */
@@ -430,8 +436,11 @@ details.liste__oge > summary.liste__baslik-satir:focus-visible {
   color: var(--cream);
 }
 
-/* Accordion işareti +/× — 20px ember Cormorant */
+/* Accordion işareti +/× — 20px ember Cormorant. margin-left:auto ile
+ * flex-container'da SAĞA çekilir (flex-start justify + auto margin =
+ * space-between eşdeğeri, ancak sağlam). */
 .liste__isaret {
+  margin-left: auto;
   font-family: var(--font-display);
   font-style: normal;
   font-size: 20px;
