@@ -1,0 +1,58 @@
+---
+// KayitBtn — kayıt CTA butonu, tek ortak primitive (brief-kayit-buton-FINAL).
+// KAYIT_CTA_LABEL format-sabit tablosunun yerini alır. Metin etkinlik bazlı
+// `Kayıt Tipi`'nden türer; hedef sluğa göre `/[format]/kayit`.
+//
+// İki mod:
+//   Mod A (etkinliğe bağlı) — SonrakiBulusma kartı + mini-cta etkinlik detay:
+//     props { etkinlik } → metin = Direkt→'Yerini ayır' / Başvuru→'Başvur';
+//     hedef = /[FORMAT_KATEGORI[tip]]/kayit; opsiyonel "Diğer tarihler →" linki.
+//   Mod B (nötr) — format sayfası kapanışı mini-cta:
+//     props { format } → sabit 'Yerini ayır' + /[format]/kayit.
+//
+// Görsel: mevcut `.ocak-kayit-cta__buton` class (atmosfer.css:1752 dolu ember).
+// Section wrapper: `data-section="kayit-cta"` — atmosfer.css section kabuğu
+// (ortala + padding) ve sonraki-bulusma ardışıklık kuralları (1736-1743)
+// zaten `[data-section="kayit-cta"]`'yı hedefliyor, tek gramer korunur.
+import type { CollectionEntry } from 'astro:content';
+import { FORMAT_KATEGORI, type EtkinlikKategori } from '../lib/etkinlik-kategori';
+import type { KayitFormat } from '../lib/kayit';
+
+type EtkinlikProp = CollectionEntry<'etkinlikler'>['data'];
+
+interface Props {
+  /** Mod A — etkinliğe bağlı: metin + hedef etkinlikten türer. */
+  etkinlik?: EtkinlikProp;
+  /** Mod B — nötr: sabit "Yerini ayır" + `/[format]/kayit`. */
+  format?: KayitFormat | EtkinlikKategori;
+  /** Buton altına "Diğer tarihler → /takvim#[format]" linki bassın mı. */
+  digerTarihler?: boolean;
+}
+
+const { etkinlik, format, digerTarihler = false } = Astro.props;
+
+// Slug + metin türetimi. Mod A öncelikli.
+let slug: string | null = null;
+let metin = 'Yerini ayır';
+if (etkinlik) {
+  slug = FORMAT_KATEGORI[etkinlik.tip] ?? null;
+  metin = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
+} else if (format) {
+  slug = format;
+}
+
+const href = slug ? `/${slug}/kayit` : null;
+const takvimHref = slug ? `/takvim#${slug}` : null;
+---
+{href && (
+  <section data-section="kayit-cta" class="ocak-kayit-cta">
+    <a class="ocak-kayit-cta__buton" href={href} data-kayit-cta-button>
+      {metin} <span aria-hidden="true">→</span>
+    </a>
+    {digerTarihler && takvimHref && (
+      <p class="ocak-kayit-cta__tumu">
+        <a href={takvimHref}>Diğer tarihler <span aria-hidden="true">→</span></a>
+      </p>
+    )}
+  </section>
+)}
