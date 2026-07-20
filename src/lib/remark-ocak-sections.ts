@@ -510,11 +510,15 @@ function transformListeStatik(
 
     if (collapsible) {
       // Accordion mod: <details> + <summary> + isaret. name grubu section-adı.
+      // MARKUP: summary içinde <span role="heading" aria-level="3">, <h3> DEĞİL.
+      // <summary> içinde heading content HTML5 spec ihlali (Kaan brief 2026-07-20);
+      // tarayıcı parser toleransı flex layout'u bozuyordu. Semantik ARIA ile korunur.
+      // transformEsik ile aynı gramerde tek çıkış.
       out.push(
         html(
           `<details name="${sectionName}" data-section="${sectionName}-${i}" class="liste__oge">` +
             '<summary class="liste__baslik-satir">' +
-            `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
+            `<span class="liste__baslik" role="heading" aria-level="3">${escapeHtmlText(parsed.baslik)}</span>` +
             '<span class="liste__isaret" aria-hidden="true"></span>' +
             '</summary>',
         ),
@@ -1233,12 +1237,20 @@ function transformEsik(
     // Meta slot yok (Kaan kararı 2026-07-19) — baslik strip guard tut,
     // sağda sadece isaret span (+/×) kalır. parseMeta=true parametresi
     // Notion başlığındaki "— 6 hafta" kalıntı stripi için hâlâ değerli.
+    //
+    // MARKUP: summary içinde <span> (ARIA heading role), <h3> DEĞİL.
+    // Kaan brief 2026-07-20: <summary> içinde <h3> HTML5 spec ihlali
+    // (heading content summary'de yasak). Tarayıcı parser tolerans DOM'u
+    // yeniden yorumluyor → flex layout tuhaflaşıyor, /atolye başlıklar
+    // ortalı/merdiven. Fix: geçerli phrasing content (<span>) + ARIA
+    // heading role + aria-level ile semantik korunur. /araclar + /advaita
+    // aynı transformEsik'ten geçtiği için üçü de tek gramerde toplanır.
     const parsed = parseMeta ? parseMetaSuffix(hText) : { baslik: hText, meta: null };
     return [
       html(
         `<details name="${groupName}" data-section="${name}" class="liste__oge">` +
           '<summary class="liste__baslik-satir">' +
-          `<h3 class="liste__baslik">${escapeHtmlText(parsed.baslik)}</h3>` +
+          `<span class="liste__baslik" role="heading" aria-level="3">${escapeHtmlText(parsed.baslik)}</span>` +
           '<span class="liste__isaret" aria-hidden="true"></span>' +
           '</summary>',
       ),

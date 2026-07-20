@@ -653,14 +653,18 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain(
       '<details name="raflar" data-section="raf-beden" class="liste__oge">',
     );
-    // Summary yeni yapı: .liste__baslik-satir + h3.liste__baslik + isaret (meta yok)
+    // Summary yeni yapı: .liste__baslik-satir + span[role=heading] + isaret.
+    // Kaan brief 2026-07-20: <summary> içinde <h3> HTML5 spec ihlali;
+    // span + ARIA heading role ile semantik korunur, layout tutarlı.
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">1 · Çekirdek Araçlar</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">1 · Çekirdek Araçlar</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">2 · Beden Araçları</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">2 · Beden Araçları</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
-    // Meta slot yok (Kaan kararı 2026-07-19) — .liste__meta hiçbir yerde
+    // Summary içinde <h3> KULLANILMAMALI (spec ihlali)
+    expect(html).not.toMatch(/<summary[^>]*>[^<]*<h3/);
+    // Meta slot yok — .liste__meta hiçbir yerde
     expect(html).not.toContain('class="liste__meta"');
     // İsaret span her summary'de var (+/× CSS ile basılır)
     expect(html.match(/<span class="liste__isaret" aria-hidden="true"><\/span>/g)?.length).toBe(2);
@@ -688,12 +692,12 @@ describe('remark-ocak-sections', () => {
       filename: 'no-h3.md',
     });
     // Fallback: summary section-name'i (raf-cekirdek) basar, içerik korunur
-    // Madde 8: familyClasses → summary yeni yapıda h3.liste__baslik + isaret
+    // Madde 8 (2026-07-20): summary içi span[role=heading], h3 DEĞİL.
     expect(html).toContain(
       '<details name="raflar" data-section="raf-cekirdek" class="liste__oge">',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">raf-cekirdek</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">raf-cekirdek</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain('Doğrudan paragraf');
     expect(warn).toHaveBeenCalled();
@@ -719,10 +723,13 @@ describe('remark-ocak-sections', () => {
       '<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge">',
     );
     // Summary yeni yapı: parseMeta=false → em-dash başlığın tamamında kalır
+    // Madde 8 (2026-07-20): summary içi span[role=heading]
     expect(html).toContain(
-      '<h3 class="liste__baslik">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h3>',
+      '<span class="liste__baslik" role="heading" aria-level="3">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</span>',
     );
-    expect(html).toContain('<h3 class="liste__baslik">🜁 DOĞU — Nefes ve Beden</h3>');
+    expect(html).toContain(
+      '<span class="liste__baslik" role="heading" aria-level="3">🜁 DOĞU — Nefes ve Beden</span>',
+    );
     // Meta slot yok (Kaan kararı 2026-07-19)
     expect(html).not.toContain('class="liste__meta"');
     // İsaret span her summary'de var
@@ -754,12 +761,12 @@ describe('remark-ocak-sections', () => {
       filename: 'no-h2.md',
     });
     // Fallback: summary section-name'i (tasidigi-bati) basar, içerik korunur
-    // Madde 8: familyClasses → summary yeni yapıda h3.liste__baslik
+    // Madde 8 (2026-07-20): summary içi span[role=heading], h3 DEĞİL.
     expect(html).toContain(
       '<details name="tasiyici" data-section="tasidigi-bati" class="liste__oge">',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">tasidigi-bati</h3>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">tasidigi-bati</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain('Doğrudan paragraf');
     expect(warn).toHaveBeenCalled();
@@ -870,13 +877,15 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain(
       '<details name="atolyeler" data-section="atolyeler-1" class="liste__oge">',
     );
-    // Summary yeni yapı: .liste__baslik-satir + h3.liste__baslik + isaret
+    // Summary yeni yapı: span[role=heading][aria-level=3] (h3 DEĞİL — 07-20 fix)
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">Kakao ve Sohbet</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Kakao ve Sohbet</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
     expect(html).toContain(
-      '<summary class="liste__baslik-satir"><h3 class="liste__baslik">Ayurveda ve Kadın</h3><span class="liste__isaret" aria-hidden="true"></span></summary>',
+      '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Ayurveda ve Kadın</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
     );
+    // Summary içinde <h3> KULLANILMAMALI (spec ihlali fix, 2026-07-20)
+    expect(html).not.toMatch(/<summary[^>]*>[^<]*<h3/);
     // Meta slot yok — 'tek akşam' sabiti kaldırıldı
     expect(html).not.toContain('class="liste__meta"');
     expect(html).not.toContain('tek akşam');

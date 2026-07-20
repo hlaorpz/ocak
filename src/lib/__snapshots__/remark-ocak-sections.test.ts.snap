@@ -105,11 +105,11 @@ exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C d
 `;
 
 exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", liste ailesi class seti 1`] = `
-"<details name="raflar" data-section="raf-cekirdek" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">1 · Çekirdek Araçlar</h3><span class="liste__isaret" aria-hidden="true"></span></summary>
+"<details name="raflar" data-section="raf-cekirdek" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">1 · Çekirdek Araçlar</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>OCAK'ın temeline giden araçlar. Nefes, niyet, sessizlik.</p>
 <p>Kısa gündelik uygulamalar.</p>
 </details>
-<details name="raflar" data-section="raf-beden" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">2 · Beden Araçları</h3><span class="liste__isaret" aria-hidden="true"></span></summary>
+<details name="raflar" data-section="raf-beden" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">2 · Beden Araçları</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Bedeni dinleme, gerginlik açma, temas kurma araçları.</p>
 </details>
 <section data-section="raf-diger" class="ocak-raf-diger">
@@ -185,10 +185,10 @@ exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details nam
 <h2>Ne Taşıyor</h2>
 <p>Bu araçlar önce Advaita'nın bedeninden geçti — ama artık OCAK'ın ortak kutusunda.</p>
 </section>
-<details name="tasiyici" data-section="tasidigi-bati" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</h3><span class="liste__isaret" aria-hidden="true"></span></summary>
+<details name="tasiyici" data-section="tasidigi-bati" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Sachamama geleneğinin şamanik sağaltımı, Amazon'un bitki bilgeliği. Element çalışması.</p>
 </details>
-<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge"><summary class="liste__baslik-satir"><h3 class="liste__baslik">🜁 DOĞU — Nefes ve Beden</h3><span class="liste__isaret" aria-hidden="true"></span></summary>
+<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">🜁 DOĞU — Nefes ve Beden</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Rishikesh'te aldığı yoga eğitmen eğitimi — Hint Vedik geleneğinin somatik özü.</p>
 </details>
 <section data-section="tasidigi-kuzey" class="ocak-tasidigi-kuzey">
