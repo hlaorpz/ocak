@@ -398,9 +398,18 @@
 [data-section="temalar"] > details.liste__oge:first-of-type,
 [data-section="turler"] > details.liste__oge:first-of-type,
 [data-section="formatlar"] > details.liste__oge:first-of-type,
-[data-section="seri-atolyeler"] > details.liste__oge:first-of-type,
-[data-section="atolyeler"] > details.liste__oge:first-of-type {
+[data-section="seri-atolyeler"] > details.liste__oge:first-of-type {
   margin-top: calc(-1 * var(--space-5));
+}
+
+/* atolyeler section-içi (H2 + p'ler + details aynı section) — intro son p
+ * LAST-CHILD DEĞİL (details takip ediyor) → `p:last-child { margin: 0 }`
+ * kuralı devrede olmaz, p bottom margin baseline'da 24 (mobil) / 32 (desktop).
+ * Kaan brief 2026-07-20: -24 çok sıkı bindirme yaratıyor → gevşet.
+ * -12 (--space-3): 24 - 12 + 12 (details padding-top) = 24px net arada,
+ * diğer 3 accordion intro→liste ritmine yakın (birincil ritim). */
+[data-section="atolyeler"] > details.liste__oge:first-of-type {
+  margin-top: calc(-1 * var(--space-3));
 }
 
 /* Öğe — sol ray + iç padding. article (statik) + details (accordion) ortak.
