@@ -370,6 +370,20 @@
   margin-top: calc(-1 * var(--space-7));
 }
 
+/* Başlık↔liste boşluk daraltma (Kaan brief 2026-07-20) — section-içi intro
+ * (h2 + p'ler) son paragrafın bottom margin (2rem baseline) + gap:0 + details
+ * padding-top (1rem) toplamı ~48px "kopuk" hissi yaratıyordu. İlk details'e
+ * negative margin-top: net ~8px + padding = ~24px arada — paragraf ile ilk
+ * başlık tek nefeslik geçiş, "anlattığım şey hemen altında" ritmi.
+ * Regresyon: /araclar + /advaita outer section wrap YOK → match etmez, bozma yok. */
+[data-section="temalar"] > details.liste__oge:first-of-type,
+[data-section="turler"] > details.liste__oge:first-of-type,
+[data-section="formatlar"] > details.liste__oge:first-of-type,
+[data-section="seri-atolyeler"] > details.liste__oge:first-of-type,
+[data-section="atolyeler"] > details.liste__oge:first-of-type {
+  margin-top: calc(-1 * var(--space-5));
+}
+
 /* Öğe — sol ray + iç padding. article (statik) + details (accordion) ortak.
  * width: 100% (Kaan brief 2026-07-20 kesin) — fit-content genişliği
  * ortalama tuzağını ezer, kümülatif daralma yok. margin: 0 auto KORU
