@@ -1537,7 +1537,8 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
  * kayit-cta üçlüsü için hem mobil hem desktop). */
 section[data-section="etkinlik-takvimi"][class^="ocak-"],
 section[data-section="sonraki-bulusma"][class^="ocak-"],
-section[data-section="kayit-btn"][class^="ocak-"] {
+section[data-section="kayit-btn"][class^="ocak-"],
+section[data-section="mini-cta"][class^="ocak-"] {
   max-width: none;
   padding-inline: 0;
 }
@@ -1545,7 +1546,8 @@ section[data-section="kayit-btn"][class^="ocak-"] {
 @media (min-width: 768px) {
   section[data-section="etkinlik-takvimi"][class^="ocak-"],
   section[data-section="sonraki-bulusma"][class^="ocak-"],
-  section[data-section="kayit-btn"][class^="ocak-"] {
+  section[data-section="kayit-btn"][class^="ocak-"],
+  section[data-section="mini-cta"][class^="ocak-"] {
     max-width: calc((100vw - 2 * var(--space-4)) / 3);
     margin-inline: auto;
   }
@@ -1562,12 +1564,20 @@ section[data-section="kayit-btn"][class^="ocak-"] {
 
 /* === mini-cta — sade kırmızı buton, komşu prose ritmine oturmuş ============
  * duzeltme-buton-eyeball-v2 S3: eski ash-warm kart + ember sol border + fazla
- * padding kaldırıldı. mini-cta artık `section[data-section][class^="ocak-"]`
- * baseline kabuğunu devralır — max-width prose, --rhythm-section padding,
- * sonraki-bulusma + KayitBtn primitive ile aynı dikey ritim. Prose p'nin
- * cream-soft rengi ve --rhythm-block margin'i baseline'dan gelir.
+ * padding kaldırıldı. mini-cta artık üçlü kolon (etkinlik-takvimi + sonraki-
+ * bulusma + kayit-btn ile aynı) max-width kuralını devralır — buton
+ * sonraki-bulusma kart-altı butonuyla BİREBİR aynı genişlikte
+ * (duzeltme-buton-tur2 S2 genişlik fix).
+ *
+ * Üst nefes: baseline `--rhythm-section-top` (3rem) yerine daha kompakt
+ * `--space-4` (1.5rem) — buton üstündeki paragrafla görsel bağ kalır
+ * (duzeltme-buton-tur2 S2 üst boşluk fix). Alt boşluk baseline
+ * `--rhythm-section-bottom` (4rem) korunur — sonraki başlığa yeterli nefes.
  * Buton (.ocak-kayit-cta__buton) tam-blok kuralı aşağıdaki genişletilmiş
  * kayit-btn bloğunda (mini-cta wrapper de kapsamda). */
+section[data-section="mini-cta"][class^="ocak-"] {
+  padding-top: var(--space-4);
+}
 
 /* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
  * içinde kalan Notion link'leri) — soluk render. `.ocak-kayit-cta__buton`

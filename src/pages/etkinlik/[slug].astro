@@ -24,7 +24,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
-import EtkinlikKart from '../../components/EtkinlikKart.astro';
+import EtkinlikListe from '../../components/EtkinlikListe.astro';
 import KayitBtn from '../../components/KayitBtn.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
@@ -138,22 +138,14 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
   {/* brief-tum-kartlar-birebir: detay sayfası KART GERİ — /acik-kapi kartıyla
       birebir aynı görsel dil (sol ember çizgi + dar dikey B + sol tarih rozeti
       + sağ blok + kart-genişliği buton bitişik). */}
-  {/* duzeltme-buton-eyeball-v2 S1: `ocak-sonraki-bulusma` prefix'i baseline
-      `section[data-section][class^="ocak-"]` kabuğunu (max-width + rhythm
-      padding) devralır — format sayfasındaki SonrakiBulusma component'ıyla
-      birebir gramer. Eksikliği kartı taşırıyordu. */}
+  {/* duzeltme-buton-tur2 S1: kart artık format sayfası SonrakiBulusma
+      component'ıyla BİREBİR gramerde — EtkinlikListe (satir varyantı, orphan
+      `.sonraki-bulusma__liste/__item` class'ları kaldırıldı). Kart hem
+      max-width hem sola-hizalı iç düzen açısından KayitBtn butonu ile aynı
+      kolonda. */}
   <section data-section="sonraki-bulusma" data-varyant="tek" class="ocak-sonraki-bulusma sonraki-bulusma">
     <div class="ocak-container">
-      <ul class="sonraki-bulusma__liste sonraki-bulusma__liste--tek">
-        <li class="sonraki-bulusma__item">
-          <EtkinlikKart
-            etkinlik={etkinlik}
-            variant="kart"
-            showStretched={false}
-            showKayitLink={false}
-          />
-        </li>
-      </ul>
+      <EtkinlikListe etkinlikler={[etkinlik]} showKayitLink={false} />
     </div>
   </section>
 
