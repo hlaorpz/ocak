@@ -354,6 +354,7 @@
   padding: var(--rhythm-section-bottom) 0;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: var(--space-5);
 }
 
@@ -377,9 +378,15 @@
   margin-top: calc(-1 * var(--space-7));
 }
 
-/* Öğe — sol ray + iç padding. article (statik) + details (accordion) ortak. */
+/* Öğe — sol ray + iç padding. article (statik) + details (accordion) ortak.
+ * width: 100% (Kaan brief 2026-07-20 kesin) — fit-content genişliği
+ * ortalama tuzağını ezer, kümülatif daralma yok. margin: 0 auto KORU
+ * /araclar rafları için (outer section wrap YOK, block akışında ortalı
+ * kalır). Section flex-item olduğunda `align-items: stretch` + width:100%
+ * → auto margin remaining 0, kayma yok. */
 .liste__oge {
   position: relative;
+  width: 100%;
   max-width: var(--max-w-prose);
   margin: 0 auto;
   padding: var(--space-4) 0 var(--space-4) var(--space-5);
@@ -393,19 +400,18 @@ details.liste__oge[open] {
   border-left-color: var(--ember);
 }
 
-/* Başlık satırı — h3 sola dayalı, isaret sağa (margin-left:auto ile).
- * `justify-content: space-between` uygulama tuhaflığı (2026-07-20 SS: h3
- * ekran ortasında yüzüyordu — `<summary>` içinde `<h3>` spec ihlali,
- * tarayıcı toleransı space-between'ı ortala hissi yaratabiliyor).
- * Savunmacı fix: flex-start + isaret auto margin — h3 kesin ray'ın hemen
- * sağında (/araclar rafları paraleli). Article'da (tek h3) davranış aynı. */
+/* Başlık satırı — h3/span sola dayalı, isaret hemen yanında (Kaan brief
+ * 2026-07-20 kesin fix). width: 100% fit-content ortalama tuzağını ezer;
+ * margin: 0 auto-margin fit varsa siler. isaret margin-left: 0.5rem
+ * (auto DEĞİL) — başlığın hemen yanında, summary sağı boşluk kalabilir. */
 .liste__baslik-satir {
   display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   justify-content: flex-start;
   align-items: baseline;
   gap: var(--space-4);
-  margin: 0;
-  padding: 0;
   text-align: left;
 }
 
@@ -425,22 +431,27 @@ details.liste__oge > summary.liste__baslik-satir:focus-visible {
   outline-offset: 4px;
 }
 
-/* Başlık — Cormorant italik medium, mevcut H3 clamp ölçek */
+/* Başlık — Cormorant italik medium, mevcut H3 clamp ölçek.
+ * flex: 0 1 auto (Kaan brief 2026-07-20) — explicit default, flex-item
+ * content genişliğinde stretch/grow olmaz. text-align:left h3 stretch
+ * durumunda içerik hizası garantisi. */
 .liste__baslik {
   margin: 0;
+  flex: 0 1 auto;
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 500;
   font-size: var(--text-h3);
   line-height: 1.3;
   color: var(--cream);
+  text-align: left;
 }
 
-/* Accordion işareti +/× — 20px ember Cormorant. margin-left:auto ile
- * flex-container'da SAĞA çekilir (flex-start justify + auto margin =
- * space-between eşdeğeri, ancak sağlam). */
+/* Accordion işareti +/× — 20px ember Cormorant. margin-left: 0.5rem
+ * (Kaan brief 2026-07-20 kesin) — AUTO DEĞİL, başlığın hemen yanında;
+ * summary sağı boşluk kalabilir. Space-between görsel illüzyonu bitti. */
 .liste__isaret {
-  margin-left: auto;
+  margin-left: 0.5rem;
   font-family: var(--font-display);
   font-style: normal;
   font-size: 20px;
