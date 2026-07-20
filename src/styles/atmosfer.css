@@ -1120,6 +1120,31 @@ section[data-section][class^="ocak-"] h3 {
   text-align: center;
 }
 
+/* ===== LİSTE AİLESİ — SECTION BASELINE YALIT (Madde 8, 2026-07-20) =========== */
+/* Kritik bulgu (kör fix sonrası tanı): baseline `section[data-section][class^="ocak-"] h3`
+ * (specificity 0,2,1) summary'nin içindeki `.liste__baslik` h3'e margin
+ * (3rem/1.5rem) ve text-align:center sızdırıyordu. Flex item margin summary
+ * height'ına ekleniyor → kapalı details öğesi ~144-220px'e şişiyordu.
+ *
+ * /araclar rafları temizdi çünkü orada outer section wrap YOK (transformEsik
+ * doğrudan <details> çıkarır) — baseline uygulanmıyordu. Bu istisnayla /atolye
+ * atolyeler accordion aynı zemine iner: kapalı details ~70px kompakt.
+ *
+ * Aynı sızıntı `section[...] p` (0,2,1) → tagline/gövde bottom margin 32px.
+ * Accordion açıldığında görünen boşluğu şişiriyordu. p için de reset. */
+section[data-section][class^="ocak-"] h3.liste__baslik {
+  margin: 0;
+  text-align: left;
+  font-weight: 500;                     /* mock: Cormorant italic medium */
+  line-height: 1.3;                     /* mock: sıkı satır */
+}
+
+section[data-section][class^="ocak-"] .liste__oge p {
+  /* Baseline p margin-bottom (2rem) sızmasın — tagline/gövde kendi grameriyle
+   * (üstten .liste__oge > * + p kuralları var(--space-3) top margin verir). */
+  margin-bottom: 0;
+}
+
 /* Listeler — bullet · ember marker, ol numbered italic ember */
 
 section[data-section][class^="ocak-"] ul,
