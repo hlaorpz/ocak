@@ -360,12 +360,31 @@
                                           kapalı details bitişik (/araclar rafları paraleli). */
 }
 
-/* Intro → grup geçiş boşluğu (brief-desenler-02b): standart iki ardışık section
- * arası ~7rem; intro bir öncesi grup başlığı gibi hissedilsin. --space-7 çek. */
+/* Intro→accordion section paddings sıfır — başlık↔ilk-öğe boşluk daraltma
+ * (Kaan brief 2026-07-20, DevTools doğrulama: 4 accordion sayfasında intro
+ * padding-bottom + accordion padding-top toplamı ~80-130px "başlık havada"
+ * hissi yaratıyordu). Explicit 4 çift; $="-intro" YASAK (araclar'daki
+ * arac-kutusu-intro + anadolu'daki evreler-intro/aramizda-intro tuzakları).
+ *
+ * Sonuç section-arası: 0 padding + intro son p bottom + details margin-top
+ * (-24) + details padding-top (12) → ~intro-p bottom margin - 12 arada. */
+[data-section="temalar-intro"],
+[data-section="turler-intro"],
+[data-section="formatlar-intro"],
+[data-section="seri-programlar-intro"] {
+  padding-bottom: 0;
+}
 [data-section="temalar-intro"] + [data-section="temalar"],
 [data-section="turler-intro"] + [data-section="turler"],
 [data-section="formatlar-intro"] + [data-section="formatlar"],
-[data-section="seri-programlar-intro"] + [data-section="seri-atolyeler"],
+[data-section="seri-programlar-intro"] + [data-section="seri-atolyeler"] {
+  padding-top: 0;
+}
+
+/* atolyeler → seri-atolyeler geçişi: atolyeler bir intro DEĞİL (kendisi
+ * accordion içeren section). İki accordion section arası, baseline
+ * padding korunur; -48 margin-top ile net ~32px arada (kabul edilir ritim).
+ * Yukarıdaki intro-*→accordion çiftlerinden ayrı davranış. */
 [data-section="atolyeler"] + [data-section="seri-atolyeler"] {
   margin-top: calc(-1 * var(--space-7));
 }
