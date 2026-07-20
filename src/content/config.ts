@@ -7,7 +7,7 @@ import {
   resolveNotionPageLinks,
 } from '../lib/notion-pages';
 import { fetchEtkinlikler, transformEtkinlik } from '../lib/notion-etkinlikler';
-import { resolveKayitCtaHref, FORMAT_NOTION_FORMAT, type KayitFormat } from '../lib/kayit';
+import { resolveMiniCtaBtn, FORMAT_NOTION_FORMAT, type KayitFormat } from '../lib/kayit';
 
 /**
  * Sayfalar — 19 site sayfasının içerikleri.
@@ -62,7 +62,7 @@ const sayfalar = defineCollection({
               const r = await renderMarkdown(frag.content);
               return {
                 kind: 'markdown' as const,
-                html: resolveKayitCtaHref(
+                html: resolveMiniCtaBtn(
                   resolveNotionPageLinks(r.html, pageIdToSlug, slug),
                   slug,
                 ),
@@ -76,16 +76,6 @@ const sayfalar = defineCollection({
               return {
                 kind: 'form-anchor' as const,
                 index: frag.index,
-                introHtml: resolveNotionPageLinks(r.html, pageIdToSlug, slug),
-              };
-            }
-            // Madde 2/4 fix — B: kayit-cta section-içi üst metin (kontenjan
-            // paragrafı, [Yerini ayır] linki, vb.) intro olarak KayitCTA.astro'ya
-            // introHtml prop'una taşınır. renderMarkdown aynı pipeline.
-            if (frag.kind === 'kayit-cta' && frag.intro) {
-              const r = await renderMarkdown(frag.intro);
-              return {
-                kind: 'kayit-cta' as const,
                 introHtml: resolveNotionPageLinks(r.html, pageIdToSlug, slug),
               };
             }
@@ -109,7 +99,7 @@ const sayfalar = defineCollection({
           body: transformed.body,
           rendered: {
             ...rendered,
-            html: resolveKayitCtaHref(
+            html: resolveMiniCtaBtn(
               resolveNotionPageLinks(rendered.html, pageIdToSlug, slug),
               slug,
             ),
@@ -166,12 +156,6 @@ const sayfalar = defineCollection({
         z.object({ kind: z.literal('yolculuk-eksen') }),
         z.object({ kind: z.literal('kanallar') }),
         z.object({ kind: z.literal('harita-anadolu') }),
-        // Madde 2/4 fix — B: kayit-cta marker component instance'a delege
-        // (KayitCTA.astro). introHtml section-içi üst metin.
-        z.object({
-          kind: z.literal('kayit-cta'),
-          introHtml: z.string().optional(),
-        }),
       ]),
     ),
   }),
@@ -228,22 +212,21 @@ const etkinlikler = defineCollection({
           );
         }
 
-        // brief FAZ 1 — Detay markdown zinciri (Sayfalar collection'ıyla
-        // hizalı): renderMarkdown → resolveNotionPageLinks → resolveKayitCtaHref.
-        // pageIdToSlug boş map (Etkinlikler loader'ı Sayfalar DB'sine gitmez;
-        // detay içinde Notion @page mention'ı beklenmiyor — çıkarsa warn ile
-        // href olduğu gibi kalır, build kırılmaz). resolveKayitCtaHref
-        // etkinliğin Format'ından türetilen kayıt slug'ıyla çağrılır: Notion
-        // Detay içindeki `## section: kayit-cta` etiketi doğru `/{format}/kayit`
-        // hedefine yönlenir; format KayitFormat dışıysa (Anadolu Yolculuğu)
-        // block kaldırılır + warn (KARAR 207).
+        // brief-kayit-buton-FINAL Faz 3 — etkinlik detay pipeline: renderMarkdown
+        // → resolveNotionPageLinks → resolveMiniCtaBtn. pageIdToSlug boş map
+        // (Etkinlikler loader'ı Sayfalar DB'sine gitmez; detay içinde @page
+        // mention beklenmiyor). resolveMiniCtaBtn etkinliğin Format'ından türeyen
+        // kayıt slug'ı + Kayıt Tipi ile çağrılır — Direkt→"Yerini ayır",
+        // Başvuru→"Başvur"; slug KayitFormat dışıysa (Anadolu Yolculuğu)
+        // placeholder boş silinir, detay prose olarak kalır.
         let detayHtml: string | undefined;
         if (fm.detay) {
           const rendered = await renderMarkdown(fm.detay);
           const kayitSlug = NOTION_FORMAT_KAYIT_SLUG[fm.tip] ?? '';
-          detayHtml = resolveKayitCtaHref(
+          detayHtml = resolveMiniCtaBtn(
             resolveNotionPageLinks(rendered.html, {}, `etkinlik/${fm.slug ?? fm.notion_id}`),
             kayitSlug,
+            { kayitTipi: fm.kayitTipi },
           );
         }
 

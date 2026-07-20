@@ -1537,7 +1537,8 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
  * kayit-cta üçlüsü için hem mobil hem desktop). */
 section[data-section="etkinlik-takvimi"][class^="ocak-"],
 section[data-section="sonraki-bulusma"][class^="ocak-"],
-section[data-section="kayit-cta"][class^="ocak-"] {
+section[data-section="kayit-btn"][class^="ocak-"],
+section[data-section="mini-cta"][class^="ocak-"] {
   max-width: none;
   padding-inline: 0;
 }
@@ -1545,7 +1546,8 @@ section[data-section="kayit-cta"][class^="ocak-"] {
 @media (min-width: 768px) {
   section[data-section="etkinlik-takvimi"][class^="ocak-"],
   section[data-section="sonraki-bulusma"][class^="ocak-"],
-  section[data-section="kayit-cta"][class^="ocak-"] {
+  section[data-section="kayit-btn"][class^="ocak-"],
+  section[data-section="mini-cta"][class^="ocak-"] {
     max-width: calc((100vw - 2 * var(--space-4)) / 3);
     margin-inline: auto;
   }
@@ -1560,31 +1562,28 @@ section[data-section="kayit-cta"][class^="ocak-"] {
  * kullanılan rotalarda boş <section> emit edilmez, ama back-compat için tutulur.
  * ============================================================================*/
 
-/* === mini-cta — ash-warm kart + ember sol border + render-side ok =========== */
-section[data-section="mini-cta"] {
-  background: var(--ash-warm);
-  border-left: 3px solid var(--ember);
-  /* Faz B: clamp() responsive karakter KORUNUR (KRİTİK — mobil sıkışma tasarım).
-   * Sabit değer olmadığı için token bağı burada geçerli değil; ancak vurgu
-   * ailesinde tutarlı clamp kalıbı olarak kalır. */
-  padding: clamp(1.25rem, 2vw, 2rem) clamp(1.5rem, 3vw, 2.5rem);
-  margin: clamp(2rem, 4vw, 3rem) auto;
-  max-width: var(--max-w-prose);
-  border-radius: var(--radius-sm);
+/* === mini-cta — sade kırmızı buton, komşu prose ritmine oturmuş ============
+ * duzeltme-buton-eyeball-v2 S3: eski ash-warm kart + ember sol border + fazla
+ * padding kaldırıldı. mini-cta artık üçlü kolon (etkinlik-takvimi + sonraki-
+ * bulusma + kayit-btn ile aynı) max-width kuralını devralır — buton
+ * sonraki-bulusma kart-altı butonuyla BİREBİR aynı genişlikte
+ * (duzeltme-buton-tur2 S2 genişlik fix).
+ *
+ * Üst nefes: baseline `--rhythm-section-top` (3rem) yerine kompakt
+ * `--space-2` (0.5rem) — buton üstündeki paragrafla sıkı ama yapışık-
+ * olmayan bağ (Kaan mikro tur 3: bir kademe daha yakınlaştır). Alt
+ * boşluk baseline `--rhythm-section-bottom` (4rem) KORUNUR — sonraki
+ * başlığa nefes kalır (simetri değil, asimetrik "yakın üst / rahat alt").
+ * Buton (.ocak-kayit-cta__buton) tam-blok kuralı aşağıdaki genişletilmiş
+ * kayit-btn bloğunda (mini-cta wrapper de kapsamda). */
+section[data-section="mini-cta"][class^="ocak-"] {
+  padding-top: var(--space-2);
 }
 
-section[data-section="mini-cta"] > p {
-  color: var(--cream);
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  margin: 0 0 var(--space-4);
-}
-
-section[data-section="mini-cta"] > p:last-of-type {
-  margin-bottom: var(--space-3);
-}
-
-section[data-section="mini-cta"] > a {
+/* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
+ * içinde kalan Notion link'leri) — soluk render. `.ocak-kayit-cta__buton`
+ * (dolu buton) hariç tutulur; onun kuralı aşağıdaki kayit-btn bloğunda. */
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton) {
   display: inline-block;
   color: var(--ember);
   text-transform: uppercase;
@@ -1596,12 +1595,12 @@ section[data-section="mini-cta"] > a {
   transition: transform var(--duration-base) var(--ease-out);
 }
 
-section[data-section="mini-cta"] > a::before {
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton)::before {
   content: "→ ";
 }
 
-section[data-section="mini-cta"] > a:hover,
-section[data-section="mini-cta"] > a:focus-visible {
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton):hover,
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton):focus-visible {
   transform: translateX(4px);
   outline: none;
 }
@@ -1703,23 +1702,24 @@ section[data-section="ic-ses"].ocak-ic-ses > p {
   color: var(--cream);
 }
 
-/* === kayit-cta — köz dolu vurgu butonu + opsiyonel üst metin (KARAR 207, Brief 4)
- * Plugin output: <section data-section="kayit-cta" class="ocak-kayit-cta">
- *   {opsiyonel üst metin p}
+/* === kayit-btn — köz dolu vurgu butonu (KayitBtn primitive; Faz 4 rebrand)
+ * Primitive output: <section data-section="kayit-btn" class="ocak-kayit-cta">
  *   <a class="ocak-kayit-cta__buton" href="/[slug]/kayit" data-kayit-cta-button>
- *     Yerini ayır →
+ *     Yerini ayır → | Başvur →
  *   </a>
+ *   <p class="ocak-kayit-cta__tumu"><a href="/takvim#[slug]">Diğer tarihler →</a></p>
  * </section>
  *
- * Sıkışık dikey boşluk — mini-cta'dan dar (Kaan "az boşluklu section" istedi):
- * mini-cta margin clamp(2-3rem); burada clamp(0.75-1.5rem) yarısından az.
- * Arkaplan/border YOK — sade akış, dolu buton tek vurgu noktası.
+ * Section attr'ı Faz 4'te "kayit-cta"'dan "kayit-btn"'e alındı — eski Notion
+ * marker'ı emekliye ayrıldı, bu attribute primitive-özel. Class ismi
+ * (ocak-kayit-cta__*) tarihsel — CSS specifiitesi + mini-cta wrapper
+ * (Faz 3) ortak gramerini paylaştığı için korundu.
  *
  * Buton görsel ağırlığı AtesMektuplari KATIL kardeşi (ember dolu + coal text +
- * uppercase letter-spacing); Brief 4 "dolu vurgu butonu (#C44B2F)" notu birebir
+ * uppercase letter-spacing); "dolu vurgu butonu (#C44B2F)" birebir
  * --ember (#C44B2F = rgba(196,75,47,1)).
  * ============================================================================ */
-section[data-section="kayit-cta"][class^="ocak-"] {
+section[data-section="kayit-btn"][class^="ocak-"] {
   text-align: center;
   /* Padding-x SIFIR — buton görsel genişliği kart section'ıyla birebir eşit.
    * Padding-y kart altına bitişik olmadığında (detay sayfası) hafif dikey
@@ -1733,10 +1733,10 @@ section[data-section="kayit-cta"][class^="ocak-"] {
 /* sonraki-bulusma ↔ kayit-cta ardışıklığı: kart + "yerin hazır" + buton
  * TEK DAVET AKIŞI olsun. Home'daki sonraki-bulusma → siradaki-kapi arası
  * etkilenmez (:has() sadece kayit-cta ardışıksa tetiklenir). */
-section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-cta"][class^="ocak-"]) {
+section[data-section="sonraki-bulusma"]:has(+ section[data-section="kayit-btn"][class^="ocak-"]) {
   padding-bottom: 0;
 }
-section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][class^="ocak-"] {
+section[data-section="sonraki-bulusma"] + section[data-section="kayit-btn"][class^="ocak-"] {
   margin-top: 0;
   /* Kart↔buton arası çok az nefes (4px) — bitişik değil, sıkışık değil. */
   padding-top: var(--space-1);
@@ -1745,11 +1745,14 @@ section[data-section="sonraki-bulusma"] + section[data-section="kayit-cta"][clas
 /* brief-format-kayit-bitir: Notion "Bir sonraki [X]'te yerin hazır" prose'unu
  * gizle — kayıt aksiyonu tek yerde (turuncu buton). Aşağıdaki `.__tumu` link
  * ise buton altındaki "Sana uyan başka tarihler..." linki; korunur. */
-section[data-section="kayit-cta"][class^="ocak-"] > p:not(.ocak-kayit-cta__tumu) {
+section[data-section="kayit-btn"][class^="ocak-"] > p:not(.ocak-kayit-cta__tumu) {
   display: none;
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+/* Faz 3 (brief-kayit-buton-FINAL): buton kuralı hem kayit-cta hem mini-cta
+ * wrapper'larında geçerli — tek görsel gramer (dolu ember, tam-blok). */
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
   /* Dar sütun içinde tam-blok buton — kart genişliğiyle birebir, tek dikey
    * ünite hissi (brief-detay-sayfa-revize + format sayfa yeni düzen). */
   display: block;
@@ -1773,8 +1776,10 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
               box-shadow var(--duration-base) var(--ease-out);
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible {
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible {
   background: var(--ember-soft);
   box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   outline: none;
@@ -1782,27 +1787,31 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus
 
 /* Mobilde 72px yatay padding taşabilir — hafif küçült (davet gücü korunur). */
 @media (max-width: 600px) {
-  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+  section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton,
+  section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
     padding: 1rem 2.5rem;
     letter-spacing: 0.2em;
   }
 }
 
 /* Kart (EtkinlikKart) ile buton arasında sıkı boşluk — tek dikey davet ünitesi. */
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-etkinlik-kart + .ocak-kayit-cta__buton {
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-etkinlik-kart + .ocak-kayit-cta__buton {
   margin-top: var(--space-2);
 }
 
-/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, davet-fısıltısı.
+/* "Diğer tarihler →" linki — butonun ALTINDA, davet-fısıltısı.
  * Font 13px (butonla yarışmaz ama okunur); yatay padding → buton kenarlarında
- * boşluk kalır, metin butonun sağ-solundan taşmaz. */
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
+ * boşluk kalır, metin butonun sağ-solundan taşmaz. Faz 3: mini-cta wrapper
+ * içinde de aynı gramer. */
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__tumu,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
   margin: var(--space-3) 0 0;
   padding: 0 var(--space-3);
   font-size: 0.8125rem;
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__tumu a,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
   font-family: var(--font-body);
   letter-spacing: 0.06em;
   color: var(--ember);
@@ -1812,13 +1821,16 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
   transition: border-color var(--duration-base) var(--ease-out);
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible {
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
+section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible {
   border-bottom-color: var(--ember);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+  section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton,
+  section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
     transition: none;
   }
 }

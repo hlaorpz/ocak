@@ -24,12 +24,11 @@ export type SectionName =
   | 'mini-cta'
   | 'buyuk-vurgu'
   | 'manifesto-vurgu'
-  | 'ic-ses'
-  | 'kayit-cta';
+  | 'ic-ses';
 
 /**
- * Kanonik 11 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
- * 127/153/207 + ic-ses göçü + kayit-cta Brief 4). Component-render kanonik 5
+ * Kanonik 10 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
+ * 127/153 + ic-ses göçü). Component-render kanonik 5
  * (Hero/BirSonraki/SonrakiBulusma/SiradakiKapi/SSS, README #21) ile karıştırma:
  * o sayım Astro component instance'larını tanımlar, bu sayım markdown→HTML
  * transform setini tanımlar. Vurgu paleti (3 isim) listenin orta üçlüsü:
@@ -37,9 +36,9 @@ export type SectionName =
  *   - manifesto-vurgu → krem italik + köz glyph, sayfa-sonu marka beyanı
  *   - ic-ses → krem italik, glyphsiz, prose ortası düşük-enerji "nefes"
  * Glyph farkı manifesto-vurgu ile ic-ses arasındaki imza ayrımıdır
- * (manifesto ağırlık taşır, ic-ses hafiflik). kayit-cta (KARAR 207): köz
- * dolu vurgu butonu, sayfa slug'ından otomatik /[format]/kayit hedefi
- * türetir (notion-pages.ts resolveKayitCtaHref post-render adımı).
+ * (manifesto ağırlık taşır, ic-ses hafiflik). Faz 4 (brief-kayit-buton-FINAL):
+ * kayit-cta transformu emekliye ayrıldı; kayıt CTA'sı artık SonrakiBulusma
+ * primitive'i + mini-cta post-render helper'ıyla basılır.
  */
 export const CANONICAL_SECTIONS: SectionName[] = [
   'hero',
@@ -52,7 +51,6 @@ export const CANONICAL_SECTIONS: SectionName[] = [
   'buyuk-vurgu',
   'manifesto-vurgu',
   'ic-ses',
-  'kayit-cta',
 ];
 
 /**
@@ -644,56 +642,38 @@ function transformSss(content: RootContent[], options: OcakSectionsOptions): Roo
 }
 
 /**
- * mini-cta (#29 Brief F.5): 1-2 paragraph + son child link.
- * - Son node "tek-link paragraph" (paragraph > link) ise paragraph wrapper sıyrılıp link
- *   doğrudan block-level basılır (CSS `a` selector'ünü hedeflemek için).
- * - Son child sade link değilse warn + içerik olduğu gibi sarılır (defansif).
- * - Hiç link yoksa warn + içerik yine sarılır (görsel ayırt edici kalır).
+ * mini-cta (brief-kayit-buton-FINAL Faz 3 + duzeltme-buton-eyeball-v2 S2):
+ * prose + kırmızı buton + opsiyonel "Diğer tarihler →" linki. Elle yazılı
+ * eski link (son child "paragraph > link") varsa TÜKETİLİR — çift CTA olmaz;
+ * yoksa boş marker olarak kabul edilir (Kaan Notion'da elle silmek zorunda
+ * kalmasın). Her iki durumda çıktı tek kırmızı buton; buton metni Notion
+ * link metnini KOPYALAMAZ — kendi sözlüğünü kullanır (resolveMiniCtaBtn).
+ *
+ * Placeholder pipeline:
+ *   - slug KayitFormat + etkinlik context (kayitTipi) → tip-bazlı metin
+ *     ("Yerini ayır" / "Başvur") + `/[format]/kayit` + "Diğer tarihler →"
+ *   - slug KayitFormat + etkinlik context yok → nötr "Yerini ayır" +
+ *     `/[format]/kayit` (tümü linki yok)
+ *   - slug KayitFormat değil (/site-rehber, /anadolu) → placeholder boş ile
+ *     değiştirilir; content prose olarak kalır (bypass, mevcut davranış).
  */
-function transformMiniCta(content: RootContent[], options: OcakSectionsOptions): RootContent[] {
-  const filename = options.filename ?? 'unknown';
+function transformMiniCta(content: RootContent[]): RootContent[] {
+  // Son child "tek-link paragraph" (paragraph > link) ise TÜKET — eski
+  // Notion elle yazılı "Çembere kayıt ol →" gibi link'ler placeholder buton
+  // ile çift CTA'ya yol açmasın. Diğer child'lar (prose, blockquote) aynen
+  // korunur — mini-cta gövdesi üst metin bağlamı olarak kalabilir.
   const lastIdx = content.length - 1;
   const last = content[lastIdx] as { type?: string; children?: RootContent[] } | undefined;
   const lastChildren = last?.children;
-  const onlyChild =
-    last?.type === 'paragraph' && lastChildren?.length === 1 ? lastChildren[0] : null;
-  const isOnlyLink = (onlyChild as { type?: string } | null)?.type === 'link';
-
-  let hasAnyLink = false;
-  for (const node of content) {
-    if (node.type === 'paragraph') {
-      const kids = (node as { children?: RootContent[] }).children ?? [];
-      if (kids.some((k) => (k as { type?: string }).type === 'link')) {
-        hasAnyLink = true;
-        break;
-      }
-    }
-  }
-
-  if (!hasAnyLink) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[remark-ocak-sections] mini-cta (${filename}): link bulunamadı — yazım sapması.`,
-    );
-  } else if (!isOnlyLink) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[remark-ocak-sections] mini-cta (${filename}): son child sade link değil — yazım sapması.`,
-    );
-  }
-
-  if (isOnlyLink && onlyChild) {
-    return [
-      html('<section data-section="mini-cta" class="ocak-mini-cta">'),
-      ...content.slice(0, lastIdx),
-      onlyChild as RootContent,
-      html('</section>'),
-    ];
-  }
+  const isTailLinkPara =
+    last?.type === 'paragraph' &&
+    lastChildren?.length === 1 &&
+    (lastChildren[0] as { type?: string }).type === 'link';
+  const body = isTailLinkPara ? content.slice(0, lastIdx) : content;
   return [
     html('<section data-section="mini-cta" class="ocak-mini-cta">'),
-    ...content,
-    html('</section>'),
+    ...body,
+    html('__MINI_CTA_BUTON__</section>'),
   ];
 }
 
@@ -781,47 +761,6 @@ function transformIcSes(
   return [
     html('<section data-section="ic-ses" class="ocak-ic-ses">'),
     ...content,
-    html('</section>'),
-  ];
-}
-
-/**
- * kayit-cta (KARAR 207 / Brief 4): köz dolu vurgu butonu + opsiyonel üst metin.
- *
- * FALLBACK PATH (Madde 2/4 fix — B sonrası): Sayfalar collection loader'ı
- * `splitBodyByMarkers` içinde `kayit-cta` marker'ını kesip fragment'a çevirdiği
- * için PageContent normalde bu marker'ı `<KayitCTA />` component instance ile
- * basar (MADDE 2 gate + MADDE 4 dayanışma satırı orada). Bu transform SADECE
- * loader/fragment-split'ten kaçan durumlarda tetiklenir — /etkinlik/[slug]
- * detay sayfasındaki `## section: kayit-cta` gibi. Section'a
- * `<!-- kayit-cta-fallback -->` HTML yorumu iliştirilir; build sonrası grep
- * ile fallback'e düşen sayfalar tespit edilebilir.
- *
- * Plugin sayfa slug'ını bilmez (global instance, options'sız wiring). href'i
- * placeholder olarak yazar; notion-pages.ts'deki resolveKayitCtaHref
- * post-render adımı 6 format slug'u ise placeholder'ı `/${slug}/kayit` ile
- * değiştirir; değilse `<section data-section="kayit-cta">...</section>`
- * regex'iyle tüm section'ı kaldırır + console.warn yazar (6-format-dışı
- * sayfada sessiz atla davranışı, Adım 0 karar A).
- *
- * Üst metin opsiyonel: `## section: kayit-cta` altına prose yazılırsa buton
- * üstünde çağrı cümlesi; yazılmazsa çıplak buton.
- *
- * Buton metni slug'a göre değişir ("Yerini ayır" veya "Başvur") — placeholder
- * olarak emit edilir, loader resolveKayitCtaHref KAYIT_CTA_LABEL map'inden
- * doldurur.
- */
-function transformKayitCta(content: RootContent[]): RootContent[] {
-  // data-kayit-cta-button attribute test'lerde + CSS scope'ta marker görevi görür.
-  // href __KAYIT_CTA_HREF__, label __KAYIT_CTA_LABEL__ placeholder — loader
-  // resolveKayitCtaHref ikisini de slug bazlı doldurur (İş 3 iki-şablon).
-  const buton = html(
-    '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
-  );
-  return [
-    html('<section data-section="kayit-cta" class="ocak-kayit-cta"><!-- kayit-cta-fallback -->'),
-    ...content,
-    buton,
     html('</section>'),
   ];
 }
@@ -1364,7 +1303,7 @@ function transformSection(
       return transformSss(content, options);
 
     case 'mini-cta':
-      return transformMiniCta(content, options);
+      return transformMiniCta(content);
 
     case 'buyuk-vurgu':
       return transformBuyukVurgu(content, options);
@@ -1374,9 +1313,6 @@ function transformSection(
 
     case 'ic-ses':
       return transformIcSes(content, options);
-
-    case 'kayit-cta':
-      return transformKayitCta(content);
 
     case 'evreler-intro':
       // /anadolu: "Altı Evre" başlığı + opsiyonel giriş, kart bloğunun

@@ -7,24 +7,16 @@
  * form-anchor'da `formAnchorRegistry[slug][index]` component'ini basar — sıra ve prop
  * default'ları tek otorite burada (KARAR 126 ruhu, KARAR 125 sıra niyeti).
  *
- * KARAR 206 (Brief 3): format sayfalarında AtesMektuplariCTA/AcikKapiKayit →
- * KayitCTA (ayrı /[format]/kayit route'una link). Kayıt aksiyonu sade — Ateş
- * Mektupları aboneliği bu sayfalardan kalktı (ana sayfa + footer'da kalır).
- * /takvim hâlâ AtesMektuplariCTA (kayıt sayfası yok — köprü/araç sayfası).
- * /yolculuk 7. kapı sonrası KayitCTA'ya taşındı (v2 brief).
- *
- * /iletisim — eski çoklu anchor (sıra 2 IletisimForm + sıra 7 CTA), form göçü
- * (brief-iletisim-form-tasima.md) sonrası SIFIR anchor.
- *
- * brief-appscript-olum: CemberBasvuru + AcikKapiKayit component'leri silindi
- * (Apps Script paritesi ile birlikte). Pipeline B (/api/kayit) tek kayıt akışı.
+ * Faz 4 (brief-kayit-buton-FINAL): kayit-cta emekliye ayrıldı; 7 format sayfası
+ * ve /takvim'in registry entry'leri düştü (Notion'da o sayfalarda form-anchor
+ * marker'ı zaten yok — kayıt CTA'sı artık sonraki-bulusma primitive'i +
+ * mini-cta post-render helper'ıyla basılır). / (home) AtesMektuplari sayfa
+ * altında kalıyor.
  *
  * Defansif: slug yoksa registry'de → boş array → fragment null basar, sayfa çökmez.
  */
 
 import AtesMektuplari from '../components/AtesMektuplari.astro';
-import AtesMektuplariCTA from '../components/AtesMektuplariCTA.astro';
-import KayitCTA from '../components/KayitCTA.astro';
 
 // Astro component factory — Astro'nun runtime tip exportları internal API'de yaşıyor.
 // Registry consumer (PageContent.astro) bu değerleri `<Component />` olarak render eder;
@@ -34,53 +26,10 @@ type AstroComponent = any;
 
 export const formAnchorRegistry: Record<string, AstroComponent[]> = {
   '/': [AtesMektuplari],
-  // 7 format sayfası → KayitCTA (ayrı /[format]/kayit route'una link).
-  '/cember': [KayitCTA],
-  '/acik-kapi': [KayitCTA],
-  '/mini-retreat': [KayitCTA],
-  '/seremoni': [KayitCTA],
-  '/sehir-aksami': [KayitCTA],
-  '/atolye': [KayitCTA],
-  '/yolculuk': [KayitCTA],
-  // /takvim: kayıt sayfası yok, AtesMektuplariCTA kalır.
-  '/takvim': [AtesMektuplariCTA],
 };
 
 /**
- * Slug → anchor index → default prop'lar.
- *
- * KayitCTA prop'ları: { href, kategoriAdi } — cümle "Sıradaki <kategoriAdi> için
- * tarih seç...". kategoriAdi nominative; cümle akışı için isim sırasına dikkat
- * edilmeli (örn. 'çembere' YANLIŞ — "Sıradaki çembere için" kırılır).
- *
- * AtesMektuplariCTA prop'u: kategoriAdi (insan-okur format adı, küçük harf).
+ * Slug → anchor index → default prop'lar. Şu an sadece / (AtesMektuplari)
+ * kullanıyor — component prop'suz, boş array.
  */
-export const formAnchorProps: Record<string, Array<Record<string, unknown>>> = {
-  // 7 format sayfası — KayitCTA
-  '/cember': [{ href: '/cember/kayit', kategoriAdi: 'Çember' }],
-  '/acik-kapi': [{ href: '/acik-kapi/kayit', kategoriAdi: 'Açık Kapı' }],
-  '/mini-retreat': [{ href: '/mini-retreat/kayit', kategoriAdi: 'mini retreat' }],
-  '/seremoni': [{ href: '/seremoni/kayit', kategoriAdi: 'mevsim seremonisi' }],
-  '/sehir-aksami': [{ href: '/sehir-aksami/kayit', kategoriAdi: 'şehir akşamı' }],
-  '/atolye': [{ href: '/atolye/kayit', kategoriAdi: 'atölye' }],
-  '/yolculuk': [{ href: '/yolculuk/kayit', kategoriAdi: 'Yolculuk' }],
-  // Kayıt sayfası olmayanlar — AtesMektuplariCTA
-  '/takvim': [{ kategoriAdi: 'OCAK buluşması' }],
-};
-
-/**
- * Madde 2/4 fix — B: `## section: kayit-cta` marker'ı gördüğünde PageContent
- * bu map'ten prop'ları alıp KayitCTA.astro basar. formAnchorProps'un 7 format
- * entry'sinin index=0 girişiyle birebir aynı (tek gerçek: iki path'in
- * çıktısı aynı component, aynı prop şablonu). Ayrı map açıklıkta anlam
- * verir: kayit-cta marker'ı slug × single, form-anchor slug × index array.
- */
-export const kayitCtaProps: Record<string, { href: string; kategoriAdi: string }> = {
-  '/cember': { href: '/cember/kayit', kategoriAdi: 'Çember' },
-  '/acik-kapi': { href: '/acik-kapi/kayit', kategoriAdi: 'Açık Kapı' },
-  '/mini-retreat': { href: '/mini-retreat/kayit', kategoriAdi: 'mini retreat' },
-  '/seremoni': { href: '/seremoni/kayit', kategoriAdi: 'mevsim seremonisi' },
-  '/sehir-aksami': { href: '/sehir-aksami/kayit', kategoriAdi: 'şehir akşamı' },
-  '/atolye': { href: '/atolye/kayit', kategoriAdi: 'atölye' },
-  '/yolculuk': { href: '/yolculuk/kayit', kategoriAdi: 'Yolculuk' },
-};
+export const formAnchorProps: Record<string, Array<Record<string, unknown>>> = {};

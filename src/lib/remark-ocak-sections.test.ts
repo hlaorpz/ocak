@@ -311,26 +311,35 @@ describe('remark-ocak-sections', () => {
     expect(iS).toBeGreaterThan(a1);
   });
 
-  it('22. mini-cta — paragraph + link son child sıyrılır (bare <a> block-level)', () => {
+  it('22. mini-cta — son child link TÜKETİLİR (çift CTA yok), prose kalır + placeholder', () => {
     const html = render('fixture-16-mini-cta.md');
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('<p>Hangi formatın');
-    // Link son child sıyrılmış (link bare, paragraph wrapper YOK)
-    expect(html).toContain('<a href="/acik-kapi">Açık Kapı\'ya gel</a>');
-    expect(html).not.toMatch(/<p><a href="\/acik-kapi"/);
+    // duzeltme-buton-eyeball-v2 S2: fixture'daki `[Açık Kapı'ya gel](/acik-kapi)`
+    // son child link TÜKETİLİR — buton placeholder tarafından basıldığı için
+    // ayrı metin linki KALMAMALI (çift-CTA bulgusu).
+    expect(html).not.toContain('Açık Kapı\'ya gel');
+    expect(html).not.toContain('href="/acik-kapi"');
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
   });
 
-  it('23. mini-cta — link yoksa warn + section yine sarılır', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('23. mini-cta — boş marker + link yoksa: sadece placeholder (warn/hata yok)', () => {
+    // duzeltme-buton-eyeball-v2 S2: Kaan'ın Notion'da mini-cta gövdesini
+    // TEMİZLEMESİ meşru — /cember gibi. Transform hata vermez, sadece buton basar.
+    const html = process('## section: mini-cta', { filename: 'bos.md' });
+    expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
+    // Metinsiz body — prose paragraph yok.
+    expect(html).not.toMatch(/<p>[^<]+<\/p>/);
+  });
+
+  it('23b. mini-cta — prose kalır, link YOK ise dokunulmaz', () => {
     const html = process('## section: mini-cta\n\nSadece metin, link yok.', {
-      filename: 'no-link.md',
+      filename: 'sadece-prose.md',
     });
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('Sadece metin');
-    expect(warn).toHaveBeenCalled();
-    expect(warn.mock.calls[0][0]).toContain('link bulunamadı');
-    expect(warn.mock.calls[0][0]).toContain('no-link.md');
-    warn.mockRestore();
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
   });
 
   it('24. buyuk-vurgu — italik paragraph data-section + ocak-buyuk-vurgu class', () => {
@@ -619,26 +628,9 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain('<em>gerçek italik</em>');
   });
 
-  it('38. kayit-cta — metinsiz: section + buton + href/label placeholder (KARAR 207 + faz3 İş 3)', () => {
-    const html = process('## section: kayit-cta\n');
-    expect(html).toContain('<section data-section="kayit-cta" class="ocak-kayit-cta">');
-    expect(html).toContain(
-      '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
-    );
-    expect(html).toContain('</section>');
-    // Metinsiz varyantta üst metin yok — section içinde sadece buton + boşluk.
-    expect(html).not.toMatch(/<section data-section="kayit-cta"[^>]*>\s*<p>/);
-  });
-
-  it('39. kayit-cta — metinli: üst paragraph + buton (placeholder href/label korunur)', () => {
-    const html = process(
-      '## section: kayit-cta\n\nYerini ayır, çembere katıl.\n',
-    );
-    expect(html).toContain('<section data-section="kayit-cta" class="ocak-kayit-cta">');
-    expect(html).toContain('<p>Yerini ayır, çembere katıl.</p>');
-    expect(html).toContain('href="__KAYIT_CTA_HREF__"');
-    expect(html).toContain('__KAYIT_CTA_LABEL__ →');
-  });
+  // Faz 4 (brief-kayit-buton-FINAL): kayit-cta transform emekliye ayrıldı;
+  // eski test 38+39 kaldırıldı. `## section: kayit-cta` marker'ı artık
+  // default prose case'e düşer (site-rehber bypass yaşamaya devam).
 
   // brief-desenler-01.md ADIM 1 — raf-accordion (/araclar 7 raf ailesi)
   // Madde 8 liste ailesi refaktörü (2026-07-19): meta slot yok, sadece isaret.

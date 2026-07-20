@@ -24,7 +24,8 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
-import EtkinlikKart from '../../components/EtkinlikKart.astro';
+import EtkinlikListe from '../../components/EtkinlikListe.astro';
+import KayitBtn from '../../components/KayitBtn.astro';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori';
@@ -74,10 +75,6 @@ const formatSayfasi = kayitSlugu ? `/${kayitSlugu}` : '/bulusmalar';
 const takvimSlugu = FORMAT_KATEGORI[etkinlik.tip];
 const takvimHref = takvimSlugu ? `/takvim#${takvimSlugu}` : '/takvim';
 
-// Kayıt CTA hedefi: Notion'daki kayitUrl doluysa (bir dış/alt link olabilir) o;
-// yoksa 6 format sayfasında `/{slug}/kayit`; yoksa (Yolculuk) CTA basma.
-const kayitHedefi = etkinlik.kayitUrl?.trim() || (kayitSlugu ? `/${kayitSlugu}/kayit` : null);
-
 // Geçmiş etkinlik tespiti (build tarihi referansı — brief FAZ 4 gecelik
 // rebuild ile "bugün" güncel kalır). Range varsa tarihBitis öncelikli.
 function parcala(iso: string) {
@@ -120,9 +117,10 @@ const description =
 
 const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
 
-// Kayıt-Tipi şablonu (KARAR 307): Direkt → "Yerini ayır", Başvuru → "Başvur".
-// Notion tek kaynak: etkinlik.kayitTipi ('Direkt' | 'Başvuru', default Direkt).
-const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
+// brief-kayit-buton-FINAL Faz 4: güncel etkinlik CTA'sı KayitBtn primitive'e
+// devredildi (Mod A — etkinliğin Kayıt Tipi'nden metin türer + "Diğer tarihler
+// →" tümü linki). Geçmiş etkinlik özel akış (format sayfasına yönlendirme
+// metni brief sözlüğü dışı) hardcoded kalır, sadece section attr rebrand.
 ---
 <Layout title={etkinlik.baslik} description={description} oda="Buluşmalar">
   <Hero
@@ -140,42 +138,33 @@ const butonMetni = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır
   {/* brief-tum-kartlar-birebir: detay sayfası KART GERİ — /acik-kapi kartıyla
       birebir aynı görsel dil (sol ember çizgi + dar dikey B + sol tarih rozeti
       + sağ blok + kart-genişliği buton bitişik). */}
-  <section data-section="sonraki-bulusma" data-varyant="tek" class="sonraki-bulusma">
+  {/* duzeltme-buton-tur2 S1: kart artık format sayfası SonrakiBulusma
+      component'ıyla BİREBİR gramerde — EtkinlikListe (satir varyantı, orphan
+      `.sonraki-bulusma__liste/__item` class'ları kaldırıldı). Kart hem
+      max-width hem sola-hizalı iç düzen açısından KayitBtn butonu ile aynı
+      kolonda. */}
+  <section data-section="sonraki-bulusma" data-varyant="tek" class="ocak-sonraki-bulusma sonraki-bulusma">
     <div class="ocak-container">
-      <ul class="sonraki-bulusma__liste sonraki-bulusma__liste--tek">
-        <li class="sonraki-bulusma__item">
-          <EtkinlikKart
-            etkinlik={etkinlik}
-            variant="kart"
-            showStretched={false}
-            showKayitLink={false}
-          />
-        </li>
-      </ul>
+      <EtkinlikListe etkinlikler={[etkinlik]} showKayitLink={false} />
     </div>
   </section>
 
-  <section data-section="kayit-cta" class="ocak-kayit-cta">
-    {gecmisMi ? (
+  {gecmisMi ? (
+    <section data-section="kayit-btn" class="ocak-kayit-cta">
       <a class="ocak-kayit-cta__buton" href={formatSayfasi} data-kayit-cta-button>
         Sıradaki {kategoriAdi} <span aria-hidden="true">→</span>
       </a>
-    ) : (
-      kayitHedefi && (
-        <a class="ocak-kayit-cta__buton" href={kayitHedefi} data-kayit-cta-button>
-          {butonMetni} <span aria-hidden="true">→</span>
-        </a>
-      )
-    )}
-
-    <p class="ocak-kayit-cta__tumu">
-      <a href={takvimHref}>Sana uyan başka tarihler de var — hepsine bak <span aria-hidden="true">→</span></a>
-    </p>
-  </section>
+      <p class="ocak-kayit-cta__tumu">
+        <a href={takvimHref}>Diğer tarihler <span aria-hidden="true">→</span></a>
+      </p>
+    </section>
+  ) : (
+    <KayitBtn etkinlik={etkinlik} digerTarihler digerTarihlerHref={takvimHref} />
+  )}
 </Layout>
 
-<!-- brief-detay-sayfa-revize: sayfa-özel `.etkinlik-detay__*` class'ları
-     kaldırıldı. Kayıt aksiyonu standart `.ocak-kayit-cta__buton`'a çevrildi
-     (atmosfer.css'teki köz ember dolu buton stilini alır — format sayfası
-     kayit-cta ile BİREBİR). Section kabuk + "Tüm buluşmalar" link stili de
-     atmosfer.css `section[data-section="kayit-cta"]` altında. -->
+<!-- brief-kayit-buton-FINAL Faz 4: güncel etkinlik CTA'sı KayitBtn primitive
+     (Mod A) — metin etkinliğin Kayıt Tipi'nden türer, hedef sluğ-otomatik,
+     altına "Diğer tarihler →" linki. Geçmiş etkinlik hardcoded fallback,
+     brief metin sözlüğü dışı yönlendirme cümlesi ("Sıradaki {kategoriAdi}")
+     için korundu. -->

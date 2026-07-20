@@ -32,6 +32,7 @@ import {
 } from '../lib/etkinlik-kategori';
 import { isKayitFormat } from '../lib/kayit';
 import EtkinlikListe from './EtkinlikListe.astro';
+import KayitBtn from './KayitBtn.astro';
 
 type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
 
@@ -93,14 +94,14 @@ const heading = (() => {
   return KATEGORI_HEADING[kategori];
 })();
 
-// Home kayit-cta (brief-kart-cizgi-koz-dugme İş 2): kartın gösterdiği
-// etkinliğin kayıt hedefi. Notion'da özel `kayitUrl` varsa o; yoksa
-// `/acik-kapi/kayit` fallback (Home = acik-kapi sabit, KARAR 331).
-// Format sayfalarında kayit-cta Notion içeriğinden gelir (## section: kayit-cta
-// marker → resolveKayitCtaHref); home Notion'da yok, buradan enjekte edilir.
-const homeKayitHedefi = isHome && !bos
-  ? (liste[0].kayitUrl?.trim() || '/acik-kapi/kayit')
-  : null;
+// brief-kayit-buton-FINAL Faz 2 — tek-kart yüzeylerde (home + 6 format sayfası)
+// kartın altına KayitBtn primitive'i düşer. Metin liste[0].kayitTipi'nden
+// (Direkt→'Yerini ayır' / Başvuru→'Başvur'); hedef FORMAT_KATEGORI[tip]'ten
+// /[slug]/kayit. Format sayfalarında "Diğer tarihler → /takvim#[slug]" tab
+// hash'i; home'da düz /takvim (brief KURAL 1). Anadolu (isTekKart=false,
+// LIMIT=3) buton basmaz — kendi başvuru rotası ayrı (/anadolu/basvuru).
+const cardEtkinlik = isTekKart && !bos ? liste[0] : null;
+const digerTarihlerHref = isHome ? '/takvim' : undefined;
 ---
 {/* `ocak-` prefix'i İLK class olmalı — baseline `section[data-section][class^="ocak-"]`
     aksi halde sessizce düşer (attribute VALUE prefix match, word-match değil). */}
@@ -119,19 +120,14 @@ const homeKayitHedefi = isHome && !bos
   </div>
 </section>
 
-{/* Home kayit-cta: kart + turuncu düğme + "Tüm buluşmalar →" — En Yakın
-    format sayfası düzeniyle birebir. Format sayfası kayit-cta'sı Notion
-    içeriğinden gelir; home'da yok, buradan. Buton dili Direkt kayıt: home
-    acik-kapi Direkt → 'Yerini ayır' (brief-baslik-dil-cizgi-takvim İş 2 geri). */}
-{homeKayitHedefi && (
-  <section data-section="kayit-cta" class="ocak-kayit-cta">
-    <a class="ocak-kayit-cta__buton" href={homeKayitHedefi} data-kayit-cta-button>
-      Yerini ayır <span aria-hidden="true">→</span>
-    </a>
-    <p class="ocak-kayit-cta__tumu">
-      <a href="/takvim">Tüm buluşmalar <span aria-hidden="true">→</span></a>
-    </p>
-  </section>
+{/* Kart altı buton — home + 6 format sayfası (tek-kart yüzeyleri). Anadolu
+    (LIMIT=3, isTekKart=false) buton basmaz; kendi başvuru rotası ayrı. */}
+{cardEtkinlik && (
+  <KayitBtn
+    etkinlik={cardEtkinlik}
+    digerTarihler
+    digerTarihlerHref={digerTarihlerHref}
+  />
 )}
 
 <style>
