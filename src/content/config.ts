@@ -299,6 +299,7 @@ const etkinlikler = defineCollection({
     ucret: z.number().optional(),
     paraBirimi: z.string().optional(),
     kayitSorulari: z.string().optional(),
+    kayitSorulariAciklamalari: z.string().optional(),
     // Brief brief-fotolu-onizleme.md İş 4 — kart köşe görseli (Notion files & media).
     // Boşken SonrakiBulusma kartı master görünümünde basılır.
     kartGorsel: z.string().optional(),

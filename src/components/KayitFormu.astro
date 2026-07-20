@@ -14,7 +14,7 @@
 // Honeypot KARAR 194 (gizli `website` alanı), KVKK KARAR 144 (checkbox + expander),
 // scrollToSuccess KARAR 156, success'te form HTML gizleme KARAR 116.
 import type { CollectionEntry } from 'astro:content';
-import { parseKayitSorulari, type KayitFormat } from '../lib/kayit';
+import { parseKayitSorulari, parseRichTextLines, type KayitFormat } from '../lib/kayit';
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
 import { BOS_STATE_KAPI_HTML } from '../lib/etkinlik-kategori';
 import DavetKutusu from './DavetKutusu.astro';
@@ -68,6 +68,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     dolu: e.data.durum === 'Dolu',
     kayitTipi: e.data.kayitTipi,
     sorular: parseKayitSorulari(e.data.kayitSorulari),
+    aciklamalar: parseRichTextLines(e.data.kayitSorulariAciklamalari),
     // Eyeball #4 Fix 2c: davet metni için etkinlik başlığı (Notion Başlık).
     baslik: e.data.baslik,
   };
@@ -195,10 +196,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                     data-para-birimi={d.paraBirimi}
                     data-kayit-tipi={d.kayitTipi}
                     data-sorular={JSON.stringify(d.sorular)}
+                    data-aciklamalar={JSON.stringify(d.aciklamalar)}
                     data-baslik={d.baslik}
                     disabled={d.dolu}
                   >
-                    {d.tarih}{d.dolu ? ' — Dolu' : ''}
+                    {d.baslik ? `${d.baslik} · ${d.tarih}` : d.tarih}{d.dolu ? ' — Dolu' : ''}
                   </option>
                 );
               })}
@@ -1605,7 +1607,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // cloneNode bunu taşır. document.createElement yapsaydık attr eksik
     // kalır, .kayit-formu__group + .kayit-formu__textarea CSS rules
     // eşleşmez → label kayık, textarea küçük. Eyeball Kaan SS bulgusu.
-    function renderNiyetSorulari(sorular: string[]) {
+    function renderNiyetSorulari(sorular: string[], aciklamalar: string[] = []) {
       if (!niyetIcerik || !niyetDetails) return;
       niyetIcerik.innerHTML = '';
       if (sorular.length === 0 || !niyetTemplate) {
@@ -1624,6 +1626,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           ta.id = inputId;
           ta.name = `soru_${i}`;
           ta.dataset.soru = soru;
+          const ph = aciklamalar[i]?.trim();
+          if (ph) ta.placeholder = ph;
         }
         niyetIcerik.appendChild(frag);
       });
@@ -1878,12 +1882,24 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       }
     }
 
+    function seciliEtkinligeAitAciklamalar(): string[] {
+      const opt = select.options[select.selectedIndex];
+      const raw = opt?.dataset.aciklamalar;
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.filter((s) => typeof s === 'string') : [];
+      } catch {
+        return [];
+      }
+    }
+
     select.addEventListener('change', () => {
       syncDirektAkis();
       syncTarihSecili(); // odemeDetails hidden = !(tarih && direkt) — direkt sync sonrası
       refreshKademeTutarlari();
       refreshOdemeBlok();
-      renderNiyetSorulari(seciliEtkinligeAitSorular());
+      renderNiyetSorulari(seciliEtkinligeAitSorular(), seciliEtkinligeAitAciklamalar());
       promoYenidenDogrula(0); // tutar değişti → promo'yu hemen yeniden doğrula
       syncSubmitMetni();
     });

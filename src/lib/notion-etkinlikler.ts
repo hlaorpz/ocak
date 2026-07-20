@@ -49,6 +49,8 @@ export type EtkinlikFrontmatter = {
   paraBirimi?: string;
   /** Notion "Kayıt Soruları" rich_text — Shift+Enter ile \n ayraçlı. Parse: split('\n').filter(Boolean). */
   kayitSorulari?: string;
+  /** Notion "Kayıt Soruları Açıklama" rich_text — soru sırasıyla hizalı placeholder satırları. */
+  kayitSorulariAciklamalari?: string;
   /**
    * Notion "Kart Görsel" files & media — buluşma kartı köşe görseli (Brief
    * brief-fotolu-onizleme.md İş 4). Boşsa undefined → SonrakiBulusma kartı master
@@ -168,6 +170,7 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
   const ucret = numberVal(page, 'Ücret');
   const paraBirimi = selectVal(page, 'Para Birimi');
   const kayitSorulari = richText(page, 'Kayıt Soruları');
+  const kayitSorulariAciklamalari = richText(page, 'Kayıt Soruları Açıklama');
   const kartGorsel = filesUrl(page, 'Kart Görsel');
   // Aşama 3b-fix — Notion "Kayıt Tipi" select [Başvuru | Direkt]. Boş/eski
   // etkinliklerde default 'Direkt' (mevcut Kapı 1 akışı sürpriz değişmesin).
@@ -199,6 +202,7 @@ export function transformEtkinlik(page: PageObjectResponse): EtkinlikFrontmatter
     ...(ucret !== undefined ? { ucret } : {}),
     ...(paraBirimi ? { paraBirimi } : {}),
     ...(kayitSorulari ? { kayitSorulari } : {}),
+    ...(kayitSorulariAciklamalari ? { kayitSorulariAciklamalari } : {}),
     ...(kartGorsel ? { kartGorsel } : {}),
     ...(slug ? { slug } : {}),
     ...(detay ? { detay } : {}),
