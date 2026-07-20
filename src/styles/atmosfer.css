@@ -404,11 +404,18 @@
 
 /* atolyeler section-içi (H2 + p'ler + details aynı section) — intro son p
  * LAST-CHILD DEĞİL (details takip ediyor) → `p:last-child { margin: 0 }`
- * kuralı devrede olmaz, p bottom margin baseline'da 24 (mobil) / 32 (desktop).
- * Kaan brief 2026-07-20 (revize): -12 hâlâ diğer 3 accordion'dan sıkışık
- * görünüyordu → margin-top TAMAMEN kaldırıldı (0). Net (mobil): 24 (p
- * bottom) + 0 + 12 (details padding) = 36px arada — diğerlerine yakın
- * gevşek ritim. */
+ * kuralı devrede olmaz. Seri (ayrı intro-section) referans nefesi mobil
+ * DevTools ölçümü ile 48px (baseline padding-bottom = --rhythm-section-top).
+ *
+ * Kaan brief 2026-07-20 kesin: tek-seferlik intro→ilk-details boşluğunu
+ * seri ile EŞİTLE. Son intro <p>'ye `--rhythm-section-top` (48px) bottom
+ * margin → net ~60px arada, seri referans (~68) ile görsel eşit.
+ *
+ * details:first-of-type margin-top: 0 (çift-etki koruması — mevcut kural,
+ * belge amaçlı bırakıldı). */
+[data-section="atolyeler"] > p:last-of-type {
+  margin-bottom: var(--rhythm-section-top);
+}
 [data-section="atolyeler"] > details.liste__oge:first-of-type {
   margin-top: 0;
 }
