@@ -510,13 +510,17 @@ function transformListeStatik(
 
     if (collapsible) {
       // Accordion mod: <details> + <summary> + isaret. name grubu section-adı.
+      // İlk öğe (i===0) `open` attribute ile açık başlar (Kaan brief 2026-07-20);
+      // exclusive accordion davranışı korunur (native `name`), kullanıcı başka
+      // açtığında ilk kapanır.
       // MARKUP: summary içinde <span role="heading" aria-level="3">, <h3> DEĞİL.
       // <summary> içinde heading content HTML5 spec ihlali (Kaan brief 2026-07-20);
       // tarayıcı parser toleransı flex layout'u bozuyordu. Semantik ARIA ile korunur.
       // transformEsik ile aynı gramerde tek çıkış.
+      const openAttr = i === 0 ? ' open' : '';
       out.push(
         html(
-          `<details name="${sectionName}" data-section="${sectionName}-${i}" class="liste__oge">` +
+          `<details name="${sectionName}" data-section="${sectionName}-${i}" class="liste__oge"${openAttr}>` +
             '<summary class="liste__baslik-satir">' +
             `<span class="liste__baslik" role="heading" aria-level="3">${escapeHtmlText(parsed.baslik)}</span>` +
             '<span class="liste__isaret" aria-hidden="true"></span>' +

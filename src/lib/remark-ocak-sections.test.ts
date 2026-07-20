@@ -789,6 +789,15 @@ describe('remark-ocak-sections', () => {
     expect(html).not.toContain('<section data-section="siradaki-kapi">');
     // 5 details: name="temalar" grubu (exclusive accordion)
     expect(html.match(/<details name="temalar"/g)?.length).toBe(5);
+    // İlk öğe (i=0) `open` başlar (Kaan brief 2026-07-20)
+    expect(html).toContain(
+      '<details name="temalar" data-section="temalar-0" class="liste__oge" open>',
+    );
+    // Kalan öğeler kapalı (open attribute YOK)
+    expect(html).toContain(
+      '<details name="temalar" data-section="temalar-1" class="liste__oge">',
+    );
+    expect(html).not.toMatch(/<details name="temalar" data-section="temalar-[1-4]"[^>]* open>/);
     // Article emit EDİLMEZ (statik-açık artık yok karar sayfalarında)
     expect(html).not.toContain('<article class="liste__oge">');
     expect(html).not.toContain('<article class="ocak-kapi-kart">');
@@ -838,15 +847,16 @@ describe('remark-ocak-sections', () => {
     warn.mockRestore();
   });
 
-  it('46. vitrin turler + formatlar — CARD_SECTIONS accordion, name grubu section adı', () => {
+  it('46. vitrin turler + formatlar — CARD_SECTIONS accordion, name grubu + ilk-açık', () => {
     const tHtml = process('## section: turler\n\n### Kakao\n\nKakao seremonisi.');
     expect(tHtml).toContain('<section data-section="turler" class="ocak-turler">');
-    expect(tHtml).toContain('<details name="turler" data-section="turler-0" class="liste__oge">');
+    // İlk öğe `open` (Kaan brief 2026-07-20)
+    expect(tHtml).toContain('<details name="turler" data-section="turler-0" class="liste__oge" open>');
     expect(tHtml).not.toContain('<article class="liste__oge">');
 
     const fHtml = process('## section: formatlar\n\n### Bir Nefes\n\nAçık kapı bir nefes.');
     expect(fHtml).toContain('<section data-section="formatlar" class="ocak-formatlar">');
-    expect(fHtml).toContain('<details name="formatlar" data-section="formatlar-0" class="liste__oge">');
+    expect(fHtml).toContain('<details name="formatlar" data-section="formatlar-0" class="liste__oge" open>');
     expect(fHtml).not.toContain('<article class="liste__oge">');
   });
 
@@ -859,9 +869,9 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain(
       '<section data-section="seri-atolyeler" class="ocak-seri-atolyeler">',
     );
-    // Accordion mod: details, article DEĞİL
+    // Accordion mod: details, article DEĞİL. İlk öğe `open` (Kaan brief 2026-07-20).
     expect(html).toContain(
-      '<details name="seri-atolyeler" data-section="seri-atolyeler-0" class="liste__oge">',
+      '<details name="seri-atolyeler" data-section="seri-atolyeler-0" class="liste__oge" open>',
     );
     expect(html).not.toContain('<article class="liste__oge">');
     // Baslik strip'li, span[role=heading] — h3 spec ihlali fix (2026-07-20)
@@ -888,12 +898,14 @@ describe('remark-ocak-sections', () => {
     expect(html).toMatch(/İntro paragraf/);
     // Her H3 bir details.liste__oge — accordion mod
     expect(html.match(/<details name="atolyeler"/g)?.length).toBe(2);
+    // İlk öğe (i=0) `open` başlar (Kaan brief 2026-07-20), kalanlar kapalı
     expect(html).toContain(
-      '<details name="atolyeler" data-section="atolyeler-0" class="liste__oge">',
+      '<details name="atolyeler" data-section="atolyeler-0" class="liste__oge" open>',
     );
     expect(html).toContain(
       '<details name="atolyeler" data-section="atolyeler-1" class="liste__oge">',
     );
+    expect(html).not.toMatch(/<details name="atolyeler" data-section="atolyeler-1"[^>]* open>/);
     // Summary yeni yapı: span[role=heading][aria-level=3] (h3 DEĞİL — 07-20 fix)
     expect(html).toContain(
       '<summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Kakao ve Sohbet</span><span class="liste__isaret" aria-hidden="true"></span></summary>',
@@ -919,10 +931,10 @@ describe('remark-ocak-sections', () => {
     const html = process(
       '## section: atolyeler\n\n### Kakao\n\nİçerik.\n\n## section: seri-atolyeler\n\n### Nefes Yolu\n\nAltı hafta nefes.',
     );
-    // atolyeler details
-    expect(html).toContain('<details name="atolyeler" data-section="atolyeler-0"');
-    // seri-atolyeler ARTIK details (statik değil)
-    expect(html).toContain('<details name="seri-atolyeler" data-section="seri-atolyeler-0"');
+    // atolyeler details — ilki `open` (Kaan brief 2026-07-20)
+    expect(html).toContain('<details name="atolyeler" data-section="atolyeler-0" class="liste__oge" open>');
+    // seri-atolyeler ARTIK details (statik değil), ilki `open`
+    expect(html).toContain('<details name="seri-atolyeler" data-section="seri-atolyeler-0" class="liste__oge" open>');
     // Hiçbir yerde article emit YOK (statik kart kalmadı karar sayfalarında)
     expect(html).not.toContain('<article class="liste__oge">');
     // Name grupları bağımsız

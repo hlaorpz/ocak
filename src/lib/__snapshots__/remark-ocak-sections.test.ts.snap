@@ -120,7 +120,7 @@ exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="ra
 
 exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS accordion, 5 details, name="temalar" 1`] = `
 "<section data-section="temalar" class="ocak-temalar">
-<details name="temalar" data-section="temalar-0" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Ateş</span><span class="liste__isaret" aria-hidden="true"></span></summary>
+<details name="temalar" data-section="temalar-0" class="liste__oge" open><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Ateş</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
 </details>
 <details name="temalar" data-section="temalar-1" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Sessizlik</span><span class="liste__isaret" aria-hidden="true"></span></summary>
