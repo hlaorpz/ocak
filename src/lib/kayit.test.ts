@@ -5,7 +5,6 @@ import {
   FORMAT_MAILERLITE_GROUP,
   isKayitFormat,
   parseKayitSorulari,
-  resolveKayitCtaHref,
   resolveMiniCtaBtn,
   katilimTipiCoz,
   mailerLiteCustomFields,
@@ -114,104 +113,6 @@ describe('parseKayitSorulari', () => {
 
   it('boş satırları + baş/son whitespace\'i atar', () => {
     expect(parseKayitSorulari('\n\nSoru 1\n  \n\nSoru 2\n\n')).toEqual(['Soru 1', 'Soru 2']);
-  });
-});
-
-// resolveKayitCtaHref — Brief 4 KARAR 207 post-render placeholder replace.
-// Plugin (remark-ocak-sections transformKayitCta) buton href'ini
-// __KAYIT_CTA_HREF__ placeholder ile emit eder; bu helper loader'da
-// (content/config.ts) her sayfa için çağrılır ve slug'ı bilen yer olarak
-// placeholder'ı çözüp 6-format-dışı sayfada section'ı temizler.
-
-const SECTION_METINSIZ =
-  '<section data-section="kayit-cta" class="ocak-kayit-cta"><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a></section>';
-const SECTION_METINLI =
-  '<section data-section="kayit-cta" class="ocak-kayit-cta"><p>Yerini ayır, çembere katıl.</p><a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a></section>';
-
-describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', () => {
-  it('Direkt format (metinsiz) → href /[slug]/kayit + label "Yerini ayır" (KARAR 307)', () => {
-    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
-    expect(out).toContain('href="/cember/kayit"');
-    expect(out).not.toContain('__KAYIT_CTA_HREF__');
-    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
-    expect(out).toContain('Yerini ayır →');
-  });
-
-  it('Başvuru formatı (mini-retreat, metinsiz) → label "Başvur"', () => {
-    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/mini-retreat');
-    expect(out).toContain('href="/mini-retreat/kayit"');
-    expect(out).toContain('Başvur →');
-    expect(out).not.toContain('Yerini ayır');
-  });
-
-  it('6 formattan biri (metinli) → href/label doldurulur, üst metin de korunur', () => {
-    const out = resolveKayitCtaHref(SECTION_METINLI, '/seremoni');
-    expect(out).toContain('href="/seremoni/kayit"');
-    expect(out).toContain('Yerini ayır →');
-    expect(out).toContain('<p>Yerini ayır, çembere katıl.</p>');
-  });
-
-  it('6 formattan biri → butondan SONRA "Tüm buluşmalar →" linki enjekte edilir (brief-baslik-dil-cizgi-takvim İş 3)', () => {
-    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/cember');
-    expect(out).toContain('Tüm buluşmalar →');
-    expect(out).toContain('class="ocak-kayit-cta__tumu"');
-    // Sayfa formatı bilinir → takvim linki `/takvim#<slug>` hash'li (client
-    // script tab'ı ön-seçer).
-    expect(out).toContain('href="/takvim#cember"');
-    // Link, butonun HEMEN ARDINDA (arada başka element yok).
-    expect(out).toMatch(/Yerini ayır →<\/a><p class="ocak-kayit-cta__tumu">/);
-  });
-
-  it('slug normalize: cember / /cember / /cember/ hepsi /cember/kayit', () => {
-    expect(resolveKayitCtaHref(SECTION_METINSIZ, 'cember')).toContain('/cember/kayit');
-    expect(resolveKayitCtaHref(SECTION_METINSIZ, '/cember')).toContain('/cember/kayit');
-    expect(resolveKayitCtaHref(SECTION_METINSIZ, '/cember/')).toContain('/cember/kayit');
-  });
-
-  it('6 format dışı slug (metinsiz) → section TAMAMEN kaldırılır + warn', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const out = resolveKayitCtaHref(SECTION_METINSIZ, '/hikaye');
-    expect(out).not.toContain('data-section="kayit-cta"');
-    expect(out).not.toContain('__KAYIT_CTA_HREF__');
-    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/hikaye/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/6 format dışı/);
-  });
-
-  it('6 format dışı slug (metinli) → ÜST METİN DAHİL tüm blok temiz kaldırılır', () => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const out = resolveKayitCtaHref(SECTION_METINLI, '/biz');
-    expect(out).not.toContain('data-section="kayit-cta"');
-    expect(out).not.toContain('Yerini ayır, çembere katıl.');
-    // Section bloğunun kalıntısı kalmadı.
-    expect(out.trim()).toBe('');
-  });
-
-  it('ana sayfa (slug "/" veya boş) → 6 format dışı, section kaldırılır + warn', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    expect(resolveKayitCtaHref(SECTION_METINSIZ, '/')).not.toContain('kayit-cta');
-    expect(resolveKayitCtaHref(SECTION_METINSIZ, '')).not.toContain('kayit-cta');
-    expect(warnSpy).toHaveBeenCalledTimes(2);
-  });
-
-  it('HTML\'de kayit-cta yoksa idempotent — placeholder/section yok, dokunma', () => {
-    const inert = '<p>Sadece prose, kayit-cta YOK.</p>';
-    expect(resolveKayitCtaHref(inert, '/hikaye')).toBe(inert);
-    // Dış HTML'de __KAYIT_CTA_HREF__ koruyucu çek (replace yapılmamalı).
-    const noSection = '<p>__KAYIT_CTA_HREF__ literal metin.</p>';
-    expect(resolveKayitCtaHref(noSection, '/cember')).toBe(noSection);
-  });
-
-  it('aynı sayfada birden fazla kayit-cta → hepsi aynı slug ile doldurulur', () => {
-    const ikili = SECTION_METINSIZ + '\n<p>Arada prose.</p>\n' + SECTION_METINLI;
-    const out = resolveKayitCtaHref(ikili, '/atolye');
-    const matches = out.match(/href="\/atolye\/kayit"/g);
-    expect(matches?.length).toBe(2);
-    const labels = out.match(/Yerini ayır →/g);
-    expect(labels?.length).toBe(2);
-    expect(out).not.toContain('__KAYIT_CTA_HREF__');
-    expect(out).not.toContain('__KAYIT_CTA_LABEL__');
   });
 });
 

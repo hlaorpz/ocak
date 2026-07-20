@@ -43,32 +43,6 @@ export const FORMAT_NOTION_FORMAT: Record<KayitFormat, string> = {
 };
 
 /**
- * Slug → kayit-cta buton metni (brief-baslik-dil-cizgi-takvim İş 2 geri-alım
- * KARAR 307 orijinaline). Direkt formatlar (Kapı 1) → 'Yerini ayır'; Başvuru
- * formatı (mini retreat, Kapı 2) → 'Başvur' — başvuruda yer AYRILMIYOR, iki
- * fiil ayrı. Hem `KayitCTA.astro` (form-anchor wiring) hem remark plugin
- * `transformKayitCta` (## section: kayit-cta marker) bu haritayı okur.
- */
-export const KAYIT_CTA_LABEL: Record<KayitFormat, string> = {
-  cember: 'Yerini ayır',
-  'acik-kapi': 'Yerini ayır',
-  'mini-retreat': 'Başvur',
-  'sehir-aksami': 'Yerini ayır',
-  seremoni: 'Yerini ayır',
-  atolye: 'Yerini ayır',
-  yolculuk: 'Yerini ayır',
-};
-
-/**
- * Dayanışma ön-izleme satırı — 7 format sayfasının kayit-cta bloğunda
- * butonun üstünde. /anadolu KayitCTA çağırmaz (form-anchor-registry'de yok),
- * dolayısıyla oraya sızmaz — Anadolu'da rakam görüşmede konuşuluyor, kademe
- * dili girmez.
- */
-export const DAYANISMA_METNI =
-  'Katılım payı kademeli — hangi kademeyi seçeceğine sen karar verirsin.';
-
-/**
  * Aşama 2.5 — Kademeli dayanışma fiyatı (sliding scale). Etkinlikler DB tek
  * `Ücret` taşır (orta/tam fiyat); 3 kademe koddan türetilir:
  *  - Üst (Ateşi büyüten) = Ücret × 1.5
@@ -382,55 +356,6 @@ export function uygulaIndirim(
     indirim: yuvarlaKurus(indirim),
     toplam: yuvarlaKurus(yeniA + bSafe),
   };
-}
-
-/**
- * kayit-cta section'ı için post-render placeholder çözümü (Brief 4 KARAR 207
- * + brief-faz3-h4-h5 İş 3).
- *
- * Plugin (remark-ocak-sections.ts transformKayitCta) buton href + label'ını
- * `__KAYIT_CTA_HREF__` ve `__KAYIT_CTA_LABEL__` placeholder'larıyla emit eder;
- * plugin global instance sayfa slug'ını bilmediği için. Bu helper loader
- * (notion-pages.ts) içinde her sayfanın HTML'i render edildikten sonra çağrılır.
- *
- * Davranış (Adım 0 karar A — sessiz atla + warn):
- *  - Slug 6 KayitFormat'tan biri → href `/${slug}/kayit`, label KAYIT_CTA_LABEL[slug].
- *  - Slug 6 format dışı (örn. '/hikaye', '/biz', '/') →
- *    `<section data-section="kayit-cta">...</section>` tüm bloğu (üst metin
- *    dahil) regex ile kaldırılır + tek console.warn yazılır (build log'da
- *    görünür kalır, sayfa boş render edilir).
- *
- * Slug input formatları: '/cember', 'cember', '/cember/' hepsi tolere
- * edilir; defansif normalize.
- *
- * Fonksiyon adı history uğruna korunuyor (`Href`) — davranış artık href+label
- * çözümü kapsıyor.
- */
-export function resolveKayitCtaHref(html: string, rawSlug: string): string {
-  if (!html.includes('data-section="kayit-cta"')) return html;
-  const slug = rawSlug.replace(/^\/+|\/+$/g, '');
-  if (isKayitFormat(slug)) {
-    const replaced = html
-      .replaceAll('__KAYIT_CTA_HREF__', `/${slug}/kayit`)
-      .replaceAll('__KAYIT_CTA_LABEL__', KAYIT_CTA_LABEL[slug]);
-    // Her butondan SONRA "Tüm buluşmalar →" linki enjekte et — home + format
-    // sayfa + detay yüzeyi aynı metin (brief-baslik-dil-cizgi-takvim İş 3;
-    // "Sana uyan..." sahte kişiselleştirme atıldı). Sayfa formatı bilinir →
-    // takvim linki `/takvim#<slug>` hash'li (client script tab'ı ön-seçer).
-    return replaced.replace(
-      /(<a class="ocak-kayit-cta__buton"[^>]*>[\s\S]*?<\/a>)/g,
-      `$1<p class="ocak-kayit-cta__tumu"><a href="/takvim#${slug}">Tüm buluşmalar →</a></p>`,
-    );
-  }
-  // 6 format dışı → tüm kayit-cta bloğunu kaldır (üst metin dahil) + warn.
-  // eslint-disable-next-line no-console
-  console.warn(
-    `[kayit-cta] /${slug || ''}: 6 format dışı sayfa — section render edilmedi (Brief 4 / KARAR 207).`,
-  );
-  return html.replace(
-    /<section\s+data-section="kayit-cta"[\s\S]*?<\/section>/g,
-    '',
-  );
 }
 
 /**

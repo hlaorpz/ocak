@@ -26,8 +26,10 @@ describe('KayitBtn.astro — metin sözlüğü + görsel gramer', () => {
     expect(source).toContain('class="ocak-kayit-cta__buton"');
   });
 
-  it('section wrapper data-section="kayit-cta" (mevcut CSS baseline\'ı devralır)', () => {
-    expect(source).toContain('data-section="kayit-cta"');
+  it('section wrapper data-section="kayit-btn" (Faz 4 rebrand — kayit-cta emekli)', () => {
+    expect(source).toContain('data-section="kayit-btn"');
+    // Faz 4: eski attr sıfır — dist grep testinin karşılığı source seviyesinde.
+    expect(source).not.toContain('data-section="kayit-cta"');
   });
 
   it('slug-otomatik hedef: FORMAT_KATEGORI[tip] + /[slug]/kayit', () => {

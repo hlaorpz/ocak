@@ -1,7 +1,7 @@
 ---
 // KayitBtn — kayıt CTA butonu, tek ortak primitive (brief-kayit-buton-FINAL).
-// KAYIT_CTA_LABEL format-sabit tablosunun yerini alır. Metin etkinlik bazlı
-// `Kayıt Tipi`'nden türer; hedef sluğa göre `/[format]/kayit`.
+// Faz 1'de eski format-sabit KAYIT_CTA_LABEL tablosunun yerini aldı; metin
+// etkinlik bazlı `Kayıt Tipi`'nden türer, hedef sluğa göre `/[format]/kayit`.
 //
 // İki mod:
 //   Mod A (etkinliğe bağlı) — SonrakiBulusma kartı + mini-cta etkinlik detay:
@@ -10,10 +10,11 @@
 //   Mod B (nötr) — format sayfası kapanışı mini-cta:
 //     props { format } → sabit 'Yerini ayır' + /[format]/kayit.
 //
-// Görsel: mevcut `.ocak-kayit-cta__buton` class (atmosfer.css:1752 dolu ember).
-// Section wrapper: `data-section="kayit-cta"` — atmosfer.css section kabuğu
-// (ortala + padding) ve sonraki-bulusma ardışıklık kuralları (1736-1743)
-// zaten `[data-section="kayit-cta"]`'yı hedefliyor, tek gramer korunur.
+// Görsel: `.ocak-kayit-cta__buton` class (atmosfer.css dolu ember).
+// Section wrapper: `data-section="kayit-btn"` — Faz 4'te "kayit-cta"
+// attr'ından ayrıştırıldı; eski marker Notion'dan emekliye ayrıldı, bu
+// attribute primitive-özel (sonraki-bulusma ardışıklık kuralları da yeni
+// attr'a göre).
 import type { CollectionEntry } from 'astro:content';
 import { FORMAT_KATEGORI, type EtkinlikKategori } from '../lib/etkinlik-kategori';
 import type { KayitFormat } from '../lib/kayit';
@@ -47,7 +48,7 @@ const href = slug ? `/${slug}/kayit` : null;
 const takvimHref = digerTarihlerHref ?? (slug ? `/takvim#${slug}` : null);
 ---
 {href && (
-  <section data-section="kayit-cta" class="ocak-kayit-cta">
+  <section data-section="kayit-btn" class="ocak-kayit-cta">
     <a class="ocak-kayit-cta__buton" href={href} data-kayit-cta-button>
       {metin}{' '}<span aria-hidden="true">→</span>
     </a>

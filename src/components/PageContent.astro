@@ -6,9 +6,6 @@
 //   - form-anchor     → formAnchorRegistry[slug][index] component'i (props default'u +
 //                        formAnchorProps[slug][index]); KARAR 151 introHtml prop'u
 //                        loader look-backward'ı consume etmişse component scope'una iletilir.
-//   - kayit-cta       → <KayitCTA {...kayitCtaProps[slug]} introHtml={..} /> (Madde 2/4 fix —
-//                        B: marker section-içi üst metin introHtml, gate/dayanışma
-//                        component'in içinde). Plugin transformKayitCta fallback.
 //   - al-ol-ver       → <AlOlVer /> (sabit içerikli pillar grid, prop yok)
 //   - sonraki-bulusma → <SonrakiBulusma slug={slug} /> (slug'tan otomatik kategori/heading)
 //   - etkinlik-takvimi → <EtkinlikTakvimi /> (tüm gelecek etkinlikler, /takvim — KARAR 153)
@@ -17,14 +14,13 @@
 //
 // Sıra korunur: marker'lar Notion'daki konumlarında basılır.
 // Defansif: slug registry'de yoksa veya index karşılığı component'i yoksa null basar.
-import { formAnchorRegistry, formAnchorProps, kayitCtaProps } from '../lib/form-anchor-registry';
+import { formAnchorRegistry, formAnchorProps } from '../lib/form-anchor-registry';
 import AlOlVer from './AlOlVer.astro';
 import SonrakiBulusma from './SonrakiBulusma.astro';
 import EtkinlikTakvimi from './EtkinlikTakvimi.astro';
 import YolculukEksen from './YolculukEksen.astro';
 import Kanallar from './Kanallar.astro';
 import AnadoluHarita from './AnadoluHarita.astro';
-import KayitCTA from './KayitCTA.astro';
 
 type Fragment =
   | { kind: 'markdown'; html: string }
@@ -34,8 +30,7 @@ type Fragment =
   | { kind: 'etkinlik-takvimi' }
   | { kind: 'yolculuk-eksen' }
   | { kind: 'kanallar' }
-  | { kind: 'harita-anadolu' }
-  | { kind: 'kayit-cta'; introHtml?: string };
+  | { kind: 'harita-anadolu' };
 
 interface Props {
   slug: string;
@@ -68,16 +63,6 @@ const propsList = formAnchorProps[slug] ?? [];
     }
     if (frag.kind === 'harita-anadolu') {
       return <AnadoluHarita />;
-    }
-    if (frag.kind === 'kayit-cta') {
-      const props = kayitCtaProps[slug];
-      if (!props) {
-        console.warn(
-          `[PageContent] ${slug}: kayit-cta marker'ı için kayitCtaProps'ta entry yok.`,
-        );
-        return null;
-      }
-      return <KayitCTA {...props} introHtml={frag.introHtml} />;
     }
     const Component = components[frag.index];
     if (!Component) {

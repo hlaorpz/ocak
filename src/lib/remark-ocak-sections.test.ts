@@ -616,26 +616,9 @@ describe('remark-ocak-sections', () => {
     expect(html).toContain('<em>gerçek italik</em>');
   });
 
-  it('38. kayit-cta — metinsiz: section + buton + href/label placeholder (KARAR 207 + faz3 İş 3)', () => {
-    const html = process('## section: kayit-cta\n');
-    expect(html).toContain('<section data-section="kayit-cta" class="ocak-kayit-cta">');
-    expect(html).toContain(
-      '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
-    );
-    expect(html).toContain('</section>');
-    // Metinsiz varyantta üst metin yok — section içinde sadece buton + boşluk.
-    expect(html).not.toMatch(/<section data-section="kayit-cta"[^>]*>\s*<p>/);
-  });
-
-  it('39. kayit-cta — metinli: üst paragraph + buton (placeholder href/label korunur)', () => {
-    const html = process(
-      '## section: kayit-cta\n\nYerini ayır, çembere katıl.\n',
-    );
-    expect(html).toContain('<section data-section="kayit-cta" class="ocak-kayit-cta">');
-    expect(html).toContain('<p>Yerini ayır, çembere katıl.</p>');
-    expect(html).toContain('href="__KAYIT_CTA_HREF__"');
-    expect(html).toContain('__KAYIT_CTA_LABEL__ →');
-  });
+  // Faz 4 (brief-kayit-buton-FINAL): kayit-cta transform emekliye ayrıldı;
+  // eski test 38+39 kaldırıldı. `## section: kayit-cta` marker'ı artık
+  // default prose case'e düşer (site-rehber bypass yaşamaya devam).
 
   // brief-desenler-01.md ADIM 1 — raf-accordion (/araclar 7 raf ailesi)
   // Madde 8 liste ailesi refaktörü (2026-07-19): meta slot yok, sadece isaret.

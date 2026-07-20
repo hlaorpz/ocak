@@ -24,12 +24,11 @@ export type SectionName =
   | 'mini-cta'
   | 'buyuk-vurgu'
   | 'manifesto-vurgu'
-  | 'ic-ses'
-  | 'kayit-cta';
+  | 'ic-ses';
 
 /**
- * Kanonik 11 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
- * 127/153/207 + ic-ses göçü + kayit-cta Brief 4). Component-render kanonik 5
+ * Kanonik 10 — plugin tarafında özel transform alan section'lar (#23/F.5/KARAR
+ * 127/153 + ic-ses göçü). Component-render kanonik 5
  * (Hero/BirSonraki/SonrakiBulusma/SiradakiKapi/SSS, README #21) ile karıştırma:
  * o sayım Astro component instance'larını tanımlar, bu sayım markdown→HTML
  * transform setini tanımlar. Vurgu paleti (3 isim) listenin orta üçlüsü:
@@ -37,9 +36,9 @@ export type SectionName =
  *   - manifesto-vurgu → krem italik + köz glyph, sayfa-sonu marka beyanı
  *   - ic-ses → krem italik, glyphsiz, prose ortası düşük-enerji "nefes"
  * Glyph farkı manifesto-vurgu ile ic-ses arasındaki imza ayrımıdır
- * (manifesto ağırlık taşır, ic-ses hafiflik). kayit-cta (KARAR 207): köz
- * dolu vurgu butonu, sayfa slug'ından otomatik /[format]/kayit hedefi
- * türetir (notion-pages.ts resolveKayitCtaHref post-render adımı).
+ * (manifesto ağırlık taşır, ic-ses hafiflik). Faz 4 (brief-kayit-buton-FINAL):
+ * kayit-cta transformu emekliye ayrıldı; kayıt CTA'sı artık SonrakiBulusma
+ * primitive'i + mini-cta post-render helper'ıyla basılır.
  */
 export const CANONICAL_SECTIONS: SectionName[] = [
   'hero',
@@ -52,7 +51,6 @@ export const CANONICAL_SECTIONS: SectionName[] = [
   'buyuk-vurgu',
   'manifesto-vurgu',
   'ic-ses',
-  'kayit-cta',
 ];
 
 /**
@@ -755,47 +753,6 @@ function transformIcSes(
 }
 
 /**
- * kayit-cta (KARAR 207 / Brief 4): köz dolu vurgu butonu + opsiyonel üst metin.
- *
- * FALLBACK PATH (Madde 2/4 fix — B sonrası): Sayfalar collection loader'ı
- * `splitBodyByMarkers` içinde `kayit-cta` marker'ını kesip fragment'a çevirdiği
- * için PageContent normalde bu marker'ı `<KayitCTA />` component instance ile
- * basar (MADDE 2 gate + MADDE 4 dayanışma satırı orada). Bu transform SADECE
- * loader/fragment-split'ten kaçan durumlarda tetiklenir — /etkinlik/[slug]
- * detay sayfasındaki `## section: kayit-cta` gibi. Section'a
- * `<!-- kayit-cta-fallback -->` HTML yorumu iliştirilir; build sonrası grep
- * ile fallback'e düşen sayfalar tespit edilebilir.
- *
- * Plugin sayfa slug'ını bilmez (global instance, options'sız wiring). href'i
- * placeholder olarak yazar; notion-pages.ts'deki resolveKayitCtaHref
- * post-render adımı 6 format slug'u ise placeholder'ı `/${slug}/kayit` ile
- * değiştirir; değilse `<section data-section="kayit-cta">...</section>`
- * regex'iyle tüm section'ı kaldırır + console.warn yazar (6-format-dışı
- * sayfada sessiz atla davranışı, Adım 0 karar A).
- *
- * Üst metin opsiyonel: `## section: kayit-cta` altına prose yazılırsa buton
- * üstünde çağrı cümlesi; yazılmazsa çıplak buton.
- *
- * Buton metni slug'a göre değişir ("Yerini ayır" veya "Başvur") — placeholder
- * olarak emit edilir, loader resolveKayitCtaHref KAYIT_CTA_LABEL map'inden
- * doldurur.
- */
-function transformKayitCta(content: RootContent[]): RootContent[] {
-  // data-kayit-cta-button attribute test'lerde + CSS scope'ta marker görevi görür.
-  // href __KAYIT_CTA_HREF__, label __KAYIT_CTA_LABEL__ placeholder — loader
-  // resolveKayitCtaHref ikisini de slug bazlı doldurur (İş 3 iki-şablon).
-  const buton = html(
-    '<a class="ocak-kayit-cta__buton" href="__KAYIT_CTA_HREF__" data-kayit-cta-button>__KAYIT_CTA_LABEL__ →</a>',
-  );
-  return [
-    html('<section data-section="kayit-cta" class="ocak-kayit-cta"><!-- kayit-cta-fallback -->'),
-    ...content,
-    buton,
-    html('</section>'),
-  ];
-}
-
-/**
  * esik-* (/sen-neredesin): exclusive accordion.
  * - Section'ın ilk h2'sini (depth=2) bulur, metnini summary'ye taşır, node'u content'ten çıkarır.
  * - `<details name="esikler" data-section="NAME">` ile wrap; `name` attribute exclusive
@@ -1343,9 +1300,6 @@ function transformSection(
 
     case 'ic-ses':
       return transformIcSes(content, options);
-
-    case 'kayit-cta':
-      return transformKayitCta(content);
 
     case 'evreler-intro':
       // /anadolu: "Altı Evre" başlığı + opsiyonel giriş, kart bloğunun
