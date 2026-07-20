@@ -1584,7 +1584,11 @@ section[data-section="mini-cta"] > p:last-of-type {
   margin-bottom: var(--space-3);
 }
 
-section[data-section="mini-cta"] > a {
+/* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
+ * içinde kalan Notion link'leri) — soluk render. `.ocak-kayit-cta__buton`
+ * (Faz 3 dolu buton) hariç tutulur; onun kuralı aşağıdaki genişletilmiş
+ * kayit-cta bloğunda. */
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton) {
   display: inline-block;
   color: var(--ember);
   text-transform: uppercase;
@@ -1596,12 +1600,12 @@ section[data-section="mini-cta"] > a {
   transition: transform var(--duration-base) var(--ease-out);
 }
 
-section[data-section="mini-cta"] > a::before {
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton)::before {
   content: "→ ";
 }
 
-section[data-section="mini-cta"] > a:hover,
-section[data-section="mini-cta"] > a:focus-visible {
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton):hover,
+section[data-section="mini-cta"] > a:not(.ocak-kayit-cta__buton):focus-visible {
   transform: translateX(4px);
   outline: none;
 }
@@ -1749,7 +1753,10 @@ section[data-section="kayit-cta"][class^="ocak-"] > p:not(.ocak-kayit-cta__tumu)
   display: none;
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+/* Faz 3 (brief-kayit-buton-FINAL): buton kuralı hem kayit-cta hem mini-cta
+ * wrapper'larında geçerli — tek görsel gramer (dolu ember, tam-blok). */
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
   /* Dar sütun içinde tam-blok buton — kart genişliğiyle birebir, tek dikey
    * ünite hissi (brief-detay-sayfa-revize + format sayfa yeni düzen). */
   display: block;
@@ -1774,7 +1781,9 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
 }
 
 section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible {
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:hover,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus-visible {
   background: var(--ember-soft);
   box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   outline: none;
@@ -1782,7 +1791,8 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton:focus
 
 /* Mobilde 72px yatay padding taşabilir — hafif küçült (davet gücü korunur). */
 @media (max-width: 600px) {
-  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton,
+  section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
     padding: 1rem 2.5rem;
     letter-spacing: 0.2em;
   }
@@ -1793,16 +1803,19 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-etkinlik-kart + .ocak-
   margin-top: var(--space-2);
 }
 
-/* "Sana uyan başka tarihler..." linki — butonun ALTINDA, davet-fısıltısı.
+/* "Diğer tarihler →" linki — butonun ALTINDA, davet-fısıltısı.
  * Font 13px (butonla yarışmaz ama okunur); yatay padding → buton kenarlarında
- * boşluk kalır, metin butonun sağ-solundan taşmaz. */
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
+ * boşluk kalır, metin butonun sağ-solundan taşmaz. Faz 3: mini-cta wrapper
+ * içinde de aynı gramer. */
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu {
   margin: var(--space-3) 0 0;
   padding: 0 var(--space-3);
   font-size: 0.8125rem;
 }
 
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
   font-family: var(--font-body);
   letter-spacing: 0.06em;
   color: var(--ember);
@@ -1813,12 +1826,15 @@ section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a {
 }
 
 section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
-section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible {
+section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:hover,
+section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__tumu a:focus-visible {
   border-bottom-color: var(--ember);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
+  section[data-section="kayit-cta"][class^="ocak-"] > .ocak-kayit-cta__buton,
+  section[data-section="mini-cta"][class^="ocak-"] > .ocak-kayit-cta__buton {
     transition: none;
   }
 }

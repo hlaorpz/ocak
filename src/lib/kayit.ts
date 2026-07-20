@@ -432,3 +432,38 @@ export function resolveKayitCtaHref(html: string, rawSlug: string): string {
     '',
   );
 }
+
+/**
+ * mini-cta buton post-render çözümü (brief-kayit-buton-FINAL Faz 3).
+ *
+ * transformMiniCta section'ı prose + `__MINI_CTA_BUTON__` placeholder emit
+ * eder; loader (config.ts) bu helper'ı çağırıp bağlama göre butonu basar.
+ *
+ * Üç dal:
+ *   - slug KayitFormat + `kayitTipi` verilir (etkinlik detay pipeline) →
+ *     Direkt→"Yerini ayır" / Başvuru→"Başvur" + `/[format]/kayit` +
+ *     "Diğer tarihler → /takvim#[slug]"
+ *   - slug KayitFormat + `kayitTipi` yok (format sayfası kapanışı) →
+ *     nötr "Yerini ayır" + `/[format]/kayit`, tümü linki yok
+ *   - slug KayitFormat değil (/site-rehber, /anadolu) → placeholder boş
+ *     ile silinir; content prose olarak kalır (bypass)
+ */
+export function resolveMiniCtaBtn(
+  html: string,
+  rawSlug: string,
+  opts: { kayitTipi?: 'Direkt' | 'Başvuru' } = {},
+): string {
+  if (!html.includes('__MINI_CTA_BUTON__')) return html;
+  const slug = rawSlug.replace(/^\/+|\/+$/g, '');
+  if (!isKayitFormat(slug)) {
+    return html.replaceAll('__MINI_CTA_BUTON__', '');
+  }
+  const metin = opts.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
+  const buton =
+    `<a class="ocak-kayit-cta__buton" href="/${slug}/kayit" data-kayit-cta-button>` +
+    `${metin} <span aria-hidden="true">→</span></a>`;
+  const tumu = opts.kayitTipi
+    ? `<p class="ocak-kayit-cta__tumu"><a href="/takvim#${slug}">Diğer tarihler <span aria-hidden="true">→</span></a></p>`
+    : '';
+  return html.replaceAll('__MINI_CTA_BUTON__', buton + tumu);
+}

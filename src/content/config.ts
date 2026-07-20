@@ -7,7 +7,12 @@ import {
   resolveNotionPageLinks,
 } from '../lib/notion-pages';
 import { fetchEtkinlikler, transformEtkinlik } from '../lib/notion-etkinlikler';
-import { resolveKayitCtaHref, FORMAT_NOTION_FORMAT, type KayitFormat } from '../lib/kayit';
+import {
+  resolveKayitCtaHref,
+  resolveMiniCtaBtn,
+  FORMAT_NOTION_FORMAT,
+  type KayitFormat,
+} from '../lib/kayit';
 
 /**
  * Sayfalar — 19 site sayfasının içerikleri.
@@ -62,8 +67,11 @@ const sayfalar = defineCollection({
               const r = await renderMarkdown(frag.content);
               return {
                 kind: 'markdown' as const,
-                html: resolveKayitCtaHref(
-                  resolveNotionPageLinks(r.html, pageIdToSlug, slug),
+                html: resolveMiniCtaBtn(
+                  resolveKayitCtaHref(
+                    resolveNotionPageLinks(r.html, pageIdToSlug, slug),
+                    slug,
+                  ),
                   slug,
                 ),
               };
@@ -109,8 +117,11 @@ const sayfalar = defineCollection({
           body: transformed.body,
           rendered: {
             ...rendered,
-            html: resolveKayitCtaHref(
-              resolveNotionPageLinks(rendered.html, pageIdToSlug, slug),
+            html: resolveMiniCtaBtn(
+              resolveKayitCtaHref(
+                resolveNotionPageLinks(rendered.html, pageIdToSlug, slug),
+                slug,
+              ),
               slug,
             ),
           },
@@ -241,9 +252,16 @@ const etkinlikler = defineCollection({
         if (fm.detay) {
           const rendered = await renderMarkdown(fm.detay);
           const kayitSlug = NOTION_FORMAT_KAYIT_SLUG[fm.tip] ?? '';
-          detayHtml = resolveKayitCtaHref(
-            resolveNotionPageLinks(rendered.html, {}, `etkinlik/${fm.slug ?? fm.notion_id}`),
+          // brief-kayit-buton-FINAL Faz 3 — etkinlik detay pipeline'ında
+          // mini-cta butonu etkinliğin `Kayıt Tipi`'nden türer (Direkt→
+          // "Yerini ayır", Başvuru→"Başvur") + altına "Diğer tarihler →".
+          detayHtml = resolveMiniCtaBtn(
+            resolveKayitCtaHref(
+              resolveNotionPageLinks(rendered.html, {}, `etkinlik/${fm.slug ?? fm.notion_id}`),
+              kayitSlug,
+            ),
             kayitSlug,
+            { kayitTipi: fm.kayitTipi },
           );
         }
 

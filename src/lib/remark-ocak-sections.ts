@@ -644,56 +644,25 @@ function transformSss(content: RootContent[], options: OcakSectionsOptions): Roo
 }
 
 /**
- * mini-cta (#29 Brief F.5): 1-2 paragraph + son child link.
- * - Son node "tek-link paragraph" (paragraph > link) ise paragraph wrapper sıyrılıp link
- *   doğrudan block-level basılır (CSS `a` selector'ünü hedeflemek için).
- * - Son child sade link değilse warn + içerik olduğu gibi sarılır (defansif).
- * - Hiç link yoksa warn + içerik yine sarılır (görsel ayırt edici kalır).
+ * mini-cta (brief-kayit-buton-FINAL Faz 3): prose + kırmızı buton + opsiyonel
+ * "Diğer tarihler →" linki. Elle yazılı son-child link kaldırıldı — buton
+ * post-render aşamada `resolveMiniCtaBtn` helper'ı tarafından slug bağlamına
+ * göre basılır. `__MINI_CTA_BUTON__` placeholder loader'da çözülür (kayit-cta
+ * placeholder pattern paraleli).
+ *
+ * Context sözlüğü (resolver):
+ *   - slug KayitFormat + etkinlik context (kayitTipi) → tip-bazlı metin
+ *     ("Yerini ayır" / "Başvur") + `/[format]/kayit` + "Diğer tarihler →"
+ *   - slug KayitFormat + etkinlik context yok → nötr "Yerini ayır" +
+ *     `/[format]/kayit` (tümü linki yok)
+ *   - slug KayitFormat değil (/site-rehber, /anadolu) → placeholder boş ile
+ *     değiştirilir; content prose olarak kalır (bypass, mevcut davranış).
  */
-function transformMiniCta(content: RootContent[], options: OcakSectionsOptions): RootContent[] {
-  const filename = options.filename ?? 'unknown';
-  const lastIdx = content.length - 1;
-  const last = content[lastIdx] as { type?: string; children?: RootContent[] } | undefined;
-  const lastChildren = last?.children;
-  const onlyChild =
-    last?.type === 'paragraph' && lastChildren?.length === 1 ? lastChildren[0] : null;
-  const isOnlyLink = (onlyChild as { type?: string } | null)?.type === 'link';
-
-  let hasAnyLink = false;
-  for (const node of content) {
-    if (node.type === 'paragraph') {
-      const kids = (node as { children?: RootContent[] }).children ?? [];
-      if (kids.some((k) => (k as { type?: string }).type === 'link')) {
-        hasAnyLink = true;
-        break;
-      }
-    }
-  }
-
-  if (!hasAnyLink) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[remark-ocak-sections] mini-cta (${filename}): link bulunamadı — yazım sapması.`,
-    );
-  } else if (!isOnlyLink) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[remark-ocak-sections] mini-cta (${filename}): son child sade link değil — yazım sapması.`,
-    );
-  }
-
-  if (isOnlyLink && onlyChild) {
-    return [
-      html('<section data-section="mini-cta" class="ocak-mini-cta">'),
-      ...content.slice(0, lastIdx),
-      onlyChild as RootContent,
-      html('</section>'),
-    ];
-  }
+function transformMiniCta(content: RootContent[]): RootContent[] {
   return [
     html('<section data-section="mini-cta" class="ocak-mini-cta">'),
     ...content,
-    html('</section>'),
+    html('__MINI_CTA_BUTON__</section>'),
   ];
 }
 
@@ -1364,7 +1333,7 @@ function transformSection(
       return transformSss(content, options);
 
     case 'mini-cta':
-      return transformMiniCta(content, options);
+      return transformMiniCta(content);
 
     case 'buyuk-vurgu':
       return transformBuyukVurgu(content, options);

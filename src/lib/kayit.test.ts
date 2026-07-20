@@ -6,6 +6,7 @@ import {
   isKayitFormat,
   parseKayitSorulari,
   resolveKayitCtaHref,
+  resolveMiniCtaBtn,
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
@@ -211,6 +212,64 @@ describe('resolveKayitCtaHref (Brief 4 KARAR 207 + brief-faz3-h4-h5 İş 3)', ()
     expect(labels?.length).toBe(2);
     expect(out).not.toContain('__KAYIT_CTA_HREF__');
     expect(out).not.toContain('__KAYIT_CTA_LABEL__');
+  });
+});
+
+// resolveMiniCtaBtn — brief-kayit-buton-FINAL Faz 3 post-render placeholder.
+// transformMiniCta section'ı prose + `__MINI_CTA_BUTON__` emit eder; loader
+// (config.ts) bu helper'ı çağırıp bağlama göre butonu basar veya bloğu boş
+// bırakır (site-rehber/anadolu bypass).
+
+const MINI_CTA_PROSE =
+  '<section data-section="mini-cta" class="ocak-mini-cta"><p>Bir çember hazır.</p>__MINI_CTA_BUTON__</section>';
+
+describe('resolveMiniCtaBtn (brief-kayit-buton-FINAL Faz 3)', () => {
+  it('KayitFormat + kayitTipi verilmez (format sayfası) → nötr "Yerini ayır" + slug hedef, tümü linki YOK', () => {
+    const out = resolveMiniCtaBtn(MINI_CTA_PROSE, '/cember');
+    expect(out).toContain('class="ocak-kayit-cta__buton"');
+    expect(out).toContain('href="/cember/kayit"');
+    expect(out).toContain('Yerini ayır');
+    expect(out).not.toContain('Başvur');
+    expect(out).not.toContain('ocak-kayit-cta__tumu');
+    expect(out).not.toContain('__MINI_CTA_BUTON__');
+  });
+
+  it('KayitFormat + kayitTipi=Direkt (etkinlik detay) → "Yerini ayır" + Diğer tarihler linki', () => {
+    const out = resolveMiniCtaBtn(MINI_CTA_PROSE, '/cember', { kayitTipi: 'Direkt' });
+    expect(out).toContain('Yerini ayır');
+    expect(out).toContain('ocak-kayit-cta__tumu');
+    expect(out).toContain('href="/takvim#cember"');
+    expect(out).toContain('Diğer tarihler');
+  });
+
+  it('KayitFormat + kayitTipi=Başvuru → "Başvur" metni', () => {
+    const out = resolveMiniCtaBtn(MINI_CTA_PROSE, '/atolye', { kayitTipi: 'Başvuru' });
+    expect(out).toContain('Başvur');
+    expect(out).toContain('href="/atolye/kayit"');
+    expect(out).toContain('href="/takvim#atolye"');
+    expect(out).not.toContain('Yerini ayır');
+  });
+
+  it('KayitFormat dışı slug (/site-rehber, /anadolu) → placeholder boş silinir, prose kalır', () => {
+    const rehber = resolveMiniCtaBtn(MINI_CTA_PROSE, '/site-rehber');
+    expect(rehber).not.toContain('__MINI_CTA_BUTON__');
+    expect(rehber).not.toContain('ocak-kayit-cta__buton');
+    expect(rehber).toContain('<p>Bir çember hazır.</p>');
+    expect(rehber).toContain('data-section="mini-cta"');
+    const anadolu = resolveMiniCtaBtn(MINI_CTA_PROSE, '/anadolu');
+    expect(anadolu).not.toContain('ocak-kayit-cta__buton');
+  });
+
+  it('slug normalize: /cember /cember/ cember hepsi /cember/kayit', () => {
+    for (const s of ['cember', '/cember', '/cember/']) {
+      const out = resolveMiniCtaBtn(MINI_CTA_PROSE, s);
+      expect(out).toContain('href="/cember/kayit"');
+    }
+  });
+
+  it('HTML\'de placeholder yoksa idempotent — dokunma', () => {
+    const inert = '<p>Sadece prose, mini-cta yok.</p>';
+    expect(resolveMiniCtaBtn(inert, '/cember')).toBe(inert);
   });
 });
 

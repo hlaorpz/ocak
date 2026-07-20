@@ -311,26 +311,23 @@ describe('remark-ocak-sections', () => {
     expect(iS).toBeGreaterThan(a1);
   });
 
-  it('22. mini-cta — paragraph + link son child sıyrılır (bare <a> block-level)', () => {
+  it('22. mini-cta — content olduğu gibi + __MINI_CTA_BUTON__ placeholder (Faz 3)', () => {
     const html = render('fixture-16-mini-cta.md');
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('<p>Hangi formatın');
-    // Link son child sıyrılmış (link bare, paragraph wrapper YOK)
-    expect(html).toContain('<a href="/acik-kapi">Açık Kapı\'ya gel</a>');
-    expect(html).not.toMatch(/<p><a href="\/acik-kapi"/);
+    // Fixture'daki elle-yazılı link fixture content'inde olduğu gibi kalır
+    // (post-render helper resolveMiniCtaBtn butonu placeholder yerine basar;
+    // fixture testinde placeholder ham olarak görünür).
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
   });
 
-  it('23. mini-cta — link yoksa warn + section yine sarılır', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('23. mini-cta — link yoksa da sarma + placeholder emit (warn KALDIRILDI, buton post-render)', () => {
     const html = process('## section: mini-cta\n\nSadece metin, link yok.', {
       filename: 'no-link.md',
     });
     expect(html).toContain('<section data-section="mini-cta" class="ocak-mini-cta">');
     expect(html).toContain('Sadece metin');
-    expect(warn).toHaveBeenCalled();
-    expect(warn.mock.calls[0][0]).toContain('link bulunamadı');
-    expect(warn.mock.calls[0][0]).toContain('no-link.md');
-    warn.mockRestore();
+    expect(html).toContain('__MINI_CTA_BUTON__</section>');
   });
 
   it('24. buyuk-vurgu — italik paragraph data-section + ocak-buyuk-vurgu class', () => {
