@@ -389,13 +389,17 @@
  * ortalama tuzağını ezer, kümülatif daralma yok. margin: 0 auto KORU
  * /araclar rafları için (outer section wrap YOK, block akışında ortalı
  * kalır). Section flex-item olduğunda `align-items: stretch` + width:100%
- * → auto margin remaining 0, kayma yok. */
+ * → auto margin remaining 0, kayma yok.
+ *
+ * Dikey padding --space-3 (12px) — Kaan brief 2026-07-20 ritim sistemi:
+ * kapalı details'ler arası (12+12=24) ve son gövde→sonraki öğe (12+12=24)
+ * = birincil ritim `--space-5` (24px). Yatay padding --space-5 korunur. */
 .liste__oge {
   position: relative;
   width: 100%;
   max-width: var(--max-w-prose);
   margin: 0 auto;
-  padding: var(--space-4) 0 var(--space-4) var(--space-5);
+  padding: var(--space-3) 0 var(--space-3) var(--space-5);
   border-left: 2px solid var(--ray-notr);
   transition: border-color var(--duration-base) var(--ease-out);
 }
