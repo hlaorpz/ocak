@@ -148,22 +148,30 @@ const kartClass = [
   }
 
   /* ============ Dış kabuk — SATIR ============
-   * KARAR 336 satir'e de genişletildi: sol ember bar HER satırda. `--one` text
-   * rozeti öne-çıkanda kalır. Padding-left 2px kompanse — bar iç metni itmesin.
-   *
-   * Üst/alt gri ayraç EtkinlikListe (ul + adjacent sibling) tarafından verilir
-   * (brief-kart-cizgi-koz-dugme): kart border-top köşede ember border-left ile
-   * 45° kesişince çizgi 2px içeriden başlıyordu — ul-level çizgi ile uçlar
-   * közün sol edge'ine hizalanır, köz çizgileri birleştirir. */
+   * Madde 8 liste ailesi (2026-07-17): KARAR 336 revize — sol ray DURUM
+   * anlatır, dekor değil (brief kural 1). Nötr satır --ray-notr; öne-çıkan
+   * satır ember + --ember-alpha-08 tint (brief kural 5: panel tint SADECE
+   * takvim featured'de). Kart varyantı KARAR 336 sabit ember korur —
+   * revize sadece --satir scope'unda. */
   .ocak-etkinlik-kart--satir {
     padding: var(--space-4) var(--space-3);
     padding-left: calc(var(--space-3) - 2px);
-    border-left: 2px solid var(--ember);
-    transition: background-color var(--duration-fast) var(--ease-out);
+    border-left: 2px solid var(--ray-notr);
+    transition: background-color var(--duration-fast) var(--ease-out),
+                border-color var(--duration-base) var(--ease-out);
+  }
+
+  .ocak-etkinlik-kart--satir.ocak-etkinlik-kart--one-cikan {
+    border-left-color: var(--ember);
+    background: var(--ember-alpha-08);
   }
 
   .ocak-etkinlik-kart--satir:hover {
     background: var(--ash-warm);
+  }
+
+  .ocak-etkinlik-kart--satir.ocak-etkinlik-kart--one-cikan:hover {
+    background: var(--ember-alpha-15);
   }
 
   /* ============ Dış kabuk — KART (S1: ash kutu kalır) ============ */

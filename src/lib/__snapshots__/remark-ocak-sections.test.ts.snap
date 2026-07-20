@@ -104,12 +104,12 @@ exports[`remark-ocak-sections > 34. evre — EVRE_SECTIONS whitelist Varyant C d
 </section>"
 `;
 
-exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", H3 strip → summary 1`] = `
-"<details name="raflar" data-section="raf-cekirdek"><summary>1 · Çekirdek Araçlar</summary>
+exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="raflar", liste ailesi class seti 1`] = `
+"<details name="raflar" data-section="raf-cekirdek" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">1 · Çekirdek Araçlar</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>OCAK'ın temeline giden araçlar. Nefes, niyet, sessizlik.</p>
 <p>Kısa gündelik uygulamalar.</p>
 </details>
-<details name="raflar" data-section="raf-beden"><summary>2 · Beden Araçları</summary>
+<details name="raflar" data-section="raf-beden" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">2 · Beden Araçları</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Bedeni dinleme, gerginlik açma, temas kurma araçları.</p>
 </details>
 <section data-section="raf-diger" class="ocak-raf-diger">
@@ -118,29 +118,24 @@ exports[`remark-ocak-sections > 40. raf accordion — whitelist details name="ra
 </section>"
 `;
 
-exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS reuse transformKapi, 5 kart, link opsiyonel 1`] = `
-"<section data-section="temalar">
-<article class="ocak-kapi-kart">
-<h3>Ateş</h3>
+exports[`remark-ocak-sections > 43. vitrin temalar — CARD_SECTIONS accordion, 5 details, name="temalar" 1`] = `
+"<section data-section="temalar" class="ocak-temalar">
+<details name="temalar" data-section="temalar-0" class="liste__oge" open><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Ateş</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>İçindeki közü tanı — cesaret, dönüşüm, yakma-yaratma.</p>
-</article>
-<article class="ocak-kapi-kart">
-<h3>Sessizlik</h3>
+</details>
+<details name="temalar" data-section="temalar-1" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Sessizlik</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Boşluğu doldurmadan durmak. Nefesin arkasındaki sesi duymak.</p>
-</article>
-<article class="ocak-kapi-kart">
-<h3>Beden</h3>
+</details>
+<details name="temalar" data-section="temalar-2" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Beden</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Dokunuş, ritim, temas. Bedeni okuma dili.</p>
 <p><a href="/atolye">Beden atölyesine bak →</a></p>
-</article>
-<article class="ocak-kapi-kart">
-<h3>Kök</h3>
+</details>
+<details name="temalar" data-section="temalar-3" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Kök</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Soy, toprak, aidiyet. Nereden geliyorsun — hangi soydan?</p>
-</article>
-<article class="ocak-kapi-kart">
-<h3>Yaratıcı</h3>
+</details>
+<details name="temalar" data-section="temalar-4" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">Yaratıcı</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>İfade, oyun, form verme. Kelimeyle, çizgiyle, sesle.</p>
-</article>
+</details>
 </section>"
 `;
 
@@ -180,15 +175,15 @@ Burada yaşar: çemberin nefesi, beden pratiği, atölyeler.
 </section>"
 `;
 
-exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details name="tasiyici", H2 strip → summary 1`] = `
+exports[`remark-ocak-sections > 47. tasiyici accordion — whitelist details name="tasiyici", liste ailesi, meta yok 1`] = `
 "<section data-section="ne-tasiyor" class="ocak-ne-tasiyor">
 <h2>Ne Taşıyor</h2>
 <p>Bu araçlar önce Advaita'nın bedeninden geçti — ama artık OCAK'ın ortak kutusunda.</p>
 </section>
-<details name="tasiyici" data-section="tasidigi-bati"><summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary>
+<details name="tasiyici" data-section="tasidigi-bati" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">🜄 BATI — Şamanik Yol, Ritüel ve Kakao</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Sachamama geleneğinin şamanik sağaltımı, Amazon'un bitki bilgeliği. Element çalışması.</p>
 </details>
-<details name="tasiyici" data-section="tasidigi-dogu"><summary>🜁 DOĞU — Nefes ve Beden</summary>
+<details name="tasiyici" data-section="tasidigi-dogu" class="liste__oge"><summary class="liste__baslik-satir"><span class="liste__baslik" role="heading" aria-level="3">🜁 DOĞU — Nefes ve Beden</span><span class="liste__isaret" aria-hidden="true"></span></summary>
 <p>Rishikesh'te aldığı yoga eğitmen eğitimi — Hint Vedik geleneğinin somatik özü.</p>
 </details>
 <section data-section="tasidigi-kuzey" class="ocak-tasidigi-kuzey">

@@ -311,295 +311,277 @@
   .ocak-kapi-kart { padding: var(--space-4); }
 }
 
-/* ===== VİTRİN DÜZEN A (temalar/turler/formatlar, brief-desenler-02.md) ========== */
-/* Plugin output: <section data-section="temalar|turler|formatlar">
- *   <article class="ocak-kapi-kart">
- *     <h3>Ateş</h3><p>…özet…</p><p>…detay…</p>   ← link ZORUNLU DEĞİL
- *   </article>
- *   … (mini-retreat 5 tema, seremoni 4 tür, acik-kapi 4 format)
- * </section>
+/* ============================================================================
+ * LİSTE AİLESİ — Madde 8 tek gramer refaktörü
+ * ============================================================================
+ * TEK KOMPONENT, İKİ MOD (Kaan onaylı mock — brief cc-brief-madde8-liste-ailesi):
+ *   STATİK AÇIK (karar sayfaları):
+ *     /seremoni turler · /atolye atolyeler + seri-atolyeler ·
+ *     /mini-retreat temalar · /acik-kapi formatlar
+ *   ACCORDION:
+ *     /araclar raflar · /advaita tasidigi
  *
- * Düzen A onaylı (Claude.ai mühürleme sonrası): TEK SÜTUN her viewport'ta,
- * her öğe solunda köz şeridi, kırılım YOK (mobil=desktop). 2 sütun grid +
- * @620px kırılım REDDEDİLDİ (mobilde zikzak, sola-sağa kaçtı, kuru).
+ * Plugin çıkışı (remark-ocak-sections.transformListeStatik / transformEsik):
+ *   Statik: <article class="liste__oge">
+ *             <div class="liste__baslik-satir">
+ *               <h3 class="liste__baslik">…</h3>
+ *             </div>
+ *             <p>tagline…</p><p>gövde…</p>
+ *           </article>
+ *   Accordion: <details class="liste__oge" name="…" data-section="…">
+ *                <summary class="liste__baslik-satir">
+ *                  <h3 class="liste__baslik">…</h3>
+ *                  <span class="liste__isaret"></span>
+ *                </summary>
+ *                <p>tagline…</p><p>gövde…</p>
+ *              </details>
  *
- * siradaki-kapi (KARAR 92: 3 sütun kart-grid) BOZULMAZ — vitrin selector'leri
- * grup-adı scope'lu ([data-section="temalar|turler|formatlar"]), .ocak-kapi-kart
- * baseline (siradaki-kapi üst ember çizgisi) sadece bu üç grup içinde override
- * ediliyor. Regresyon kontrolü test 43-46'ya + Kaan eyeball'una bırakılı.
+ * Ray (brief kural 1): nötr --ray-notr 2px; ember statik açık / accordion[open].
+ * Ray parça, öğe başına — .liste__oge tek tek border-left taşır, aralar boş.
+ * Kısa çizgi (kural 4): tagline (ilk P) altına ::after → 30px × 1px ember.
+ * Tagline yoksa çizgi yok (F kararı) — :first-of-type match yok = çizgi yok.
+ * Panel tint (kural 5): SADECE takvim featured'de (EtkinlikKart --satir --one-cikan).
+ * /advaita glyph başlıklar em-dash alt-başlık: parseMeta=false (plugin tarafı).
+ * siradaki-kapi (3 sütun tarih-taş) ayrı desen — .ocak-kapi-kart baseline korunur.
  */
 
+/* Section kap — dikey ritim + öğeler arası boşluk (ray parça hissi) */
 [data-section="temalar"],
 [data-section="turler"],
 [data-section="formatlar"],
-[data-section="seri-atolyeler"] {
+[data-section="seri-atolyeler"],
+[data-section="atolyeler"] {
   padding: var(--rhythm-section-bottom) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  align-items: stretch;
+  gap: 0;                              /* accordion sıkı ritim — Kaan brief 2026-07-20:
+                                          5 karar sayfası listesi hepsi accordion,
+                                          kapalı details bitişik (/araclar rafları paraleli). */
 }
 
-/* Vitrin item "Sıcak Zemin" (brief-desenler-02c.md):
- *   - Sol köz şeridi 3px STATİK ember (hover/tap efekti YOK — Kaan spec:
- *     "tıklanmayan blokta yanıp sönme anlamsız").
- *   - Sıcak zemin: soldan sağa ember gradient .08 alpha (rgba inline —
- *     --ember-alpha-08 token yok, brief onaylı uydurma değil).
- *   - Sağ köşe hafif yuvarlak (border-radius 0 6px 6px 0) — sol şerit düz kalır.
- *   - -webkit-tap-highlight-color:transparent → mobil tap yanıp sönme kesildi
- *     (Kaan bulgusu bonus fix).
- * siradaki-kapi'nin üst border + ::before ember-grow'u reset. text-align:left →
- * blok masaüstünde ortalansa da metin sola dayalı kalır. */
-[data-section="temalar"] .ocak-kapi-kart,
-[data-section="turler"] .ocak-kapi-kart,
-[data-section="formatlar"] .ocak-kapi-kart,
-[data-section="seri-atolyeler"] .ocak-kapi-kart {
-  max-width: 56ch;
-  padding: var(--space-4);
-  border-top: none;
-  border-left: 3px solid var(--ember);
-  border-radius: 0 6px 6px 0;
-  background: linear-gradient(100deg, rgba(196, 75, 47, 0.08), transparent 55%);
-  text-align: left;
-  -webkit-tap-highlight-color: transparent;
-}
-
-[data-section="temalar"] .ocak-kapi-kart::before,
-[data-section="turler"] .ocak-kapi-kart::before,
-[data-section="formatlar"] .ocak-kapi-kart::before,
-[data-section="seri-atolyeler"] .ocak-kapi-kart::before {
-  content: none;
-}
-
-/* MASAÜSTÜ: blok yatayda ortalı (sayfa ortalı kompozisyonuyla hizalı), metin +
- * köz şerit solda kalır. Mobil: margin yok → sola dayalı (dar ekran doğal).
- * Tek @media farkı bu — aynı bileşen, viewport hizası. */
-@media (min-width: 768px) {
-  [data-section="temalar"] .ocak-kapi-kart,
-  [data-section="turler"] .ocak-kapi-kart,
-  [data-section="formatlar"] .ocak-kapi-kart,
-  [data-section="seri-atolyeler"] .ocak-kapi-kart {
-    margin-inline: auto;
-  }
-}
-
-/* Intro → grup geçiş boşluğu (brief-desenler-02b.md ADIM 2): standart iki
- * ardışık section arası ~7rem (rhythm-section-bottom 4rem + top 3rem). Intro
- * bir öncesi grup section'ının BAŞLIĞI gibi çalışıyor, tam ayrı section olarak
- * hissedilmesin — negatif margin ile yakınlaştır. --space-6 (2rem) kadar
- * çekildi → net ~5rem, iki adım arası nefes.
+/* Intro→accordion section paddings sıfır — başlık↔ilk-öğe boşluk daraltma
+ * (Kaan brief 2026-07-20, DevTools doğrulama: 4 accordion sayfasında intro
+ * padding-bottom + accordion padding-top toplamı ~80-130px "başlık havada"
+ * hissi yaratıyordu). Explicit 4 çift; $="-intro" YASAK (araclar'daki
+ * arac-kutusu-intro + anadolu'daki evreler-intro/aramizda-intro tuzakları).
  *
- * Notion intro adları (envanterden teyit): temalar-intro, zirveler-intro,
- * formatlar-intro. Bu geçiş dışındaki hiçbir section-arası boşluk dokunulmuyor. */
+ * Sonuç section-arası: 0 padding + intro son p bottom + details margin-top
+ * (-24) + details padding-top (12) → ~intro-p bottom margin - 12 arada. */
+[data-section="temalar-intro"],
+[data-section="turler-intro"],
+[data-section="formatlar-intro"],
+[data-section="seri-programlar-intro"] {
+  padding-bottom: 0;
+}
 [data-section="temalar-intro"] + [data-section="temalar"],
 [data-section="turler-intro"] + [data-section="turler"],
 [data-section="formatlar-intro"] + [data-section="formatlar"],
 [data-section="seri-programlar-intro"] + [data-section="seri-atolyeler"] {
+  padding-top: 0;
+}
+
+/* atolyeler → seri-atolyeler geçişi: atolyeler bir intro DEĞİL (kendisi
+ * accordion içeren section). İki accordion section arası, baseline
+ * padding korunur; -48 margin-top ile net ~32px arada (kabul edilir ritim).
+ * Yukarıdaki intro-*→accordion çiftlerinden ayrı davranış. */
+[data-section="atolyeler"] + [data-section="seri-atolyeler"] {
   margin-top: calc(-1 * var(--space-7));
 }
 
-/* ===== RİTİM TİPOGRAFİSİ (vitrin + raf ortak, brief-desenler-02.md ADIM 2) ==== */
-/* Vitrin kartı + raf accordion içeriği AYNI ritmi paylaşır: ilk paragraf = özet
- * (Jost temiz 1.02rem cream + alt köz çizgi ayraç), sonraki paragraf/madde =
- * detay (küçük .9rem cream-soft).
- *
- * SEMANTİK: plugin markup'ı düz <h3> + <p> + <p>… üretiyor, semantik sınıf yok.
- * :first-of-type ile ilk <p> = özet ayrımı. Selector'ler vitrin-grup + raf-
- * scope'lu → siradaki-kapi ve diğer prose section'lar dokunulmuyor.
- *
- * SAPMA: Notion araç raflarında madde işaretleri "· ..." prefix'li düz <p>
- * (li DEĞİL). Detay selector'ü p:not(:first-of-type) — defansif olarak li
- * de ekli (Notion ileride bullet list kullanırsa çalışsın).
- *
- * Raf'ın ilk <p>'sinde <em> italik (Notion özet italik yazılmış) — em normalize:
- * font-style normal, cream. Brief Kaan isteği: "Image-1 fontu gibi temiz". */
+/* Başlık↔liste boşluk daraltma (Kaan brief 2026-07-20) — section-içi intro
+ * (h2 + p'ler) son paragrafın bottom margin (2rem baseline) + gap:0 + details
+ * padding-top (1rem) toplamı ~48px "kopuk" hissi yaratıyordu. İlk details'e
+ * negative margin-top: net ~8px + padding = ~24px arada — paragraf ile ilk
+ * başlık tek nefeslik geçiş, "anlattığım şey hemen altında" ritmi.
+ * Regresyon: /araclar + /advaita outer section wrap YOK → match etmez, bozma yok. */
+[data-section="temalar"] > details.liste__oge:first-of-type,
+[data-section="turler"] > details.liste__oge:first-of-type,
+[data-section="formatlar"] > details.liste__oge:first-of-type,
+[data-section="seri-atolyeler"] > details.liste__oge:first-of-type {
+  margin-top: calc(-1 * var(--space-5));
+}
 
-/* İlk <p> = özet: Jost temiz, belirgin, köz-çizgi ayraç */
-[data-section="temalar"] .ocak-kapi-kart p:first-of-type,
-[data-section="turler"] .ocak-kapi-kart p:first-of-type,
-[data-section="formatlar"] .ocak-kapi-kart p:first-of-type,
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type,
-details[data-section^="raf-"] > p:first-of-type {
-  font-family: var(--font-body);
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.02rem;
+/* atolyeler section-içi (H2 + p'ler + details aynı section) — intro son p
+ * LAST-CHILD DEĞİL (details takip ediyor) → `p:last-child { margin: 0 }`
+ * kuralı devrede olmaz. Seri (ayrı intro-section) referans nefesi mobil
+ * DevTools ölçümü ile 48px (baseline padding-bottom = --rhythm-section-top).
+ *
+ * Kaan brief 2026-07-20 kesin: tek-seferlik intro→ilk-details boşluğunu
+ * seri ile EŞİTLE. Son intro <p>'ye `--rhythm-section-top` (48px) bottom
+ * margin → net ~60px arada, seri referans (~68) ile görsel eşit.
+ *
+ * details:first-of-type margin-top: 0 (çift-etki koruması — mevcut kural,
+ * belge amaçlı bırakıldı). */
+[data-section="atolyeler"] > p:last-of-type {
+  margin-bottom: var(--rhythm-section-top);
+}
+[data-section="atolyeler"] > details.liste__oge:first-of-type {
+  margin-top: 0;
+}
+
+/* Öğe — sol ray + iç padding. article (statik) + details (accordion) ortak.
+ * width: 100% (Kaan brief 2026-07-20 kesin) — fit-content genişliği
+ * ortalama tuzağını ezer, kümülatif daralma yok. margin: 0 auto KORU
+ * /araclar rafları için (outer section wrap YOK, block akışında ortalı
+ * kalır). Section flex-item olduğunda `align-items: stretch` + width:100%
+ * → auto margin remaining 0, kayma yok.
+ *
+ * Dikey padding --space-3 (12px) — Kaan brief 2026-07-20 ritim sistemi:
+ * kapalı details'ler arası (12+12=24) ve son gövde→sonraki öğe (12+12=24)
+ * = birincil ritim `--space-5` (24px). Yatay padding --space-5 korunur. */
+.liste__oge {
+  position: relative;
+  width: 100%;
+  max-width: var(--max-w-prose);
+  margin: 0 auto;
+  padding: var(--space-3) 0 var(--space-3) var(--space-5);
+  border-left: 2px solid var(--ray-notr);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+/* Statik <article> her zaman "açık" → ray ember */
+article.liste__oge,
+details.liste__oge[open] {
+  border-left-color: var(--ember);
+}
+
+/* Başlık satırı — h3/span sola dayalı, isaret hemen yanında (Kaan brief
+ * 2026-07-20 kesin fix). width: 100% fit-content ortalama tuzağını ezer;
+ * margin: 0 auto-margin fit varsa siler. isaret margin-left: 0.5rem
+ * (auto DEĞİL) — başlığın hemen yanında, summary sağı boşluk kalabilir. */
+.liste__baslik-satir {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+/* Details summary native marker + cursor */
+details.liste__oge > summary.liste__baslik-satir {
+  list-style: none;
+  cursor: pointer;
+  scroll-margin-top: var(--nav-height);
+}
+
+details.liste__oge > summary.liste__baslik-satir::-webkit-details-marker {
+  display: none;
+}
+
+details.liste__oge > summary.liste__baslik-satir:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 4px;
+}
+
+/* Başlık — Cormorant italik medium, mevcut H3 clamp ölçek.
+ * flex: 0 1 auto (Kaan brief 2026-07-20) — explicit default, flex-item
+ * content genişliğinde stretch/grow olmaz. text-align:left h3 stretch
+ * durumunda içerik hizası garantisi. */
+.liste__baslik {
+  margin: 0;
+  flex: 0 1 auto;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--text-h3);
+  line-height: 1.3;
   color: var(--cream);
+  text-align: left;
+}
+
+/* Accordion işareti +/× — 20px ember Cormorant. margin-left: 0.5rem
+ * (Kaan brief 2026-07-20 kesin) — AUTO DEĞİL, başlığın hemen yanında;
+ * summary sağı boşluk kalabilir. Space-between görsel illüzyonu bitti. */
+.liste__isaret {
+  margin-left: 0.5rem;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ember);
+  flex-shrink: 0;
+}
+
+.liste__isaret::before {
+  content: '+';
+}
+
+details.liste__oge[open] .liste__isaret::before {
+  content: '×';
+}
+
+/* Body: tagline (ilk P) — Cormorant italik cream-soft, altında kısa ember çizgi.
+ * Article'da baslik-satir sibling'i; details'te summary sonrası ilk P. */
+article.liste__oge > .liste__baslik-satir + p,
+details.liste__oge > p:first-of-type {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-md);
+  color: var(--cream-soft);
+  margin: var(--space-3) 0 0;
   padding-bottom: var(--space-3);
-  margin-bottom: var(--space-3);
   position: relative;
 }
 
-/* Raf özet <em> italik'i sıyır — Jost düz temiz (Kaan spec) */
-details[data-section^="raf-"] > p:first-of-type em {
-  font-style: normal;
-  color: var(--cream);
-  font-weight: 400;
-}
-
-/* Seri kart tek p — özet stili iptal, detay boyutuna düşür (turler ikinci p'siyle
- * görsel eş). turler kartında H3 + 2 p (özet + detay) yapısı var; seri kartta
- * H3 + tek p → özet 1.02rem cream stili uzun metinde iri hissi verdi. p:only-of-
- * type ile Kaan Notion içeriğine ikinci p ekleyene kadar detay boyutunda kalır;
- * ikinci p eklenirse doğal olarak özet+detay ritmine döner (fix koşullu). */
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:only-of-type {
-  font-size: 0.9rem;
-  color: var(--cream-soft);
-  padding-bottom: 0;
-  margin-bottom: 0;
-}
-
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type:only-of-type::after {
-  content: none;
-}
-
-/* Vitrin özet ayracı ALTIN (brief-desenler-02c.md V2): şerit ember (dikey) +
- * ayraç gold (yatay) → iki sıcak ton çakışmaz. */
-[data-section="temalar"] .ocak-kapi-kart p:first-of-type::after,
-[data-section="turler"] .ocak-kapi-kart p:first-of-type::after,
-[data-section="formatlar"] .ocak-kapi-kart p:first-of-type::after,
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:first-of-type::after {
+/* Kısa çizgi — tagline altında 30px × 1px ember (mock kural 4).
+ * Tagline yoksa selector match olmaz → çizgi de yok (F kararı). */
+article.liste__oge > .liste__baslik-satir + p::after,
+details.liste__oge > p:first-of-type::after {
   content: '';
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 2.4rem;
-  height: 1px;
-  background: var(--gold);
-  opacity: 0.8;
-}
-
-/* Raf özet ayracı EMBER kalır (araçlar sayfası, brief kapsamı dışı). */
-details[data-section^="raf-"] > p:first-of-type::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 2.2rem;
+  width: 30px;
   height: 1px;
   background: var(--ember);
-  opacity: 0.7;
 }
 
-/* SONRAKİ <p> / <li> = detay: küçük, yumuşak */
-[data-section="temalar"] .ocak-kapi-kart p:not(:first-of-type),
-[data-section="turler"] .ocak-kapi-kart p:not(:first-of-type),
-[data-section="formatlar"] .ocak-kapi-kart p:not(:first-of-type),
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:not(:first-of-type),
-details[data-section^="raf-"] > p:not(:first-of-type),
-details[data-section^="raf-"] li {
-  font-size: 0.9rem;
+/* Gövde — tagline sonrası P/list, Jost cream-soft */
+article.liste__oge > .liste__baslik-satir + p ~ p,
+article.liste__oge > .liste__baslik-satir + p ~ ul,
+article.liste__oge > .liste__baslik-satir + p ~ ol,
+details.liste__oge > p:not(:first-of-type),
+details.liste__oge > ul,
+details.liste__oge > ol {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
   color: var(--cream-soft);
+  font-weight: 300;
 }
 
-/* Opsiyonel ritim şeridi (brief-desenler-02.md ADIM 3): seremoni türlerinde
- * "Ayda bir", "Baharlarda", "Yılda dört kez" gibi ritim bilgisi. Notion'da son
- * satır `_Yılda dört kez_` (italik) yazılırsa → gold uppercase şerit. Notion'da
- * italik satır yoksa selector hiçbir şeyi yakalamaz (zararsız). */
-[data-section="temalar"] .ocak-kapi-kart p:last-child em,
-[data-section="turler"] .ocak-kapi-kart p:last-child em,
-[data-section="formatlar"] .ocak-kapi-kart p:last-child em,
-[data-section="seri-atolyeler"] .ocak-kapi-kart p:last-child em {
-  font-size: 0.68rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--gold);
-  font-style: normal;
-  display: block;
-  margin-top: var(--space-2);
-}
-
-/* ===== GÜNDÖNÜMÜ SADE (brief-desenler-02e — içerik-sunum sınırı) =============== */
-/* /seremoni "Mevsim Seremonileri" kartındaki <ul><li> gündönümü listesi.
- *
- * YENİ İLKE (Kaan kararı): Notion rich text (bold, italik, renk, strike) siteye
- * DOĞAL geçer, CSS EZMEZ. Kod yalnızca liste ritmi verir (list-style + padding
- * + alt çizgi). Vurgu ve renk facilitator'ün Notion kontrolünde.
- *
- * Silinen dayatmalar (desenler-02d): strong { display:block, font-family, color,
- * font-size, font-weight, margin-bottom } × em { font-size, letter-spacing,
- * text-transform, color, font-style } = 10 kural. Nardugan gibi kaymalar
- * blok-kırma olmadan görünmez olur. Notion bold→bold, italik→italik, renk→renk.
- *
- * Scope: [data-section="turler"] .ocak-kapi-kart li — mini-retreat temalar
- * (5 ul/5 li) + acik-kapi formatlar (0 li) etkilenmez. */
-
-[data-section="turler"] .ocak-kapi-kart li {
+/* Kart-içi mevsim ul/li (Notion gündönümü listesi — /seremoni Mevsim
+ * Seremonileri). KARAR 330: renk/font Notion'dan; CSS sadece ritim. */
+.liste__oge ul,
+.liste__oge ol {
   list-style: none;
-  padding: var(--space-3) 0;
+  padding: 0;
+}
+
+.liste__oge li {
+  padding: var(--space-2) 0;
   border-bottom: 1px solid rgba(61, 53, 50, 0.4);
 }
 
-[data-section="turler"] .ocak-kapi-kart li:last-child {
+.liste__oge li:last-child {
   border-bottom: none;
 }
 
-/* ===== ATÖLYELER DESEN III — Tek Seferlik Liste (brief-desenler-04) ============ */
-/* /atolye "atolyeler" section (default prose, class="ocak-atolyeler").
- * Notion: <ul><li><strong>İsim</strong> — açıklama</li> × 10.
- * İçerik-sunum sınırı (KARAR adayı 330): CSS yalnız grid + liste ritmi + köz
- * nokta verir. İsim/açıklama RENK/YAPI dayatma YOK — Notion bold neyse o.
- * mobil 1 sütun, ≥620px 2 sütun. Kapanış cümlesi liste dışında baseline prose.
- *
- * Specificity notu: baseline `section[data-section][class^="ocak-"] ul li::before`
- * (:1194) `content:'·'` middle-dot basıyor (0,2,4). Bizim ember daire ile ÇAKIŞMA
- * → iki nokta görünüyor. Fix: `section[data-section="atolyeler"][class^="ocak-"]`
- * prefix ile specificity (0,3,4) → baseline'ı ezer, TEK ember daire kalır.
- * Aynı prefix ul + li kurallarında da baseline padding/margin'i ezmek için. */
-
-section[data-section="atolyeler"][class^="ocak-"] ul {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
-  list-style: none;
-  padding: 0;
-  margin: var(--space-4) 0;
-}
-
-@media (min-width: 620px) {
-  section[data-section="atolyeler"][class^="ocak-"] ul {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 2.5rem;
+@media (max-width: 768px) {
+  .liste__oge {
+    padding: var(--space-3) 0 var(--space-3) var(--space-4);
   }
 }
 
-/* li display:flex + align-items:baseline → ::before daire ilk satır baseline'ına
- * OTOMATİK hizalanır (font-size/line-height değişse dahi tutar). Sabit top:1.15rem
- * kırılgandı (font akışıyla uyuşmuyordu, ~0.5rem yukarı kaçtı).
- * padding-left kaldırıldı — flex gap ile ayrım. */
-section[data-section="atolyeler"][class^="ocak-"] li {
-  display: flex;
-  align-items: baseline;
-  gap: 0.7rem;
-  padding: 0.85rem 0;
-  margin-bottom: 0;
-  border-bottom: 1px solid rgba(61, 53, 50, 0.5);
-}
-
-/* Köz nokta — bullet marker yerine küçük ember daire (baseline `·`'u ezer).
- * !important content: baseline `content:'·'` cascade sırasına rağmen kesin ez.
- * flex baseline hizası + transform ile daireyi metin x-height ortasına çek
- * (baseline default olarak daireyi metnin alt kenarına yerleştirir; 0.4em yukarı
- * çekmek ortaya getirir). em unit ::before'un kendi font-size'ından değil, li'nin
- * inherited font-size'ından alınır (font-size:0'ı ::before üzerinde tutuyoruz —
- * güvenlik için em yerine sabit rem değeri kullanmayacağız çünkü font-size:0
- * em hesabını 0 yapar; onun yerine width/height'a göre translateY). */
-section[data-section="atolyeler"][class^="ocak-"] ul li::before {
-  content: '' !important;
-  flex: 0 0 auto;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--ember);
-  opacity: 0.8;
-  color: transparent;
-  font-size: 0;
-  transform: translateY(-0.35rem);
-}
-
-/* Native ::marker güvenliği — bazı motorlar list-style:none'a rağmen marker
- * basabilir (Safari eski, print media). content:none garanti kapatır. */
-section[data-section="atolyeler"][class^="ocak-"] li::marker {
-  content: none;
+@media (prefers-reduced-motion: reduce) {
+  .liste__oge {
+    transition: none;
+  }
 }
 
 /* ===== BEŞ KADİM KAYNAK (Varyant C, /hikaye, brief-desenler-03) ============= */
@@ -956,186 +938,10 @@ details[data-section^="esik-"] summary:focus-visible {
   }
 }
 
-/* ===== RAF ACCORDION (/araclar, 7 raf-* section) ============================== */
-/* Plugin output: <details name="raflar" data-section="raf-NAME">
- *   <summary>1 · Çekirdek Araçlar</summary> ..kalan içerik, h3 strip..
- * </details>
- * esik-* deseninin ikizi (brief-desenler-01.md ADIM 3): aynı görsel dil (ember
- * sol border, + → × marker, Cormorant italik summary), farklı namespace
- * (name="raflar" ↔ name="esikler" exclusive gruplar bağımsız).
- * Paralel blok — mevcut esik selector'lerine dokunulmadı. */
-
-details[data-section^="raf-"] {
-  border-left: 3px solid var(--ash);
-  padding: var(--space-5) 0 var(--space-5) var(--space-5);
-  margin: 0 auto;
-  max-width: var(--max-w-prose);
-  transition: border-color 0.4s ease, padding 0.4s ease;
-}
-
-details[data-section^="raf-"]:hover {
-  border-left-color: var(--ember-soft);
-}
-
-details[data-section^="raf-"][open] {
-  border-left-color: var(--ember);
-  padding: var(--space-5) 0 var(--space-5) var(--space-5);
-  border-top: 1px solid var(--ash);
-}
-
-details[data-section^="raf-"][open] > *:last-child {
-  margin-block-end: 0;
-}
-
-details[data-section^="raf-"] summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-4);
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  line-height: 1.3;
-  color: var(--cream);
-  padding: var(--space-2) 0;
-  scroll-margin-top: var(--nav-height);
-}
-
-details[data-section^="raf-"] summary::-webkit-details-marker {
-  display: none;
-}
-
-details[data-section^="raf-"] summary::after {
-  content: '+';
-  font-family: 'Cormorant Garamond', serif;
-  font-style: normal;
-  font-size: 1.5rem;
-  color: var(--ember);
-  transition: transform 0.4s ease, color 0.3s ease;
-  flex-shrink: 0;
-}
-
-details[data-section^="raf-"][open] summary::after {
-  transform: rotate(45deg);
-}
-
-details[data-section^="raf-"] > *:not(summary) {
-  margin-top: var(--space-5);
-}
-
-details[data-section^="raf-"] p {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: var(--leading-prose);
-  color: var(--cream-soft);
-  font-weight: 300;
-}
-
-details[data-section^="raf-"] summary:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  details[data-section^="raf-"],
-  details[data-section^="raf-"] summary::after {
-    transition: none;
-  }
-}
-
-/* ===== TAŞIYICI ACCORDION (/advaita, 3 tasidigi-* section) ==================== */
-/* Plugin output: <details name="tasiyici" data-section="tasidigi-NAME">
- *   <summary>🜄 BATI — Şamanik Yol, Ritüel ve Kakao</summary> ..kalan içerik, h2 strip..
- * </details>
- * esik-* deseninin küçük kardeşi (brief-advaita-accordion.md): aynı görsel dil
- * (ember sol border, + → × marker, Cormorant italik summary), farklı namespace
- * (name="tasiyici" ↔ name="esikler"/name="raflar" exclusive gruplar bağımsız).
- * Boşluk simetrisi (KARAR 292-293) klonda baştan gelir — o savaş tekrar etmesin.
- * Paralel blok — mevcut esik/raf selector'lerine dokunulmadı. */
-
-details[data-section^="tasidigi-"] {
-  border-left: 3px solid var(--ash);
-  padding: var(--space-5) 0 var(--space-5) var(--space-5);
-  margin: 0 auto;
-  max-width: var(--max-w-prose);
-  transition: border-color 0.4s ease, padding 0.4s ease;
-}
-
-details[data-section^="tasidigi-"]:hover {
-  border-left-color: var(--ember-soft);
-}
-
-details[data-section^="tasidigi-"][open] {
-  border-left-color: var(--ember);
-  padding: var(--space-5) 0 var(--space-5) var(--space-5);
-  border-top: 1px solid var(--ash);
-}
-
-details[data-section^="tasidigi-"][open] > *:last-child {
-  margin-block-end: 0;
-}
-
-details[data-section^="tasidigi-"] summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-4);
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  line-height: 1.3;
-  color: var(--cream);
-  padding: var(--space-2) 0;
-  scroll-margin-top: var(--nav-height);
-}
-
-details[data-section^="tasidigi-"] summary::-webkit-details-marker {
-  display: none;
-}
-
-details[data-section^="tasidigi-"] summary::after {
-  content: '+';
-  font-family: 'Cormorant Garamond', serif;
-  font-style: normal;
-  font-size: 1.5rem;
-  color: var(--ember);
-  transition: transform 0.4s ease, color 0.3s ease;
-  flex-shrink: 0;
-}
-
-details[data-section^="tasidigi-"][open] summary::after {
-  transform: rotate(45deg);
-}
-
-details[data-section^="tasidigi-"] > *:not(summary) {
-  margin-top: var(--space-5);
-}
-
-details[data-section^="tasidigi-"] p {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: var(--leading-prose);
-  color: var(--cream-soft);
-  font-weight: 300;
-}
-
-details[data-section^="tasidigi-"] summary:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  details[data-section^="tasidigi-"],
-  details[data-section^="tasidigi-"] summary::after {
-    transition: none;
-  }
-}
+/* Not (Madde 8): eski RAF ACCORDION + TAŞIYICI ACCORDION blokları
+ * .liste ailesine eritildi (bkz. dosya üstündeki LİSTE AİLESİ bloğu).
+ * Plugin transformEsik'in familyClasses=true dallı çıkışı .liste__oge
+ * markup'ı üretir, tek gramer aynı CSS ile stillenir. */
 
 /* ===== BİR SONRAKI (retarget: .bir-sonraki__quote → [data-section] > blockquote) = */
 /* Plugin output: <section data-section="bir-sonraki"><blockquote>..ham içerik..</blockquote></section>
@@ -1378,6 +1184,31 @@ section[data-section][class^="ocak-"] h3 {
    * Alt --rhythm-heading-after (1.5rem). */
   margin: var(--rhythm-heading-before) 0 var(--rhythm-heading-after);
   text-align: center;
+}
+
+/* ===== LİSTE AİLESİ — SECTION BASELINE YALIT (Madde 8, 2026-07-20) =========== */
+/* Kritik bulgu (kör fix sonrası tanı): baseline `section[data-section][class^="ocak-"] h3`
+ * (specificity 0,2,1) summary'nin içindeki `.liste__baslik` h3'e margin
+ * (3rem/1.5rem) ve text-align:center sızdırıyordu. Flex item margin summary
+ * height'ına ekleniyor → kapalı details öğesi ~144-220px'e şişiyordu.
+ *
+ * /araclar rafları temizdi çünkü orada outer section wrap YOK (transformEsik
+ * doğrudan <details> çıkarır) — baseline uygulanmıyordu. Bu istisnayla /atolye
+ * atolyeler accordion aynı zemine iner: kapalı details ~70px kompakt.
+ *
+ * Aynı sızıntı `section[...] p` (0,2,1) → tagline/gövde bottom margin 32px.
+ * Accordion açıldığında görünen boşluğu şişiriyordu. p için de reset. */
+section[data-section][class^="ocak-"] h3.liste__baslik {
+  margin: 0;
+  text-align: left;
+  font-weight: 500;                     /* mock: Cormorant italic medium */
+  line-height: 1.3;                     /* mock: sıkı satır */
+}
+
+section[data-section][class^="ocak-"] .liste__oge p {
+  /* Baseline p margin-bottom (2rem) sızmasın — tagline/gövde kendi grameriyle
+   * (üstten .liste__oge > * + p kuralları var(--space-3) top margin verir). */
+  margin-bottom: 0;
 }
 
 /* Listeler — bullet · ember marker, ol numbered italic ember */
@@ -2202,155 +2033,6 @@ section[data-section="form-anchor"][data-form-anchor]:empty {
 /* === atmosfer.css reduced-motion === */
 @media (prefers-reduced-motion: reduce) {
   section[data-section="mini-cta"] > a {
-    transition: none;
-  }
-}
-
-/* ===== RAF AKORDEON (/araclar, 7 raf-* section) ================================ */
-/* Override emit (src/pages/araclar.astro): section sarmalama korunur, içeride
- * <details>/<summary> + body. raf-cekirdek baştan açık, raf-beden..raf-yaratici
- * kapalı. Brief Araçlar Yedi Raf Yön 5.
- *
- * Yeri (file sonu) ve specificity arttırımı — Ek Brief 2 teşhisinin sonucu:
- * 1. tur daraltma source order yüzünden GENERIC PROSE BASELINE (line 700+) tarafından
- *    eziliyordu (özellikle h3 0,1,4 vs 0,2,2 ve body p 0,1,1 vs 0,2,2). Düzeltme:
- *    (a) bloğu file sonuna taşı → eşit specificity'de source order kazanır,
- *    (b) h3 + body p selector'lerine extra class qualifier ekle → 0,2,4 ve 0,3,2
- *        baseline (0,2,2) üzerinde kazanır.
- *
- * Görsel dil: SSS pattern (KARAR 105) — chevron 45°→açıkta -135°, border ash→ember.
- * Eşik accordion'dan (ember sol border + → ×) farklı: kasıtlı imza ayrımı. */
-
-/* Section: baseline padding `var(--space-8) var(--space-6) var(--space-9)` (64-32-96)
- * accordion için devasa → kapalı 7 raf bir ekrana sığmıyordu. Shorthand override
- * dikey 8, sol-sağ 32 (baseline kolon eni korunur). */
-section[data-section^="raf-"][class^="ocak-raf-"] {
-  padding: var(--space-2) var(--space-6);
-  border-bottom: 1px solid var(--ash);
-  transition: border-color var(--duration-base) var(--ease-out);
-}
-
-/* Açık raf → alt sınır ember (SSS details[open] paralel) */
-section[data-section^="raf-"][class^="ocak-raf-"]:has(details[open]) {
-  border-bottom-color: var(--ember);
-}
-
-/* Modül alt kenar simetri (Ek Brief 4 teşhisi): baseline section padding
- * asimetrisi (`var(--space-8) … var(--space-9)` = 64 üst / 96 alt) sayfanın
- * TÜM section'larında geçerli — diğer bölümlerde dikey ritm kasıtlı, ama raf
- * modülü specificity-fixed kompakt iç padding aldığı için modülün DIŞ kenarı
- * asimetrik oldu (üst toplam ~112 vs alt toplam ~81 = ~31px ham fark). Son raf'a
- * margin-bottom eklenir. İlk pas var(--space-6) (32) eyeball'da "az açıldı ama
- * tam simetrik değil" — line-height/glyph metrikleri ham padding ölçüsünün
- * ötesinde ekstra üst nefes bırakıyor. var(--space-7) (48) ile cömert eşitleme. */
-section[data-section="raf-yaratici"][class^="ocak-raf-"] {
-  margin-bottom: var(--space-7);
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary {
-  list-style: none;
-  cursor: pointer;
-  padding: var(--space-2) 0;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-1);
-  transition: color var(--duration-base) var(--ease-out);
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary::-webkit-details-marker {
-  display: none;
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:focus-visible {
-  outline: 2px solid var(--ember);
-  outline-offset: 4px;
-}
-
-/* h3 — specificity (0,2,4) > baseline section h3 (0,2,2). margin 0 (kapalı raf
- * dikey kompaktlığı korunur), font-size baseline `var(--text-h3)` (clamp 22-29px)
- * geri alındı — Ek Brief 3 hiyerarşi düzeltmesi: 16px aşırıydı, raf başlığı gövde
- * paragrafından küçük görünüyordu. h2 sayfa başlığından küçük, gövdeden büyük. */
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3 {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-align: left;
-  font-size: var(--text-h3);
-  line-height: 1.2;
-}
-
-/* Chevron — SSS verbatim (45° → açıkta -135°), h3 sağ kenarında */
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3::after {
-  content: '';
-  margin-left: auto;
-  width: 12px;
-  height: 12px;
-  border-right: 1px solid var(--ember);
-  border-bottom: 1px solid var(--ember);
-  transform: rotate(45deg);
-  transition: transform var(--duration-base) var(--ease-out);
-  flex-shrink: 0;
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] > details[open] > summary > h3::after {
-  transform: rotate(-135deg);
-}
-
-/* Tanım cümlesi — italik soluk krem, h3 hemen altında tek-birim hissi.
- * font-size baseline gövde paragrafıyla yakın (`var(--text-base)`, 16px) — h3
- * büyüyünce orantı korunur, italik+soluk renk tanım rolünü işaretler. */
-section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__tanim {
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: 1.4;
-  color: var(--cream-soft);
-  font-weight: 300;
-  text-align: left;
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__tanim em {
-  font-style: italic;
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:hover > h3,
-section[data-section^="raf-"][class^="ocak-raf-"] > details > summary:focus-visible > h3 {
-  color: var(--ember);
-}
-
-/* Body: araçlar arası sıkı satır. Specificity (0,3,2) > baseline section p (0,2,2).
- * Em-dash paragrafları "sıkı liste" hissi — margin neredeyse sıfır, line-height
- * baseline `--leading-prose` (1.9) yerine 1.5 (sıkı satır). */
-section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik {
-  padding-top: var(--space-3);
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p {
-  margin: 0 0 var(--space-1);
-  font-size: var(--text-sm);
-  line-height: 1.55;
-}
-
-section[data-section^="raf-"][class^="ocak-raf-"] .ocak-raf__icerik p:last-child {
-  margin-bottom: 0;
-}
-
-/* Mobil (max-width: 768px) baseline override `section[…class^="ocak-"]` (line 992)
- * padding'i tekrar büyütür (3-1.5-4rem) — eşit specificity, source order ile
- * burada (file sonu) baseline mobil'i de eziyoruz. Sol-sağ var(--space-5) tutuldu
- * (baseline mobil ile aynı kolon eni). */
-@media (max-width: 768px) {
-  section[data-section^="raf-"][class^="ocak-raf-"] {
-    padding: var(--space-2) var(--space-5);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  section[data-section^="raf-"][class^="ocak-raf-"],
-  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary,
-  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3,
-  section[data-section^="raf-"][class^="ocak-raf-"] > details > summary > h3::after {
     transition: none;
   }
 }
