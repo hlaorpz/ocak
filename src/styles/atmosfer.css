@@ -1570,13 +1570,14 @@ section[data-section="mini-cta"][class^="ocak-"] {
  * (duzeltme-buton-tur2 S2 genişlik fix).
  *
  * Üst nefes: baseline `--rhythm-section-top` (3rem) yerine daha kompakt
- * `--space-4` (1.5rem) — buton üstündeki paragrafla görsel bağ kalır
- * (duzeltme-buton-tur2 S2 üst boşluk fix). Alt boşluk baseline
- * `--rhythm-section-bottom` (4rem) korunur — sonraki başlığa yeterli nefes.
+ * `--space-3` (0.75rem) — buton üstündeki paragrafla görsel bağ net ama
+ * yapışık değil ("paragrafın altında, ilişkili" hissi; tur 2 → mikro tur
+ * bir kademe daha kıs). Alt boşluk baseline `--rhythm-section-bottom`
+ * (4rem) korunur — sonraki başlığa yeterli nefes.
  * Buton (.ocak-kayit-cta__buton) tam-blok kuralı aşağıdaki genişletilmiş
  * kayit-btn bloğunda (mini-cta wrapper de kapsamda). */
 section[data-section="mini-cta"][class^="ocak-"] {
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
 }
 
 /* Bypass link (/site-rehber gibi KayitFormat dışı sayfalarda mini-cta prose
