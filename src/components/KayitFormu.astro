@@ -200,7 +200,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                     data-baslik={d.baslik}
                     disabled={d.dolu}
                   >
-                    {d.tarih}{d.dolu ? ' — Dolu' : ''}
+                    {d.baslik ? `${d.baslik} · ${d.tarih}` : d.tarih}{d.dolu ? ' — Dolu' : ''}
                   </option>
                 );
               })}
