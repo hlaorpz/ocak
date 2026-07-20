@@ -158,17 +158,20 @@ export function isKayitFormat(s: unknown): s is KayitFormat {
 }
 
 /**
- * Notion "Kayıt Soruları" rich_text plain_text'ini soru dizisine çevirir.
- * Sorular Notion'da Shift+Enter ile yazılır → tek rich_text içinde \n ayraçlı.
+ * Notion rich_text plain_text'ini satır dizisine çevirir.
+ * Satırlar Notion'da Shift+Enter ile yazılır → tek rich_text içinde \n ayraçlı.
  * Boş satırları atar. Boş input → [].
  */
-export function parseKayitSorulari(raw: string | undefined | null): string[] {
+export function parseRichTextLines(raw: string | undefined | null): string[] {
   if (!raw) return [];
   return raw
     .split('\n')
     .map((s) => s.trim())
     .filter(Boolean);
 }
+
+/** Kayıt niyet soruları. Geriye uyumlu isim — parseRichTextLines'a delege. */
+export const parseKayitSorulari = parseRichTextLines;
 
 /**
  * Brief 6 (KARAR 210) + Son tur (2026-06-14): Kayıt için benzersiz referans
