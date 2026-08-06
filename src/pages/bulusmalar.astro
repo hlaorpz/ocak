@@ -23,6 +23,7 @@ import { getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
 import BulusmalarFormatSekmeleri from '../components/BulusmalarFormatSekmeleri.astro';
+import { KATEGORI_SIRA, FORMAT_KATEGORI } from '../lib/etkinlik-kategori';
 
 const sayfa = await getEntry('sayfalar', '/bulusmalar');
 if (!sayfa) {
@@ -37,15 +38,31 @@ if (!sayfa) {
 // 2'de gösterince metinle çelişiyordu. Notion `format-*` section başlıkları
 // zaten numaralı ("1 · Açık Kapı" … "6 · Mini Retreat"); bu sıra o numaralarla
 // birebir hizalanır.
-const FORMAT_ORDER: Array<{ id: string; label: string }> = [
-  { id: 'format-acik-kapi', label: 'Açık Kapı' },
-  { id: 'format-cember', label: 'Çember' },
-  { id: 'format-seremoni', label: 'Seremoni' },
-  { id: 'format-atolye', label: 'Atölye' },
-  { id: 'format-sehir-aksami', label: 'Şehir Akşamı' },
-  { id: 'format-mini-retreat', label: 'Mini Retreat' },
-  { id: 'format-yolculuk', label: 'Yolculuk' },
-];
+//
+// B24/KARAR 395: bu dizi elle yazılıydı ve `KATEGORI_SIRA` ile aynı yedi-kapı
+// gerçeğini İKİNCİ kez kodluyordu — iki yüzey elle eşit tutuluyordu. Sıra artık
+// tek kaynaktan (`KATEGORI_SIRA`) türetiliyor; id `FORMAT_KATEGORI` etiket→slug
+// eşlemesinden gelir. Takvim sekmeleri de aynı diziyi kullandığı için iki yüzey
+// yapısal olarak hizalı kalır.
+//
+// `BULUSMALAR_DISI`: /bulusmalar bir FORMAT vitrini. Anadolu Yolculuğu kendi
+// sayfasında (/anadolu) yaşar, burada sekmesi yoktur — dışlama BİLİNÇLİ ve
+// listelenmiştir, sessiz düşme değildir.
+const BULUSMALAR_DISI = new Set<string>(['anadolu']);
+
+const FORMAT_ORDER: Array<{ id: string; label: string }> = KATEGORI_SIRA.flatMap((label) => {
+  const slug = FORMAT_KATEGORI[label];
+  if (!slug) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[bulusmalar.astro] KATEGORI_SIRA'daki "${label}" FORMAT_KATEGORI'de yok — ` +
+        'sekme üretilemedi. Notion\'a yeni tip eklendiyse eşleme de eklenmeli.',
+    );
+    return [];
+  }
+  if (BULUSMALAR_DISI.has(slug)) return [];
+  return [{ id: `format-${slug}`, label }];
+});
 
 interface ExtractedFormat {
   id: string;
