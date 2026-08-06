@@ -11,7 +11,7 @@
 | Ne arıyorsan | Nereye bak |
 |---|---|
 | bir kararın durumu / halefi | `01-kararlar.tsv` |
-| bir kararın **gerekçesi** | `90-kronoloji/YYYY-AA.md` (tsv'nin `kaynak` sütunu işaret eder) |
+| bir kararın **gerekçesi** | `90-kronoloji/YYYY-AA.md` — aylık dilim, tam tarihçe (tsv'nin `kaynak` sütunu işaret eder) |
 | açık borç, sahip, tetikleyici | `02-borclar.md` |
 | marka çekirdeği | `10-marka.md` |
 | sayfa mimarisi, stack, CTA, tracking | `20-ref-site.md` |

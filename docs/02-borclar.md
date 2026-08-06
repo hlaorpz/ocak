@@ -2,7 +2,7 @@
 
 **Son güncelleme:** 6 Ağustos 2026 · ADIM 3 (Pilot bölünmesi) — sayım düzeltmesi + B31
 
-**Durum:** 32 madde · **22 açık** · 10 kapandı/çözüldü/geri çekildi
+**Durum:** 33 madde · **23 açık** · 10 kapandı/çözüldü/geri çekildi
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -15,6 +15,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
 | **Claude.ai (ADIM 3b)** | B05 · B06 · B13 · B20 |
 | **Claude.ai (ADIM 3b sonrası)** | B32 |
+| **CC (dilimleme sonrası)** | B33 |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
 | **ADIM 4'e bağlı** | B01 |
@@ -221,6 +222,17 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   doğrulanamayan satır yazılmaz).
 - **Not:** `ocak-referans.md`'nin başındaki "DÖNEM GÜNCELLEMELERİ KRONOLOJİDE" haritası
   bu işin giriş kapısıdır — hangi A.X'in hangi dönem bloğunda güncellendiğini gösterir.
+
+## B33 — Ledger `kaynak` sütunu dilimlemeden sonra kırık
+- [ ] **Sahip:** CC (mekanik dönüşüm)
+- **Sorun:** `01-kararlar.tsv`'nin `kaynak` sütununda **386 satır** `ocak-kronoloji.md:NNNN`
+  biçiminde satır numarası taşıyor. Dosya dilimlendi; numaralar artık hiçbir şeye
+  denk gelmiyor.
+- **Çözüm:** dilimleme sırasında üretilen satır-eşleme tablosundan (`eski satır → yeni
+  dosya:satır`) mekanik dönüşüm. Elle düzeltilmez.
+- **Ön koşul KARŞILANDI:** `docs/_arsiv/kronoloji-satir-esleme.tsv` üretildi —
+  5675 satır, `eski_satir · yeni_dosya · yeni_satir`, birebirliği doğrulandı
+  (5675/5675, sapma 0). Bu borç artık kapatılabilir.
 
 
 ---
