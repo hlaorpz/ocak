@@ -3,7 +3,10 @@
 // oda prop'u glow yoğunluğunu belirler (KARAR 102 sapma 2):
 //   - OCAK → strong (0.12 / 0.05 / 0.02)
 //   - diğer 5 oda → soft (0.10 / 0.04 / 0.02)
-// Glow inline radial-gradient (legacy verbatim, blur YOK, drift YOK)
+// Glow inline radial-gradient (legacy verbatim, blur YOK, drift YOK).
+// B21/KARAR 204: %50 durağındaki gold artık `color-mix(in srgb, var(--gold) 2%,
+// transparent)` — hesaplanan renk rgba(212,168,85,0.02) ile BİREBİR aynı
+// (--gold = #D4A855 = 212,168,85), yalnız hardcode tek kaynağa bağlandı.
 // fadeUp staggered intro: eyebrow .3s / title .6s / subtitle .9s / cta 1.2s
 // Scroll indicator: hero dibinde köz akış çizgisi — .hero__scroll{,-line}. CSS
 //   src/styles/atmosfer.css'te tek noktada (component + plugin ortak). Plugin
@@ -111,7 +114,7 @@ const {
       ellipse at center,
       rgba(196, 75, 47, 0.12) 0%,
       rgba(196, 75, 47, 0.05) 30%,
-      rgba(212, 168, 85, 0.02) 50%,
+      color-mix(in srgb, var(--gold) 2%, transparent) 50%,
       transparent 70%
     );
   }
@@ -126,7 +129,7 @@ const {
       ellipse at center,
       rgba(196, 75, 47, 0.10) 0%,
       rgba(196, 75, 47, 0.04) 30%,
-      rgba(212, 168, 85, 0.02) 50%,
+      color-mix(in srgb, var(--gold) 2%, transparent) 50%,
       transparent 70%
     );
   }

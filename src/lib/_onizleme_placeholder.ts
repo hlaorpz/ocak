@@ -14,7 +14,10 @@
  */
 
 const BG = '#3a2a25'; // koyu ember-ash, kontrast etiket için
-const FG = '#d4a855'; // gold
+// FG, tokens.css `--gold` (#D4A855) ile birebir aynı değerdir (B21/KARAR 204).
+// Burada token OKUNAMAZ: bu modül SVG data-URI üretir, CSS custom property
+// çözümlenmeden string'e gömülür. Token değişirse bu satır ELLE güncellenir.
+const FG = '#d4a855'; // gold — tokens.css:12 --gold ile eşit tutulacak
 
 /**
  * Inline SVG döner — `<Fragment set:html={...}>` ile basılır. w/h aspect oranını

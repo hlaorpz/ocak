@@ -26,7 +26,7 @@ import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
 import EtkinlikListe from '../../components/EtkinlikListe.astro';
 import KayitBtn from '../../components/KayitBtn.astro';
-import { formatEtkinlikTarihi } from '../../lib/format-etkinlik';
+import { formatEtkinlikTarihi, bugunTR } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori';
 
@@ -77,15 +77,13 @@ const takvimHref = takvimSlugu ? `/takvim#${takvimSlugu}` : '/takvim';
 
 // Geçmiş etkinlik tespiti (build tarihi referansı — brief FAZ 4 gecelik
 // rebuild ile "bugün" güncel kalır). Range varsa tarihBitis öncelikli.
-function parcala(iso: string) {
-  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
-}
-const bugun = new Date();
-bugun.setHours(0, 0, 0, 0);
+// TR-yerel gün karşılaştırması (KARAR 385, B23): build Vercel'de UTC koşuyor,
+// eski `setHours(0,0,0,0)` TR 00:00-03:00 penceresinde günü geri kaydırıyordu.
+// YYYY-MM-DD leksikografik karşılaştırma = kronolojik; Date matematiği yok.
 const referans = etkinlik.tarihBitis ?? etkinlik.tarihBaslangic;
-const referansTarihi = parcala(referans);
-const gecmisMi = referansTarihi ? referansTarihi < bugun : false;
+const gecmisMi = /^\d{4}-\d{2}-\d{2}/.test(referans)
+  ? referans.slice(0, 10) < bugunTR()
+  : false;
 
 // Detay sayfası kart-sız düzen (Kaan kararı): Hero başlık + subtitle bağlamı
 // veriyor, kayıt için tek turuncu buton yeter. Subtitle: tarih + mekân düz cümlesi.

@@ -5,6 +5,7 @@
 // Davet linki tüm 6 format sayfasına gelebilir; her override .astro sayfası
 // bu helper'ı çağırıp banner conditional render eder.
 import { notion } from './notion.ts';
+import { bugunTR } from './format-etkinlik.ts';
 
 /**
  * Etkinlik tarihi bugünden geçmişse true. Hata/eksik durumlarda false
@@ -23,11 +24,13 @@ export async function etkinlikGecmisMi(id: string): Promise<boolean> {
     const tarih = (props['Tarih'] as { date?: { start?: string; end?: string } } | undefined)?.date;
     const tarihRaw = tarih?.start ?? tarih?.end;
     if (!tarihRaw) return false;
-    const t = new Date(tarihRaw);
-    if (Number.isNaN(t.getTime())) return false;
-    const bugun = new Date();
-    bugun.setHours(0, 0, 0, 0);
-    return t.getTime() < bugun.getTime();
+    // TR-yerel gün karşılaştırması (KARAR 385, B23). Eski `new Date()` +
+    // `setHours(0,0,0,0)` server-yerel (Vercel UTC) çalışıyordu → TR 00:00-03:00
+    // penceresinde bir gün geride kalıyordu. Notion date.start zaten YYYY-MM-DD
+    // prefix'li; leksikografik karşılaştırma = kronolojik, Date matematiği yok.
+    const gun = tarihRaw.slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(gun)) return false;
+    return gun < bugunTR();
   } catch (err) {
     console.error(
       '[davet-guvenlik-agi] etkinlik retrieve hatası:',

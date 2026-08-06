@@ -30,7 +30,7 @@ const ISO_GUN = /^\d{4}-\d{2}-\d{2}/;
 
 /** Europe/Istanbul'da verilen Date'in YYYY-MM-DD gün damgası. TZ/DST-güvenli.
  *  en-CA locale deterministik "YYYY-MM-DD" verir; Notion date.start ile birebir formatta. */
-function trGun(d: Date): string {
+export function trGun(d: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Istanbul',
     year: 'numeric',
@@ -39,8 +39,10 @@ function trGun(d: Date): string {
   }).format(d);
 }
 
-/** "Bugün" TR gününde, YYYY-MM-DD. Testlerde sabit Date injekte edilir. */
-function bugunTR(bugun: Date = new Date()): string {
+/** "Bugün" TR gününde, YYYY-MM-DD. Testlerde sabit Date injekte edilir.
+ *  Export: KARAR 385'in TZ sabitlemesi bu modülün dışındaki üç çağrı yerinde de
+ *  kullanılır (davet-guvenlik-agi, api/kayit, etkinlik/[slug]) — B23. */
+export function bugunTR(bugun: Date = new Date()): string {
   return trGun(bugun);
 }
 
