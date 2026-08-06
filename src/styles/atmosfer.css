@@ -90,7 +90,7 @@
     ellipse at center,
     rgba(196, 75, 47, 0.10) 0%,
     rgba(196, 75, 47, 0.04) 30%,
-    rgba(212, 168, 85, 0.02) 50%,
+    color-mix(in srgb, var(--gold) 2%, transparent) 50%,
     transparent 70%
   );
 }
@@ -100,7 +100,7 @@
     ellipse at center,
     rgba(196, 75, 47, 0.12) 0%,
     rgba(196, 75, 47, 0.05) 30%,
-    rgba(212, 168, 85, 0.02) 50%,
+    color-mix(in srgb, var(--gold) 2%, transparent) 50%,
     transparent 70%
   );
 }
