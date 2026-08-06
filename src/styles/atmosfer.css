@@ -1534,7 +1534,7 @@ section[data-section][class^="ocak-"] > p:has(> em:only-child) > em {
  * + padding-inline 2rem) ve mobil baseline (satır 1650 padding-x 1.5rem) —
  * ikisi de aynı specificity (0,2,1); bu blok mobil baseline'ın SONRASINDA →
  * source-order tie-break kazanır (etkinlik-takvimi + sonraki-bulusma +
- * kayit-cta üçlüsü için hem mobil hem desktop). */
+ * kayit-btn + mini-cta dörtlüsü için hem mobil hem desktop). */
 section[data-section="etkinlik-takvimi"][class^="ocak-"],
 section[data-section="sonraki-bulusma"][class^="ocak-"],
 section[data-section="kayit-btn"][class^="ocak-"],
