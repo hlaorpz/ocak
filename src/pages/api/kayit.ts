@@ -18,7 +18,7 @@
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
-import { bugunTR } from '../../lib/format-etkinlik.ts';
+import { havaleVadeMetni } from '../../lib/havale-vade.ts';
 import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
@@ -51,32 +51,8 @@ function havaleAciklamasi(args: { ad: string; referansNo: string }): string {
   return `${args.ad} — ${args.referansNo}`;
 }
 
-/**
- * Tasarım turu 3 (ADIM 1) — havale success metninde ödeme süresi dinamik:
- *  - Etkinlik tarihine 3+ gün varsa: "Katılım payını en geç 3 gün içinde
- *    aşağıdaki hesaba iletebilirsin."
- *  - 3 günden yakınsa: "Katılım payını ilettiğinde biz kontrol edip sana
- *    döneceğiz."
- * tarihISO YYYY-MM-DD veya ISO timestamp. Parse edilemezse defansif olarak
- * 3+ gün dalına düşer (rahat metin).
- *
- * TZ (KARAR 385, B23): "bugün" TR gününden alınır. Eski `setHours(0,0,0,0)`
- * server-yerel (Vercel UTC) çalıştığı için TR 00:00-03:00 penceresinde sınırı
- * bir gün geriye kaydırıyor, vade metnini yanlış dala düşürebiliyordu — bu
- * metin müşteriye giden ödeme talimatı. Gün farkı Date.UTC ile hesaplanır:
- * iki uç da UTC gün başlangıcı, DST kayması giremez.
- */
-export function havaleVadeMetni(tarihISO: string | undefined | null, bugun: Date = new Date()): string {
-  const m = tarihISO?.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!m) return 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
-  const [by, bm, bd] = bugunTR(bugun).split('-').map(Number);
-  const sinirUTC = Date.UTC(by, bm - 1, bd);
-  const etkUTC = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  const gunFarki = Math.round((etkUTC - sinirUTC) / 86_400_000);
-  return gunFarki >= 3
-    ? 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.'
-    : 'Katılım payını ilettiğinde biz kontrol edip sana döneceğiz.';
-}
+// havaleVadeMetni → src/lib/havale-vade.ts (B23). Saf mantık lib'de yaşar;
+// `src/pages/` altındaki her dosya route olduğu için test dosyası buraya konamaz.
 
 export const prerender = false;
 

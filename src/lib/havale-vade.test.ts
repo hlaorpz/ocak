@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { havaleVadeMetni } from './kayit.ts';
+import { havaleVadeMetni } from './havale-vade.ts';
 
 /**
  * B23 / KARAR 385 — havale vade metni TZ sınırı.
