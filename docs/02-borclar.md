@@ -1,8 +1,10 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 6 Ağustos 2026 · ADIM 2 sonu + kod teyidi (3 tur) + sapma düzeltmesi (7 commit)
+**Son güncelleme:** 6 Ağustos 2026 · ADIM 3 (Pilot bölünmesi) — sayım düzeltmesi + B31
 
-**Durum:** 31 madde · **19 açık** · 12 kapandı/çözüldü/geri çekildi
+**Durum:** 32 madde · **22 açık** · 10 kapandı/çözüldü/geri çekildi
+
+*(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
 Numaralar sabittir, yeniden kullanılmaz. Kapanan maddeler silinmez — nasıl kapandığı bilgisi
 kendisi işe yarıyor (KARAR 61/88 ruhu).
@@ -11,10 +13,12 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai (ADIM 3)** | B05 · B06 · B13 · B20 |
+| **Claude.ai (ADIM 3b)** | B05 · B06 · B13 · B20 |
+| **Claude.ai (ADIM 3b sonrası)** | B32 |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
 | **ADIM 4'e bağlı** | B01 |
+| **İçerik (Notion girişi)** | B31 |
 
 ---
 
@@ -192,6 +196,33 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Açılınca yapılacak iş:** render `variant='satir'` yoluna taşınır; `variant='kart'` dalı o zaman emekli edilir.
 
 
+## B31 — `/site-rehber` CANONICAL_SECTIONS sayımı yanlış (D4)
+- [ ] **Sahip:** Claude.ai (metin) → Advaita/Kaan (Notion girişi)
+- **Kaynak:** `02-borclar.md` D4 · `remark-ocak-sections.ts:43-53`
+- **Yazan:** `/site-rehber` sayfası "CANONICAL_SECTIONS tam 11 kalem" diyor.
+- **Gerçek:** kodda **10 kalem** — `kayit-cta` KARAR 423 ile çıktı.
+- **Not:** B29 kapanışı listeyi 10→9'a indirmeyi öneriyor (`al-ol-ver` emekli edilirse).
+  İkisi birlikte yapılırsa sayı **9** olur; ayrı ayrı yapılırsa iki tur Notion girişi gerekir.
+- **Neden borç:** düzeltme kod tarafında değil **içerik tarafında** — ADIM 3'ün doküman
+  düzeltme kuyruğuyla kapanamaz, Notion'a elle girilir (KARAR 459).
+
+## B32 — `ocak-referans.md` → `20-ref-*` birleştirme
+- [ ] **Sahip:** Claude.ai
+- **Tetikleyici:** ADIM 3b'den sonra, ADIM 4'ten önce
+- **Sorun:** `docs/ocak-referans.md` (3574 satır) **tema bazlıdır** — yeni `20-ref-*`
+  beşlisiyle aynı temaları kapsıyor. `20-ref-*` ADIM 3'te **Pilot'tan** dolduruldu;
+  referans dosyasının oraya nasıl akacağı hiç tanımlanmadı.
+- **Sonuç:** aynı konu için iki kaynak. "Hangi dosyada?" sorusu — KARAR 397'nin
+  A/B seam kesimini tercih etme gerekçesinin ta kendisi.
+- **Boşluk plandaydı:** `2026-08-06-ocak-gecis-plani.md` `20-ref-*`'ı hedef olarak
+  sayıyor ama `ocak-referans.md`'nin akıbetini yazmıyor.
+- **Neden ADIM 3'te yapılmadı:** bölme işini bulandırırdı; ayrıca A.X başlıklarının
+  hangisinin bayat olduğu ancak kaynak okunarak anlaşılır (KARAR 456 ruhu —
+  doğrulanamayan satır yazılmaz).
+- **Not:** `ocak-referans.md`'nin başındaki "DÖNEM GÜNCELLEMELERİ KRONOLOJİDE" haritası
+  bu işin giriş kapısıdır — hangi A.X'in hangi dönem bloğunda güncellendiğini gösterir.
+
+
 ---
 
 # ADIM 3 DOKÜMAN DÜZELTME KUYRUĞU
@@ -207,6 +238,20 @@ Bunlar borç değil, doküman hatası — ADIM 3'te Pilot bölünürken düzelti
 | D5 | KARAR 204 metni | "`--altin` token tek-kaynak" | token adı **`--gold`** — ve öyle kalıyor (6 Ağu kararı). `--ember`, `--ash`, `--cream-soft` de İngilizce; sapan KARAR 204'ün metni |
 | D4 | `/site-rehber` (Notion içeriği) | "CANONICAL_SECTIONS tam 11 kalem" | kodda 10 kalem (`remark-ocak-sections.ts:43-53`); `kayit-cta` KARAR 423 ile çıktı. **Düzeltme kod değil içerik tarafında** — Advaita/Kaan Notion'a girer |
 
+**D1 · D2 · D3 · D5 KAPANDI (6 Ağustos, ADIM 3).** Düzeltmeler türetilmiş katmana yazıldı:
+D1 → `20-ref-protokoller.md` (OVERFLOW bloğunun altına ek düzeltme notu) · D2 → `00-durum.md`
+(176/176) · D3 + D5 → `20-ref-site.md` GÜNCEL GERÇEK bölümü. **D4 → B31 olarak açıldı**
+(içerik tarafı, Notion girişi gerekir).
+
+**ADIM 3'te açılan iki yeni doküman hatası:**
+
+| # | nerede | yazan | gerçek |
+|---|---|---|---|
+| D6 | `02-borclar.md` başlığı | "31 madde · 19 açık" | B01–B30 = 30 madde · 20 açık — **düzeltildi** |
+| D7 ✅ | Pilot (build) | 33 sayfa | **KAPANDI (6 Ağu, ADIM 0):** 32 prerender + 10 SSR + 6 API route. "33" hiçbir sayıma denk gelmiyor — rakam köksüzdü. Ders: tek-sayı beyanları çok-hedefli build'de anlamını yitirir |
+| D8 | Pilot TECH STACK "Form/Backend" | Apps Script unified doPost = canlı form backend | Apps Script **EMEKLİ**, backend tamamen Vercel; blok aynı dosyanın #38 bölümüyle çelişiyordu — bloklar `90-kronoloji/2026-07.md`'ye indi, düzeltme `20-ref-site.md`'de |
+
 Ek: KARAR 380, 350, 143 satırları ledger'da `TEYITSIZ`. Sebep doküman hatası değil,
-**benim brief'imde beklenen kanıtı kararın metninden değil çıkarımdan üretmiş olmam.**
-ADIM 3'te kronolojideki asıl karar metni okununca durumları netleşir.
+**brief'te beklenen kanıtın kararın metninden değil çıkarımdan üretilmiş olması.**
+Kronolojideki asıl karar metni okununca durumları netleşir — **ADIM 3b'ye devredildi**
+(B05 · B06 · B13 · B20 ile aynı iş).

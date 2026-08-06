@@ -1,0 +1,404 @@
+pilot_satir	hedef	ilk_80_karakter
+1	STRUCT	# OCAK — PİLOT (Canlı Durum)
+2	STRUCT	
+3	K8	**Versiyon:** v52 · **Son güncelleme:** 4 Ağustos 2026 (**bakım turu — kod/karar
+4	STRUCT	
+5	K8	*(Önceki dönem — v47 · 6 Temmuz 2026, Sohbet #54 dönemi konsolidasyonu — 4 sohbe
+6	K8	*(Önceki: v46 · 5 Temmuz 2026, Sohbet #40 dönemi — KARAR ADAYI 299-320 [arşivde 
+7	STRUCT	
+8	STRUCT	
+9	K8	Bu dosya OCAK'ın **canlı durumunu** taşır: güncel dönem özeti, açık borçlar, sit
+10	STRUCT	
+11	K8	Bu dosya **dörtlü master yapısının** bir parçasıdır (KARAR 397, 28 Temmuz 2026 —
+12	STRUCT	
+13	K8	| Dosya | Ne taşır | Nasıl güncellenir |
+14	K8	|---|---|---|
+15	K8	| `ocak-marka.md` | Sabit marka çekirdeği — kimlik, ses, manifesto, görsel kimli
+16	K8	| `ocak-pilot.md` | **Canlı durum** — güncel dönem, açık borçlar, protokoller, t
+17	K8	| `ocak-referans.md` | **Tema bazlı referanslar** (Bölüm A) — konuya göre organi
+18	K8	| `ocak-kronoloji.md` | **Kronolojik tarihçe** (Bölüm B + dönem eklemeleri) — so
+19	STRUCT	
+20	K8	**KARAR numaraları tek dizidir** (1 → 396+), hangi dosyada olursa olsun. Numara 
+21	STRUCT	
+22	K8	**Metin içindeki "Arşiv: KARAR X" referansları** artık `ocak-referans.md` (tema 
+23	STRUCT	
+24	STRUCT	---
+25	STRUCT	## DURUM
+26	STRUCT	
+27	K7	**12–20 TEMMUZ DÖNEMİ — TAM (PARTİ 1+2+3/3) — 14 sohbet konsolide (28 Temmuz 202
+28	STRUCT	
+29	K7	⚠ **KRONOLOJİ UYARISI:** dump dosya adlarındaki tarihler **yazım günüdür, güveni
+30	STRUCT	
+31	K7	- **HERO GEÇİŞİ + AKIŞ ÇİZGİSİ (12–13 Tem, CC — 14 commit main):** Ana sayfa her
+32	STRUCT	
+33	K7	- **MOBİL ZOOM-OUT — İLKE (13 Tem, 0 commit):** Ana sayfa mobilde pinch-zoom-out
+34	STRUCT	
+35	K7	- **ETKİNLİK LİSTE TEK-KABUK + KART HİZALAMA (15–16 Tem, CC — `3c2b865` main/pro
+36	STRUCT	
+37	K7	- **KAYIT PENCERESİ + TZ FIX (15–16 Tem, CC — `aff2e7a` → `73efe87` → merge `818
+38	STRUCT	
+39	K7	- **YASAL LİNK + BANKA POS (16 Tem, CC — `954417f` `3f6050e` `b0464a0` → merge `
+40	STRUCT	
+41	K7	- **TAKVİM HASH + AYRAÇ + WA NUMARA (16 Tem, CC — `f6c94bf` `8b21e1c` → merge `a
+42	STRUCT	
+43	K7	- **İÇERİK/DİL TURU + LİSTE GRAMERİ TEŞHİSİ (16–18 Tem, CC — `4e0418d` `559be0f`
+44	STRUCT	
+45	K7	- **LİSTE AİLESİ TEK GRAMER (17–20 Tem, CC — 22 commit `liste-ailesi` branch → m
+46	STRUCT	
+47	K7	- **KAYIT AÇIKLAMA + DROPDOWN (20 Tem, CC — `5f20c46` `05d5fe3` → merge `7c3b332
+48	STRUCT	
+49	K7	- **KAYIT BUTONU BİRLEŞTİRME (20 Tem, CC — `cbe6034` `e41a100` `a8d0497` `5fd558
+50	STRUCT	
+51	K7	**12–20 Temmuz dönemi (Parti 1+2) açık/borç özeti:** (1) **`hashchange`/`pagesho
+52	STRUCT	
+53	K7	**Parti 2'nin eklediği borçlar:** (18) **Production göz turu (Kaan, ~10 dk):** `
+54	STRUCT	
+55	K8	**Sohbet #69'un eklediği borçlar (6 Ağustos 2026, doküman mimarisi geçişi):**
+56	STRUCT	
+57	K8	- **(28) ADIM 2 sohbeti (Claude.ai, 1-2 sohbet):** `kararlar.tsv` durum + iliski
+58	K8	- **(29) İki klon temizliği (Kaan, 10 dk, KARAR 463):** `ocak-site` ve `ocak-sit
+59	K8	- **(30) Project files bayat (KARAR 455):** 6 Ağustos'tan sonra otorite repodadı
+60	STRUCT	
+61	K7	**⚠ Parti 1'den devreden borçların durumu (Parti 2 gitlog'una göre):** KARAR 391
+62	STRUCT	
+63	K7	**Parti 1 merge durumu (gitlog kanıtı):** Bu partinin altı sohbetinin tamamı `ma
+64	STRUCT	
+65	K7	- **YOLCULUK 7. KAPI — ÜRÜN + KOD (12 Tem, CC — `af5a7a0` → merge `cf288c1` main
+66	STRUCT	
+67	K7	- **YOLCULUK 7. KAPI — METİN (12 Tem, Fable, 0 commit):** Üç sayfa metni üretild
+68	STRUCT	
+69	K7	- **FABLE İÇERİK/EDİTORYAL TURU (12–19 Tem, çok oturumlu, Fable'ın kendi commit'
+70	STRUCT	
+71	K7	- **SOSYAL MEDYA AJANS DOSYASI v2 (19 Tem, Fable, 0 commit):** v1 "elektrik kesi
+72	STRUCT	
+73	K7	**Parti 3'ün eklediği borçlar:** (28) **`/yolculuk` kayıt CTA URL'i (Kaan):** `o
+74	STRUCT	
+75	K7	**⚠ Parti 3'ün düzelttiği iki beyan:** (a) `fable-icerik-editoryal-turu` dumpı W
+76	STRUCT	
+77	STRUCT	---
+78	STRUCT	
+79	K7	**Geçmiş dönem kayıtları (#21–#54, KARAR 105-362) `ocak-kronoloji.md`'ye taşındı
+80	STRUCT	
+81	STRUCT	---
+82	STRUCT	## SİTE MİMARİSİ
+83	STRUCT	
+84	RS	**6 oda · 21 sayfa.** OCAK landing page değil, bir dünyanın haritası.
+85	STRUCT	
+86	RS	⚠ **Buluşma kapısı sayısı: ALTI → YEDİ** (KARAR 429, 438). Yedinci kapı **Yolcul
+87	STRUCT	
+88	RS	| Oda | Sayfa | URL | Durum |
+89	RS	|---|---|---|---|
+90	RS	| **OCAK** | Ana Sayfa | / | Onay Bekliyor |
+91	RS	| | Hikâye | /hikaye | Onay Bekliyor |
+92	RS	| | Felsefe | /felsefe | Onay Bekliyor |
+93	RS	| | Araçlar | /araclar | Onay Bekliyor |
+94	RS	| **Yol** | Sen Neredesin? | /sen-neredesin | Onay Bekliyor |
+95	RS	| **Buluşmalar** | Buluşmalar | /bulusmalar | Onay Bekliyor |
+96	RS	| | Çember | /cember | Onay Bekliyor |
+97	RS	| | Açık Kapı | /acik-kapi | Onay Bekliyor |
+98	RS	| | Seremoni | /seremoni | Onay Bekliyor (görünür ad "Mevsim Seremonisi"→"Seremo
+99	RS	| | Atölye | /atolye | Onay Bekliyor (slug rename /workshop→/atolye, 301 redirec
+100	RS	| | Şehir Akşamı | /sehir-aksami | Onay Bekliyor (slug rename /istanbul→/sehir-a
+101	RS	| | Mini Retreat | /mini-retreat | Onay Bekliyor |
+102	RS	| | Takvim | /takvim | Onay Bekliyor |
+103	RS	| | Etkinlik Detay | /etkinlik/[slug] | build-time getStaticPaths, slug'lı tüm e
+104	RS	| **Yolculuk** | Yolculuk | /yolculuk | **SSR override** (`src/pages/yolculuk.as
+105	RS	| | Yolculuk Kayıt | /yolculuk/kayit | **YENİ** — Direkt kayıt, `KayitFormu form
+106	RS	| | Anadolu Yolculuğu | /anadolu | Onay Bekliyor (+`ayni-esikler` section, KARAR
+107	RS	| | Anadolu Başvuru | /anadolu/basvuru | Hard-coded layout (KARAR 125 ağır form 
+108	RS	| **Biz** | Biz | /biz | Onay Bekliyor |
+109	RS	| | Advaita | /advaita | Onay Bekliyor |
+110	RS	| | Ekip | /ekip | Onay Bekliyor |
+111	RS	| **İletişim** | İletişim | /iletisim | Onay Bekliyor |
+112	STRUCT	
+113	RS	**URL kuralı:** Türkçe karaktersiz, lowercase (/hikaye değil /hikâye).
+114	STRUCT	
+115	RS	**Kalan adımlar:** Astro setup → component'lar → Notion canlı binding → sayfa mi
+116	STRUCT	
+117	RS	**Sıra mantığı:** Şemsiye sayfalar (/bulusmalar, /yolculuk) alt sayfalardan önce
+118	STRUCT	
+119	RS	**Pattern bekçileri:** Yeni sayfa yazılırken **önce `/cember` ve `/mini-retreat`
+120	STRUCT	
+121	STRUCT	## ÇALIŞMA PROTOKOLLERİ
+122	STRUCT	
+123	RP	**Çalışma sıralaması:** İçerik → Site → Altyapı.
+124	STRUCT	
+125	K8	**⚠ DOKÜMAN MİMARİSİ GEÇİŞ HALİNDE (6 Ağustos 2026, KARAR 455-462).** Dörtlü dos
+126	STRUCT	
+127	RI	**İÇERİK-SUNUM SINIRI İLKESİ (KARAR 354, KALICI):** Notion rich text (bold, ital
+128	STRUCT	
+129	RP	**CANLI-BUILD TEŞHİS PROTOKOLÜ (KARAR 355, KALICI):** CC ADIM 0 teşhisi `ocak-si
+130	STRUCT	
+131	RI	**"BURADA YAŞAR" BAKIM TETİKLEYİCİSİ (KARAR 326):** /hikaye bes-kadim-kaynak "Bu
+132	STRUCT	
+133	RP	**CARD_SECTIONS ÇOK-ZİNCİR CHECKLIST (KARAR 361):** Yeni bir vitrin grubunu CARD
+134	STRUCT	
+135	RP	**GÜVENLİ MERGE PROTOKOLÜ (KARAR 388):** Production'a giden her merge: (1) kurta
+136	STRUCT	
+137	RP	**PREVIEW TESTİ DÖRT-DEĞİŞKEN DOĞRULAMASI (KARAR 387):** Bir preview'de davranış
+138	STRUCT	
+139	RP	**OVERFLOW KIRPMA STRATEJİSİ (KARAR 372, KARAR 187'nin kardeşi):** `overflow: hi
+140	STRUCT	
+141	RP	**ORDER-DUYARLI SELEKTÖR DİSİPLİNİ (KARAR 375, KARAR 355 uzantısı):** `[class^="
+142	STRUCT	
+143	RP	**"BENZETME DEĞİL PAYLAŞIM" İLKESİ (KARAR 373):** İki ayrı kod yolunu (kopyayı) 
+144	STRUCT	
+145	RP	**BUILD-TIME TARİH KARARI TZ-SABİTLENİR (KARAR 385):** SSG build server UTC'dir.
+146	STRUCT	
+147	RP	**CLIENT-SAFE ↔ SERVER-ONLY MODÜL SINIRI (KARAR 394):** Client `<script>`'in imp
+148	STRUCT	
+149	RP	**"SAĞLAYICI ADI" KARARLARI ZİNCİRLENİR, SÜPERSELENMEZ (KARAR 364):** iyzico → P
+150	STRUCT	
+151	RP	**TEK GENİŞLİK GERÇEĞİ (KARAR 427, KALICI/yardımcı):** CTA ve kart section'ların
+152	STRUCT	
+153	RP	**NOTION MARKER'I BİR SÖZLEŞMEDİR (KARAR 409):** Section marker adları serbest m
+154	STRUCT	
+155	RP	**"KOD VAR" ≠ "OUTPUT VAR" (KARAR 408/409 ailesi):** Bir özelliğin durumu compon
+156	STRUCT	
+157	RP	**LAYOUT/RİTİM İŞLERİNDE CHROME-CC BAĞLANTISI ADIM 0 ŞARTI (KARAR 419, KARAR 355
+158	STRUCT	
+159	RI	**VURGU YERLEŞTİRME YÖNTEMİ (KARAR 400/401):** Vurgu bloğu için **yeni cümle yaz
+160	STRUCT	
+161	RI	**TEKRAR DİSİPLİNİ — EV SAHİBİ + KÖPRÜ (KARAR 403/404):** Her fikir **tek evde**
+162	STRUCT	
+163	RP	**İş bölüşümü (KARAR 100):** Claude.ai (bu) → strateji, içerik, Marka/Pilot/Arşi
+164	STRUCT	
+165	RP	**Web sitesi protokolü (KARAR 52):** Her sayfa ayrı sohbette. Sohbet sonunda mas
+166	STRUCT	
+167	RP	**SIRA İLKESİ — DOKÜMAN KALİTESİ TESİSATTAN ÖNCE (KARAR 460, KALICI):** Claude.a
+168	STRUCT	
+169	RP	**KARAR LEDGER'I İNDEKSTİR, REFERANS DEĞİL (KARAR 456 eki):** `kararlar.tsv` bir
+170	STRUCT	
+171	RP	**TEK KLON DİSİPLİNİ (KARAR 463):** Bir repo, bir klon, bir aktif CC. İkinci CC 
+172	STRUCT	
+173	K8	**Sohbet sonu protokolü (KARAR 88 → 145 → 397, 28 Temmuz 2026):** Master prompt 
+174	STRUCT	
+175	K8	- `ocak-marka.md` (~18K, sabit marka çekirdeği — yılda 2-3 kez güncellenir, nadi
+176	K8	- `ocak-pilot.md` (~90K, **canlı durum** — her dönem sonu tam değişim; geçmiş dö
+177	K8	- `ocak-referans.md` (~247K, **tema bazlı referanslar** = eski Bölüm A — yerinde
+178	K8	- `ocak-kronoloji.md` (~765K, **kronolojik tarihçe** = eski Bölüm B + dönem ekle
+179	STRUCT	
+180	K8	**KARAR 397 — arşiv ikiye ayrıldı (28 Temmuz 2026).** Gerekçe: `ocak-arsiv.md` 8
+181	STRUCT	
+182	K8	⚠ **Dönem-blok A güncellemeleri kronolojide yaşıyor.** Tarihsel olarak patch'ler
+183	STRUCT	
+184	K8	Her dönem sonunda Claude:
+185	STRUCT	
+186	K8	1. **ocak-marka.md** → sadece marka kararı çıkmışsa tam haliyle üretir, aksi hal
+187	K8	2. **ocak-pilot.md** → tam haliyle yeniden üretir (geçmiş dönem bloğu eklenmez —
+188	K8	3. **ocak-referans.md** → yalnız A.X başlığı değiştiyse hedefli düzenleme
+189	K8	4. **ocak-kronoloji.md PATCH** → sadece yeni eklenen bölümleri verir. Format:
+190	STRUCT	
+191	K8	```
+192	K8	# KRONOLOJİ PATCH — Sohbet #N
+193	K8	
+194	K8	## Referans güncellemeleri (ocak-referans.md → A.X)
+195	K8	### A.X başlığı altına EKLE (mevcut son satır: "...")
+196	K8	[yeni paragraf]
+197	K8	
+198	K8	## Kronoloji yeni (ocak-kronoloji.md sonuna append)
+199	K8	## Sohbet #N (tarih — başlık)
+200	K8	[tüm yeni sohbet özeti]
+201	K8	```
+202	STRUCT	
+203	K8	Kaan: Marka dosyasını sadece marka kararı varsa değiştirir. Pilot tam yeni dosya
+204	STRUCT	
+205	K8	**Sohbet kapanış protokolü:** Kaan "bugünlük bu kadar" benzeri kapanış enerjisi 
+206	STRUCT	
+207	RP	**Brief disiplini (KARAR 103):** Uzun brief'ler Claude Code input alanına yapışt
+208	STRUCT	
+209	RP	**İleri iş bırakma yasağı (KARAR 104):** 10-15 dk içinde çözülecek konular sonra
+210	STRUCT	
+211	RP	**Ara brief kalıbı (KARAR 119 sohbet kazanımı):** Sohbet ortasında küçük scope +
+212	STRUCT	
+213	RN	**Görünür-etiket vs veri-otoritesi ayrımı (KARAR 283 taşınabilir dersi):** Bir N
+214	STRUCT	
+215	RN	**Schema tasarım kuralı (KARAR 288):** **Kapalı/tasarlanmış küme → `z.enum` (bui
+216	STRUCT	
+217	RN	**Notion↔kod sıra dersi (KARAR 295):** Notion↔kod hizalaması gereken bir işte "ö
+218	STRUCT	
+219	RP	**Üç-dallı merge brief deseni (KARAR 298):** Merge/geri-alması pahalı bir iş önc
+220	STRUCT	
+221	RP	**"Doğru tarafı ölç" teşhis dersi (KARAR 292):** "test-yeşili ≠ göz-temiz" (KARA
+222	STRUCT	
+223	RI	**Yeni sayfa yazımı:** Önce `/cember` + `/mini-retreat` referans olarak oku. Kiş
+224	STRUCT	
+225	K8	**Sohbet açıldığında:** Pilot otomatik bağlam (canlı durum). Marka sabit zemin, 
+226	STRUCT	
+227	RP	**Specificity savaşı disiplini (KARAR 137, 138, 140):** CSS fix tutmadığında `gr
+228	STRUCT	
+229	RP	**Tanı disiplini rafinasyonu (KARAR 150, Brief L #34B pedagojisi):** Specificity
+230	STRUCT	
+231	RP	**!important lansman öncesi kabul (KARAR 138):** Lansmana <30 gün kala specifici
+232	STRUCT	
+233	RP	**Vercel paralel iş paterni (KARAR 100 genişlemesi):** Vercel rate-limit veya re
+234	STRUCT	
+235	RP	**Paralel CC seansı çakışma riski (KARAR 150 #34A pedagojisi):** İki CC seansı a
+236	STRUCT	
+237	RP	**Retry brief paterni (KARAR 137 + 138 + 140 sohbet kazanımı):** Tutmayan fix bi
+238	STRUCT	
+239	RP	**Hard refresh disiplini (#30 pedagojik not 3, #31 tatbik):** Vercel preview eye
+240	STRUCT	
+241	RP	**Geceyarısı disiplini (KARAR 150 #34B pedagojisi):** Saat 03:00'te Kaan "kapata
+242	STRUCT	
+243	RP	**Hub-bazlı eyeball sınıflaması (KARAR ADAYI 308, #40 pedagojisi):** Büyük bir e
+244	STRUCT	
+245	RP	**Kanon/referans dosyası kavramı (KARAR ADAYI 299, #40):** Bazı derin içerik çal
+246	STRUCT	
+247	RI	**İddia yumuşatma > içerik budama (KARAR ADAYI 300, #40 pedagojisi):** Bir dürüs
+248	STRUCT	
+249	STRUCT	---
+250	RI	**METİN KATMANI TAZE-DUMP DİSİPLİNİ — "patch günü, dump günü" (KARAR 439, KALICI
+251	STRUCT	
+252	RI	**ŞEMSİYE SAYFAYA ÜRÜN EKLERKEN KAVRAM KATMANI DENETİMİ (KARAR 439 eki):** Bir ş
+253	STRUCT	
+254	RP	**ENUM RENAME BRİEFİ KALIBI (KARAR 430 dersi):** Mevcut bir enum değerinin **anl
+255	STRUCT	
+256	RI	**"ELEKTRİK KESİLDİ" TESLİM STANDARDI (KARAR 449):** Uygulama dosyalarında (sosy
+257	STRUCT	
+258	RI	**PLACEHOLDER ARA-DEĞİŞTİR KANONU (KARAR 450):** Henüz var olmayan bir varlığa (
+259	STRUCT	
+260	RI	**FABLE DEVİR DOSYASI PROTOKOLÜ:** Paralel Fable sohbetleri arası kanon aktarımı
+261	STRUCT	
+262	RI	**KULLANICININ ÜSTLENDİĞİ İŞ SENKRONU BOZAR:** Kaan Notion'a geçirmeyi ve düzelt
+263	STRUCT	
+264	STRUCT	## TECH STACK (öz)
+265	STRUCT	
+266	K7	**Parti 3 (12–19 Tem) kod değişikliği — tek commit `af5a7a0` (11 dosya, +128/-37
+267	STRUCT	
+268	RS	**Site:** Astro 5 SSG + content collections + Notion API canlı binding · ocak.bi
+269	K7	**Form/Backend:** Apps Script unified doPost (formType ile route, Sheets + Zoom 
+270	K7	**Apps Script handler'lar (#28-29 sonrası):** handleAtesMektuplari + handleCembe
+271	RB	**Otomasyon:** Google Apps Script (mevcut) → n8n (hedef, Railway'de mevcut).
+272	RB	**AI agent:** WhatsApp bot (Railway, Node.js, Claude'a bağlı). Site'da açık olar
+273	RN	**Veri merkezi:** Notion. İçerik canlı binding aktif (Mayıs 2026, KARAR 97); for
+274	RN	**Notion Başvurular DB (#28 sonu, #29 İletişim eklendi):** 18 property — Ad/Emai
+275	RN	**Notion Sayfalar DB property'leri (yapısal):** `Sayfa Başlığı`, `URL`, `Meta Aç
+276	RS	**Reklam/Analytics (lansman öncesi):** GTM + Meta Pixel + GA4 + (CAPI Yıl 1 orta
+277	RS	**Arşiv (ilk çember sonrası):** Zoom Cloud + Vimeo Pro + Fireflies + Notion.
+278	STRUCT	
+279	RS	**Yaklaşım:** Human led, agent operated. Kaan strateji + yön. Claude kodu + içer
+280	STRUCT	
+281	STRUCT	---
+282	K7	**12–20 TEMMUZ DÖNEMİ (PARTİ 2/3) TECH STACK GÜNCELLEMESİ (KARAR 398-428):**
+283	K7	**Yeni dosya:** `src/components/KayitBtn.astro` (üç-mod CTA buton primitive — Mo
+284	K7	**Silinen:** `KayitCTA.astro` · `transformKayitCta` · `KAYIT_CTA_LABEL` sabiti ·
+285	K7	**Liste ailesi (KARAR 411-419):** `atmosfer.css` `.liste__oge` tek liste kompone
+286	K7	**Kayıt CTA (KARAR 423-428):** `atmosfer.css:1538-1552` genişlik kolonuna `mini-
+287	K7	**Kayıt formu (KARAR 420-422):** `kayit.ts` `parseRichTextLines(raw)` jenerik + 
+288	K7	**İçerik/dil turu (KARAR 398-410):** `notion-pages.ts` `splitBodyByMarkers` kayi
+289	K7	**Notion:** Etkinlikler DB'ye **`Kayıt Soruları Açıklama` (rich_text)** property
+290	K7	**Kayıt tipi otoritesi:** ETKİNLİK BAZLI (`kayit.ts:130`) — aynı format farklı e
+291	RB	**Meta/WhatsApp:** display name "Ocak Kadın Çemberi" ve "OCAK" denemeleri **redd
+292	K7	**Test/build:** 175/175 (liste ailesi) → 175/175 (kayıt formu) → **176/176** (ka
+293	K7	**robots.txt DOKUNULMADI** — hâlâ `User-agent: * / Disallow: /` (`public/robots.
+294	STRUCT	
+295	STRUCT	---
+296	K7	**12–16 TEMMUZ DÖNEMİ (PARTİ 1/3) TECH STACK GÜNCELLEMESİ (KARAR 363-396):**
+297	K7	**Yeni dosyalar:** `src/components/EtkinlikListe.astro` (~35 satır — ortak liste
+298	K7	**Hero/atmosfer:** `Hero.astro` + `atmosfer.css` — `.hero { overflow: hidden }` 
+299	K7	**`tokens.css`:** yeni `--ember-alpha-85`, `--ember-alpha-32`. Glow alpha'ları h
+300	K7	**`remark-ocak-sections.ts`:** hero case'e `<div class="hero__scroll"><span clas
+301	K7	**Etkinlik veri katmanı (KARAR 383-385):** `notion-etkinlikler.ts` +`kayitAcilis
+302	K7	**Kart/liste katmanı (KARAR 373-382):** `EtkinlikTakvimi.astro` + `SonrakiBulusm
+303	K7	**Takvim/filtre (KARAR 390-395):** `etkinlik-kategori.ts` +`slugToFormatHam(slug
+304	K7	**Legal/footer (KARAR 363-364):** `Footer.astro` `.footer__yasal` nav (JSX ~L59-
+305	RB	**WhatsApp:** site geneli numara `905325555226` → `905322080888` (`0f77218`); bo
+306	RB	**n8n:** "OCAK Gecelik Rebuild" (id `BlS7CuDb7Mbktq0k`) Schedule Trigger cron `0
+307	RS	**Vercel:** Team ID `team_EVx2zHhI9iYscmqsuHckk599` + Project ID `prj_CxW3Nm85TG
+308	K7	**Ödeme sağlayıcı:** iyzico elendi (297/311), **PayTR de elendi** — banka sanal 
+309	K7	**Test/build:** hero turu 162/162 · kayıt penceresi 151/151 (`src/lib/` 6 dosya 
+310	K7	**Tanı araçları:** Vercel MCP `list_deployments` (deploy-tazelik/stale-preview e
+311	STRUCT	
+312	STRUCT	---
+313	K7	**#39 DÖNEMİ TECH STACK GÜNCELLEMESİ (2-3 Temmuz 2026, KARAR 277-298):**
+314	K7	**Etkinlik detay + geçmiş yönetimi:** Yeni `src/pages/etkinlik/[slug].astro` (ge
+315	K7	**Dikey ritim token sistemi:** `tokens.css` +`--rhythm-*` seti (block 2rem / hea
+316	K7	**n8n gecelik cron:** Yeni workflow "OCAK — Gecelik Rebuild" (Schedule Trigger +
+317	K7	**Takvim display (`EtkinlikTakvimi.astro` + `etkinlik-kategori.ts`):** `notion-e
+318	K7	**Schema kuralı (`config.ts`):** `mekan: z.enum([...])` → `z.string()` (Mekân/Pl
+319	K7	**Ana sayfa hero (`index.astro`):** `<Hero>` title + subtitle prop iki satır (Fa
+320	K7	**Anadolu görsel (`AnadoluHarita.astro` + `atmosfer.css`):** zigzag `hatPath` co
+321	K7	**Eşik accordion (`atmosfer.css` + `Layout.astro`):** `[open]` `margin-top` kald
+322	K7	**Slug rename (atomik commit):** `oda-map.ts` (ODA_MAP `/workshop`+`/istanbul` →
+323	K7	**iyzico şerit kaldırma:** `KayitFormu.astro` iyzico güven şeridi JSX (`.kayit-f
+324	K7	**Merge yapısı (#39):** Ardışık --no-ff merge'ler (KARAR 266 deseni), robots Dis
+325	RN	**Notion Etkinlikler DB tam property referansı (#39 sonu):** Yöneten[select], Me
+326	STRUCT	
+327	STRUCT	---
+328	K7	**#38 DÖNEMİ TECH STACK GÜNCELLEMESİ (2 Temmuz 2026, KARAR 251-276):**
+329	RB	**Bot lookup (n8n):** OCAK Code node'a kayıt lookup katmanı — telefon `slice(-10
+330	K7	**Yasal/ödeme/merge (main'de production):** Footer'a `footer__yasal` (4 link, ba
+331	K7	**Davet sistemi v1 (astro-iskelet, `ae20459`):** Yeni `src/components/DavetKutus
+332	STRUCT	
+333	STRUCT	
+334	K7	**Backend:** Apps Script EMEKLİ (Code.gs→Code.gs.retired, web app arşiv, 12 Haz 
+335	K7	**Ödeme (main'de production — #38 dönemi KARAR 266 ile merge'li, #39'da iyzico ş
+336	STRUCT	
+337	K6	**#36 DÖNEMİ TECH STACK GÜNCELLEMESİ (3 Haziran 2026, KARAR 196-222):**
+338	K6	
+339	K6	- **Test:** 72 → **126** (#36 dönemi: Anadolu +4, kayıt sistemi +35, ic-ses +2, 
+340	K6	- **Kanonik section: 9 → genişledi.** Bu dönemde eklenenler: `ic-ses` (10., glyp
+341	K6	- **Yeni backend hattı — Vercel `/api/kayit` (KARAR 216):** Ödemeli/ücretsiz kay
+342	K6	- **MailerLite:** +4 grup (Mini Retreat `189209166869431831`, İstanbul `18920918
+343	K6	- **Notion Etkinlikler DB:** +Ücret (number), +Para Birimi (select TRY/USD/EUR),
+344	K6	- **Env (Vercel + .env.example):** `PUBLIC_HAVALE_IBAN` (public, lansmanda gerçe
+345	K6	- **Yeni dosyalar:** `src/pages/api/kayit.ts`, `src/lib/kayit.ts` (FORMAT_TIP, F
+346	RB	- **WhatsApp tek-kaynak:** `src/lib/api.ts → WHATSAPP_URL = 'https://wa.me/15551
+347	RB	- **BotZ bot platformu (n8n + Notion, GitHub'dan ayrı):** n8n "Ocak ai Bot" work
+348	K6	- **Mevcut branch durumu (#36 sonu):** çalışma `astro-iskelet`, working tree tem
+349	STRUCT	
+350	STRUCT	
+351	STRUCT	
+352	RN	**Notion workspace yapısı:** Site İçerik (Sayfalar, SSS) · Operasyon (Etkinlikle
+353	STRUCT	
+354	RN	Tam mimari + database property listeleri + view yapıları: Arşiv KARAR 56-60, 73-
+355	STRUCT	
+356	STRUCT	---
+357	STRUCT	## SOHBET SONU AÇIK ITEM'LAR
+358	STRUCT	
+359	K8	**GÜNCEL AÇIK ITEM LİSTESİ:** yukarıdaki DURUM bölümündeki üç blok birlikte esas
+360	STRUCT	
+361	K8	*(Eski dönem açık-item listeleri — #34 sonu v2 ve öncesi — `ocak-kronoloji.md`'y
+362	STRUCT	
+363	STRUCT	---
+364	STRUCT	
+365	STRUCT	## ÖNEMLİ NOTLAR
+366	STRUCT	
+367	K8	- Bu Çekirdek, OCAK'ın yaşayan navigasyon belgesidir. Detay/tarihçe/brainstorm i
+368	K8	- Advaita projeyi gördü, bayıldı, OCAK ismini onayladı.
+369	K8	- İlk kohort hedefi: Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.
+370	K8	- Site lansmanı: **15 Temmuz 2026** (KARAR 276 ile 21 Haziran'dan çekildi, "Yaz 
+371	K8	- **Fiyatlandırma:** Bu dokümanda rakam tahmini yapılmaz. Gelir mimarisi aşaması
+372	K8	- Çekirdek nadiren değişir — yeni KARAR'lar Arşiv'e eklenir, Çekirdek'te DURUM s
+373	K8	- Kaan kurucu ortak olarak site sayfalarında görünmüyor — operasyonel rol iç tar
+374	RN	- **Notion içerik yazım disiplini (KARAR 118):** Kaan Notion'da içerik yazarken 
+375	RS	- ⚠ **Form-anchor / kayıt CTA mimarisi GÜNCELLENDİ:** aşağıdaki KARAR 125+126 ka
+376	K6	- **Form yerleşim pattern'i (KARAR 125 + 126, tarihsel):** Form içeren sayfalard
+377	RS	- **Yeni kanonik section'lar (KARAR 126):** `mini-cta` (sayfa-sonu yumuşak köprü
+378	RS	- **İletişimForm (KARAR 126):** /iletisim sayfasına yeni form component, 5. form
+379	RN	- **Notion içerik yazım rehberi (KARAR 125 sonrası güncel):** `notion-icerik-yaz
+380	RN	- **Sayfa içi Notion linkler (KARAR 119 + 120):** Notion'da inline link / page m
+381	K6	- **#26 yeni component'ler (KARAR 121 + 122):** AtesMektuplariCTA (statik blok, 
+382	K6	- **#27 yeni component + atmosfer (KARAR 124):** /iletisim'de AtesMektuplariCTA 
+383	K6	- **Başvuru altyapısı çerçevesi (KARAR 123):** Lansman'da `/anadolu` + `/advaita
+384	K6	- **Hero section retrofit boşluğu (KARAR 124 düzeltme — KARAR 93):** KARAR 93 re
+385	K6	- **CANLI DURUM (KARAR 149 — Plan B sessiz canlı + KARAR 150 #34B Brief J/L Prom
+386	RP	- **Acil rollback protokolü (KARAR 149):** Bug çıkarsa zincir hız sırasıyla:
+387	RP	  - **Vercel deployment rollback** → Vercel UI → Deployments → son sağlam deploy
+388	RP	  - **Notion içerik bug'ı** → Notion düzelt + "Yayınla" checkbox işaretle → Verc
+389	RP	  - **Kod bug'ı (CC)** → CC fix + commit + push astro-iskelet → Vercel auto-rebu
+390	RP	  - **Apps Script bug'ı** → Google Workspace editor → Edit (pencil) → New versio
+391	RP	  - **Hızlı arka arkaya commit/Notion edit** sıralama bozar (yarış kuyrukta) — b
+392	RP	- **Vercel CLI deploy disiplini (ÇÖZÜLDÜ #35, KARAR 192-193):** `--prod=false` s
+393	RP	- **Vercel env değişkenleri disiplini:** `PUBLIC_` prefix'li env'ler (GTM ID, Pi
+394	RS	- **GTM mimari ayrımı (KARAR 146):** Kod tek tracking platform bilir — GTM. Meta
+395	RS	- **Layout noindex prop standardı (KARAR 147):** `src/layouts/Layout.astro` `noi
+396	RN	- **Notion property whitelist mantığı (KARAR 150 #34A pedagojisi):** `src/lib/no
+397	RP	- **KARAR 150 tanı disiplinleri paketi (#34 birleşik pedagojisi):** 9 alt-madde 
+398	K6	- **KARAR 151 form-anchor success state persistence — ÇÖZÜLDÜ (#35 dönemi, KARAR
+399	K6	- **KARAR 152 bot koruma — honeypot ÇÖZÜLDÜ (#35 dönemi, KARAR 194):** 5 form gö
+400	RP	- **KARAR 130 statü güncellemesi (#34B sonrası):** "Tepedeki navigator altındaki
+401	STRUCT	
+402	STRUCT	---
+403	STRUCT	
