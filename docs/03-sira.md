@@ -26,12 +26,13 @@ Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam 
 | # | iş | kim | nerede | ön koşul | nasıl açılır |
 |---|---|---|---|---|---|
 | 1 | **ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh` | CC | repo | yok | brief yazılacak (Claude.ai) |
-| 2 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
-| 3 | **B36** — sığ kaynak satırları `#k` çapasına terfi (+B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | yok — B32 kapandı | ledger + ilgili dilimler |
-| 4 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
-| 5 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
-| 6 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
-| 7 | **B38** — ledger çapa denetimi, örneklem bazlı (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 | `02-borclar.md` B38 — örneklem numaralarını Kaan verir |
+| 2 | **B39** — `ocak-kaynak-kanonu.md` + `Ocak-Mufredat.md` dağıtımı (447 satır, evsiz) | Claude.ai | ayrı sohbet | yok | `02-borclar.md` B39 — B32 deseni |
+| 3 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
+| 4 | **B36** — sığ kaynak satırları `#k` çapasına terfi (+B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | yok — B32 kapandı | ledger + ilgili dilimler |
+| 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
+| 6 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
+| 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
+| 8 | **B38** — ledger çapa denetimi, örneklem bazlı (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 | `02-borclar.md` B38 — örneklem numaralarını Kaan verir |
 
 **Hiçbiri ADIM 4'ü kilitlemiyor.** ADIM 4 kuyruğun başındadır; B35 · B36 · 251 sırası tercih meselesidir. B38 tanımı gereği sonuncudur.
 

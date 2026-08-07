@@ -13,7 +13,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai** | B35 · B36 · B38 |
+| **Claude.ai** | B35 · B36 · B38 · B39 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -421,6 +421,40 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   gösterir.
 - **Kaynak:** B32 örneklem denetimi (7 Ağustos 2026, Kaan'ın seçtiği beş numara:
   19 · 176 · 295 · 376 · 461).
+
+## B39 — `ocak-kaynak-kanonu.md` + `Ocak-Mufredat.md` dağıtımı
+
+- **Sahip:** Claude.ai · **Tetikleyici:** ADIM 4 sonrası; sırasız.
+- **Sorun:** İki dosya hiçbir turda dağıtılmadı. ADIM 3 Pilot'u, B32 Referans'ı
+  dağıttı; bu ikisi hiçbir adımın kapsamına girmedi. Geçiş planı ikisini ölçüm bloğunda
+  sayıyor ama HEDEF YAPI'da hedefleri yok.
+- **Ölçüm (8 Ağustos 2026):** `docs/ocak-kaynak-kanonu.md` 172 satır ·
+  `docs/Ocak-Mufredat.md` 275 satır — toplam 447. Örtüşme testi
+  (`_arsiv/ocak-referans-v1.md` + `10-marka.md` + beş kronoloji dilimi + `00-devir.md`,
+  7-kelimelik shingle, 60+ karakterlik satırlar): **237 satırın 226'sı (%95,4)** hiçbir
+  dağıtılmış kaynakta yok. *Düzeltme 04 bu ölçümü **231/232 (%99,6)** olarak yazmıştı;
+  CC yeniden ürettiğinde 226/237 çıktı ve her eşikte (~40/50/60/70/80 karakter) oran
+  %95 civarında kaldı. İki rakam da kayda geçti — hangisinin yönteminin doğru olduğu
+  B39'un ADIM 0'ında belirlenir (KARAR 465).* Sonuç değişmiyor: içerik evsiz.
+- **Neden borç:** iki dosya repoda duruyor ve Advaita kopyalarıyla birebir
+  aynı — silinme riski yok. Sorun erişilebilirlik: 447 satır `docs/`
+  mimarisinin dışında, hiçbir `20-ref-*` dosyasına ait değil, `baglam.sh`
+  hiçbir profilinde görünmeyecek. Kaybolmuyorlar, bulunamıyorlar.
+- **Muhtemel hedefler** (kesim anında kararlaşır, şimdi bağlayıcı değil):
+  müfredat → `20-ref-program.md` · kanon anlatısı ve ad kökü → `20-ref-marka.md` ·
+  `/adimiz` sayfa tarifi → `20-ref-site.md` · tema havuzu → içerik motoru olduğu için
+  `20-ref-icerik-dili.md` adayı.
+- **Yöntem:** B32 deseni — envanter, çakışma listesi, bölme haritası, `sed` ile
+  satır-aralığı kopyalama, `_arsiv/`'e taşıma. Ledger dönüşümü aynı turda (KARAR 467);
+  `kaynak` sütununda bu iki dosyayı gösteren satır **yok** (8 Ağustos'ta sayıldı, 0).
+- **İşaretlenen, kapsam dışı:** `docs/sayfa-yazim-rehberi.md` (219 satır) da
+  HEDEF YAPI'da sayılmıyor. Ama aynı sınıf değil — KARAR 111 ile doğmuş canlı
+  bir kod sözleşmesi, `docs/` içinde duruyor ve `20-ref-notion.md` ona işaret
+  ediyor. Sorunu "dağıtılmamış" değil, "planda sayılmamış". Çözümü dağıtım
+  olmayabilir: kendi başına duran bir dosya olarak kalması meşru, o zaman
+  düzeltilecek olan HEDEF YAPI'dır. B39'un ADIM 0'ında karara bağlanır,
+  kapsamı şimdiden genişletilmez.
+- **Kaynak:** ADIM 4 açılış paketi hazırlığı, 8 Ağustos 2026.
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)

@@ -259,11 +259,21 @@ bu yana kaydı. Plandan brief yazan, önce bu listeyi okur.
 | 3 | `baglam.sh` dört profil (`kod · icerik · marka · bot`) | `20-ref-program.md` hiçbir profile girmiyor; `marka` profili artık `10-marka.md` **+** `20-ref-marka.md` görmeli | B32 |
 | 4 | sohbet sonu patch'i **dört** bölüm | **beş** — `03-sira.md` eklendi | KARAR 468 |
 | 5 | `durum` enum **yedi** değer | **dokuz** — `KULLANILMADI` (6 satır) ve `REZERVE` (1 satır) ledger'da fiilen kullanılıyor | KARAR 456 |
+| 6 | ölçüm bloğu `ocak-kaynak-kanonu.md` (172) ve `Ocak-Mufredat.md` (275) sayıyor | **HEDEF YAPI'da ikisinin de hedefi yok** — hiçbir ADIM kapsamına almadı. 447 satır `docs/` mimarisinin dışında duruyor; B39 açıldı. `sayfa-yazim-rehberi.md` (219) de sayılmıyor, ama farklı sebeple | 8 Ağustos ölçümü |
 
 **En riskli olan 3 ve 5.** ADIM 4'ün `baglam.sh`'ı beş dosyaya göre kurulursa iki
 `20-ref-*` hiçbir profile girmez — planın "manifest satırı" ile önlemeye çalıştığı
 sessiz kırılmanın ta kendisi. `ocak-kararci` yedi değerlik enum'la yazılırsa iki durum
 tanımsız kalır.
+
+**Altıncısı planın kendi kör noktası:** ölçüm bloğu yedi dosya sayıyor, HEDEF YAPI
+beşine ev veriyor. `ocak-site-icerik.md` `_uretilen/`'e gidiyor (türetilmiş),
+`ocak-marka.md` `10-marka.md` oluyor — ama kaynak kanonu ve müfredat hiçbir kutuya
+düşmüyor. Planı yazan sohbet bunu fark etmedi; üç tur sonra ADIM 4 hazırlığında görüldü.
+**Aynı listede üçüncü bir dosya var, ama aynı sebeple değil:** `sayfa-yazim-rehberi.md`
+(219 satır) de HEDEF YAPI'da sayılmıyor — o dağıtılmamış değil, planda sayılmamış.
+KARAR 111 ile doğmuş canlı bir kod sözleşmesi, `20-ref-notion.md` ona işaret ediyor;
+kendi başına durması meşru olabilir, o zaman düzeltilecek olan HEDEF YAPI'dır.
 
 **Ayrıca:** KARAR 461'in ledger `kaynak`'ı bu dosyayı gösteriyor, satır numarası yok —
 sığ çapa, B36 kapsamında.
