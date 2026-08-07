@@ -97,3 +97,163 @@ tam metni `90-kronoloji/2026-0{5,6,7}.md`'de birebir durur.
 *Yukarıdaki gövde `ocak-pilot.md` v52'den birebir taşındı. Bayat olduğu kanıtlanan
 bloklar (Apps Script hattı, "CANLI DURUM astro-iskelet production" beyanı) buraya
 alınmadı — `90-kronoloji/`'ye indi.*
+
+---
+
+*Aşağıdaki gövde `ocak-referans.md` v46'dan **birebir** taşındı (B32, 7 Ağustos 2026).
+Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi:
+`docs/_arsiv/_bolme-haritasi-referans.tsv`.*
+
+---
+
+## A.15 — SİTE MİMARİSİ (KARAR 50-55, 83, 85, 86, 87)
+
+### Master Metin İki Yerde (KARAR 54)
+
+Kadınları ağlatan ana metin (Sohbet #6'da validasyon almış) iki yerde yaşayacak:
+- **Ana Sayfa:** Kısaltılmış, scroll deneyimi halinde
+- **/hikaye:** Tam metin + KÖZ metaforu (6 katmanlı detay) + beşli sentez detayı
+
+### Advaita & Ekip Odası Durumu (KARAR 90, v2 KARAR 124)
+
+| Sayfa | Durum |
+|---|---|
+| /advaita | Onay Bekliyor (v1) — Üçüncü tekil OCAK sesi (KARAR 55), KARAR 47 görünür, alkimi sembolleriyle 4 modalite kümesi, IG alıntıları blockquote, "Bir ateş, çok ocak" |
+| /ekip | **v2 (KARAR 124 #27 Brief B)** — Notion'da güncel yapı: Şu An + Çekirdek 5 rol simya sembolleriyle (🜂 Nefes & Beden / 🜄 Psikolog · Terapist / 🜁 Ses & Sanat / 🜃 Hareket & Dans / 🜔 Kadın Sağlığı opsiyonel) + Dönen Konuklar + Çıraklık 4 satır tablo (Ay 1-6 / Ay 6-9 / Ay 9-12 / Yıl 2) + Çoğalma "Bir Ateş, Çok Ocak". KARAR 47 + KARAR 89 ("bir kurucu ortak taşıyor") açıkça konuşuyor, Kaan görünmüyor ✓, portre yok ✓, "Bir Sonraki [X]" yok ✓ orientasyon sayfası |
+
+### İletişim Odası Durumu (KARAR 90, KARAR 124 page override)
+
+| Sayfa | Durum |
+|---|---|
+| /iletisim | **v1 + page override (KARAR 124 #27 Brief C)** — Mail (selam@ocak.biz), WhatsApp asistanı (açık konuşulur, bot olduğunu söyler), Instagram (@ocak.life + @advaita_hayatladans), Konum (İzmir evi, açık adres yok), Ateş Mektupları AtesMektuplariCTA pattern (KARAR 121 beşinci kullanımı, ana sayfa form'a jump link), conversational SSS. `src/pages/iletisim.astro` page-level override (KARAR 119 paterni). Senaryo A doğrulandı: `## section: ates-mektuplari` plugin OMIT_SECTIONS yakaladı, page override ile CTA component instance |
+
+### Section Etiketi Retrofit Turu (KARAR 92)
+
+Bazı sayfalarda `## section: name` + (hero için) `overline: AD` etiketleri var, bazılarında yok. `/hikaye`, `/advaita`, `/ekip`, `/iletisim` standart taşıyor — diğer 15 sayfada eksik. Bu etiketler renderer/CSS class altyapısının ön şartı:
+
+- `section: hero` → tam genişlik, radial glow, büyük serif başlık, alt overline (krem renk, harf aralığı geniş)
+- `section: siradaki-kapi` → üç sütun H3 kart grid'i
+- `section: bir-sonraki` → blockquote, Köz vurgulu, CTA buton
+- `section: sss` → accordion, daraltılabilir
+- Diğer section'lar → standart prose
+
+`section: name` satırı CSS class'a dönüşür (`<section class="ocak-hero">`); `overline:` satırı hero üst etiketi için ayrı field. Bunlar olmadan parser kararsız — ya hepsi düz prose olur ya da regex tahminiyle çalışır, ikisi de kırılgan.
+
+**Karar:** #20 (kod entegrasyonu) öncesinde ayrı bir retrofit turu açılır. Eksik sayfalar Notion'dan toplanır, bir oturumda section etiketleri standartlaştırılır. İçerik kararı değil mekanik iş — ayrı sohbette toplu yapmak hata riskini azaltır.
+
+---
+
+### 12–20 Temmuz 2026 eklemesi — Liste ailesi tek gramer (KARAR 405, 411-419)
+
+**Sorun:** Sitede **dört liste lehçesi** yaşıyordu — format kartları (panel tint + ember border + kısa ALTIN divider), /araclar accordion (ray + kısa ALTIN divider), /advaita accordion (ray + açık başlığa TAM EMBER KUTU), takvim satırları (ray + hairline + featured tint).
+
+**Tek gramer (KARAR 411):** Tek liste komponent stili `.liste__oge` + `collapsible` bayrağı. Her modda aynı iskelet: **sol ray** (2px, nötr `--ray-notr` / aktif `--ember`) · **başlık satırı** (Cormorant italik ~22-26px) · **italik tagline** (`--cream-soft`) · **30px 1px ember kısa çizgi** (tagline varsa) · **gövde**. **Ember dozu DURUM anlatır, dekor değil.** Format kartlarındaki panel tint tamamen kalktı (çıplak kömür üzerinde tipografi). Liste bağlamındaki **altın divider'lar ember'e döndü** — altın yalnız vurgu bloklarında (`buyuk-vurgu`/`manifesto-vurgu`/inline altın) kalır (KARAR 210 hattının devamı). /advaita açık-başlık ember-kutusu kaldırıldı. Doğrulama grep'leri: liste bağlamında altın divider = 0, panel tint yalnız takvim featured, /advaita ember-kutu = 0.
+
+**Meta-slot iptali (KARAR 412):** Statik açık listelerde sağ meta etiketi ("tek akşam" / "6 Hafta", suffix'ten parse) **tamamen kaldırıldı**; süre bilgisi gövdeye doğal dille girdi. Accordion'da +/× kalır, yanında meta olmaz. Başlık suffix strip guard korundu ("—" artığı görünmesin).
+
+**Statik/accordion kanonu (KARAR 405 → 413):** İlk ölçüt sayfa türüne bağlıydı (karar sayfaları = statik açık, envanter/derinlik = accordion) ve /atolye bu ölçütle **karar sayfası** ilan edildi — ölçüt liste uzunluğu değil *seçim mi merak mı* (KARAR 405). Uygulamada 10 öğelik statik liste sayfayı aşırı uzattı; ölçüt **liste doğasına** kaydırıldı (KARAR 413): karar-kütlesi küçük ve taahhüt-ağırlıklı liste → içeriğe göre; **dönen envanter** ("rafta dönenlerden bir avuç" = raf doğası) → accordion, karar sayfasında bile. Sonuç: tüm karar-sayfası listeleri accordion'a döndü (/seremoni `turler`, /mini-retreat `temalar`, /acik-kapi `formatlar`, /atolye `atolyeler` + `seri-atolyeler`) ve **her accordion section'ında ilk öğe `<details open>` başlar** — boş başlık listesi "ölü liste" hissini kırar; native `<details name>` grubu tekil-açık davranışını korur.
+
+**KARAR 336 satır-scope revizesi (KARAR 414):** KARAR 336 iptal değil **rafine** edilir. Ember-durum ayrımı yalnız `variant='satir'` (takvim listesi) için geçerlidir: nötr satır ash ray 2px, featured satır ember 2px + `--ember-alpha-08` tint. `variant='kart'` (dar kutu, home, detay) ember çizgisi **KALIR** — tek başına duran kart doğası gereği vurgudur, "ember = durum" grameriyle çelişmez.
+
+**Geçersiz DOM fix (KARAR 416):** `<summary>` içine `<h3>` konmaz — heading content, summary'nin phrasing-content bağlamında HTML5 spec ihlalidir. Tarayıcı tolere eder ama flex davranışı bozulur: `h3` summary width'ine stretch olup başlıkları görsel ortalar ve **ray merdiveni** yaratır. Üç tur CSS (text-align / margin-left / justify) tutmadı çünkü sorun CSS değil geçersiz DOM'du. Çözüm: `<span class="liste__baslik" role="heading" aria-level="3">` + işaret span; semantik ARIA ile korunur. Statik `<article>` içinde gerçek `<h3>` kalır (orada spec'e uygun). ⚠ **Yapısal borç:** `aria-level="3"` sabit — sayfadaki H2 section başlığı hiyerarşisiyle tutarlılık post-launch erişilebilirlik turunda teyit edilmeli.
+
+**İki-section dikey ritim (KARAR 418):** Notion `X-intro` (H2 + intro P) + `X` (accordion) iki ayrı section üretir; baseline `padding: 48 32 64` her ikisine uygulanınca ~130-200px boşluk doğuyordu (H2 havada, liste kopuk). **Explicit 4-çift** selector kullanıldı (`temalar-intro` / `turler-intro` / `formatlar-intro` / `seri-programlar-intro` + sonraki accordion'lar): intro `padding-bottom: 0`, accordion `padding-top: 0`. Geniş `[data-section$="-intro"]` selector'ü **reddedildi** — /araclar (`arac-kutusu-intro`) + /anadolu (`evreler-intro`, `aramizda-intro`) regresyon riski. `--space-7` negatif margin yalnız `atolyeler + seri-atolyeler` çiftinde (iki accordion arası geçiş, intro değil).
+
+**Token:** `--ember-alpha-08` featured tint olarak tokenize edildi (KARAR 415, mevcut ember-alpha migrasyon borcunun kısmi ödemesi); `--ray-notr` eklendi; tagline mevcut `--cream-soft`. Ölü blok temizliği (KARAR 417): `section[data-section^="raf-"][class^="ocak-raf-"]` CSS bloğu (plugin böyle wrap üretmiyor) + `araclar.astro` build-time HTML rewrite override (plugin çıkışıyla eşleşmiyor) silindi.
+
+### 12–20 Temmuz 2026 eklemesi — Kayıt CTA mimarisi (KARAR 406, 423-428)
+
+**Kırılma:** `kayit-cta` section'ı **üç kod yolundan** render ediliyordu — Yol A remark plugin `transformKayitCta` (etkinlik detay/site-rehber, parlak buton), Yol B `KayitCTA.astro` component (7 format landing, soluk link), Yol C `SonrakiBulusma.astro` (home, parlak buton) — iki farklı görsel gramer (`.ocak-kayit-cta__buton` vs `__link`). Ayrıca buton **metni** format-sabit `KAYIT_CTA_LABEL[slug]` tablosundan geliyordu ama gerçek akış etkinlik-bazlıydı (`Etkinlikler.Kayıt Tipi`): /mini-retreat "Başvur" derken Direkt'e, /yolculuk "Yerini ayır" derken Başvuru'ya düşüyordu — **metin yalan söylüyordu.**
+
+**Ara durak (KARAR 406, emekli):** Marker `form-anchor` → `kayit-cta` yeniden adlandırılırken `splitBodyByMarkers` fragment listesine eklenmemişti; `KayitCTA.astro` **hiçbir sayfada basılmıyordu** ve buton görünmeye devam ettiği için sessiz kaldı. Çözüm B ile marker Astro component instance'ına delege edildi (`splitBodyByMarkers` case + `PageContent` branch + `kayitCtaProps` registry + plugin fallback izi). Üç gün sonra section tümden emekli edilince bu çözüm de düştü.
+
+**İki-section mimarisi (KARAR 423):** `kayit-cta` section'ı emekli edildi (`KayitCTA.astro`, `transformKayitCta`, `KAYIT_CTA_LABEL`, `resolveKayitCtaHref`, `kayitCtaProps`, `PageContent` handler kaldırıldı; `data-section` attr `kayit-btn`'e rebrand). CTA iki section'da toplandı: **`sonraki-bulusma`** (kart + buton + "Diğer tarihler →" `/takvim#[format]`) ve **`mini-cta`** (serbest bağlam, kırmızı buton). `isKayitFormat` yaşamaya devam eder. KARAR 218 (slug-otomatik hedef) mantığı devralındı; KARAR 307/332/334/335 revize edildi.
+
+**Buton metni etkinlik tipinden (KARAR 424):** `Kayıt Tipi = Direkt` → "Yerini ayır →"; `= Başvuru` → "Başvur →"; etkinliğe bağlı değilse (format sayfası kapanışı) nötr → "Yerini ayır →". Notion link metni butona **taşınmaz**, buton kendi sözlüğünü kullanır. **Otorite netleştirmesi:** sayfa CTA butonu *ikincil davet tabelasıdır*; asıl kayıt tipi otoritesi `/[format]/kayit` form submit runtime'ındadır (`KayitFormu.astro:1560 direktAktif()` seçili option'ın `data-kayit-tipi`'sini okur).
+
+**`KayitBtn.astro` primitive (KARAR 425):** Üç mod — Mod A etkinliğe bağlı (`etkinlik` prop → tip metni + hedef `/[format]/kayit`), Mod B nötr (`format` prop). `sonraki-bulusma` `liste[0]`'dan besler (ek fetch yok), `mini-cta` bağlamdan, etkinlik detay URL slug'ından.
+
+**`mini-cta` esnek link-tüketimi (KARAR 426):** `transformMiniCta` gövdedeki son child "paragraph > link" ise **tüketir** (ayrı link olarak kalmaz), yoksa doğrudan buton emit eder. **Boş `section: mini-cta` marker'ı meşru girdidir**, warn üretmez — Kaan Notion'da elle link silmek zorunda kalmaz. `site-rehber` + `anadolu` bypass korunur.
+
+**TEK GENİŞLİK GERÇEĞİ (KARAR 427, KALICI):** `atmosfer.css:1538-1552` **dört section'a** özel genişlik kolonu tanımlar (`etkinlik-takvimi` + `sonraki-bulusma` + `kayit-btn` + `mini-cta`): mobil `max-width:none; padding-inline:0`, desktop `viewport/3`. **Yeni bir CTA/kart section eklenirse bu listeye ZORUNLU eklenir**; eklenmezse sessizce baseline prose (38rem) alır ve geniş çıkar. Gizli global kural = sessiz kırılma riski.
+
+**Etkinlik detay kartı (KARAR 428):** `<EtkinlikListe etkinlikler={[etkinlik]} />` kullanır — home + format sayfası `SonrakiBulusma` ile **birebir** (satir varyantı). Hardcoded `EtkinlikKart variant="kart"` + orphan `.sonraki-bulusma__liste`/`__item` (CSS'te hiç tanımlı değildi) düştü; kart sola-hizalı + butonla aynı max-width.
+
+### 12–20 Temmuz 2026 eklemesi — Kayıt formu UI (KARAR 420-422)
+
+**Çok-satırlı rich_text parse tek kaynak (KARAR 420):** `parseKayitSorulari`'nın gövdesi `parseRichTextLines(raw)` jenerik fonksiyonuna çıkarıldı, eski ad geriye-uyumlu **alias** olarak bırakıldı. Gerekçe: soru ↔ açıklama **indeks hizasının garanti** kalması için ikisinin birebir aynı split/trim/filter mantığını kullanması şart; ayrı ama "aynı görünen" fonksiyon drift riski taşır.
+
+**Placeholder binding (KARAR 421):** Notion `Kayıt Soruları Açıklama` (rich_text, `\n` ayraçlı) satırları ilgili niyet textarea'sının placeholder'ı olur: `ta.placeholder = aciklamalar[i]?.trim() || "Birkaç cümle yeter."`. Template default korunur, JS yalnız doluysa ezer. İçerik-sunum sınırı (KARAR 354): placeholder düz `plain_text`, CSS/bold/renk dayatması yok.
+
+**Dropdown option label (KARAR 422):** Label'da **etkinlik başlığı** (`baslik`, Notion title `Başlık`) kullanılır, `FORMAT_TIP[format]` **değil** — format etiketi buluşmalar arasında ayırt etmez, hepsi aynı olur (KARAR 283 ayrımının pratik uygulaması). Biçim: `{baslik} · {tarih}` + `— Dolu` eki; ayraç ` · ` (U+00B7, meta satırı kanonu). Ad her zaman gösterilir — "tek buluşmada gizle" koşulu reddedildi (ekstra dallanma/test yükü, kazanç düşük, KARAR 104 ruhu). Ad boşsa güvenlik ağı düz tarihe düşer.
+
+### 12–19 Temmuz 2026 eklemesi — Yedinci kapı, `/yolculuk` rolü, CTA buton dili (KARAR 429, 433, 438, 445; PARTİ 3/3)
+
+**`/yolculuk` rol değişimi ve üç katmanlı yapı (KARAR 429).** Sayfa "şemsiye sayfa (iki yolculuğun kapısı)" olmaktan çıkıp **"kavram + online ürün sayfası + iki türevin kapısı"** oldu. Katman sırası: (1) **KAVRAM** — `hero` + `intro` + `yolculuk-eksen` (görsel bileşen, dokunulmadı) + `yolculuk-nedir` + `yolculuk-kime`; (2) **ONLINE ÜRÜN** — `online-yolculuk` + `buyuk-vurgu` + `online-nasil`; (3) **İKİ TÜREV** — `iki-yolculuk`; ardından mevcut `siradaki-kapi`. Route değişmedi ama **SSR override**'a geçti (`src/pages/yolculuk.astro`, `prerender=false`; eskiden `[...slug].astro` render ediyordu); yeni route `/yolculuk/kayit` (Direkt kayıt, `KayitFormu format="yolculuk"`). Yeni serbest-prose section adları: `online-yolculuk`, `online-nasil` (`/yolculuk`), `ayni-esikler` (`/anadolu`), `format-yolculuk` (`/bulusmalar`). Meta Açıklama `/yolculuk` + `/bulusmalar` için güncellendi; Sayfa Başlığı değişmedi.
+
+**`/bulusmalar` altı → yedi kapı (KARAR 438).** Sıra: `format-acik-kapi` (1) → `format-cember` (2) → `format-seremoni` (3) → `format-atolye` (4) → `format-sehir-aksami` (5) → `format-mini-retreat` (6) → **`format-yolculuk` (7)** → `format-takvim` (**numarasız kapanış**, marker adına rağmen kapı değil). 1-6 numaralandırması değişmedi. **Yolculuk sona konur çünkü en ağır taahhüttür — sıra, taahhüt ağırlığı sırasıdır.** Blok mevcut altı formatın kalıbına birebir uyar: `## 7 · Yolculuk` → tek cümle vaat → ritim paragrafı → `Kim için:` → ok-sonda link. Hero "Altı kapı, bir ateş." → **"Yedi kapı, bir ateş."**; intro ikinci paragrafı altı→yedi. `ilk-davet`, `hangisinden-baslasam`, `siradaki-kapi` dokunulmadı.
+
+**Format sayfası kayıt CTA marker zorunluluğu (KARAR 433) ⚠ KARAR 423 ile SUPERSEDE.** Doğduğu andaki hâli: kutu-buton KayitCTA render'ı için Notion body'sinde `## section: form-anchor` marker'ı zorunludur; kod registry'de hazır tutar ama marker olmadan tetiklenmez. **Vaka:** marker yazılmadığı için KayitCTA render olmadı, yanlış hedefli prose linki (`[Yolculuğa kayıt →](/takvim)`) tek aksiyon olarak canlıya çıktı. **Bugünkü okunuşu:** marker mimarisi 16–20 Temmuz'da değişti (`form-anchor` → `kayit-cta`, KARAR 406 → `kayit-cta` tümden emekli, CTA `sonraki-bulusma` + `mini-cta`'ya taşındı, KARAR 423). Kural yaşamaya devam eder: **format sayfası kayıt CTA'sı için ilgili marker Notion'da bulunmalıdır ve brief bunu açıkça söylemelidir.** Marker-sözleşme ilkesi KARAR 409'da kalıcılaştı.
+
+**CTA buton dili — tek etkinlik vs havuz (KARAR 445) ⚠ KARAR 424 ile KISMEN SUPERSEDE.** Kural: buton bir TEK etkinliğe mi açılıyor, HAVUZA mı? (1) Tek belirli etkinlik kartı → tipini söyler (direkt "Yerini ayır →", başvurulu "Başvur →"). (2) Çok-tarihli/karışık-tipli havuza açılan format butonu → nötr "Tarihlere bak →". (3) Aynı etkinliğin diğer tarihleri için buton-altı ikincil satır "Diğer tarihler →". (4) Tek-ve-sabit akışlı format (Anadolu hep başvurulu) → doğrudan "Başvur →". **Korunan ilke — buton havuzu dürüstlüğü:** bir buton arkasındaki içerik havuzu karışık tipliyse hiçbir tip-vaadi dürüst olamaz. **Uygulama durumu:** maddeler (1) ve (3) KARAR 423-425'te doğrulandı ve canlıdır ("Diğer tarihler →" `sonraki-bulusma` içinde `/takvim#[format]`). **Madde (2) uygulanmadı** — KARAR 424'te etkinliğe bağlı olmayan nötr durum "Tarihlere bak →" değil **"Yerini ayır →"**dir.
+
+## A.20 — REKLAM VE ANALYTICS ALTYAPISI (KARAR 59)
+
+**Site #20 içine gömüldü** (ayrı dizi yok). Lansman öncesi kurulu olmalı — algoritma veri toplamaya başlasın.
+
+### Mimari
+
+```
+Site (ocak.biz)
+    ↓
+Google Tag Manager (tek script tag, merkez yönetim)
+    ↓
+├── Meta Pixel (IG + FB)
+├── Google Tag (Ads + GA4)
+└── (gelecek: TikTok, LinkedIn)
+```
+
+**Gerekçe — Neden GTM:** Doğrudan her platform kodunu site HTML'ine gömmek yerine, GTM bir "kod yöneticisi" gibi davranıyor. Siteye tek bir GTM kodu konuluyor, sonra **Meta Pixel'i, Google Tag'i, TikTok Pixel'i GTM arayüzünden** yönetiliyor. Yeni bir platform eklemek istendiğinde siteye dokunmadan ekleniyor.
+
+### Event'ler
+
+- **Page View** — Otomatik. Kadın siteye girdi → pixel ateşliyor. Temel.
+- **Lead** — Form gönderildi (Tally → success). Dönüşüm sinyali.
+- **Sign Up** — Email kayıt (Ateş Mektupları).
+- **Schedule** — Açık Kapı kaydı.
+- **Purchase** — Ödeme tamamlandı (Yıl 2+).
+
+### Reklam Yönetimi
+
+| Yıl | Yaklaşım | Detay |
+|---|---|---|
+| **Yıl 1** | Platform içi AI | Meta Advantage+ Campaign + Google Performance Max. Bu platformların kendi optimizasyonu küçük-orta bütçede ($500-3000) yeterli — manuel hedefleme yapmamak bile daha iyi sonuç veriyor. Ekstra araç gereksiz. |
+| **Yıl 2+** | n8n + Claude raporlama | Haftalık otomatik akış: Meta Ads API + Google Ads API'den veri → Claude'a context → "Bu hafta neye yatırım yapmalıyız, neyi kapatmalıyız" raporu → Notion'a yaz / mail at. Mevcut altyapıya sorunsuz oturur. |
+
+### Kreatif Üretimi
+
+- **Metin:** Claude (OCAK ses kılavuzuna uyumlu)
+- **Görsel:** Midjourney (görsel kimlik renk paleti ve atmosferi ile)
+- **Video:** Runway (kısa reels, story formatları)
+
+### Conversion API (CAPI) — Server-side Tracking
+
+- iOS 14+ ve ad-blocker'lar yüzünden pixel tek başına ~%30-40 veriyi kaçırıyor
+- Modern kurulumda kadın form doldurduğunda hem tarayıcı pixel'i hem server (n8n) Meta'ya event yolluyor — veri kaybı azalıyor
+- Yıl 1 ortasında devreye alınır. n8n zaten var, server-side event göndermek kolay.
+- Kayıp %30-40 → %10 aralığına düşer
+
+**Maliyet:** GTM + Pixel + Tag ücretsiz. Reklam bütçesi ayrı.
+
+### Kurulum Sırası (Site #20'de)
+
+1. GTM hesabı + container kurulumu
+2. Meta Pixel + Google Tag GTM'den yüklenir
+3. Standart event'ler (page view, lead, sign up)
+4. Test (Meta Pixel Helper + Google Tag Assistant)
+5. ocak.biz canlı, ilk reklamlar Açık Kapı'ya trafik (Haziran-Temmuz)
+
+**Erken kurulumun önemi:** Algoritma öğrenme zamanı ihtiyacı. Lansman günü reklam başlatmak için Pixel'in en az 2-3 hafta öncesinden veri toplamış olması ideal.
+
+---
+

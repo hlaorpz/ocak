@@ -50,10 +50,6 @@ metin/marka disiplinleri (`20-ref-icerik-dili.md`) · Notion sözleşmeleri (`20
 
 **TEK KLON DİSİPLİNİ (KARAR 463):** Bir repo, bir klon, bir aktif CC. İkinci CC penceresi ancak **ayrı repoda** meşrudur; aynı reponun iki klonu sessizce ayrışır ve hangisinin doğru olduğu ancak diverge push'unda anlaşılır. Doküman katmanı (`docs/`) ile kod katmanı (`src/`) aynı repoda yaşadığı için geçiş boyunca **birbirini bekler** — doküman brief'i çalışırken eşzamanlı kod brief'i verilmez. KARAR 150'nin (paralel CC seansı) klon ölçeğindeki kardeşidir.
 
-**Brief disiplini (KARAR 103):** Uzun brief'ler Claude Code input alanına yapıştırırken kırpılabilir. Üç yöntem: (1) parçalı yapıştır (Parça N/M formatında), (2) `~/Desktop/brief-XXX.md` dosyasına TextEdit Plain Text ile kaydet → Claude Code'a "oku ve uygula" de, (3) terminal'de `cat > ~/Desktop/brief.md << 'EOF'` heredoc'la yaz. Claude Code'da Enter mesaj gönderir, Shift+Enter yeni satır.
-
-**İleri iş bırakma yasağı (KARAR 104):** 10-15 dk içinde çözülecek konular sonraya bırakılmaz. Bilinçli erteleme (takvimli, "Brief 4'te" gibi) ile sürprize bırakma (npm audit, cache sorunu — "ileride bakarız" deyip unutmak) farklı. Her brief sonunda: "yarıda kaldı mı, kaldıysa neden?" sorusu. Cevap "kısa süreli ama lazım" ise hemen bitir.
-
 **Ara brief kalıbı (KARAR 119 sohbet kazanımı):** Sohbet ortasında küçük scope + sistemik etki + mevcut brief'i bloketmeyen bir bulgu çıkarsa, ara brief tasarlanabilir (5 satırlık mini şablon: bağlam → fix kod blok → doğrulama → commit mesajı → brief sırasına göre yeri). Örnekler: Brief 0 manifesto bold hierarchy (sohbet ortası önerildi, brief'in başına eklendi), Brief F Notion internal link normalize (#26 başına alındı, Brief A push sonrası bulgu). Ara brief değildir: yeni component/yeni schema/belirsiz scope/mevcut brief mantığını değiştiren karar. Görsel sapma baseline ölçeğindeyse → ara brief muhtemelen. Sayfa-özel ise → brief içi TODO veya eyeball kuyruğu. Veri/içerik sapması → Notion'da Kaan'da iş, brief'e bile girmez.
 
 **Üç-dallı merge brief deseni (KARAR 298):** Merge/geri-alması pahalı bir iş öncesi kapsam belirsizse (özellikle Pilot ifadesi ile CC salt-read'i çelişiyorsa), brief'i ADIM 0 doğrulamasının olası sonuçlarına göre önceden dallandır (A/B/C), riskli dala "DUR, raporla" guard'ı koy. CC ham çıktıyı (ör. `git log main..astro-iskelet`) görür görmez doğru dalı uygular, ekstra tur beklemez. **"reality overrides spec" (KARAR 102) Pilot'un kendisine de uygulanır** — Pilot bir varsayım taşıyabilir; ham kanıt üstündür.
@@ -94,3 +90,93 @@ metin/marka disiplinleri (`20-ref-icerik-dili.md`) · Notion sözleşmeleri (`20
 - **KARAR 150 tanı disiplinleri paketi (#34 birleşik pedagojisi):** 9 alt-madde — (1) DOM ölçümü ≠ render pixel, pixel sampling şart, (2) replaced element sizing tuzağı inline SVG'lerde CSS sizing zorunlu, (3) niyet sorgusu = commit gateway, (4) brief revizyon disiplini yeni Brief açmak, (5) "bölge n" yerine konum referansı, (6) CC öneri eleme — kanıtlı öneri ≠ doğru kapı, (7) "algısal damga" en az iki kanıt yöntemiyle doğrulanmadan kullanılmamalı, (8) üçlü Console tanı zinciri (snippet emit + network + dataLayer state) — GTM dışı tracking + iframe + 3rd party script bug'larında genel pattern, (9) dataLayer.push override dinleyici pattern — smoke test'in görünmez katmanı. Detay: ÇALIŞMA PROTOKOLLERİ > "Tanı disiplini rafinasyonu" + Arşiv KARAR 150.
 
 - **KARAR 130 statü güncellemesi (#34B sonrası):** "Tepedeki navigator altındaki taşan renk" Brief G'de "algısal effect" diye kuyruğa atılmıştı. Brief L pixel kanıtı çürüttü — gerçek bug'dı (GrainOverlay SVG sizing), 11 gün canlıda kaldı, commit `1332a37` ile çözüldü. "Algısal" kategorisi disiplin olarak revize edildi (KARAR 150 ruhu).
+
+---
+
+*Aşağıdaki gövde `ocak-referans.md` v46'dan **birebir** taşındı (B32, 7 Ağustos 2026).
+Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi:
+`docs/_arsiv/_bolme-haritasi-referans.tsv`.*
+
+---
+
+## A.23 — ÇALIŞMA PROTOKOLLERİ
+
+**Kritik kural — KIRPILMAZ:** Patch modu **sadeleştirme veya kırpma yapmaz.** Sadece ekleme veya değiştirme yapar. v11 → v12 → v13 geçişlerinde yapılan operasyonel detay sadeleştirme bir hataydı — master prompt **operasyonel hafıza**, kırpılırsa anlamını yitiriyor. 12 aylık çember tablosu, 20+ araç listesi, 9 eşik detayı, KÖZ 6 katman, çember akış 6 bölüm — bunlar ileride sayfa içeriği yazılırken temel referans. Bunlar kırpılmaz.
+
+### Brief Yapıştırma Disiplini (KARAR 103)
+
+**Tarih:** 22 Mayıs 2026 — Sohbet #19.
+
+**Sorun:** Claude.ai sohbetinden Claude Code'a uzun brief'ler yapıştırıldığında, terminal/input alanı bazen uzun input'u kırpıyor. Sohbet #19'da Brief 2 (~5K karakter atmosfer diff tablosu) yapıştırıldığında bir bölümü Claude Code'a ulaşmadı — Claude Code envanter aşamasındaki sapma sorularını tekrar etmeye başladı, brief'in tablo bölümünü hiç görmedi. Erken yakalandı, Esc ile temizlendi, brief parçalı verildi.
+
+**Üç güvenli yöntem:**
+
+1. **Parçalı yapıştırma:** Brief "Parça N/M" formatında bölümlere ayrılır, her parça ayrı yapıştırılır. Aralarda Claude Code'un "anladım, devamını bekliyorum" gibi onayı alınır. Sohbet #19'da Brief 2 ve Brief 3 bu yöntemle gönderildi.
+
+2. **Dosya yöntemi (önerilen büyük brief'ler için):** Brief metni `~/Desktop/brief-XXX.md` dosyasına kaydedilir (TextEdit → Format → Make Plain Text → Cmd+S, encoding UTF-8). Claude Code'a "~/Desktop/brief-XXX.md dosyasını oku ve içindeki talimatları uygula" denir. Kırpma sıfır.
+
+3. **Terminal heredoc:** `cat > ~/Desktop/brief.md << 'EOF'` → yapıştır → `EOF`. Tek hamlede dosya yazımı.
+
+**Claude Code input klavye kuralları:**
+- **Enter** → mesajı gönderir
+- **Shift+Enter** → yeni satır ekler (multi-line input)
+- **Esc** → açık seçenekli prompt'u iptal eder
+- **Cmd+A + Delete** → tüm input'u temizler
+- **Ctrl+C** → session'ı kırar (yeniden `claude` ile başlatılır)
+
+**Disiplin:** Astro sohbet dizisinin geri kalanında (#22-26 ve #21'in ikinci yarısı) Claude.ai default olarak parçalı veya dosya yöntemini önerir. Tek seferde yapıştırma sadece ~1K karakterin altındaki brief'ler için. Uzun brief = dosya. Bu disiplin sürpriz "input kırpıldı" hatasını ortadan kaldırır.
+
+### İleri İş Bırakma Yasağı (KARAR 104)
+
+**Tarih:** 22 Mayıs 2026 — Sohbet #19.
+
+**Sorun:** Brief 3a'da iki gözlem ileriye bırakılma riski taşıyordu: (1) npm cache izin sorunu — her install'da `--cache /tmp/...` workaround'u, (2) npm audit 9 zafiyet — "ileride bakarız." Kaan yakaladı: "İleriye genelde iş bırakmayalım, çözümleri 10-15 dk sürecekse. İleride sürpriz çıksın istemiyorum."
+
+**Karar:** 10-15 dk içinde çözülebilecek konular sonraya bırakılmaz. Eğer Claude bir çözümü "ileri için" not düşmek istiyorsa, önce şu soruyu sormalı: **kısa süreli mi (≤15 dk) yoksa gerçekten kapsamlı bir tur mu (≥1 saat)?**
+
+**İki kategori:**
+
+| Kategori | Tanım | Örnek (Sohbet #19) |
+|---|---|---|
+| **Bilinçli erteleme** | Takvimli, ayrı bir sohbete/aşamaya planlı | Brief 4 (5 Astro component) → bir sonraki sohbet. Notion canlı binding → #22. GTM/Pixel → #26. |
+| **Sürprize bırakma** | "İleride bakarız" denilip unutma riski | npm audit, npm cache izin, `@astrojs/check` yanlış dependency kümesi |
+
+İlk kategori takvimde yer alıyor — sürpriz değil. İkinci kategori şimdi bitirilir.
+
+**Sohbet #19'da uygulandı (Brief 3c + 3c-3):**
+- npm cache: `sudo chown -R kaan:staff ~/.npm` — kalıcı çözüm, workaround bitti
+- npm audit: tam inceleme yapıldı (kaynaklar, runtime etkisi, `--force` breaking analizi), karar "lansman sonrasına ertelendi" olarak dokümante edildi (`.claude/notes.md` "Bilinen Sorunlar"), gerekçe netleştirildi (dev tooling + SSG runtime etkisi yok + Astro 5→6 framework upgrade 1 ay kala tehlikeli)
+- `@astrojs/check` → devDependencies'e taşındı (tek satırlık hijyen iyileştirmesi)
+
+**Disiplin:** Her brief sonunda Claude kendine sorar: "Yarıda kalan bir şey var mı? Varsa: takvimli erteleme mi, sürprize bırakma mı?" Eğer ikincisi ise hemen bitirilir.
+
+**Patch protokolü:** Tam dosya yazılmaz. **KIRPMA YAPILMAZ** — sadece ekleme ve değiştirme.
+
+---
+
+### 12–20 Temmuz 2026 eklemesi — Metodoloji (KARAR 407-409, 419)
+
+**Notion marker'ı bir sözleşmedir (KARAR 409).** Section marker adları serbest metin değil — `splitBodyByMarkers` fragment listesi veya plugin switch case'iyle eşleşen **sözleşmedir**. Marker adı değiştirilmeden ya da yeni ad icat edilmeden önce CC'ye tek satır teyit sorulur ("X marker'ı hangi kapıya düşüyor?"). İçerik katmanındaki adlandırma kararları kod katmanıyla **atomik** yürür (KARAR 102 ailesinin genişlemesi). Fallback yollarına iz bırakılır (`<!-- kayit-cta-fallback -->`) — sessiz düşüş grep'le görünür olsun. *Vaka: `form-anchor` → `kayit-cta` yeniden adlandırması `KayitCTA.astro`'yu hiçbir sayfada render etmez hale getirdi; buton görünmeye devam ettiği için haftalarca fark edilmedi. **Sessiz fakirleşme en tehlikeli hata tipidir** — site "bozulmaz", özellik sessizce düşer.*
+
+**"Kod var" ≠ "output var" (KARAR 408).** Bir özelliğin durumu component dosyasındaki koda bakılarak verilmez; `dist`/build output grep'i şarttır. İlk ADIM 0 raporu Madde 2/4'ü "uygulanmış" saydı çünkü dosyada kod vardı — build output'unda hiç yoktu. Ayrıca **brief uygulandıktan sonra `notes.md`'ye brief adı + madde durumları + commit hash'leri yazılır**; aksi halde sonraki oturum aynı brief'i ikinci kez çalıştırır (fiilen yaşandı: ADIM 0 raporu Madde 1-6'nın zaten kodda olduğunu ortaya çıkardı, salt-read olmasa altı madde ikinci kez yamanacaktı).
+
+**Layout/ritim işlerinde Chrome-CC bağlantısı ADIM 0 şartı (KARAR 419, KARAR 355 uzantısı).** `.liste`/layout/dikey-ritim dokunuşlarında CC önce Chrome bağlar ve ADIM 0'da **computed CSS'ten** konuşur; statik CSS analizi tek başına yeterli sayılmaz. *Gerekçe: `liste-ailesi` oturumunda statik analiz 5+ turda gerçek px ile çelişti (merdiven px'i, başlık ortalama, kapalı öğe yüksekliği, section-arası boşluk, tek-seferlik ritmi); her seferinde Kaan DevTools computed değeri verince kaynak kesinleşti.* Bağlı ders: **bir CSS fix "tutmuyorsa" ve semptom tuhafsa, önce DOM geçerliliğini sorgula** — geçersiz markup, CSS ile kovalanan bir bug'ın gerçek kökü olabilir (KARAR 416 vakası).
+
+**CSS tanısında iç içe düğüm (KARAR 407).** `<p><del><em>…</em></del></p>` gibi yapılarda genel `em` kuralı dış rengi ezer; standalone-yükseltme seçicisi (`p:has(> em:only-child)`) fire etmez. Çözüm hardcode token değil **`color: inherit`** — kural "del içindeki vurgu del'in rengini bozamaz" evrenselliğini taşır ve spesifiklik hesabıyla (0,2,2 > 0,2,1) genel kuralı yener. Ayrıca: **CSS tanısında hipotezi erken sabitleme** — ilk hipotez standalone-yükseltme seçicisiydi, gerçek ezici genel `em` kuralı çıktı; brief "amaç"la yazıldığı için (harfle değil) CC doğru çözüme sapabildi.
+
+**Grep'te çekim varyantı tuzağı.** Türkçe'de kök + çekim varyantlarıyla aramak zorunludur: "külledi" araması "küllemiş"i kaçırdı ve bir maddeyi yanlışlıkla "çözülmüş" raporlattı.
+
+**Salt-read her maddede, listenin başında değil.** Liste bazlı çalışmada (ör. inceleme listesi) her madde kendi teyidini ister — liste eski dump'a göre yazılmış olabilir; maddelerin yarısı ya çözülmüş ya başka sayfaya taşınmış çıkabilir.
+
+**Aynı-kaynak parse ile indeks hizası (KARAR 420 genellemesi).** Birbirine indeksle eşleşen iki dizi (soru ↔ açıklama) **aynı** fonksiyondan beslenmelidir; "aynı görünen" ikinci bir fonksiyon drift üretir. Jenerik + alias deseni.
+
+**"Yeterince iyi" bir launch kararıdır.** Piksel-doğru ≠ göz-temiz, ve göz-temiz bile her zaman launch şartı değildir. /atolye ritim ince-ayarı 6-7 tur px kovaladıktan sonra "yeter" denip backlog'a alındı, merge bloklanmadı.
+
+**Kök-neden fix yan etki yayar.** Baseline padding sızıntısı fix'i statik `article`'lara da dokundu (başlıklar center→left); "iyi" denen sayfalar yeniden bakılmak zorunda kaldı. Kök fix'te göz turu **dokunulan tüm yüzeyleri** kapsamalı.
+
+**İçerik tutarsızlığı CSS ile bastırılmaz (KARAR 354 tatbiki).** Bullet sorununun kaynağı Notion'da 3 kart `ul/li`, 2 kart `p` tutarsızlığıydı; `content: none !important` yerine Notion içeriği düzeltildi — kök çözüm, `!important` borcu yok.
+
+**CC push-unutma nüksü.** Commit ≠ deploy. "Push edildi" ayrı teyit gerektirir; brief içi hatırlatma yetmeyebilir (ikinci brief'e madde eklenmesine rağmen tekrar oldu). Nihai teyit: Vercel'de commit görünürlüğü.
+
+**Brief evrimi: parça-parça delta → tek-kaynak temiz brief.** Paralel session'da birikmiş onay+delta parçaları karışıklık yaratır; tek konsolide brief daha güvenlidir. Ayrıca onaylı görsel kararını brief'e **kod olarak gömmek** (mock'un HTML/CSS'i) "onayladığım bu muydu" tartışmasını sıfırlar; belirsiz noktalar ADIM 0'da cevaplanacak **açık soru** olarak yazılır (CC sessizce seçim yapmasın).
+
