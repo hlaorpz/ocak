@@ -436,6 +436,11 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   CC yeniden ürettiğinde 226/237 çıktı ve her eşikte (~40/50/60/70/80 karakter) oran
   %95 civarında kaldı. İki rakam da kayda geçti — hangisinin yönteminin doğru olduğu
   B39'un ADIM 0'ında belirlenir (KARAR 465).* Sonuç değişmiyor: içerik evsiz.
+  - **Sapmanın olası kaynağı — karakter mi bayt mı.** "60+ karakter" eşiği
+    `awk length` ile ölçülürse Türkçe harfler iki bayt sayılır ve eşik
+    kayar: aynı kurulum 237 yerine 248 satır verir. B39'un ADIM 0'ında
+    yöntem sabitlenir (karakter sayımı, hangi araçla) ve rakamla birlikte
+    yazılır. Bu tuzak B36 ve B38'de de çıkacak.
 - **Neden borç:** iki dosya repoda duruyor ve Advaita kopyalarıyla birebir
   aynı — silinme riski yok. Sorun erişilebilirlik: 447 satır `docs/`
   mimarisinin dışında, hiçbir `20-ref-*` dosyasına ait değil, `baglam.sh`

@@ -34,7 +34,7 @@ Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam 
 | 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
 | 8 | **B38** — ledger çapa denetimi, örneklem bazlı (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 | `02-borclar.md` B38 — örneklem numaralarını Kaan verir |
 
-**Hiçbiri ADIM 4'ü kilitlemiyor.** ADIM 4 kuyruğun başındadır; B35 · B36 · 251 sırası tercih meselesidir. B38 tanımı gereği sonuncudur.
+**Hiçbiri ADIM 4'ü kilitlemiyor.** ADIM 4 kuyruğun başındadır; B39 · B35 · B36 · 251 sırası tercih meselesidir. B38 tanımı gereği sonuncudur.
 
 ---
 
