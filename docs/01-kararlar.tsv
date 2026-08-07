@@ -7,11 +7,11 @@ no	tarih	baslik	durum	iliski	kaynak
 404	2026-07	İmza cümleler eksen ayrımı — üçü de yaşar	KALICI		ocak-referans.md:141
 405	2026-07	/atolye karar sayfasıdır — ölçüt "seçim mi merak mı"	SUPERSEDE	→413	2026-07.md:1043
 406	2026-07	kayit-cta marker'ı component instance'a delege	SUPERSEDE	→423	2026-07.md:1043
-423	2026-07	kayit-cta emekli → sonraki-bulusma + mini-cta iki-section	AKTIF	←307,332,335,406,433 · SSR sayfalarda statik teyit yok	ocak-pilot.md:3
+423	2026-07	kayit-cta emekli → sonraki-bulusma + mini-cta iki-section	AKTIF	←307,332,335,406,433 · SSR sayfalarda statik teyit yok	2026-08.md:34
 424	2026-07	CTA buton dili — tek-etkinlik vs havuz revizesi	AKTIF	←334,445	ocak-referans.md:1221
-432	2026-07-12	Fiyat sayfada geçmez; "sembolik" de "yatırım" da denmez	KALICI		ocak-pilot.md:59
+432	2026-07-12	Fiyat sayfada geçmez; "sembolik" de "yatırım" da denmez	KALICI		2026-08.md:58
 433	2026-07-12	Format sayfası kayıt CTA'sı için Notion marker zorunluluğu	SUPERSEDE	→423	ocak-referans.md:1219
-444	2026-07	Sıklık sözü yasağı — "ayda en az bir" düştü, takvim gösterir	KALICI		ocak-pilot.md:63
+444	2026-07	Sıklık sözü yasağı — "ayda en az bir" düştü, takvim gösterir	KALICI		2026-07.md:42
 445	2026-07	CTA buton dili — tek etkinlik vs havuz kuralı	SUPERSEDE	→424 (kısmen)	ocak-referans.md:1221
 47	2026-02-19	İlk yıl Advaita merkezli + ekip geçiş zaman çizelgesi	AKTIF		2026-02.md:72
 93	2026-05-21	Section etiketi retrofit tamam — 13 sayfa, standart sabit	AKTIF		2026-05.md:86
@@ -25,7 +25,7 @@ no	tarih	baslik	durum	iliski	kaynak
 115	2026-05-23	#23 Brief 3 — ana sayfa override (hero OMIT) + form + proxy	AKTIF		2026-05.md:173
 116	2026-05-24	#24 QA pass + prose tipografi sistematik fix	AKTIF		2026-05.md:192
 123	2026-05-24	Lansman çerçevesi — "Brief I" terimi iptal, #28/#29 ayrımı	AKTIF		2026-05.md:537
-125	2026-05-25	Başvuru altyapısı + form temizliği tam tasarım	SUPERSEDE	→423 (CTA ayağı; başvuru route/DB yaşıyor)	ocak-pilot.md:361
+125	2026-05-25	Başvuru altyapısı + form temizliği tam tasarım	SUPERSEDE	→423 (CTA ayağı; başvuru route/DB yaşıyor)	2026-08.md:100
 146	2026-05-27	Brief I.1 — GTM container iskeleti	AKTIF		2026-05.md#k146
 150	2026-05-26	"Algısal" yasağı — en az iki kanıt yöntemi olmadan denmez	KALICI		2026-05.md:1872
 173	2026-05-31	Form validation katmanı — koşulsuz reset 5 form × 16 yer	AKTIF		2026-05.md:3192
@@ -51,11 +51,11 @@ no	tarih	baslik	durum	iliski	kaynak
 361	2026-07-05	Seri kartları çok-zincir düzeltmesi	AKTIF		2026-07.md:517
 364	2026-07	Legal metin PayTR → nötr "bankamızın sanal POS altyapısı"	AKTIF	←259,297,309	00-devir.md:12
 365	2026-07	Hero CTA hedefi funnel → manifesto dar-emit id	AKTIF		00-devir.md:12
-366	2026-07	Glow stop artırma denendi → banding, geri alındı	AKTIF		ocak-pilot.md:31
+366	2026-07	Glow stop artırma denendi → banding, geri alındı	AKTIF		2026-07.md:16
 373	2026-07	EtkinlikListe.astro tek kabuk — ortak bileşen	AKTIF	←330 · ⚠ EtkinlikKart hâlâ canlı, bkz B22	00-devir.md:12
-381	2026-07	Sabit değer reddi — gap dahil hesaplanır	KALICI		ocak-pilot.md:35
+381	2026-07	Sabit değer reddi — gap dahil hesaplanır	KALICI		2026-07.md:20
 383	2026-07	Çift-uçlu `pencereIcinde` — kapanış DAHİL, başlangıç HARİÇ	KALICI		00-devir.md:12
-384	2026-07	Statü hiyerarşisi — Dolu görünür, İptal gizli	KALICI		ocak-pilot.md:37
+384	2026-07	Statü hiyerarşisi — Dolu görünür, İptal gizli	KALICI		2026-07.md:22
 411	2026-07	Liste ailesi tek gramer — dört lehçe → `.liste__oge`	KALICI		00-devir.md:11
 412	2026-07	Meta-slot iptali — sağ meta etiketi kaldırıldı	AKTIF		ocak-referans.md:1175
 414	2026-07	KARAR 336 satır-scope revizesi — yalnız `variant='satir'`	AKTIF	←336	ocak-referans.md:1179
@@ -80,7 +80,7 @@ no	tarih	baslik	durum	iliski	kaynak
 346	2026-07-05	Beş desen mimarisi — raf-accordion / vitrin / …	KALICI		2026-07.md:491
 363	2026-07	Ödeme hattı — PayTR/sanal POS + Vercel slug geçişi	AKTIF	←297	00-devir.md:12
 390	2026-07	`/takvim#slug` ön-seçili filtre — reverse-türetme + click	AKTIF	→391	00-devir.md:12
-391	2026-07	`hashchange` + `pageshow(persisted)` eki	ACIK-BORC	B09	ocak-pilot.md:41
+391	2026-07	`hashchange` + `pageshow(persisted)` eki	ACIK-BORC	B09	2026-07.md:26
 402	2026-07	Portre dili site kanonu	KALICI	←441-448	00-devir.md:10
 429	2026-07	Buluşma kapısı sayısı ALTI → YEDİ (Yolculuk online)	KALICI	←438	00-devir.md:10
 22	2026-02-11	Gelir mimarisi mantığı	KALICI		2026-02.md:38
@@ -103,7 +103,7 @@ no	tarih	baslik	durum	iliski	kaynak
 120	2026-05-24	#26 Brief 0 manifesto strong hierarchy + Brief F link normalize	AKTIF		2026-05.md:371
 121	2026-05-24	#26 Brief G — buluşmalar 4 sayfa page-level migration	AKTIF		2026-05.md:372
 124	2026-05-24	#27 Yolculuk + Biz + İletişim odaları migration	AKTIF		2026-05.md:540
-126	2026-05-26	form-anchor registry pattern + mini-cta + buyuk-vurgu	SUPERSEDE	→423 (form-anchor ayağı; iki section yaşıyor)	ocak-pilot.md:361
+126	2026-05-26	form-anchor registry pattern + mini-cta + buyuk-vurgu	SUPERSEDE	→423 (form-anchor ayağı; iki section yaşıyor)	2026-08.md:100
 127	2026-05-26	Brief F.5 push tam + Açık Kapı Notion bind fix	AKTIF		2026-05.md:1335
 130	2026-05-26	Başvuru formu deseni unification — /[format]/kayit · /basvuru	AKTIF		2026-05.md:1639
 131	2026-05-26	Safari hero glow banding — radial-gradient engine kısıtı	ACIK-BORC	B11	2026-05.md:1640
@@ -127,22 +127,22 @@ no	tarih	baslik	durum	iliski	kaynak
 345	2026-07	Kart-grid reddi	KALICI	→346	00-devir.md:13
 354	2026-07-05	İçerik-sunum sınırı — Notion rich text doğal geçer	KALICI		2026-07.md:505
 355	2026-07-05	Canlı-build teşhis protokolü — ADIM 0 salt-read, `dist/` gerçeği	KALICI	→419	2026-07.md:509
-367	2026-07	Scroll indicator pulse → akış animasyonu, hero dibinde	AKTIF		ocak-pilot.md:31
-368	2026-07	Dip çizgisi global — plugin emit + atmosfer tek kural	AKTIF		ocak-pilot.md:31
-369	2026-07	CTA silik kor çerçeve + iOS hover-yapışma pattern'i	KALICI	←186	ocak-pilot.md:31
-370	2026-07	Ayrı ember gradyan katmanı reddi — sıcaklık tek kaynaktan	KALICI		ocak-pilot.md:31
-371	2026-07	`.hero { overflow: hidden }` kaldırıldı — empirik doğrulandı	AKTIF		ocak-pilot.md:31
+367	2026-07	Scroll indicator pulse → akış animasyonu, hero dibinde	AKTIF		2026-07.md:16
+368	2026-07	Dip çizgisi global — plugin emit + atmosfer tek kural	AKTIF		2026-07.md:16
+369	2026-07	CTA silik kor çerçeve + iOS hover-yapışma pattern'i	KALICI	←186	2026-07.md:16
+370	2026-07	Ayrı ember gradyan katmanı reddi — sıcaklık tek kaynaktan	KALICI		2026-07.md:16
+371	2026-07	`.hero { overflow: hidden }` kaldırıldı — empirik doğrulandı	AKTIF		2026-07.md:16
 374	2026-07	`variant='kart'` dalı silindi — dikey sapma rasyonalizasyonuydu	SUPERSEDE	→373 (sarmalama; dal ölü) · kartGorsel B30	EtkinlikKart.astro:49,80
-376	2026-07	Kart başlığı her yerde `span`	KALICI		ocak-pilot.md:35
-377	2026-07	Başlık birleştirme "En Yakın X" — `HOME_HEADING` silindi	AKTIF		ocak-pilot.md:35
-378	2026-07	Sahte kişiselleştirme reddi — "Sana uyan başka tarihler" atıldı	KALICI		ocak-pilot.md:35
-379	2026-07	Çizgi/kor sol-uç birleştirme + üst gri çizgi adjacent sibling	AKTIF		ocak-pilot.md:35
+376	2026-07	Kart başlığı her yerde `span`	KALICI		2026-07.md:20
+377	2026-07	Başlık birleştirme "En Yakın X" — `HOME_HEADING` silindi	AKTIF		2026-07.md:20
+378	2026-07	Sahte kişiselleştirme reddi — "Sana uyan başka tarihler" atıldı	KALICI		2026-07.md:20
+379	2026-07	Çizgi/kor sol-uç birleştirme + üst gri çizgi adjacent sibling	AKTIF		2026-07.md:20
 380	2026-07	Baseline `li` reset — tek fix üç iş (hizasızlık + boşluk + çift-çizgi illüzyonu)	AKTIF		2026-07.md#k380
-382	2026-07	Buton dili OCAK'laştırma geri alındı; 336 borcu kapandı	AKTIF	←334,336	ocak-pilot.md:35
-386	2026-07	n8n 6-haneli cron tuzağı	KALICI		ocak-pilot.md:37
-392	2026-07	Hash'e bağlı davranış eyeball'ı hard-reload ile	KALICI		ocak-pilot.md:41
-393	2026-07	/bulusmalar bölüm ayracı kor gradient — Varyant B	AKTIF		ocak-pilot.md:41
-396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	AKTIF		ocak-pilot.md:41
+382	2026-07	Buton dili OCAK'laştırma geri alındı; 336 borcu kapandı	AKTIF	←334,336	2026-07.md:20
+386	2026-07	n8n 6-haneli cron tuzağı	KALICI		2026-07.md:22
+392	2026-07	Hash'e bağlı davranış eyeball'ı hard-reload ile	KALICI		2026-07.md:26
+393	2026-07	/bulusmalar bölüm ayracı kor gradient — Varyant B	AKTIF		2026-07.md:26
+396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	AKTIF		2026-07.md:26
 397	2026-07-28	Dönem güncellemeleri referans dosyasına yerinde işlenir	AKTIF	←145; 462 ile değişecek	00-devir.md:11
 399	2026-07	Rol/portre kalıbı — alan + çemberdeki an + kadının tarifi	KALICI		ocak-referans.md:143
 400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		ocak-referans.md#k400
@@ -465,3 +465,4 @@ no	tarih	baslik	durum	iliski	kaynak
 464	2026-08-06	Test ortamı TZ sabitlenir — `vitest.config.ts` → TZ:'UTC'	KALICI	←385 · ↔387 · kod teyitli 6 Ağu (vitest.config.ts:12)	vitest.config.ts
 465	2026-08-07	Çapa tekilliği ve doğrulama disiplini — çapa tek benzersiz satırdan, kriter dosyanın gerçeğinden	KALICI	←355 · ↔462	2026-08.md#k465
 466	2026-08-07	`kaynak` sütununun iki biçimi — `#kNNN` elle doğrulanmış çapa, `:NNNN` mekanik işaretçi	KALICI	←456	2026-08.md#k466
+467	2026-08-07	Dosya dağıtımı ledger dönüşümünü içerir — eşleme + dönüşüm + doğrulama aynı işin parçası	KALICI	←456 · ↔465	2026-08.md#k467

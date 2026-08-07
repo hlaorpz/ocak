@@ -2,7 +2,7 @@
 
 **Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) — B05·B06·B13·B20 kapandı, B34·B35 açıldı
 
-**Durum:** 37 madde · **22 açık** · 15 kapandı/çözüldü/geri çekildi
+**Durum:** 37 madde · **21 açık** · 16 kapandı/çözüldü/geri çekildi
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -15,7 +15,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
 | **Claude.ai** | B35 · B36 |
 | **Claude.ai (ADIM 3b sonrası)** | B32 |
-| **CC (mekanik)** | B37 |
+| **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
@@ -229,6 +229,13 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   doğrulanamayan satır yazılmaz).
 - **Not:** `ocak-referans.md`'nin başındaki "DÖNEM GÜNCELLEMELERİ KRONOLOJİDE" haritası
   bu işin giriş kapısıdır — hangi A.X'in hangi dönem bloğunda güncellendiğini gösterir.
+- **ÖN KOŞUL (KARAR 467, 7 Ağu):** `ocak-referans.md` dağıtımı, ledger'da o dosyaya
+  işaret eden `kaynak` hücrelerinin dönüşümünü **kendi kapsamına dahil eder**.
+  Eşleme tablosu kesim anında üretilir — sonradan üretilemez. Ayrı tura bırakılmaz.
+  *Gerekçe: kronoloji dilimlemesi B33'ü doğurdu (367 satır, ayrı tur), Pilot bölünmesi
+  B37'yi doğurdu (23 satır, iki tur sonra fark edildi). Bu üçüncüsü olurdu.*
+- **Sayım:** B33 sonrası ölçüm **28** satır (`ocak-referans.md:NNNN` + `#kNNN` birlikte);
+  brief'in ~30'u yaklaşıktı. B32 kendi ADIM 0'ında yeniden saysın (KARAR 465).
 
 ## B33 — Ledger `kaynak` sütunu dilimlemeden sonra kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik dönüşüm)
@@ -295,7 +302,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Eylem:** blok blok tara, `#kNNN` çapasına terfi ettir. ADIM 3b'nin yöntemi birebir
   uygulanır. B32'den sonra, ADIM 4'ten önce ya da sonra — sıra serbest.
 
-## B37 — `ocak-pilot.md:NNNN` referansları da kırık
+## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)
 - **Sorun:** B33 dönüşümü sonrası ledger'da **23 satır** `ocak-pilot.md:NNNN` gösteriyor.
   O dosya ADIM 3'te `_arsiv/ocak-pilot-v52.md`'ye alındı — numaralar hiçbir yaşayan
@@ -308,6 +315,12 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   Nokta örnekleme zorunlu.
 - **Not:** ADIM 3b'nin `#k` satırlarından bazıları zaten `ocak-referans.md#kNNN`
   biçiminde; o dosya yaşıyor, dokunulmaz (B32'de taşınacak).
+- **Sonuç (7 Ağu):** **23** satır dönüştürüldü. Kapsama **23/23** · nokta örnekleme **5/5** ·
+  `#k` biçimi ezilmedi (23 → 24, artan yalnız KARAR 467). **Artık: 0** — 23 satırın hiçbiri
+  `STRUCT` koduna düşmedi; Dal B'nin tek riski oydu ve gerçekleşmedi. İçerik eşleştirmesi
+  23/23 tek eşleşme verdi (sıfır/çoklu yok). Kod çözüm tablosu `_uretilen/bolme-kod-cozumu.tsv`,
+  betik `_uretilen/b37-pilot-referans-donusumu.py`. **KARAR 467** bu sınıf kırıklığın üçüncü
+  tekrarını önlemek için mühürlendi.
 
 
 ---

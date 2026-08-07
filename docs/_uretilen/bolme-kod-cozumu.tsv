@@ -1,0 +1,10 @@
+kod	hedef_dosya	dizin	dogrulama
+STRUCT	00-durum.md	docs/	0/2 — ADIM 3'te YENİDEN YAZILDI, birebir taşıma değil
+K6	2026-06.md	docs/90-kronoloji/	6/6
+K7	2026-07.md	docs/90-kronoloji/	6/6
+K8	2026-08.md	docs/90-kronoloji/	6/6
+RB	20-ref-bot.md	docs/	6/6
+RI	20-ref-icerik-dili.md	docs/	6/6
+RN	20-ref-notion.md	docs/	6/6
+RP	20-ref-protokoller.md	docs/	6/6
+RS	20-ref-site.md	docs/	6/6
