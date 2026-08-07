@@ -1,0 +1,64 @@
+kaynak_satir	satir_sayisi	hedef_dosya	ilk_satir_capasi	not
+1-24	24	docs/_arsiv/ocak-referans-v1.md	# OCAK — REFERANS (Tema Bazlı Kararlar)	kapak + versiyon zinciri v46→v38 — dörtlü master yapısı tarifi, ölü iskele
+25-30	6	docs/_arsiv/ocak-referans-v1.md	## NE ZAMAN BU DOSYAYA BAKILIR	NE ZAMAN BU DOSYAYA BAKILIR — dosya ölüyor
+31-56	26	docs/_arsiv/ocak-referans-v1.md	## ⚠ DÖNEM GÜNCELLEMELERİ KRONOLOJİDE	DÖNEM GÜNCELLEMELERİ KRONOLOJİDE tablosu — Parti 1 öncesi harita, ölü
+57-58	2	docs/_arsiv/ocak-referans-v1.md	# BÖLÜM A — TEMA BAZLI REFERANSLAR	BÖLÜM A başlığı
+59-60	2	docs/20-ref-marka.md	## A.1 — MARKA VE KONUMLANDIRMA	A.1 başlığı
+61-132	72	docs/20-ref-marka.md	### Marka Konumlandırma Çekirdeği (KARAR 18)	marka çekirdeği: KARAR 18/14/23/26/24/48 + beşli sentez
+133-164	32	docs/20-ref-icerik-dili.md	### 12–20 Temmuz 2026 eklemesi — Editoryal kanonlar (KARAR 400-404)	editoryal kanonlar KARAR 399-404 + dil kanonları 441-453 — Ç1, damıtımı ezer
+165-276	112	docs/20-ref-marka.md	## A.2 — KURUCU: ADVAITA SONAT	A.2 Advaita: modaliteler, ses, /advaita meta, modalite haritası
+277-327	51	docs/20-ref-program.md	## A.3 — EKOSİSTEM MİMARİSİ (4 KATMAN)	A.3 ekosistem 4 katman + AL·OL·VER
+328-353	26	docs/20-ref-marka.md	## A.4 — HEDEF KİTLE: EŞİK KADINI (KARAR 15)	A.4 eşik kadını
+354-396	43	docs/20-ref-program.md	## A.5 — OCAK WAY: ÜÇ PRENSİP + KATMAN DOZU (KARAR 40)	A.5 OCAK Way üç prensip + katman dozu + ateş imzası
+397-488	92	docs/20-ref-program.md	## A.6 — ARAÇ KUTUSU: 7 KATEGORİ + 30+ ARAÇ (KARAR 42)	A.6 araç kutusu 7 kategori
+489-596	108	docs/20-ref-program.md	## A.7 — KATMAN 1: ÇEMBER (KARAR 19)	A.7 Çember: 12 aylık döngü ×2, akış formatı, hibrit model
+597-635	39	docs/20-ref-program.md	## A.8 — KATMAN 2: DENEYİMLER (KARAR 20)	A.8 Deneyimler
+636-672	37	docs/20-ref-program.md	## A.9 — AÇIK KAPI: DETAYLI FORMAT VE MEKANİK (KARAR 45)	A.9 Açık Kapı
+673-795	123	docs/20-ref-program.md	## A.10 — KATMAN 3: YOLCULUKLAR (KARAR 1, 5, 6, 7, 10, 11, 13)	A.10 Yolculuklar + Temmuz eklemesi (KARAR 429-443)
+796-871	76	docs/20-ref-marka.md	## A.11 — DIŞ UZMAN STRATEJİSİ (KARAR 21)	A.11 dış uzman + ekip + KARAR 398
+872-894	23	docs/20-ref-program.md	## A.12 — KADIN YOLCULUK HARİTASI: 9 EŞİK + SPİRAL (KARAR 25)	A.12 9 eşik + spiral
+895-969	75	docs/20-ref-program.md	## A.13 — TAKVİM VE LANSMAN	A.13 takvim, gündönümü, ritüel tasarımı, yıllık ekosistem takvimi
+970-1010	41	docs/20-ref-marka.md	## A.14 — TOHUMLAMA STRATEJİSİ (KARAR 28, 32)	A.14 tohumlama, reklam bütçesi, şehir stratejisi, gelir mimarisi
+1011-1012	2	docs/20-ref-site.md	## A.15 — SİTE MİMARİSİ (KARAR 50-55, 83, 85, 86, 87)	A.15 başlığı
+1013-1044	32	docs/90-kronoloji/2026-05.md	### 6 Oda + 19 Sayfa (KARAR 50)	Ç2 — 6 oda / 19 sayfa tablosu. Site 21 sayfa taşıyor, o kazandı
+1045-1050	6	docs/90-kronoloji/2026-05.md	### URL Yapısı — Türkçe Karaktersiz, Lowercase (KARAR 51)	Ç3 — URL yapısı gerekçesi. Kural site:70'te yaşıyor
+1051-1085	35	docs/90-kronoloji/2026-05.md	### Çalışma Düzeni — Her Sayfa Ayrı Sohbet (KARAR 52, 53)	Ç4 — 20 aşama sohbet tablosu + sıra mantığı. Dizi tamamlandı
+1086-1091	6	docs/20-ref-site.md	### Master Metin İki Yerde (KARAR 54)	Master metin iki yerde (KARAR 54) — site'da yok
+1092-1103	12	docs/90-kronoloji/2026-05.md	### Pattern Bekçileri (KARAR 87)	Ç3 — pattern bekçileri uzun hali. Site:76 doğrulama notlarıyla kazandı
+1104-1107	4	docs/20-ref-icerik-dili.md	### Köz Kelimesi Site Dilinde Yok (KARAR 86)	köz kelimesi site dilinde yok (KARAR 86) — KARAR 453'ün atası
+1108-1111	4	docs/20-ref-notion.md	### Tasarım Notları Sade Tutulur (KARAR 70)	tasarım notları sade tutulur (KARAR 70) — Notion property disiplini
+1112-1115	4	docs/20-ref-icerik-dili.md	### Site Sesi (KARAR 55)	site sesi (KARAR 55)
+1116-1119	4	docs/20-ref-icerik-dili.md	### Site Dili — Sadece Türkçe (KARAR 39)	site dili sadece Türkçe (KARAR 39)
+1120-1139	20	docs/90-kronoloji/2026-05.md	### Buluşmalar Odası Durumu (KARAR 83)	Ç5 — Buluşmalar + Yolculuk odası durum tabloları. Site Durum sütunu kazandı
+1140-1152	13	docs/20-ref-site.md	### Advaita & Ekip Odası Durumu (KARAR 90, v2 KARAR 124)	Ç5 — Advaita/Ekip/İletişim odası içerik tarifleri. Site'da yok
+1153-1168	16	docs/20-ref-site.md	### Section Etiketi Retrofit Turu (KARAR 92)	section etiketi → component eşlemesi (KARAR 92) — sözleşme canlı
+1169-1222	54	docs/20-ref-site.md	### 12–20 Temmuz 2026 eklemesi — Liste ailesi tek gramer (KARAR 405, 411-419)	Ç6 — Temmuz eklemeleri: liste ailesi, kayıt CTA, form UI, yedinci kapı. 14 ledger satırı buraya bakıyor
+1223-1273	51	docs/20-ref-marka.md	## A.16 — GÖRSEL KİMLİK (KARAR 35, 36)	A.16 görsel kimlik tam
+1274-1325	52	docs/20-ref-marka.md	## A.17 — INSTAGRAM STRATEJİSİ (KARAR 37, 38)	A.17 Instagram + blog + ajans v2
+1326-1380	55	docs/20-ref-bot.md	## A.18 — OTOMASYON MİMARİSİ (KARAR 56)	A.18 otomasyon mimarisi
+1381-1403	23	docs/20-ref-bot.md	## A.19 — VERİ ETİK ÇERÇEVESİ (KARAR 57)	A.19 veri etik çerçevesi (KARAR 57)
+1404-1463	60	docs/20-ref-site.md	## A.20 — REKLAM VE ANALYTICS ALTYAPISI (KARAR 59)	A.20 reklam/analytics + CAPI
+1464-1530	67	docs/20-ref-program.md	## A.21 — SEANS ARŞİVİ MİMARİSİ (KARAR 60)	A.21 seans arşivi mimarisi
+1531-1731	201	docs/20-ref-notion.md	## A.22 — NOTION DATABASE YAPISI (KARAR 73-77, 82)	Ç8 — A.22 tam. 30+ property, 9 view, Çember Döngüsü/Workshop/Kayıtlar DB
+1732-1733	2	docs/20-ref-protokoller.md	## A.23 — ÇALIŞMA PROTOKOLLERİ	A.23 başlığı
+1734-1747	14	docs/90-kronoloji/2026-05.md	### Çalışma Sıralaması — İçerik → Site → Altyapı (KARAR 58)	KARAR 58 detayı bayat (19 sayfa, 21 Haziran). İlke protokoller:11'de
+1748-1762	15	docs/90-kronoloji/2026-05.md	### Master Prompt Patch Modu (KARAR 61)	KARAR 61 mekaniği + bozuk H1 şablon bloğu (1753-1758)
+1763-1764	2	docs/20-ref-protokoller.md	**Kritik kural — KIRPILMAZ:** Patch modu **sadeleştirme veya kırpma yapmaz.** Sadece eklem	KIRPMA YASAĞI özü — KARAR 61 KALICI, ledger teyitli
+1765-1770	6	docs/90-kronoloji/2026-05.md	**Eylül-Ekim'de** altyapı dizisinde Notion kurulduğunda, master prompt Notion database'ine	KARAR 61 Notion geçiş planı — ölü
+1771-1813	43	docs/90-kronoloji/2026-05.md	### Çekirdek + Arşiv İkili Yapısı (KARAR 88)	KARAR 88 çekirdek+arşiv ikili yapısı — ledger SUPERSEDE →145
+1814-1829	16	docs/20-ref-marka.md	### Çalışma Prensipleri	çalışma prensipleri 13 madde — 10-marka.md'de yok
+1830-1843	14	docs/90-kronoloji/2026-05.md	### Önemli Notlar	önemli notlar — 21 Haziran lansmanı, bayat
+1844-1866	23	docs/20-ref-protokoller.md	### Brief Yapıştırma Disiplini (KARAR 103)	Ç9 — KARAR 103 tam (klavye kuralları dahil). protokoller:53 damıtımını ezer
+1867-1894	28	docs/20-ref-protokoller.md	### İleri İş Bırakma Yasağı (KARAR 104)	Ç9 — KARAR 104 tam. protokoller:55 damıtımını ezer
+1895-1920	26	docs/20-ref-protokoller.md	### 12–20 Temmuz 2026 eklemesi — Metodoloji (KARAR 407-409, 419)	metodoloji KARAR 407-409, 419 — ledger #k407 + :1899 + :1901
+1921-1936	16	docs/20-ref-icerik-dili.md	### 12–19 Temmuz 2026 eklemesi — Metin katmanı protokolleri (KARAR 439; PARTİ 3/3)	metin katmanı KARAR 439 — icerik-dili damıtımını ezer
+1937-1945	9	docs/90-kronoloji/2026-05.md	## A.24 — TECH STACK (Güncel Durum)	Ç7 — A.24 Mayıs gövdesi. Apps Script/19 sayfa bayat, site D8'de ilan etti
+1946-1948	3	docs/20-ref-bot.md	- **Email:** MailerLite (entegre, çalışıyor). Token JWT formatında, frontend'den çağrılıyo	Ç7 istisnası — MailerLite token + 3 grup ID + Zoom S2S. Başka yerde yok
+1949-1950	2	docs/90-kronoloji/2026-05.md	- **Otomasyon (mevcut, geçiş yapılacak):** Google Apps Script	Ç7 — otomasyon mevcut/hedef
+1951-1951	1	docs/20-ref-bot.md	- **AI agent:** WhatsApp bot (Railway'de Node.js, Claude'a bağlı). Mimari: WhatsApp → Meta	Ç7 istisnası — WhatsApp bot mimarisi + Phone Number ID
+1952-1989	38	docs/90-kronoloji/2026-05.md	- **Veri merkezi (içerik canlı binding aktif Mayıs 2026, form veritabanı lansman sonrası):	Ç7 — Notion integration, admin.html, Astro gerekçesi, form backend, repo adı
+1990-3458	1469	docs/90-kronoloji/2026-05.md	### Astro İskelet Teslimi (KARAR 99)	A.24 tarihçesi — sohbet #18-#25 brief kaydı. Kronolojide %97 yok, ölçüldü
+3459-3476	18	docs/20-ref-marka.md	### The Wild Woman Project (2011'den beri)	uluslararası öncüler — A.25 başlığı kayıp, orphan blok
+3477-3513	37	docs/20-ref-bot.md	### 12–20 Temmuz 2026 eklemesi — Meta / WhatsApp display name (KARAR 410)	Meta/WhatsApp display name (410) + stratejik konumlama (447) — ledger #k447
+3514-3533	20	docs/_arsiv/ocak-referans-v1.md	## A.26 — HAZIR DOKÜMANLAR	A.26 hazır dokümanlar + pitch materyalleri
+3534-3574	41	docs/_arsiv/ocak-referans-v1.md	## A.27 — SIRADAKI ADIMLAR	A.27 sıradaki adımlar — #27 AKTİF diyor, bayat
