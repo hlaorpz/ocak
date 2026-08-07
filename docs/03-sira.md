@@ -13,8 +13,11 @@
 
 ## SIRADAKİ İŞ
 
-**B32** — `ocak-referans.md` dağıtımı. Claude.ai, ayrı sohbet.
-Açılış paketi: `_arsiv/2026-08-07-b32-acilis-paketi.md`
+**ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. CC, repo.
+Brief Claude.ai'da yazılacak.
+
+⚠ `baglam.sh` profilleri **yedi** `20-ref-*` dosyasına göre kurulur, beşe göre değil.
+Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam metni).
 
 ---
 
@@ -22,13 +25,12 @@ Açılış paketi: `_arsiv/2026-08-07-b32-acilis-paketi.md`
 
 | # | iş | kim | nerede | ön koşul | nasıl açılır |
 |---|---|---|---|---|---|
-| 1 | **B32** — `ocak-referans.md` → `20-ref-*` beşlisi (+28 `kaynak` hücresi) | Claude.ai | ayrı sohbet | KARAR 467 | `_arsiv/2026-08-07-b32-acilis-paketi.md` — paketi oku, ölçümü çalıştır, dosyaları ekle |
-| 2 | **ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh` | CC | repo | yok | brief yazılacak (Claude.ai) |
-| 3 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
-| 4 | **B36** — ~37 sığ kaynak satırı `#k` çapasına terfi | Claude.ai | ayrı sohbet | tercihen B32 sonrası | ledger + ilgili dilimler |
-| 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
-| 6 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
-| 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
+| 1 | **ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh` | CC | repo | yok | brief yazılacak (Claude.ai) |
+| 2 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
+| 3 | **B36** — sığ kaynak satırları `#k` çapasına terfi (+B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | yok — B32 kapandı | ledger + ilgili dilimler |
+| 4 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
+| 5 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
+| 6 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
 
 **B32 dahil hiçbiri ADIM 4'ü kilitlemiyor.** 1 ve 2 arasındaki sıra tercih meselesidir.
 
@@ -92,3 +94,7 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   ADIM 1 · ADIM 2 · ADIM 3 · ADIM 3b · B33 · B37 · B34 · arşiv kapanışı.
   TEYITSIZ 27 → 1 · kırık `kaynak` referansı 409 → 0 · 7 borç kapandı ·
   KARAR 465 · 466 · 467 mühürlendi. → `90-kronoloji/2026-08.md`
+- **7 Ağustos — B32 ✅** `ocak-referans.md` dağıtımı (4 commit).
+  3574 satır → 63 segment → 7 hedef. `20-ref-*` beşli → **yedili**.
+  33 kaynak hücresi dönüştü · 1715 satır kronolojiye indi · `_arsiv/ocak-referans-v1.md`.
+  → `90-kronoloji/2026-08.md`

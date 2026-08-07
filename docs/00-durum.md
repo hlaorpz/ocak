@@ -15,6 +15,8 @@
 | açık borç, sahip, tetikleyici | `02-borclar.md` |
 | sıradaki iş, kim, nasıl açılır | `03-sira.md` |
 | marka çekirdeği | `10-marka.md` |
+| marka tam metni, kurucu, ekip, görsel kimlik, yayılım | `20-ref-marka.md` |
+| ekosistem katmanları, format kanonları, araç kutusu, ürün takvimi | `20-ref-program.md` |
 | sayfa mimarisi, stack, CTA, tracking | `20-ref-site.md` |
 | kod/teşhis/merge/brief disiplinleri | `20-ref-protokoller.md` |
 | metin, vurgu, dil, teslim standartları | `20-ref-icerik-dili.md` |
@@ -32,7 +34,7 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md`.
 - **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.
 - **ADIM 3b ✅** — KARAR arkeolojisi. TEYITSIZ 27 → 3. B05·B06·B13·B20 kapandı;
   454 sahte satırı `REZERVE`'e döndü. Kalan: **B33** (ledger `kaynak` dönüşümü, CC,
-  KARAR 465) ✅ kapandı. **Sıradaki iş B32** (`ocak-referans.md` → `20-ref-*`; KARAR 467: kaynak dönüşümü kapsam içi).
+  KARAR 465) ✅ kapandı. **B32 ✅** — `ocak-referans.md` dağıtıldı; beşli yedili oldu (`20-ref-program.md` + `20-ref-marka.md`). Kaynak dönüşümü aynı turda kapandı (KARAR 467).
 - **ADIM 4 ⏭** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. B01 (klon yeniden
   adlandırma) buna bağlı.
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
@@ -116,7 +118,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya Gün 0/Gün 1 önkoşulları | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
-| Ledger kaynak dönüşümü (B33) + kod teyidi (B34) | CC |
+| Sığ kaynak çapaları (B36) + KARAR 87 ayrıştırma (B35) | Claude.ai |
 | Doküman geçişi ADIM 4 | Kaan + CC |
 
 ---

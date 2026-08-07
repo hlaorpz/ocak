@@ -14,7 +14,6 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
 | **Claude.ai** | B35 · B36 |
-| **Claude.ai (ADIM 3b sonrası)** | B32 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -234,8 +233,19 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   Eşleme tablosu kesim anında üretilir — sonradan üretilemez. Ayrı tura bırakılmaz.
   *Gerekçe: kronoloji dilimlemesi B33'ü doğurdu (367 satır, ayrı tur), Pilot bölünmesi
   B37'yi doğurdu (23 satır, iki tur sonra fark edildi). Bu üçüncüsü olurdu.*
-- **Sayım:** B33 sonrası ölçüm **28** satır (`ocak-referans.md:NNNN` + `#kNNN` birlikte);
-  brief'in ~30'u yaklaşıktı. B32 kendi ADIM 0'ında yeniden saysın (KARAR 465).
+- **Sayım:** B32 ADIM 0 ölçümü **31** satır — 28 mekanik `:NNNN` + 3 `#kNNN`
+  (KARAR 400, 407, 447). Buradaki eski "28" rakamı **yanlıştı**: yalnız mekanik
+  biçimi sayıyor, `#k` üçlüsünü atlıyordu. Ledger dışı 2 işaretçi daha çıktı
+  (bu dosyanın 48 ve 73. satırları) — toplam dönüşüm **33 hücre**.
+- **KAPANDI — 7 Ağustos 2026.** 3574 satır 63 segmentte yedi hedefe dağıtıldı; kapsama
+  tam, boşluk yok. Beşli **yedili** oldu: `20-ref-program.md` (658) + `20-ref-marka.md` (466)
+  açıldı. Gerekçe ölçümlüdür — KARAR 398 ve 436'nın kaynak çapası beşlide ev bulmuyordu.
+  1715 satır `90-kronoloji/2026-05.md` sonuna indi (A.24 tarihçesi %97 oranında kronolojide
+  YOKTU, ölçüldü). 119 satır iskele yalnız `_arsiv/ocak-referans-v1.md`'de kaldı.
+  Kaynak dönüşümü aynı turda: 31 ledger + 2 borclar hücresi. Köken izi
+  `_arsiv/_bolme-haritasi-referans.tsv`.
+  ADIM 0 patch'in dört beklenti rakamını ve bir hayalet satırı yakaladı; kaynak dosya
+  3574 satır, arşiv payı 119, gövde payı 3455 (düzeltme: `b32-duzeltme-01.md`).
 
 ## B33 — Ledger `kaynak` sütunu dilimlemeden sonra kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik dönüşüm)
@@ -318,6 +328,15 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   hepsini aynı hedef satıra çözdü — doğru dönüşüm, sığ kaynak. Toplam ~37 satır.
   *Sayım dosyadan doğrulandı (KARAR 465): `2026-07.md:16` altı satır (366-371),
   `2026-07.md:20` altı satır (376-379, 381-382). 380 hariç — ADIM 3b onu `#k380` yapmıştı.*
+- **B32 ADIM 0 bulgusu — dört sığ çapa tespit edildi.** Ledger `kaynak` sütunu bu
+  satırlarda kararın **kendi metnine** değil komşusuna bakıyor:
+  - **409** → halefi 433'ün satırına bakıyor; 409'un kendi metni `20-ref-protokoller.md`'de
+    (`NOTION MARKER'I BİR SÖZLEŞMEDİR`), farklı dosyada.
+  - **424** → halefi 445'in satırına bakıyor; kendi metni iki satır yukarıda.
+  - **415 ve 417** aynı satıra bakıyor.
+  - **218 · 307 · 335** üçü de 423'ün satırına bakıyor (halef metni — savunulabilir,
+    ama `#k` terfisinde ayrıştırılmalı).
+  B32 bunları **düzeltmedi** — sığ çapa terfisi B36'nın işidir (KARAR 456: tahmin yazılmaz).
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)
@@ -330,8 +349,8 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Eylem:** B33 betiğinin ikizi. Hedef sütunu kısa kod taşıyor (`STRUCT`, `K7`, `RS`…),
   gerçek dosya adına çözülmesi gerekir — B33'teki gibi doğrudan dosya:satır değil.
   Nokta örnekleme zorunlu.
-- **Not:** ADIM 3b'nin `#k` satırlarından bazıları zaten `ocak-referans.md#kNNN`
-  biçiminde; o dosya yaşıyor, dokunulmaz (B32'de taşınacak).
+- **Not:** B32 ile taşındı — üç `#k` çapası artık `20-ref-icerik-dili.md#k400`,
+  `20-ref-protokoller.md#k407`, `20-ref-bot.md#k447`. Çapa adları korundu.
 - **Sonuç (7 Ağu):** **23** satır dönüştürüldü. Kapsama **23/23** · nokta örnekleme **5/5** ·
   `#k` biçimi ezilmedi (23 → 24, artan yalnız KARAR 467). **Artık: 0** — 23 satırın hiçbiri
   `STRUCT` koduna düşmedi; Dal B'nin tek riski oydu ve gerçekleşmedi. İçerik eşleştirmesi
