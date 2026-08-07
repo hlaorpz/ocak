@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 6 Ağustos 2026 · ADIM 3 (Pilot bölündü) + ADIM 0 teyidi · **KARAR 464 mühürlendi**
+**Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) · **KARAR 465 mühürlendi**
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
@@ -29,8 +29,9 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md`.
 
 - **ADIM 1–2 ✅** — KARAR envanteri + ledger durum sütunu (453 satır).
 - **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.
-- **ADIM 3b ⏭** — KARAR arkeolojisi: B05 · B06 · B13 · B20 (20+ tanımsız/çakışan numara).
-  Kronolojinin ilgili dönem bloklarını okumayı gerektirir. **Sıradaki iş.**
+- **ADIM 3b ✅** — KARAR arkeolojisi. TEYITSIZ 27 → 3. B05·B06·B13·B20 kapandı;
+  454 sahte satırı `REZERVE`'e döndü. Kalan: **B33** (ledger `kaynak` dönüşümü, CC,
+  ayrı commit — 3b'den SONRA, KARAR 465) → sonra **B32**. **Sıradaki iş B33.**
 - **ADIM 4 ⏭** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. B01 (klon yeniden
   adlandırma) buna bağlı.
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
@@ -77,7 +78,7 @@ Hepsi "site bozulmaz, özellik sessizce düşer" sınıfı. Metinleri işaret ed
 
 - **`atmosfer.css:1538-1552` genişlik kolonu** — yeni CTA/kart section buraya eklenmezse
   baseline prose alır, geniş çıkar. Dört selektör. → `20-ref-site.md`
-- **`ODA_MAP` kapalı settir** — kod tarafı girdi yoksa yeni Notion sayfası 404. → KARAR 87
+- **`ODA_MAP` kapalı settir** — kod tarafı girdi yoksa yeni Notion sayfası 404. → **numara teyitsiz, B35** (KARAR 87 üç ayrı şeye atfediliyor)
 - **Notion marker adı = kod sözleşmesi** — ad değişimi component'i haftalarca render
   dışı bırakabilir. → `20-ref-protokoller.md` (KARAR 409)
 - **`[class^="ocak-"]` prefix-match** — `ocak-` ilk class değilse baseline sessizce düşer.
@@ -114,7 +115,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya Gün 0/Gün 1 önkoşulları | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
-| KARAR arkeolojisi (ADIM 3b) | Claude.ai |
+| Ledger kaynak dönüşümü (B33) + kod teyidi (B34) | CC |
 | Doküman geçişi ADIM 4 | Kaan + CC |
 
 ---

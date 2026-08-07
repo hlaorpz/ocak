@@ -1,0 +1,31 @@
+62	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+64	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+66	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+67	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+68	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+179	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+114	2026-05-23	Glow stop verbatim	SUPERSEDE	→366 (kısmi: stop verbatim korundu, geometri değişti)	2026-07.md#k366
+143	2026-05-27	/test sayfası ODA_MAP'e eklendi	TEYITSIZ	karar metni TEYİTLİ (2026-05.md:2612); ODA_MAP'ten çıkarılma kayıtlı DEĞİL → B34	2026-05.md#k143
+146	2026-05-27	Brief I.1 — GTM container iskeleti	AKTIF		2026-05.md#k146
+154	2026-05-31	Eşik accordion mimarisi — `esik-*` whitelist 10, /sen-neredesin exclusive	AKTIF		2026-05.md#k154
+159	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+160	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+164	2026-05-31	Notion-marker-driven slot kompozisyonu (blok üyesi)	KALICI	⊂163	2026-05.md#k163-blok
+170	2026-05-31	Form-anchor look-backward + AtesMektuplariCTA daraltma (blok üyesi)	AKTIF	⊂169	2026-05.md#k169-blok
+171	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+172	2026-05-31	Form-anchor look-backward + AtesMektuplariCTA daraltma (blok üyesi)	AKTIF	⊂169	2026-05.md#k169-blok
+196	2026-06-03	Form overline = hero overline parametreleri verbatim	AKTIF		2026-06.md#k196
+223	2026-06	İki pipeline keşfi — Apps Script lead formları ölü kod, taşınacak 3 form	AKTIF		2026-06.md#k223
+237	2026-06-02	Yasal/uyumluluk — 4 statik yasal sayfa + kurumsal kimlik (blok üyesi)	AKTIF	⊂236	2026-06.md#k236-blok
+238	2026-06-02	Yasal/uyumluluk — 4 statik yasal sayfa + kurumsal kimlik (blok üyesi)	AKTIF	⊂236	2026-06.md#k236-blok
+247	2026-06	Tasarım turu 2 — hesap bug + sıralama + askı sadeleştirme (blok üyesi, `934afbf`)	AKTIF	⊂241	2026-06.md#41-madde6
+248	2026-06	Tasarım turu 1 — form sıralama + Niyet runtime + kuruş + Zoom şifre (blok üyesi, `7d8486c`)	AKTIF	⊂240	2026-06.md#41-madde5
+251	2026-07-02	—	TEYITSIZ	#38 dönem bloğunun ilk numarası; blok içi tekil etiket yok. Aday: "Kayıt lookup — salt-okuma, event-level kaynak" (2026-06.md:390) — DOĞRULANMADI	2026-06.md#38-blok
+350	2026-07-05	Statik ember kor şeridi — vitrin sol şeridi `--ash`→`--ember` 3px statik, hover/tap kaldırıldı	TEYITSIZ	karar metni TEYİTLİ (2026-07.md:499); `dist` selektör teyidi açık → B34	2026-07.md#k350
+380	2026-07	Baseline `li` reset — tek fix üç iş (hizasızlık + boşluk + çift-çizgi illüzyonu)	AKTIF		2026-07.md#k380
+400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		ocak-referans.md#k400
+407	2026-07	CSS tanısında iç içe düğüm — `del em` çözümü `color: inherit`	KALICI		ocak-referans.md#k407
+447	2026-07	WhatsApp stratejik konumlama — push'u hizmete, pull'u pazarlamaya	AKTIF	↔410 (display name beyanı geçersiz)	ocak-referans.md#k447
+454	2026-08-06	—	REZERVE	ADIM 1: 429-453 mühürlü, çakışma riski alınmadı; yeni kararlar 455'ten	2026-08.md#adim1
+458	2026-08-06	Agent/skill kadrosu + iki-yüzey mimarisi — kanonik kaynak `docs/skills/`	KALICI	↔455	2026-08.md#k458
+465	2026-08-07	Çapa tekilliği ve doğrulama disiplini — çapa tek benzersiz satırdan, kriter dosyanın gerçeğinden	KALICI	←355 · ↔462	2026-08.md#k465

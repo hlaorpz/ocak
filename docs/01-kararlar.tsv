@@ -21,12 +21,12 @@ no	tarih	baslik	durum	iliski	kaynak
 99	2026-05-21	Astro iskelet teslimi — 22 dosyalık başlangıç paketi	AKTIF		ocak-kronoloji.md:192
 104	2026-05-22	İleri iş bırakma yasağı — 10-15 dk'lık iş sonraya kalmaz	KALICI		ocak-kronoloji.md:209
 112	2026-05-23	#23 Brief 1 — pipeline kurulumu (dinamik route + plugin render)	AKTIF		ocak-kronoloji.md:260
-114	2026-05-23	Glow stop verbatim	SUPERSEDE	→365-371 (kısmi, halef belirsiz · B06)	ocak-kronoloji.md:5
+114	2026-05-23	Glow stop verbatim	SUPERSEDE	→366 (kısmi: stop verbatim korundu, geometri değişti)	2026-07.md#k366
 115	2026-05-23	#23 Brief 3 — ana sayfa override (hero OMIT) + form + proxy	AKTIF		ocak-kronoloji.md:263
 116	2026-05-24	#24 QA pass + prose tipografi sistematik fix	AKTIF		ocak-kronoloji.md:282
 123	2026-05-24	Lansman çerçevesi — "Brief I" terimi iptal, #28/#29 ayrımı	AKTIF		ocak-kronoloji.md:627
 125	2026-05-25	Başvuru altyapısı + form temizliği tam tasarım	SUPERSEDE	→423 (CTA ayağı; başvuru route/DB yaşıyor)	ocak-pilot.md:361
-146	2026-05-27	Brief I.1 — GTM container iskeleti	AKTIF	⚠188 çakışma · B05	ocak-kronoloji.md:2790
+146	2026-05-27	Brief I.1 — GTM container iskeleti	AKTIF		2026-05.md#k146
 150	2026-05-26	"Algısal" yasağı — en az iki kanıt yöntemi olmadan denmez	KALICI		ocak-kronoloji.md:1962
 173	2026-05-31	Form validation katmanı — koşulsuz reset 5 form × 16 yer	AKTIF		ocak-kronoloji.md:3282
 174	2026-05-31	Email Unicode reject — ASCII sınırı	AKTIF		ocak-kronoloji.md:3420
@@ -113,12 +113,12 @@ no	tarih	baslik	durum	iliski	kaynak
 145	2026-05	Üçlü dosya yapısı — Pilot / Marka / Arşiv	AKTIF	→397; 455-463 ile emekliye gidiyor	ocak-kronoloji.md:12
 151	2026-05-28	Form-anchor success state persistence bug fix	AKTIF		ocak-kronoloji.md:3021
 152	2026-05-28	Bot koruma katmanı — honeypot (öncesi) / Turnstile (sonrası)	AKTIF	→194; Turnstile ayağı B12	ocak-kronoloji.md:3022
-154	2026-05-31	—	TEYITSIZ	tanım envanterde yok (ilk geçiş sürüm listesi sınırı)	ocak-kronoloji.md:8
+154	2026-05-31	Eşik accordion mimarisi — `esik-*` whitelist 10, /sen-neredesin exclusive	AKTIF		2026-05.md#k154
 161	2026-05-31	manifesto-vurgu section teknik implementasyonu	AKTIF		ocak-kronoloji.md:3206
 193	2026-05-31	Git iş döngüsü disiplini — production branch = `main`	KALICI	←157,191	ocak-kronoloji.md:3374
-196	2026-06-03	—	TEYITSIZ	tanım envanterde yok (ilk geçiş sürüm listesi sınırı)	ocak-kronoloji.md:8
+196	2026-06-03	Form overline = hero overline parametreleri verbatim	AKTIF		2026-06.md#k196
 210	2026-05-31	`ic-ses` kanonik section — glyphsiz krem akan-içi nefes	AKTIF	altın hattı →411	ocak-kronoloji.md:3655
-251	2026-07-02	—	TEYITSIZ	tanım envanterde yok (ilk geçiş sürüm listesi sınırı)	ocak-kronoloji.md:8
+251	2026-07-02	—	TEYITSIZ	#38 dönem bloğunun ilk numarası; blok içi tekil etiket yok. Aday: "Kayıt lookup — salt-okuma, event-level kaynak" (2026-06.md:390) — DOĞRULANMADI	2026-06.md#38-blok
 266	2026-06	Merge deseni — çakışma kaynağı izolasyonu	KALICI	←286	ocak-kronoloji.md:4032
 283	2026-07-02	Seremoni görünür etiket = Yol B (jenerik "Seremoni")	AKTIF		ocak-kronoloji.md:4142
 290	2026-07	Evre-arketip değişmez — uluslararası yolculuk kanonla birebir	KALICI		ocak-kronoloji.md:7
@@ -137,7 +137,7 @@ no	tarih	baslik	durum	iliski	kaynak
 377	2026-07	Başlık birleştirme "En Yakın X" — `HOME_HEADING` silindi	AKTIF		ocak-pilot.md:35
 378	2026-07	Sahte kişiselleştirme reddi — "Sana uyan başka tarihler" atıldı	KALICI		ocak-pilot.md:35
 379	2026-07	Çizgi/kor sol-uç birleştirme + üst gri çizgi adjacent sibling	AKTIF		ocak-pilot.md:35
-380	2026-07	Baseline `li` reset — tek fix üç iş	TEYITSIZ	beklenti doğrulanmadı — karar metni okunmalı	ocak-pilot.md:35
+380	2026-07	Baseline `li` reset — tek fix üç iş (hizasızlık + boşluk + çift-çizgi illüzyonu)	AKTIF		2026-07.md#k380
 382	2026-07	Buton dili OCAK'laştırma geri alındı; 336 borcu kapandı	AKTIF	←334,336	ocak-pilot.md:35
 386	2026-07	n8n 6-haneli cron tuzağı	KALICI		ocak-pilot.md:37
 392	2026-07	Hash'e bağlı davranış eyeball'ı hard-reload ile	KALICI		ocak-pilot.md:41
@@ -145,9 +145,9 @@ no	tarih	baslik	durum	iliski	kaynak
 396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	AKTIF		ocak-pilot.md:41
 397	2026-07-28	Dönem güncellemeleri referans dosyasına yerinde işlenir	AKTIF	←145; 462 ile değişecek	ocak-kronoloji.md:4
 399	2026-07	Rol/portre kalıbı — alan + çemberdeki an + kadının tarifi	KALICI		ocak-referans.md:143
-400	2026-07	—	TEYITSIZ	tanım envanterde yok (ilk geçiş bölüm başlığı)	ocak-referans.md:133
+400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		ocak-referans.md#k400
 401	2026-07	Vurgu tipi seçimi — ALTIN ilan / KREM `ic-ses` nefes	KALICI		ocak-referans.md:137
-407	2026-07	—	TEYITSIZ	tanım envanterde yok (ilk geçiş bölüm başlığı)	ocak-referans.md:1895
+407	2026-07	CSS tanısında iç içe düğüm — `del em` çözümü `color: inherit`	KALICI		ocak-referans.md#k407
 408	2026-07	"Kod var" ≠ "output var" — `dist`/build grep şart	KALICI	←355	ocak-referans.md:1899
 409	2026-07	Marker-sözleşme ilkesi — brief açıkça söyler	KALICI		ocak-referans.md:1219
 413	2026-07	Statik/accordion ölçütü liste doğasına + ilk-açık	KALICI	←405	ocak-referans.md:1177
@@ -272,7 +272,7 @@ no	tarih	baslik	durum	iliski	kaynak
 139	2026-05-27	Başvuru formu unification genişletildi	AKTIF	←130	ocak-kronoloji.md:2410
 140	2026-05-27	Brief G.4 — DOM kanıt + maksimum specificity	AKTIF	←138	ocak-kronoloji.md:2364
 141	2026-05-27	Lansman öncesi kalan iş haritası — v0 etiketli 8 madde	AKTIF		ocak-kronoloji.md:2412
-143	2026-05-27	/test sayfası ODA_MAP'e eklendi	TEYITSIZ	ODA_MAP 29 slug, /test yok — bilinçli kaldırma mı	ocak-kronoloji.md:2435
+143	2026-05-27	/test sayfası ODA_MAP'e eklendi	TEYITSIZ	karar metni TEYİTLİ (2026-05.md:2612); ODA_MAP'ten çıkarılma kayıtlı DEĞİL → B34	2026-05.md#k143
 144	2026-05-27	Lansman sonrası ilk hafta paketi — 3 yeni madde	ACIK-BORC	B16	ocak-kronoloji.md:2436
 148	2026-05-27	Brief I.3 — SonrakiBulusma kategori defansı + lib refactor	AKTIF		ocak-kronoloji.md:2792
 155	2026-05-31	Sıralı setlerde slug semantik disiplini	KALICI		ocak-kronoloji.md:3256
@@ -313,7 +313,7 @@ no	tarih	baslik	durum	iliski	kaynak
 220	2026-06-03	Katılım linki ödemeli akışta gizli	KALICI		ocak-kronoloji.md:3807
 221	2026-06-03	Referans no `OCAK-XXXXX` + success copy	SUPERSEDE	→250 (6 hane)	ocak-kronoloji.md:3807
 222	2026-05-31	Bot prompt yönetimi Notion CMS — BotZ platform	AKTIF		ocak-kronoloji.md:3663
-223	2026-06	—	TEYITSIZ	tanım envanterde yok (sürüm listesi sınırı)	ocak-kronoloji.md:8
+223	2026-06	İki pipeline keşfi — Apps Script lead formları ölü kod, taşınacak 3 form	AKTIF		2026-06.md#k223
 226	2026-06-02	`src/lib/zoom.ts` + `api/zoom-olustur.ts`	AKTIF		ocak-kronoloji.md:3859
 228	2026-06-02	Tek mail, koşullu field (Yol 2)	AKTIF		ocak-kronoloji.md:3862
 229	2026-06-05	ML `zoom_sifresi` field açıldı	AKTIF	→230	ocak-kronoloji.md:3898
@@ -399,7 +399,7 @@ no	tarih	baslik	durum	iliski	kaynak
 347	2026-07-05	`transformEsik` 4-param genelleştirme	AKTIF		ocak-kronoloji.md:4457
 348	2026-07-05	`transformKapi` link-opsiyonel + `CARD_SECTIONS`	AKTIF		ocak-kronoloji.md:4459
 349	2026-07-05	Vitrin Düzen A — tek sütun, 2-sütun grid reddedildi	KALICI		ocak-kronoloji.md:4461
-350	2026-07-05	Statik ember kor şeridi — hover/tap efekti kaldırıldı	TEYITSIZ	"vitrin" selektörü yok — karar metni okunmalı	ocak-kronoloji.md:4463
+350	2026-07-05	Statik ember kor şeridi — vitrin sol şeridi `--ash`→`--ember` 3px statik, hover/tap kaldırıldı	TEYITSIZ	karar metni TEYİTLİ (2026-07.md:499); `dist` selektör teyidi açık → B34	2026-07.md#k350
 351	2026-07-05	Ritim tipografisi — vitrin + raf ortak	AKTIF		ocak-kronoloji.md:4465
 352	2026-07-05	Sıcak zemin renk seviyesi	AKTIF		ocak-kronoloji.md:4467
 353	2026-07-05	Gündönümü V2 sadeleştirme	AKTIF		ocak-kronoloji.md:4469
@@ -429,37 +429,38 @@ no	tarih	baslik	durum	iliski	kaynak
 441	2026-07	Fable içerik/editoryal turu	AKTIF		ocak-kronoloji.md:3
 442	2026-07	"Uzmanlık var; kürsü yok" doktrini	KALICI		ocak-kronoloji.md:5569
 443	2026-07	Anadolu süre standardı — 3g4g / Dönüş 4g5g	KALICI	←6	ocak-kronoloji.md:5570
-447	2026-07	Ayrım gerekliliği — fiilen açılıp açılmadığı teyit edilmedi	TEYITSIZ		ocak-kronoloji.md:5567
+447	2026-07	WhatsApp stratejik konumlama — push'u hizmete, pull'u pazarlamaya	AKTIF	↔410 (display name beyanı geçersiz)	ocak-referans.md#k447
 448	2026-07	A/B/C/D iş kırılımı	AKTIF		ocak-kronoloji.md:5568
 449	2026-07-19	Sosyal medya ajans v2 — elektrik-kesildi teslim standardı	KALICI		ocak-kronoloji.md:3
 450	2026-07-19	Gün 0 kurucu görsel kilidi — Gün 0 onayı olmadan Gün 1 yok	KALICI		ocak-kronoloji.md:5608
 451	2026-07-19	"Kayıt/başvuru açık" dili Kaan sayfaları açana dek yasak	KALICI		ocak-kronoloji.md:5608
 452	2026-07-19	Anadolu evre süreleri kartları + tek soruluk not	AKTIF		ocak-kronoloji.md:5610
 453	2026-07-19	Kamu metninde "köz" yasağı Bölüm 4'e kodlandı	KALICI	→86	ocak-kronoloji.md:5610
-62	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-64	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-66	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-67	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-68	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-159	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 158, 159, 160, 171"	ocak-kronoloji.md:3290
-160	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 158, 159, 160, 171"	ocak-kronoloji.md:3290
-164	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 163, 164"	ocak-kronoloji.md:3212
-170	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 169, 170, 172"	ocak-kronoloji.md:3294
-171	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 158, 159, 160, 171"	ocak-kronoloji.md:3290
-172	2026-05-31	—	TEYITSIZ	yalnız grup atfında: "KARAR 169, 170, 172"	ocak-kronoloji.md:3294
-179	—	—	TEYITSIZ	hiçbir dosyada geçmiyor (dizi boşluğu)	—
-237	2026-06-02	—	TEYITSIZ	yalnız grup atfında: "KARAR 236, 237, 238"	ocak-kronoloji.md:3869
-238	2026-06-02	—	TEYITSIZ	yalnız grup atfında: "KARAR 236, 237, 238"	ocak-kronoloji.md:3869
-247	2026-06	—	TEYITSIZ	yalnız grup atfında: "KARAR 245-250" zinciri	ocak-kronoloji.md:3866
-248	2026-06	—	TEYITSIZ	yalnız grup atfında: "KARAR 245-250" zinciri	ocak-kronoloji.md:3866
-454	2026-08-06	Hesap adı oynak, ID kanonik — GitHub numeric `261375117`	KALICI	↔389	90-kronoloji/2026-08.md
+62	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+64	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+66	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+67	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+68	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+159	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+160	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+164	2026-05-31	Notion-marker-driven slot kompozisyonu (blok üyesi)	KALICI	⊂163	2026-05.md#k163-blok
+170	2026-05-31	Form-anchor look-backward + AtesMektuplariCTA daraltma (blok üyesi)	AKTIF	⊂169	2026-05.md#k169-blok
+171	2026-05-31	Tarih dropdown + Dolu statü + boş durum (blok üyesi)	AKTIF	⊂158	2026-05.md#k158-blok
+172	2026-05-31	Form-anchor look-backward + AtesMektuplariCTA daraltma (blok üyesi)	AKTIF	⊂169	2026-05.md#k169-blok
+179	—	numara atlandı — tanım hiç yazılmadı	KULLANILMADI	ADIM 1 anomali: dizi boşluğu 16	2026-08.md#adim1
+237	2026-06-02	Yasal/uyumluluk — 4 statik yasal sayfa + kurumsal kimlik (blok üyesi)	AKTIF	⊂236	2026-06.md#k236-blok
+238	2026-06-02	Yasal/uyumluluk — 4 statik yasal sayfa + kurumsal kimlik (blok üyesi)	AKTIF	⊂236	2026-06.md#k236-blok
+247	2026-06	Tasarım turu 2 — hesap bug + sıralama + askı sadeleştirme (blok üyesi, `934afbf`)	AKTIF	⊂241	2026-06.md#41-madde6
+248	2026-06	Tasarım turu 1 — form sıralama + Niyet runtime + kuruş + Zoom şifre (blok üyesi, `7d8486c`)	AKTIF	⊂240	2026-06.md#41-madde5
+454	2026-08-06	—	REZERVE	ADIM 1: 429-453 mühürlü, çakışma riski alınmadı; yeni kararlar 455'ten	2026-08.md#adim1
 455	2026-08-06	Otorite kopya repodadır; project files bayat (10-marka.md istisna)	KALICI	→462	90-kronoloji/2026-08.md
 456	2026-08-06	KARAR ledger'ı indekstir, referans değil — `kaynak` sütunu zorunlu	KALICI		20-ref-protokoller.md
 457	2026-08-06	`00-durum.md` 200 satır hard cap — aşan blok kronolojiye iner	KALICI	↔61,88	00-durum.md
-458	2026-08-06	—	TEYITSIZ	ekli dosyalarda tanım yok — ADIM 3b	—
+458	2026-08-06	Agent/skill kadrosu + iki-yüzey mimarisi — kanonik kaynak `docs/skills/`	KALICI	↔455	2026-08.md#k458
 459	2026-08-06	İçerik otoritesi: `ocak-metin` taslak-only, Notion'a giriş elle	KALICI	en az 3 ay	2026-08-06-ocak-gecis-plani.md
 460	2026-08-06	SIRA İLKESİ — doküman kalitesi tesisattan önce gelir	KALICI		20-ref-protokoller.md
 461	2026-08-06	MCP hedeftir, yapıştırma geçicidir — 1-3 oturmadan açılmaz	AKTIF	→ADIM 7	2026-08-06-ocak-gecis-plani.md
 462	2026-08-06	Sohbet sonu = tek `docs-patch` dosyası, CC uygular (tam yenileme yok)	KALICI	←88,145,397	00-durum.md
 463	2026-08-06	TEK KLON DİSİPLİNİ — bir repo, bir klon, bir aktif CC	KALICI	↔150 · B01	20-ref-protokoller.md
 464	2026-08-06	Test ortamı TZ sabitlenir — `vitest.config.ts` → TZ:'UTC'	KALICI	←385 · ↔387 · kod teyitli 6 Ağu (vitest.config.ts:12)	vitest.config.ts
+465	2026-08-07	Çapa tekilliği ve doğrulama disiplini — çapa tek benzersiz satırdan, kriter dosyanın gerçeğinden	KALICI	←355 · ↔462	2026-08.md#k465

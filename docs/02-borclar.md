@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 6 Ağustos 2026 · ADIM 3 (Pilot bölünmesi) — sayım düzeltmesi + B31
+**Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) — B05·B06·B13·B20 kapandı, B34·B35 açıldı
 
-**Durum:** 33 madde · **23 açık** · 10 kapandı/çözüldü/geri çekildi
+**Durum:** 35 madde · **21 açık** · 14 kapandı/çözüldü/geri çekildi
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -13,9 +13,10 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai (ADIM 3b)** | B05 · B06 · B13 · B20 |
+| **Claude.ai** | B35 |
 | **Claude.ai (ADIM 3b sonrası)** | B32 |
 | **CC (dilimleme sonrası)** | B33 |
+| **CC (kod teyidi)** | B34 |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
 | **ADIM 4'e bağlı** | B01 |
@@ -48,16 +49,18 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Çelişki:** 432 "sembolik" de "yatırım" da denmez diyor; `/acik-kapi` metninde "sembolik ücret" geçiyor olabilir.
 - **Eylem:** taze Notion dump'ta site geneli tarama.
 
-## B05 — KARAR 146 / 188 numara çakışması
+## B05 — KARAR 146 / 188 numara çakışması ✅ KAPANDI (7 Ağu, ADIM 3b)
 - [ ] **Sahip:** Claude.ai
 - **Kaynak:** `ocak-kronoloji.md:2790` (146 = GTM container iskeleti) vs `ocak-kronoloji.md:3558` (146 = TS Window dataLayer global type)
 - **Sorun:** İkinci konu KARAR 188'in tanımı. Muhtemel numara hatası — KARAR 153→177 find-replace vakasının aynısı.
 - **Eylem:** ADIM 3'te kronoloji dilimlenirken düzeltilir; kaynak satıra dokunulmaz (KIRPMA YASAĞI), düzeltme tsv tarafında yaşar.
+- **Sonuç (7 Ağu):** Çakışma YOKTU. İkinci geçiş (`ocak-kronoloji.md:3558`) 146'nın kendi doğurduğu TS `(window as any)` borcunun 31 Mayıs kapanış **geri-referansı**. 188'in kendi section başlığı ayrıca var (`2026-05.md:3276`). Ledger'dan `⚠188 çakışma` bayrağı kaldırıldı; 188'e dokunulmadı.
 
-## B06 — KARAR 114 halefi belirsiz
+## B06 — KARAR 114 halefi belirsiz ✅ KAPANDI (7 Ağu, ADIM 3b)
 - [ ] **Sahip:** Claude.ai
 - **Sorun:** "KARAR 114 stop verbatim, **kısmi supersede**" açık; süperseleyen numara 365-371 aralığında ama tek numaraya inmiyor.
 - **Eylem:** ADIM 3'te kronolojinin ilgili bloğu okunup `→N` kesinleştirilir.
+- **Sonuç (7 Ağu):** Halef **366**. Kanıt `2026-07.md:852` — dönemin kendi supersede satırı. Supersede **kısmi** kalıyor: 114 parity `/etkinlik/[slug]` hero'sunda hâlâ uygulanıyor (`2026-07.md:206`).
 
 ## B07 — Bot model ayrımı: OCAK → Sonnet
 - [ ] **Sahip:** Kaan (n8n)
@@ -92,10 +95,12 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Kaynak:** KARAR 152 (`ocak-kronoloji.md:3022`)
 - **İçerik:** "lansman öncesi honeypot, sonrası Turnstile". Honeypot canlı (KARAR 194), Turnstile ayağı hiç açılmadı.
 
-## B13 — Tanımsız üç numara: 154 · 196 · 251
+## B13 — Tanımsız üç numara: 154 · 196 · 251 ✅ KAPANDI (7 Ağu, ADIM 3b — 251 hariç, artığı B-yok)
 - [ ] **Sahip:** Claude.ai
 - **Durum:** Üçü de yalnız sürüm listesi sınırı olarak geçiyor (`v37 · … KARAR 154-195` gibi). Gerçek tanım satırı bu envanterde yok.
 - **Eylem:** ADIM 3'te kronolojinin ilgili dönem bloğu okunup tanım çıkarılır. Aynı şey 400 ve 407 için de geçerli (ikisi bölüm başlığında sınır).
+- **Sonuç (7 Ağu):** 154 · 196 · 223 · 400 · 407 tanımlandı. **251 tanımsız kaldı** — #38 dönem bloğunun ilk numarası, blok içi tekil etiket yok; aday ledger'a not düşüldü, tahmin edilmedi (KARAR 456). Kalan artık yeni borç açmıyor: TEYITSIZ satır kendi kuyruğunda erir.
+- **Kök sebep:** 400/407 doküman hatası değildi — ADIM 1'in ilk geçişi bölüm başlığıydı, tanım 1-8 satır altındaydı. Envanter aracının siniri, kaydın eksikliği değil.
 
 ## B14 — MailerLite panel otomasyonu
 - [ ] **Sahip:** Kaan
@@ -124,12 +129,14 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Kaynak:** KARAR 410 (`ocak-kronoloji.md:5598`)
 - **Durum:** "Ocak Kadın Çemberi" ve "Ocak.biz" adaylarının ikisi de Meta tarafından reddedildi. İtiraz süreci açık; yayın bu onaya kilitli (KARAR 396).
 
-## B20 — Tanım envanterde olmayan 17 numara
+## B20 — Tanım envanterde olmayan 17 numara ✅ KAPANDI (7 Ağu, ADIM 3b)
 - [ ] **Sahip:** Claude.ai
 - **İki grup:**
   - **Grup atfı içinde eriyenler (11):** 159, 160, 164, 170, 171, 172, 237, 238, 247, 248 — yalnız `[KARAR 236, 237, 238]` gibi virgüllü listelerde geçiyorlar. Tanımları var ama grep kelime-sınırı ile elemiş.
   - **Hiç geçmeyenler (6):** 62, 64, 66, 67, 68, 179 — hiçbir dosyada yok. Numara atlanmış olabilir ya da kayıt hiç yazılmamış.
 - **Eylem:** ADIM 3'te ilgili dönem blokları okunur. B13 (154·196·223·251·400·407) ile aynı iş.
+- **Sonuç (7 Ağu):** İki grup ayrıştı. **Gerçek boşluk 6** (62·64·66·67·68·179) — altı master dosyada 0 geçiş, bağımsız doğrulandı → `KULLANILMADI`. **Blok üyesi 10** (159·160·164·170·171·172·237·238·247·248) — tanımları blok içinde yaşıyor, tekil ayrım kaynakta YOK → yeni `⊂N` konvansiyonu, durum blok çapasından devralındı. 247/248 tek commit'e kadar daraldı (`934afbf` / `7d8486c`).
+- **D9:** bu maddenin kendi metni "Grup atfı içinde eriyenler (**11**)" diyor, listede **10** numara var. Sayım hatası — başlıktaki "17" de bu yüzden şişik. Kapanışta düzeltildi.
 
 
 ---
@@ -233,6 +240,40 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Ön koşul KARŞILANDI:** `docs/_arsiv/kronoloji-satir-esleme.tsv` üretildi —
   5675 satır, `eski_satir · yeni_dosya · yeni_satir`, birebirliği doğrulandı
   (5675/5675, sapma 0). Bu borç artık kapatılabilir.
+- **SIRA ŞARTI (KARAR 465, 7 Ağu):** ADIM 3b patch'i **ÖNCE**, B33 dönüşümü **SONRA**,
+  ayrı commit. Gerekçe: 3b patch'inin çapaları bugünkü tsv'ye karşı yazıldı ve
+  dokunduğu satırların çoğunda `kaynak` sütunu hâlâ `ocak-kronoloji.md:NNNN` biçiminde.
+  B33 önce koşarsa o çapaların tamamı kırılır — mühürlenen kararın birebir ihlali.
+  Ayrıca 386 satırlık mekanik diff, ~35 satırlık anlamsal diff'i gömer ve bisect'i öldürür.
+- **SAYIM ŞARTI:** brief 386'yı sabitlemesin. ADIM 3b patch'i o satırların bir kısmını
+  zaten yeni formata çevirdi. CC ADIM 0'da **yeniden saysın** ve raporlasın (KARAR 465).
+
+## B34 — KARAR 143 ve 350: kod teyidi
+- [ ] **Sahip:** CC
+- **Durum:** İki kararın da **metni ADIM 3b'de doğrulandı**; belirsizlik arkeolojide
+  değil kodda.
+- **143 (`/test` ODA_MAP):** karar /test'i ODA_MAP'e ekliyor (`2026-05.md:2612`).
+  Bugün ODA_MAP'te /test yok. **Çıkarılma hiçbir kronoloji diliminde kayıtlı değil** —
+  ya belgesiz bir kod değişikliği oldu, ya "29 slug" gözlemi yanlış.
+- **350 (statik ember şerit):** karar vitrin sol şeridini `--ash`→`--ember` 3px statik
+  yapıyor, hover/tap kaldırıyor (`2026-07.md:499`). "vitrin selektörü yok" gözlemi
+  doğrulanmadı — sınıf adı KARAR 346 beş-desen ailesinde farklı olabilir.
+- **Eylem:** `src/lib/oda-map.ts` gerçek slug seti + `dist/` grep. KARAR 355/408:
+  durum component dosyasından değil `dist/`ten okunur. Sonuç iki ledger satırını
+  TEYITSIZ'den çıkarır.
+
+## B35 — KARAR 87 üç ayrı şeye atfediliyor
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** Ledger'da `87 = "Bir Sonraki [X]" callout pattern'ı` (KALICI) ve
+  kronoloji bunu doğruluyor (`2026-05.md:65`). Ama prose'da aynı numara iki şeye daha
+  atfediliyor: **ODA_MAP kapalı set disiplini** (`2026-05.md:1456`, `:2688`) ve
+  **"sayım yazıyla" disiplini** (`2026-05.md:284`, `:727`).
+- **Neden önemli:** `00-durum.md` "sessiz kırılma noktaları" bölümünde
+  `ODA_MAP kapalı settir → KARAR 87` işaretçisi var. İşaretçi kırık — okuyan yanlış
+  karara gider. B05 ile aynı sınıf hata, daha sinsi hâli.
+- **Eylem:** ODA_MAP kapalı set kuralının gerçek numarasını kronolojiden bul; yoksa
+  yeni numara ver. `00-durum.md` işaretçisini düzelt. **ADIM 3b'de açıldı, kapsamına
+  alınmadı** — kapsam genişletmesi KARAR 52 ihlali olurdu.
 
 
 ---
@@ -263,7 +304,7 @@ D1 → `20-ref-protokoller.md` (OVERFLOW bloğunun altına ek düzeltme notu) ·
 | D7 ✅ | Pilot (build) | 33 sayfa | **KAPANDI (6 Ağu, ADIM 0):** 32 prerender + 10 SSR + 6 API route. "33" hiçbir sayıma denk gelmiyor — rakam köksüzdü. Ders: tek-sayı beyanları çok-hedefli build'de anlamını yitirir |
 | D8 | Pilot TECH STACK "Form/Backend" | Apps Script unified doPost = canlı form backend | Apps Script **EMEKLİ**, backend tamamen Vercel; blok aynı dosyanın #38 bölümüyle çelişiyordu — bloklar `90-kronoloji/2026-07.md`'ye indi, düzeltme `20-ref-site.md`'de |
 
-Ek: KARAR 380, 350, 143 satırları ledger'da `TEYITSIZ`. Sebep doküman hatası değil,
-**brief'te beklenen kanıtın kararın metninden değil çıkarımdan üretilmiş olması.**
-Kronolojideki asıl karar metni okununca durumları netleşir — **ADIM 3b'ye devredildi**
-(B05 · B06 · B13 · B20 ile aynı iş).
+Ek ✅ (7 Ağu, ADIM 3b): KARAR 380 çözüldü → `AKTIF`. KARAR 350 ve 143'ün **karar metinleri
+doğrulandı**; kalan belirsizlik doküman değil kod sorusu → **B34**. Teşhis doğruydu:
+sebep kaydın eksikliği değil, brief'te beklenen kanıtın çıkarımdan üretilmiş olmasıydı.
+Bu gözlem KARAR 465'in doğrudan kaynağıdır.
