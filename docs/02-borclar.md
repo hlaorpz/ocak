@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) — B05·B06·B13·B20 kapandı, B34·B35 açıldı
+**Son güncelleme:** 7 Ağustos 2026 · B37 + B34 — pilot referansları dönüştü, 143/350 kod teyidi (TEYITSIZ 3→1)
 
-**Durum:** 37 madde · **21 açık** · 16 kapandı/çözüldü/geri çekildi
+**Durum:** 37 madde · **20 açık** · 17 kapandı/çözüldü/geri çekildi
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -16,7 +16,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | **Claude.ai** | B35 · B36 |
 | **Claude.ai (ADIM 3b sonrası)** | B32 |
 | **CC (mekanik)** | B37 ✅ |
-| **CC (kod teyidi)** | B34 |
+| **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
 | **ADIM 4'e bağlı** | B01 |
@@ -262,7 +262,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   `docs/_uretilen/b33-kaynak-donusumu.py`. **KARAR 466** biçim kuralını mühürledi:
   `#kNNN` elle doğrulanmış çapa, `:NNNN` mekanik işaretçi; mekanik dönüşüm `#k`'yi asla ezmez.
 
-## B34 — KARAR 143 ve 350: kod teyidi
+## B34 — KARAR 143 ve 350: kod teyidi ✅ KAPANDI (7 Ağu, kod teyidi)
 - [ ] **Sahip:** CC
 - **Durum:** İki kararın da **metni ADIM 3b'de doğrulandı**; belirsizlik arkeolojide
   değil kodda.
@@ -275,6 +275,18 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Eylem:** `src/lib/oda-map.ts` gerçek slug seti + `dist/` grep. KARAR 355/408:
   durum component dosyasından değil `dist/`ten okunur. Sonuç iki ledger satırını
   TEYITSIZ'den çıkarır.
+- **Sonuç (7 Ağu):** `ODA_MAP` gerçek slug sayısı **29** (ölçüldü, varsayılmadı); `/test`
+  **YOK** — commit `82b5962` (6 Tem 2026) ile çıkarılmış, mesaj gerekçe **içeriyor**
+  ("dev-only referans lansman öncesi ODA_MAP + [...slug] noindex branşından silindi").
+  `dist/` route yok, Notion dump'ında da yok → lansmanda public olma riski yok, B39 açılmadı.
+  Vitrin deseninin gerçek adı **`.liste__oge`** (`CARD_SECTIONS`: temalar/turler/formatlar/
+  seri-atolyeler) — ledger'ın "vitrin selektörü yok" notu **yanlış ada bakıyordu**.
+  `dist` kuralı: `border-left:2px solid var(--ray-notr)` + `[open]`/`article` → `--ember`;
+  yani 3px değil 2px, statik değil durum-bağımlı. Hover/tap kalıntısı **yok** (tek
+  `:focus-visible` outline — klavye erişilebilirliği), B38 açılmadı.
+  Ledger: 143 → `IPTAL` (süperseleyen karar yok, geri alan bir commit) · 350 → `SUPERSEDE →411`
+  (kısmi: hover/tap yasağı korundu, geometri + ray semantiği değişti). **TEYITSIZ 3 → 1** —
+  kalan 251, kaynak metni bulunamadığı için (KARAR 456).
 
 ## B35 — KARAR 87 üç ayrı şeye atfediliyor
 - [ ] **Sahip:** Claude.ai

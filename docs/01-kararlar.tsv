@@ -272,7 +272,7 @@ no	tarih	baslik	durum	iliski	kaynak
 139	2026-05-27	Başvuru formu unification genişletildi	AKTIF	←130	2026-05.md:2320
 140	2026-05-27	Brief G.4 — DOM kanıt + maksimum specificity	AKTIF	←138	2026-05.md:2274
 141	2026-05-27	Lansman öncesi kalan iş haritası — v0 etiketli 8 madde	AKTIF		2026-05.md:2322
-143	2026-05-27	/test sayfası ODA_MAP'e eklendi	TEYITSIZ	karar metni TEYİTLİ (2026-05.md:2612); ODA_MAP'ten çıkarılma kayıtlı DEĞİL → B34	2026-05.md#k143
+143	2026-05-27	/test sayfası ODA_MAP'e eklendi	IPTAL	geri alındı: 82b5962 (6 Tem 2026) — dev-only referans, lansman öncesi temizlik; ardıl karar yok	2026-05.md#k143
 144	2026-05-27	Lansman sonrası ilk hafta paketi — 3 yeni madde	ACIK-BORC	B16	2026-05.md:2346
 148	2026-05-27	Brief I.3 — SonrakiBulusma kategori defansı + lib refactor	AKTIF		2026-05.md:2702
 155	2026-05-31	Sıralı setlerde slug semantik disiplini	KALICI		2026-05.md:3166
@@ -399,7 +399,7 @@ no	tarih	baslik	durum	iliski	kaynak
 347	2026-07-05	`transformEsik` 4-param genelleştirme	AKTIF		2026-07.md:493
 348	2026-07-05	`transformKapi` link-opsiyonel + `CARD_SECTIONS`	AKTIF		2026-07.md:495
 349	2026-07-05	Vitrin Düzen A — tek sütun, 2-sütun grid reddedildi	KALICI		2026-07.md:497
-350	2026-07-05	Statik ember kor şeridi — vitrin sol şeridi `--ash`→`--ember` 3px statik, hover/tap kaldırıldı	TEYITSIZ	karar metni TEYİTLİ (2026-07.md:499); `dist` selektör teyidi açık → B34	2026-07.md#k350
+350	2026-07-05	Statik ember kor şeridi — vitrin sol şeridi `--ash`→`--ember` 3px statik, hover/tap kaldırıldı	SUPERSEDE	→411 (kısmi: hover/tap yasağı korundu, geometri + ray semantiği değişti)	2026-07.md#k350
 351	2026-07-05	Ritim tipografisi — vitrin + raf ortak	AKTIF		2026-07.md:501
 352	2026-07-05	Sıcak zemin renk seviyesi	AKTIF		2026-07.md:503
 353	2026-07-05	Gündönümü V2 sadeleştirme	AKTIF		2026-07.md:505

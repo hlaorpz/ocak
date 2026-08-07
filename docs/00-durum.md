@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) · **KARAR 465 mühürlendi**
+**Son güncelleme:** 7 Ağustos 2026 · B37 + B34 · **KARAR 467 mühürlendi** (TEYITSIZ 3→1)
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve

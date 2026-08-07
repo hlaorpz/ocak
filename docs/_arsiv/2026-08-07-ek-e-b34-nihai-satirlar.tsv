@@ -1,0 +1,2 @@
+143	2026-05-27	/test sayfası ODA_MAP'e eklendi	IPTAL	geri alındı: 82b5962 (6 Tem 2026) — dev-only referans, lansman öncesi temizlik; ardıl karar yok	2026-05.md#k143
+350	2026-07-05	Statik ember kor şeridi — vitrin sol şeridi `--ash`→`--ember` 3px statik, hover/tap kaldırıldı	SUPERSEDE	→411 (kısmi: hover/tap yasağı korundu, geometri + ray semantiği değişti)	2026-07.md#k350
