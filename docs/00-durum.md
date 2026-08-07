@@ -31,7 +31,7 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md`.
 - **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.
 - **ADIM 3b ✅** — KARAR arkeolojisi. TEYITSIZ 27 → 3. B05·B06·B13·B20 kapandı;
   454 sahte satırı `REZERVE`'e döndü. Kalan: **B33** (ledger `kaynak` dönüşümü, CC,
-  ayrı commit — 3b'den SONRA, KARAR 465) → sonra **B32**. **Sıradaki iş B33.**
+  KARAR 465) ✅ kapandı. **Sıradaki iş B32** (`ocak-referans.md` → `20-ref-*`).
 - **ADIM 4 ⏭** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. B01 (klon yeniden
   adlandırma) buna bağlı.
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.

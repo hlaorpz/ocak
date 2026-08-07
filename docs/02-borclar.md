@@ -2,7 +2,7 @@
 
 **Son güncelleme:** 7 Ağustos 2026 · ADIM 3b (KARAR arkeolojisi) — B05·B06·B13·B20 kapandı, B34·B35 açıldı
 
-**Durum:** 35 madde · **21 açık** · 14 kapandı/çözüldü/geri çekildi
+**Durum:** 37 madde · **22 açık** · 15 kapandı/çözüldü/geri çekildi
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -13,9 +13,9 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai** | B35 |
+| **Claude.ai** | B35 · B36 |
 | **Claude.ai (ADIM 3b sonrası)** | B32 |
-| **CC (dilimleme sonrası)** | B33 |
+| **CC (mekanik)** | B37 |
 | **CC (kod teyidi)** | B34 |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
@@ -230,7 +230,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Not:** `ocak-referans.md`'nin başındaki "DÖNEM GÜNCELLEMELERİ KRONOLOJİDE" haritası
   bu işin giriş kapısıdır — hangi A.X'in hangi dönem bloğunda güncellendiğini gösterir.
 
-## B33 — Ledger `kaynak` sütunu dilimlemeden sonra kırık
+## B33 — Ledger `kaynak` sütunu dilimlemeden sonra kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik dönüşüm)
 - **Sorun:** `01-kararlar.tsv`'nin `kaynak` sütununda **386 satır** `ocak-kronoloji.md:NNNN`
   biçiminde satır numarası taşıyor. Dosya dilimlendi; numaralar artık hiçbir şeye
@@ -247,6 +247,13 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   Ayrıca 386 satırlık mekanik diff, ~35 satırlık anlamsal diff'i gömer ve bisect'i öldürür.
 - **SAYIM ŞARTI:** brief 386'yı sabitlemesin. ADIM 3b patch'i o satırların bir kısmını
   zaten yeni formata çevirdi. CC ADIM 0'da **yeniden saysın** ve raporlasın (KARAR 465).
+- **Sonuç (7 Ağu):** **367** satır dönüştürüldü (ADIM 3b sonrası gerçek sayım; brief'in
+  386'sı geçersizdi). Kapsama testi **367/367**. Nokta örnekleme **5/5**. `#k` biçimindeki
+  **21** satır ezilmedi (brief 19 diyordu, dosya 21 dedi — KARAR 465). Ek olarak 455'in
+  önekli `90-kronoloji/2026-08.md` değeri `2026-08.md#k455`'e normalize edildi — KARAR
+  466'nın "`:NNNN` zamanla `#k`'ye terfi eder" kuralının ilk uygulaması. Dönüşüm betiği
+  `docs/_uretilen/b33-kaynak-donusumu.py`. **KARAR 466** biçim kuralını mühürledi:
+  `#kNNN` elle doğrulanmış çapa, `:NNNN` mekanik işaretçi; mekanik dönüşüm `#k`'yi asla ezmez.
 
 ## B34 — KARAR 143 ve 350: kod teyidi
 - [ ] **Sahip:** CC
@@ -274,6 +281,33 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Eylem:** ODA_MAP kapalı set kuralının gerçek numarasını kronolojiden bul; yoksa
   yeni numara ver. `00-durum.md` işaretçisini düzelt. **ADIM 3b'de açıldı, kapsamına
   alınmadı** — kapsam genişletmesi KARAR 52 ihlali olurdu.
+
+## B36 — Kaynağı kapak/sürüm listesi olan satırlar
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** B33 dönüşümü sonrası **25 satırın** `kaynak` değeri `00-devir.md:1-34`
+  aralığına düşüyor — monolitin kapağı, yani **sürüm listesi**. Bir kararın hangi
+  sürümde mühürlendiğini söyler; **ne olduğunu söylemez.**
+- **Neden borç:** B13'ü doğuran hastalığın aynısı. ADIM 1'in ilk geçişi kapaktı, gerçek
+  tanım dönem bloğundaydı. 154·196·223·400·407 tam bu yüzden TEYITSIZ kalmıştı ve ADIM 3b'de
+  tanımları bulundu. Kalan 25 satır için de aynı iş yapılabilir.
+- **Neden acil değil:** satırların durumu doğru, yalnız kaynağı zayıf. Kırık değil, sığ.
+  TEYITSIZ değiller — okuyan yanlış yere gitmez, sadece derine inemez.
+- **Eylem:** blok blok tara, `#kNNN` çapasına terfi ettir. ADIM 3b'nin yöntemi birebir
+  uygulanır. B32'den sonra, ADIM 4'ten önce ya da sonra — sıra serbest.
+
+## B37 — `ocak-pilot.md:NNNN` referansları da kırık
+- [ ] **Sahip:** CC (mekanik)
+- **Sorun:** B33 dönüşümü sonrası ledger'da **23 satır** `ocak-pilot.md:NNNN` gösteriyor.
+  O dosya ADIM 3'te `_arsiv/ocak-pilot-v52.md`'ye alındı — numaralar hiçbir yaşayan
+  dosyada karşılık bulmuyor. B33 ile **aynı sınıf hata, farklı dosya**; B33 brief'i
+  yalnız `ocak-kronoloji.md` desenini kapsıyordu.
+- **Ön koşul KARŞILANDI:** `docs/_bolme-haritasi.tsv` (403 satır, `pilot_satir · hedef ·
+  ilk_80_karakter`) ADIM 3'te bölme anında üretildi — B33'ün eşleme tablosuyla aynı rol.
+- **Eylem:** B33 betiğinin ikizi. Hedef sütunu kısa kod taşıyor (`STRUCT`, `K7`, `RS`…),
+  gerçek dosya adına çözülmesi gerekir — B33'teki gibi doğrudan dosya:satır değil.
+  Nokta örnekleme zorunlu.
+- **Not:** ADIM 3b'nin `#k` satırlarından bazıları zaten `ocak-referans.md#kNNN`
+  biçiminde; o dosya yaşıyor, dokunulmaz (B32'de taşınacak).
 
 
 ---
