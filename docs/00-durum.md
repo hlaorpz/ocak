@@ -6,7 +6,7 @@
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: ~135 satır. Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: ~138 satır. Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -28,7 +28,7 @@
 ## ŞU AN NEREDEYİZ
 
 **Doküman mimarisi geçişi — ADIM 3 bitti.** Pilot dağıtıldı; artık `ocak-pilot.md` yok.
-Yol haritası: `2026-08-06-ocak-gecis-plani.md`.
+Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı okumadan brief yazma** (plan beş yerinden bayat, B32 sonrası).
 
 - **ADIM 1–2 ✅** — KARAR envanteri + ledger durum sütunu (453 satır).
 - **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.

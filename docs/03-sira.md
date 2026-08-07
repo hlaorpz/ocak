@@ -31,8 +31,9 @@ Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam 
 | 4 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
 | 5 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
 | 6 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
+| 7 | **B38** — ledger çapa denetimi, örneklem bazlı (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 | `02-borclar.md` B38 — örneklem numaralarını Kaan verir |
 
-**B32 dahil hiçbiri ADIM 4'ü kilitlemiyor.** 1 ve 2 arasındaki sıra tercih meselesidir.
+**Hiçbiri ADIM 4'ü kilitlemiyor.** ADIM 4 kuyruğun başındadır; B35 · B36 · 251 sırası tercih meselesidir. B38 tanımı gereği sonuncudur.
 
 ---
 

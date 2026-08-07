@@ -244,3 +244,26 @@ Bu sohbet ilk tatbikidir.
 
 `2026-08-06-brief-karar-envanteri.md` → CC'ye "oku ve uygula".
 Çıktı: `karar-ham.tsv` + anomali raporu. Sonra ADIM 2 için temiz sohbet.
+
+---
+
+## SAPMA KAYDI — 7 Ağustos 2026 (B32 sonrası)
+
+Bu plan 6 Ağustos'ta yazıldı. Gövdesi **değiştirilmedi** — aşağıdaki beş nokta o günden
+bu yana kaydı. Plandan brief yazan, önce bu listeyi okur.
+
+| # | plan ne diyor | gerçek | sebep |
+|---|---|---|---|
+| 1 | HEDEF YAPI'da `20-ref-*` **beş** dosya | **yedi** — `20-ref-program.md` + `20-ref-marka.md` eklendi | B32 |
+| 2 | HEDEF YAPI'da `03-sira.md` yok | var, canlı kuyruk dosyası | KARAR 468 |
+| 3 | `baglam.sh` dört profil (`kod · icerik · marka · bot`) | `20-ref-program.md` hiçbir profile girmiyor; `marka` profili artık `10-marka.md` **+** `20-ref-marka.md` görmeli | B32 |
+| 4 | sohbet sonu patch'i **dört** bölüm | **beş** — `03-sira.md` eklendi | KARAR 468 |
+| 5 | `durum` enum **yedi** değer | **dokuz** — `KULLANILMADI` (6 satır) ve `REZERVE` (1 satır) ledger'da fiilen kullanılıyor | KARAR 456 |
+
+**En riskli olan 3 ve 5.** ADIM 4'ün `baglam.sh`'ı beş dosyaya göre kurulursa iki
+`20-ref-*` hiçbir profile girmez — planın "manifest satırı" ile önlemeye çalıştığı
+sessiz kırılmanın ta kendisi. `ocak-kararci` yedi değerlik enum'la yazılırsa iki durum
+tanımsız kalır.
+
+**Ayrıca:** KARAR 461'in ledger `kaynak`'ı bu dosyayı gösteriyor, satır numarası yok —
+sığ çapa, B36 kapsamında.

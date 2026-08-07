@@ -82,8 +82,6 @@ Yıl 1'de site sadece Türkçe. İngilizce alt sayfa veya dil seçeneği yok. Fa
 
 **Kullanıcının üstlendiği iş senkronu bozar.** Kaan Notion'a geçirmeyi ve düzeltmeleri üstlendiğinde iş kapanır, ama Notion'daki gerçek metin Claude'un elindekinden sapar. Bu, sohbet kapanırken **açıkça söylenir**; aynı sayfalara bir daha dokunulacak gün **o günkü** taze dump gerekir.
 
-**Enum rename briefi kalıbı.** Mevcut bir enum değerinin **anlamını** değiştirirken (Yolculuk → online), o değere bağlı TÜM kod yolları (`SLUG_KATEGORI`, `KATEGORI_ADI`, `KATEGORI_EN_YAKIN`, `formAnchor`, `KATEGORI_HEADING`) **tek commit'te** taranır. Yeni bir enum/format önerilmeden önce CC'ye *"bu değer zaten kullanımda mı?"* teşhisi yaptırılır — mimari kararı verirken kod gerçekliğini varsaymak hatadır.
-
 **Fable devir dosyası protokolü.** Paralel Fable sohbetleri arası kanon aktarımı açılış-protokollü bir devir dosyasıyla yapılır; yeni sohbet taze dumptan uygulama durumunu teyit edip açık kararlara dokunmadan başlar — iki sohbetin üst üste yazmasını önler. **"Bütünsel sayfa güncelleme" formatı:** Fable, MEVCUT→YENİ değişiklik listesi + tam Notion gövdesini tek dosyada verir; düşen linkleri tam URL ile geri koyar.
 
 **Jenerik fix > sayfa-özel fix.** Dump script'inde sayfa-özel dallanma (`if slug === …`) yerine desen-bazlı çözüm istendi; jenerik `walkTopLevelBlocks` fix'i brief'te sayılmayan 4. gizli hatayı da (`/advaita` tasıyıcı accordion) yakaladı. "if slug ===" yasağı doğru brief kuralıydı.

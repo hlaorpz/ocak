@@ -13,7 +13,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
 | **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai** | B35 · B36 |
+| **Claude.ai** | B35 · B36 · B38 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -213,7 +213,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Neden borç:** düzeltme kod tarafında değil **içerik tarafında** — ADIM 3'ün doküman
   düzeltme kuyruğuyla kapanamaz, Notion'a elle girilir (KARAR 459).
 
-## B32 — `ocak-referans.md` → `20-ref-*` birleştirme
+## B32 — `ocak-referans.md` → `20-ref-*` birleştirme ✅ KAPANDI
 - [ ] **Sahip:** Claude.ai
 - **Tetikleyici:** ADIM 3b'den sonra, ADIM 4'ten önce
 - **Sorun:** `docs/ocak-referans.md` (3574 satır) **tema bazlıdır** — yeni `20-ref-*`
@@ -328,15 +328,99 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   hepsini aynı hedef satıra çözdü — doğru dönüşüm, sığ kaynak. Toplam ~37 satır.
   *Sayım dosyadan doğrulandı (KARAR 465): `2026-07.md:16` altı satır (366-371),
   `2026-07.md:20` altı satır (376-379, 381-382). 380 hariç — ADIM 3b onu `#k380` yapmıştı.*
-- **B32 ADIM 0 bulgusu — dört sığ çapa tespit edildi.** Ledger `kaynak` sütunu bu
-  satırlarda kararın **kendi metnine** değil komşusuna bakıyor:
+- **B32 bulguları — beş sığ çapa vakası, ve kuyruk boyutu teyitsiz.**
+
+  **Kesim ve dönüşüm sırasında (beş):**
   - **409** → halefi 433'ün satırına bakıyor; 409'un kendi metni `20-ref-protokoller.md`'de
     (`NOTION MARKER'I BİR SÖZLEŞMEDİR`), farklı dosyada.
   - **424** → halefi 445'in satırına bakıyor; kendi metni iki satır yukarıda.
   - **415 ve 417** aynı satıra bakıyor.
   - **218 · 307 · 335** üçü de 423'ün satırına bakıyor (halef metni — savunulabilir,
     ama `#k` terfisinde ayrıştırılmalı).
-  B32 bunları **düzeltmedi** — sığ çapa terfisi B36'nın işidir (KARAR 456: tahmin yazılmaz).
+  - **336 ve 414** ikisi de `20-ref-site.md:156`'ya bakıyor (eskiden `:1179`). 414,
+    336'nın revizesi olduğu için savunulabilir; yeni doğmadı, dönüşüm ölçünce göründü.
+
+  **Örneklem denetiminde (7 Ağustos).** Kaan beş numara seçti — 19 · 176 · 295 · 376 ·
+  461. Çapaları takip edildi. **Beşi de uydurma değil; beşinin de çapası zayıf:**
+  - **19** → `2026-02.md:35` tek satırlık **indeks** girdisi, gerekçe değil. Üstelik
+    "Bölüm A.7"ye işaret ediyor — o bölüm B32 ile `20-ref-program.md`'ye indi.
+  - **295** → `2026-07.md:184` **KARAR 294'ün metni.** 295 aynı blokta, başka satırda.
+  - **376** → `2026-07.md:20` dönem özeti bülteni; 376'nın kendi metni `:749`'da.
+  - **176** → `dist / ates-mektuplari__success` — şemada tanımsız biçim (aşağı bak).
+  - **461** → `2026-08-06-ocak-gecis-plani.md`, satır numarası yok; ve o dosya beş
+    yerinden bayat (sapma kaydı dosyanın sonunda).
+
+  **⚠ Kuyruk boyutu ölçülmedi.** Bu maddedeki eski "~37 sığ kaynak satırı" rakamının
+  kaynağı belirsizdir — **kendisi doğrulanmamış bir sayıdır** (KARAR 465 ihlali).
+  Gerçek ölçüm: ledger'ın **468 satırından yalnız 35'i** (`%7,5`) elle konmuş `#` çapası
+  taşıyor — **25'i `#kNNN` biçiminde**, 10'u başka `#` biçiminde (`#adim1` yedi satırda,
+  `#38-blok`, `#41-madde5`, `#41-madde6`); **418'i mekanik `:NNN`.** Mekanik çapaların
+  kaçının komşusunu gösterdiği bilinmiyor. B36 açılırken **önce örneklem ölçümü** yapılır
+  (rastgele 10-20 mekanik satır, komşu-gösterme oranı); kuyruk boyutu ondan sonra yazılır.
+
+- **`kaynak` sütununda iki tanımsız biçim — şema eksiği.** KARAR 466 iki biçim
+  tanımladı. Ledger fiilen **dört** biçim kullanıyor:
+
+  | biçim | satır | örnek |
+  |---|---|---|
+  | mekanik `:NNNN` | 418 | `2026-07.md:705` |
+  | elle konmuş `#` çapası | 35 | `2026-07.md#k366` (25) · `2026-08.md#adim1` (10) |
+  | **kod/dist artefaktı** | **8** | `src/styles/global.css:21,142` · `dist / ates-mektuplari__success` |
+  | **çıplak dosya adı** | **7** | `20-ref-protokoller.md` |
+
+  Son ikisi yanlış değil — kod artefaktı KARAR 102/355 ruhuna uygun, hatta prose'dan
+  **daha** doğrulanabilir. Sorun isimsiz olmaları: şema tanımadığı için hiçbir doğrulama
+  onları kapsamıyor. B36'da ya KARAR 466 genişletilir ya ayrı KARAR açılır.
+
+- **`iliski` sütunu bazı satırlarda not taşıyor, ilişki değil.** Örnek: KARAR 176 →
+  `dist teyitli (ember dot render oluyor)`. Sütun `→ ← ↔` için tanımlıydı. Kaç satırda
+  olduğu sayılmadı.
+
+- **Prose'a gömülü durum etiketi — dokuz satır, altısı mükerrer.** `20-ref-*` ailesinde
+  ledger'a ait durum değerleri prose'da tekrar ediliyor:
+
+  | dosya:satır | etiket | ledger |
+  |---|---|---|
+  | `20-ref-icerik-dili.md:11` | KALICI | 354 = KALICI ✅ |
+  | `20-ref-site.md:26` · `:178` | KALICI | 427 = KALICI ✅ |
+  | `20-ref-site.md:196` | SUPERSEDE (←423) | 433 = SUPERSEDE ✅ |
+  | `20-ref-site.md:198` | KISMEN SUPERSEDE (←424) | 445 = SUPERSEDE ✅ |
+  | `20-ref-protokoller.md:13` | KALICI | 355 = KALICI ✅ |
+  | `20-ref-protokoller.md:35` | KALICI/yardımcı | 427 = KALICI ⚠ |
+  | `20-ref-protokoller.md:47` | KALICI | 460 = KALICI ✅ |
+  | `20-ref-protokoller.md:49` | — | kuralın kendi tarifi, etiket değil |
+
+  **Hiçbiri yanlış değil; hepsi mükerrer.** `20-ref-protokoller.md:49` "durum ledger'da
+  yaşar, referans dosyasında tekrar edilmez" diyor — altı kardeş satır tam olarak bunu
+  yapıyor. **İki ayrıntı:** (a) KARAR 427 **iki dosyada birden** etiketli ve metinler
+  ayrışmış (`KALICI` vs `KALICI/yardımcı`) — ayrışma tam da tekrarın maliyeti;
+  (b) SUPERSEDE taşıyan 433 ve 445, yukarıdaki sığ çapa listesindeki kararların ta
+  kendisi. B32 hiçbirine dokunmadı.
+
+- **Enum rename kuralı iki kayıtta** (`20-ref-protokoller.md`, yan yana). B32 taşıdı ama
+  birleştirmedi — birleştirme yeniden yazımdır, KIRPMA YASAĞI kapsamı. B36'da tek kayda
+  indirilir; ikisinin de benzersiz cümlesi korunur.
+
+## B38 — Ledger çapa denetimi (terminal kontrol)
+
+- **Sahip:** Claude.ai · **Tetikleyici:** ADIM 4-7 oturduktan sonra, doküman geçişinin
+  **son** işi olarak.
+- **Sorun:** Ledger 468 kararın *durumunu* güvenilir taşıyor ama *nereye işaret ettiğini*
+  taşımıyor. Elle doğrulanmış çapa oranı **%7,5** (35/468). Kalan 418 mekanik satırın
+  doğru satırı gösterdiği hiç ölçülmedi; bugüne kadar bakılan on vakanın **onu da**
+  sığ ya da komşu-gösteren çıktı.
+- **Neden en sona:** her doküman turu ledger'ı biraz daha oynatıyor (B32 tek turda 33
+  hücre taşıdı). Denetimi ortada yapmak, sonrası kayınca boşa gider. ADIM 7 (MCP)
+  oturduğunda ledger artık hareket etmiyor olacak — denetim orada anlam kazanır.
+- **Yöntem — örneklem, tam tarama değil:** rastgele 15-20 mekanik `:NNN` satırı çekilir,
+  çapası takip edilir, üç kategoriye ayrılır (kendi metnine · komşusuna · hiçbir yere).
+  Oran çıkar, kuyruk boyutu **ondan sonra** yazılır. **Örneklemi Claude seçmez** —
+  numaraları Kaan verir. Gerekçe: seçen taraf kendi kör noktasına göre seçer.
+- **B36 ile ilişki:** B36 bilinen sığ çapaları terfi ettirir; B38 **bilinmeyenin oranını**
+  ölçer. B36 önce, B38 en sonda — B36 bitince denetim onun ne kadarını kapattığını da
+  gösterir.
+- **Kaynak:** B32 örneklem denetimi (7 Ağustos 2026, Kaan'ın seçtiği beş numara:
+  19 · 176 · 295 · 376 · 461).
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)

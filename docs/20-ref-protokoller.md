@@ -78,6 +78,10 @@ metin/marka disiplinleri (`20-ref-icerik-dili.md`) · Notion sözleşmeleri (`20
 
 **ENUM RENAME BRİEFİ KALIBI (KARAR 430 dersi):** Mevcut bir enum değerinin **anlamını** değiştirirken o değere bağlı TÜM kod yolları (`SLUG_KATEGORI`, `KATEGORI_ADI`, `KATEGORI_EN_YAKIN`, `formAnchor`, `KATEGORI_HEADING`) tek commit'te taranır. Yeni bir enum/format önerilmeden önce CC'ye **"bu değer zaten kullanımda mı?"** teşhisi yaptırılır. *Vaka: `Format: Yolculuk` enum'u zaten Anadolu'ya bağlıydı; ADIM 0 olmasa Anadolu etkinlikleri online kayıt akışına düşecekti.*
 
+*↑ Aynı kuralın iki kaydı: ilki ADIM 3 damıtımı (vaka cümlesini taşır), ikincisi `ocak-referans.md` v46 gövdesi (kod-gerçekliği ilkesini taşır). İkisi de ötekinin alt kümesi değil; birleştirme B36'da yapılır (B32'de birleştirme = yeniden yazım, KIRPMA YASAĞI).*
+
+**Enum rename briefi kalıbı.** Mevcut bir enum değerinin **anlamını** değiştirirken (Yolculuk → online), o değere bağlı TÜM kod yolları (`SLUG_KATEGORI`, `KATEGORI_ADI`, `KATEGORI_EN_YAKIN`, `formAnchor`, `KATEGORI_HEADING`) **tek commit'te** taranır. Yeni bir enum/format önerilmeden önce CC'ye *"bu değer zaten kullanımda mı?"* teşhisi yaptırılır — mimari kararı verirken kod gerçekliğini varsaymak hatadır.
+
 - **Acil rollback protokolü (KARAR 149):** Bug çıkarsa zincir hız sırasıyla:
   - **Vercel deployment rollback** → Vercel UI → Deployments → son sağlam deployment → ⋮ menü → "Promote to Production", ~10-30 sn (en hızlı).
   - **Notion içerik bug'ı** → Notion düzelt + "Yayınla" checkbox işaretle → Vercel automation tetikler → ~2-3 dk canlı.
