@@ -301,7 +301,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   yeni numara ver. `00-durum.md` işaretçisini düzelt. **ADIM 3b'de açıldı, kapsamına
   alınmadı** — kapsam genişletmesi KARAR 52 ihlali olurdu.
 
-## B36 — Kaynağı kapak/sürüm listesi olan satırlar
+## B36 — Kaynağı sığ satırlar
 - [ ] **Sahip:** Claude.ai
 - **Sorun:** B33 dönüşümü sonrası **25 satırın** `kaynak` değeri `00-devir.md:1-34`
   aralığına düşüyor — monolitin kapağı, yani **sürüm listesi**. Bir kararın hangi
@@ -313,6 +313,11 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   TEYITSIZ değiller — okuyan yanlış yere gitmez, sadece derine inemez.
 - **Eylem:** blok blok tara, `#kNNN` çapasına terfi ettir. ADIM 3b'nin yöntemi birebir
   uygulanır. B32'den sonra, ADIM 4'ten önce ya da sonra — sıra serbest.
+- **Kapsam genişlemesi (7 Ağu, B37):** +12 satır (366-371 · 376-379 · 381-382).
+  Pilot'un yoğun paragraflarında birden çok karar tek satırda anılıyordu; dönüşüm
+  hepsini aynı hedef satıra çözdü — doğru dönüşüm, sığ kaynak. Toplam ~37 satır.
+  *Sayım dosyadan doğrulandı (KARAR 465): `2026-07.md:16` altı satır (366-371),
+  `2026-07.md:20` altı satır (376-379, 381-382). 380 hariç — ADIM 3b onu `#k380` yapmıştı.*
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)
