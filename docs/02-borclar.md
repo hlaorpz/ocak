@@ -325,7 +325,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   O dosya ADIM 3'te `_arsiv/ocak-pilot-v52.md`'ye alındı — numaralar hiçbir yaşayan
   dosyada karşılık bulmuyor. B33 ile **aynı sınıf hata, farklı dosya**; B33 brief'i
   yalnız `ocak-kronoloji.md` desenini kapsıyordu.
-- **Ön koşul KARŞILANDI:** `docs/_bolme-haritasi.tsv` (403 satır, `pilot_satir · hedef ·
+- **Ön koşul KARŞILANDI:** `docs/_arsiv/_bolme-haritasi.tsv` (403 satır, `pilot_satir · hedef ·
   ilk_80_karakter`) ADIM 3'te bölme anında üretildi — B33'ün eşleme tablosuyla aynı rol.
 - **Eylem:** B33 betiğinin ikizi. Hedef sütunu kısa kod taşıyor (`STRUCT`, `K7`, `RS`…),
   gerçek dosya adına çözülmesi gerekir — B33'teki gibi doğrudan dosya:satır değil.

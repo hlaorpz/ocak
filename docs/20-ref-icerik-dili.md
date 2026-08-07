@@ -4,7 +4,7 @@
 içerik-sunum sınırı, taze-dump şartı, teslim standartları, Fable devir protokolü.
 **Ne taşımaz:** marka çekirdeği (`10-marka.md`) · sayfa mimarisi (`20-ref-site.md`).
 
-*Bu dosyanın gövdesi `ocak-pilot.md` v52'den **birebir** taşındı (ADIM 3, 6 Ağustos 2026). Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi: `docs/_bolme-haritasi.tsv`.*
+*Bu dosyanın gövdesi `ocak-pilot.md` v52'den **birebir** taşındı (ADIM 3, 6 Ağustos 2026). Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi: `docs/_arsiv/_bolme-haritasi.tsv`.*
 
 ---
 

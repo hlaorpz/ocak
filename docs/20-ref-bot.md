@@ -3,7 +3,7 @@
 **Ne taşır:** WhatsApp bot, n8n, Meta display name kuralları, numara tek-kaynağı,
 BotZ platformu, cron.
 
-*Bu dosyanın gövdesi `ocak-pilot.md` v52'den **birebir** taşındı (ADIM 3, 6 Ağustos 2026). Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi: `docs/_bolme-haritasi.tsv`.*
+*Bu dosyanın gövdesi `ocak-pilot.md` v52'den **birebir** taşındı (ADIM 3, 6 Ağustos 2026). Hiçbir cümle kısaltılmadı, yeniden yazılmadı. Satır-satır köken izi: `docs/_arsiv/_bolme-haritasi.tsv`.*
 
 ---
 

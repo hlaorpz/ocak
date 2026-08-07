@@ -31,7 +31,7 @@ import csv, re, sys, os
 KOK = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 D = lambda *p: os.path.join(KOK, 'docs', *p)
 LEDGER = D('01-kararlar.tsv')
-HARITA = D('_bolme-haritasi.tsv')
+HARITA = D('_arsiv', '_bolme-haritasi.tsv')
 KOD_TABLO = D('_uretilen', 'bolme-kod-cozumu.tsv')
 
 RE_KIRIK = re.compile(r'^ocak-pilot\.md:(\d+)$')
