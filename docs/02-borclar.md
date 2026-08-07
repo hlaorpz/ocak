@@ -45,7 +45,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 
 ## B04 — `/acik-kapi` "sembolik ücret" ifadesi
 - [ ] **Sahip:** Claude.ai (metin) → Advaita/Kaan (Notion girişi)
-- **Kaynak:** KARAR 240 notu (`ocak-referans.md:788`), KARAR 432
+- **Kaynak:** KARAR 240 notu (`20-ref-program.md:498`), KARAR 432
 - **Çelişki:** 432 "sembolik" de "yatırım" da denmez diyor; `/acik-kapi` metninde "sembolik ücret" geçiyor olabilir.
 - **Eylem:** taze Notion dump'ta site geneli tarama.
 
@@ -70,7 +70,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 
 ## B08 — Site geneli "Uluslararası Yolculuk" sweep'i
 - [ ] **Sahip:** Claude.ai (tarama) → Advaita/Kaan (Notion)
-- **Kaynak:** KARAR 326 bakım tetikleyicisi (`ocak-referans.md:780`)
+- **Kaynak:** KARAR 326 bakım tetikleyicisi (`20-ref-program.md:490`)
 - **Durum:** "yapılmadı" — birebir. Marka dosyası K3 tanımı düzeltildi (v1.4), site metni taranmadı.
 
 ## B09 — `/takvim` hash listener'ları

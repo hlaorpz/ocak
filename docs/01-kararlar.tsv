@@ -1,18 +1,18 @@
 no	tarih	baslik	durum	iliski	kaynak
 187	2026-05-31	Sabit-px `::after` glow taşması (Brief M)	AKTIF	↔372	2026-07.md:705
 334	2026-07-05	Kayıt butonu metni Kayıt-Tipi şablonuna bağlandı ("Yerini ayır")	SUPERSEDE	→424	2026-07.md:1044
-336	2026-07-05	Sol ember çizgi — ember/durum ayrımı	SUPERSEDE	→414	ocak-referans.md:1179
+336	2026-07-05	Sol ember çizgi — ember/durum ayrımı	SUPERSEDE	→414	20-ref-site.md:156
 372	2026-07	Mobil zoom-out ilkesi — `hidden` extent silmez, `clip` siler	KALICI	↔187 · clip UYGULANDI (kod teyitli, pilot bayat)	src/styles/global.css:21,142
-398	2026-07	Çekirdek ekip yapısı — psikolog rolü çekirdekten çıkarıldı	AKTIF		ocak-referans.md:862
-404	2026-07	İmza cümleler eksen ayrımı — üçü de yaşar	KALICI		ocak-referans.md:141
+398	2026-07	Çekirdek ekip yapısı — psikolog rolü çekirdekten çıkarıldı	AKTIF		20-ref-marka.md:297
+404	2026-07	İmza cümleler eksen ayrımı — üçü de yaşar	KALICI		20-ref-icerik-dili.md:39
 405	2026-07	/atolye karar sayfasıdır — ölçüt "seçim mi merak mı"	SUPERSEDE	→413	2026-07.md:1043
 406	2026-07	kayit-cta marker'ı component instance'a delege	SUPERSEDE	→423	2026-07.md:1043
 423	2026-07	kayit-cta emekli → sonraki-bulusma + mini-cta iki-section	AKTIF	←307,332,335,406,433 · SSR sayfalarda statik teyit yok	2026-08.md:34
-424	2026-07	CTA buton dili — tek-etkinlik vs havuz revizesi	AKTIF	←334,445	ocak-referans.md:1221
+424	2026-07	CTA buton dili — tek-etkinlik vs havuz revizesi	AKTIF	←334,445	20-ref-site.md:198
 432	2026-07-12	Fiyat sayfada geçmez; "sembolik" de "yatırım" da denmez	KALICI		2026-08.md:58
-433	2026-07-12	Format sayfası kayıt CTA'sı için Notion marker zorunluluğu	SUPERSEDE	→423	ocak-referans.md:1219
+433	2026-07-12	Format sayfası kayıt CTA'sı için Notion marker zorunluluğu	SUPERSEDE	→423	20-ref-site.md:196
 444	2026-07	Sıklık sözü yasağı — "ayda en az bir" düştü, takvim gösterir	KALICI		2026-07.md:42
-445	2026-07	CTA buton dili — tek etkinlik vs havuz kuralı	SUPERSEDE	→424 (kısmen)	ocak-referans.md:1221
+445	2026-07	CTA buton dili — tek etkinlik vs havuz kuralı	SUPERSEDE	→424 (kısmen)	20-ref-site.md:198
 47	2026-02-19	İlk yıl Advaita merkezli + ekip geçiş zaman çizelgesi	AKTIF		2026-02.md:72
 93	2026-05-21	Section etiketi retrofit tamam — 13 sayfa, standart sabit	AKTIF		2026-05.md:86
 96	2026-05-21	Site mimarisi — Astro SSG + Notion canlı binding	KALICI		2026-05.md:94
@@ -35,7 +35,7 @@ no	tarih	baslik	durum	iliski	kaynak
 188	2026-05-31	Astro tooling — `astro check` tek doğrulama	KALICI		2026-05.md:3276
 194	2026-05-31	Honeypot bot koruma katmanı (KARAR 152 uygulaması)	AKTIF		2026-05.md:3216
 202	2026-06-03	Inline ember — `<code>` ember rengi, monospace/gri kutu iptal	AKTIF		2026-06.md:105
-218	2026-05-31	`kayit-cta` slug'dan otomatik hedef	SUPERSEDE	→423 (mantık devralındı)	ocak-referans.md:1193
+218	2026-05-31	`kayit-cta` slug'dan otomatik hedef	SUPERSEDE	→423 (mantık devralındı)	20-ref-site.md:170
 259	2026-06	Footer yasal linkler her sayfada kalır	SUPERSEDE	→364 (kısmi)	00-devir.md:12
 260	2026-06-14	Ödeme ekranı iyzico güven şeridi	IPTAL	→297	2026-07.md:190
 277	2026-07-02	Slug disiplini + build guard — yayından sonra dokunulmaz	KALICI		00-devir.md:108
@@ -44,7 +44,7 @@ no	tarih	baslik	durum	iliski	kaynak
 286	2026-07-02	Site dili Fable revizyonu + ana sayfa hero metin refresh	AKTIF		2026-07.md:193
 297	2026-07-02	iyzico güven şeridi kaldırıldı — PayTR geçişi	SUPERSEDE	→364	2026-07.md:332
 299	2026-07-05	Kaynak kanonu "Dört Yön, Bir Ocak"	KALICI		2026-07.md:352
-307	2026-07-05	H4 kapanış standardı + mini-retreat + atölye	SUPERSEDE	→423	ocak-referans.md:1193
+307	2026-07-05	H4 kapanış standardı + mini-retreat + atölye	SUPERSEDE	→423	20-ref-site.md:170
 309	2026-07-05	Faz 0 teknik paket kararları	AKTIF	→311 (kod ayağı); footer ayağı ↔364	2026-07.md:373
 311	2026-07-05	Faz 0 teknik paket uygulaması	AKTIF	←309	2026-07.md:403
 330	2026-07-05	Etkinlik liste dikey sapma rasyonalizasyonu	SUPERSEDE	→373	00-devir.md:12
@@ -57,8 +57,8 @@ no	tarih	baslik	durum	iliski	kaynak
 383	2026-07	Çift-uçlu `pencereIcinde` — kapanış DAHİL, başlangıç HARİÇ	KALICI		00-devir.md:12
 384	2026-07	Statü hiyerarşisi — Dolu görünür, İptal gizli	KALICI		2026-07.md:22
 411	2026-07	Liste ailesi tek gramer — dört lehçe → `.liste__oge`	KALICI		00-devir.md:11
-412	2026-07	Meta-slot iptali — sağ meta etiketi kaldırıldı	AKTIF		ocak-referans.md:1175
-414	2026-07	KARAR 336 satır-scope revizesi — yalnız `variant='satir'`	AKTIF	←336	ocak-referans.md:1179
+412	2026-07	Meta-slot iptali — sağ meta etiketi kaldırıldı	AKTIF		20-ref-site.md:152
+414	2026-07	KARAR 336 satır-scope revizesi — yalnız `variant='satir'`	AKTIF	←336	20-ref-site.md:156
 420	2026-07	`parseRichTextLines` jenerikleştirme + alias + fallback	AKTIF		00-devir.md:11
 101	2026-05-21	Repo-içi operasyonel hafıza `.claude/notes.md` + token rotation	KALICI		2026-05.md:111
 102	2026-05-22	Gerçeklik spec'i ezer — plugin işi + salt-read doğrulama	KALICI		2026-05.md:117
@@ -76,7 +76,7 @@ no	tarih	baslik	durum	iliski	kaynak
 324	2026-07-05	/hikaye `adimiz` bloğu kısaltma + ocak-ne arkasına taşıma	AKTIF		2026-07.md:535
 326	2026-07-05	/hikaye "Burada yaşar" bakım tetikleyicisi	KALICI	B08	2026-07.md:539
 329	2026-07-05	EtkinlikKart tam-ekstraksiyon tek-gerçek	AKTIF		00-devir.md:13
-335	2026-07-05	Kayıt bloğu düzeni — dar kart + bitişik buton + altında link	SUPERSEDE	→423	ocak-referans.md:1193
+335	2026-07-05	Kayıt bloğu düzeni — dar kart + bitişik buton + altında link	SUPERSEDE	→423	20-ref-site.md:170
 346	2026-07-05	Beş desen mimarisi — raf-accordion / vitrin / …	KALICI		2026-07.md:491
 363	2026-07	Ödeme hattı — PayTR/sanal POS + Vercel slug geçişi	AKTIF	←297	00-devir.md:12
 390	2026-07	`/takvim#slug` ön-seçili filtre — reverse-türetme + click	AKTIF	→391	00-devir.md:12
@@ -144,26 +144,26 @@ no	tarih	baslik	durum	iliski	kaynak
 393	2026-07	/bulusmalar bölüm ayracı kor gradient — Varyant B	AKTIF		2026-07.md:26
 396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	AKTIF		2026-07.md:26
 397	2026-07-28	Dönem güncellemeleri referans dosyasına yerinde işlenir	AKTIF	←145; 462 ile değişecek	00-devir.md:11
-399	2026-07	Rol/portre kalıbı — alan + çemberdeki an + kadının tarifi	KALICI		ocak-referans.md:143
-400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		ocak-referans.md#k400
-401	2026-07	Vurgu tipi seçimi — ALTIN ilan / KREM `ic-ses` nefes	KALICI		ocak-referans.md:137
-407	2026-07	CSS tanısında iç içe düğüm — `del em` çözümü `color: inherit`	KALICI		ocak-referans.md#k407
-408	2026-07	"Kod var" ≠ "output var" — `dist`/build grep şart	KALICI	←355	ocak-referans.md:1899
-409	2026-07	Marker-sözleşme ilkesi — brief açıkça söyler	KALICI		ocak-referans.md:1219
-413	2026-07	Statik/accordion ölçütü liste doğasına + ilk-açık	KALICI	←405	ocak-referans.md:1177
-415	2026-07	`--ember-alpha-08` featured tint tokenize + `--ray-notr`	AKTIF		ocak-referans.md:1185
+399	2026-07	Rol/portre kalıbı — alan + çemberdeki an + kadının tarifi	KALICI		20-ref-icerik-dili.md:41
+400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		20-ref-icerik-dili.md#k400
+401	2026-07	Vurgu tipi seçimi — ALTIN ilan / KREM `ic-ses` nefes	KALICI		20-ref-icerik-dili.md:35
+407	2026-07	CSS tanısında iç içe düğüm — `del em` çözümü `color: inherit`	KALICI		20-ref-protokoller.md#k407
+408	2026-07	"Kod var" ≠ "output var" — `dist`/build grep şart	KALICI	←355	20-ref-protokoller.md:161
+409	2026-07	Marker-sözleşme ilkesi — brief açıkça söyler	KALICI		20-ref-site.md:196
+413	2026-07	Statik/accordion ölçütü liste doğasına + ilk-açık	KALICI	←405	20-ref-site.md:154
+415	2026-07	`--ember-alpha-08` featured tint tokenize + `--ray-notr`	AKTIF		20-ref-site.md:162
 416	2026-07	Geçersiz DOM fix — `<summary>` içine `<h3>` konmaz	KALICI		dist: 92 <summary>, 0 heading
-417	2026-07	Ölü blok temizliği — raf CSS + build-time HTML rewrite	AKTIF		ocak-referans.md:1185
-418	2026-07	İki-section dikey ritim — `X-intro` + `X` padding çakışması	AKTIF		ocak-referans.md:1183
-419	2026-07	Layout işlerinde Chrome-CC bağlantısı ADIM 0 şartı	KALICI	←355	ocak-referans.md:1901
-421	2026-07	Placeholder binding — Notion Kayıt Soruları Açıklama	AKTIF		ocak-referans.md:1209
-422	2026-07	Dropdown label = etkinlik başlığı, `FORMAT_TIP` değil	KALICI		ocak-referans.md:1211
-425	2026-07	`KayitBtn.astro` primitive — üç mod	AKTIF		ocak-referans.md:1197
-426	2026-07	`mini-cta` esnek link-tüketimi	AKTIF		ocak-referans.md:1199
-427	2026-07	TEK GENİŞLİK GERÇEĞİ — `atmosfer.css:1538-1552` dört section	KALICI	B25 (yorum bayat)	ocak-referans.md:1201
-428	2026-07	Etkinlik detay kartı = `EtkinlikListe` birebir	AKTIF		ocak-referans.md:1203
-436	2026-07	Paralel takvim imgesi — imge var, eşzamanlılık sözü yok	KALICI		ocak-referans.md:786
-446	2026-07	Liste vs karşılaştırma format deseni	KALICI		ocak-referans.md:157
+417	2026-07	Ölü blok temizliği — raf CSS + build-time HTML rewrite	AKTIF		20-ref-site.md:162
+418	2026-07	İki-section dikey ritim — `X-intro` + `X` padding çakışması	AKTIF		20-ref-site.md:160
+419	2026-07	Layout işlerinde Chrome-CC bağlantısı ADIM 0 şartı	KALICI	←355	20-ref-protokoller.md:163
+421	2026-07	Placeholder binding — Notion Kayıt Soruları Açıklama	AKTIF		20-ref-site.md:186
+422	2026-07	Dropdown label = etkinlik başlığı, `FORMAT_TIP` değil	KALICI		20-ref-site.md:188
+425	2026-07	`KayitBtn.astro` primitive — üç mod	AKTIF		20-ref-site.md:174
+426	2026-07	`mini-cta` esnek link-tüketimi	AKTIF		20-ref-site.md:176
+427	2026-07	TEK GENİŞLİK GERÇEĞİ — `atmosfer.css:1538-1552` dört section	KALICI	B25 (yorum bayat)	20-ref-site.md:178
+428	2026-07	Etkinlik detay kartı = `EtkinlikListe` birebir	AKTIF		20-ref-site.md:180
+436	2026-07	Paralel takvim imgesi — imge var, eşzamanlılık sözü yok	KALICI		20-ref-program.md:496
+446	2026-07	Liste vs karşılaştırma format deseni	KALICI		20-ref-icerik-dili.md:55
 3	2026-02-11	Online versiyonlar — 5 evre için online program (PARK EDİLDİ)	SUPERSEDE	→429 (Yolculuk online 7. kapı)	2026-02.md:16
 4	2026-02-11	İsim çalışması	SUPERSEDE	→14	2026-02.md:17
 11	2026-02-11	Lokasyonlar	AKTIF		2026-02.md:24
@@ -429,7 +429,7 @@ no	tarih	baslik	durum	iliski	kaynak
 441	2026-07	Fable içerik/editoryal turu	AKTIF		00-devir.md:10
 442	2026-07	"Uzmanlık var; kürsü yok" doktrini	KALICI		2026-07.md:1165
 443	2026-07	Anadolu süre standardı — 3g4g / Dönüş 4g5g	KALICI	←6	2026-07.md:1166
-447	2026-07	WhatsApp stratejik konumlama — push'u hizmete, pull'u pazarlamaya	AKTIF	↔410 (display name beyanı geçersiz)	ocak-referans.md#k447
+447	2026-07	WhatsApp stratejik konumlama — push'u hizmete, pull'u pazarlamaya	AKTIF	↔410 (display name beyanı geçersiz)	20-ref-bot.md#k447
 448	2026-07	A/B/C/D iş kırılımı	AKTIF		2026-07.md:1164
 449	2026-07-19	Sosyal medya ajans v2 — elektrik-kesildi teslim standardı	KALICI		00-devir.md:10
 450	2026-07-19	Gün 0 kurucu görsel kilidi — Gün 0 onayı olmadan Gün 1 yok	KALICI		2026-07.md:1204
