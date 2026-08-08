@@ -30,14 +30,47 @@ site metninde yasaklar. Çelişki değil — marka dosyası v1.4 notu doktrinin 
 
 ```bash
 cd ~/Desktop/hlaorpz/ocak-site-clone
-while IFS=$'\t' read -r dize tip kapsam karar istisna oneri; do
+while IFS=$'\t' read -r dize tip kapsam karar ek_istisna oneri; do
   [ "$dize" = "dize" ] && continue
   n=$(grep -c -i -- "$dize" "$HEDEF" 2>/dev/null || true)
   [ "$n" -gt 0 ] && printf '%s\t%s\t%s\t%s\n' "$n" "$dize" "$karar" "$oneri"
 done < docs/skills/ocak-lint/yasak-dizeler.tsv
 ```
 
-Eşleşme **ihlal değil, incelenecek adaydır.** `istisna` sütunu okunmadan rapor yazılmaz.
+Eşleşme **ihlal değil, incelenecek adaydır.** Genel muafiyet ve `ek_istisna` sütunu
+okunmadan rapor yazılmaz.
+
+### TARİHSEL KAYIT MUAFİYETİ — her satır için geçerli (KARAR 465)
+
+**Bir dize, kendi yasağını ya da kendi değişimini anlatan metinde geçtiğinde korunur.**
+Bu muafiyet tablodaki her satıra uygulanır; `ek_istisna` sütunu **buna ek** olan,
+satıra özgü muafiyetleri taşır. Sütunun `yok` demesi genel muafiyetin kalktığı anlamına
+gelmez.
+
+Tarihsel kayıt sayılan yüzeyler:
+
+- sürüm notu ve değişiklik kaydı (`10-marka.md:3` gibi)
+- karar başlığı ve gövdesi — `01-kararlar.tsv`, `90-kronoloji/*`
+- sapma kaydı, borç maddesinin sorun tanımı, brief'in ölçüm bölümü
+- commit mesajı
+- yasağı tanımlayan cümlenin kendisi (`10-marka.md:223` "funnel terimleri OCAK iç
+  sistemine girmez" — cümle terimi barındırmak zorundadır)
+
+**Kapanış kriteri hiçbir satır için `grep -c` sıfır değildir.** Kriter, eşleşmelerin
+**canlı referans** / **tarihsel kayıt** diye sınıflandırılmış olmasıdır. Rename ve
+yeniden-ifade kararlarında tarihsel kayıtlar sayımda kalır ve kalmalıdır — silinirlerse
+kayıt yalan söyler.
+
+### `kapsam` sütunu sözlüğü
+
+| değer | ne denetlenir |
+|---|---|
+| `kamu metni` | Notion gövdesi, caption, bülten, kanal, site kopyası |
+| `canlı referans` | yukarısı **+** iç dokümanlardaki **işaret eden** ifadeler (adres, handle, ürün adı) — anlatan ifadeler değil |
+| `kod` | `src/`, `scripts/`, CSS |
+| `site sayfası` | yalnız yayınlanan sayfa gövdesi |
+
+`her yerde` değeri **kullanılmaz.** Kaldırıldı: altı satırda kendi tanımını yakalıyordu.
 
 ⚠ Taze dump şartı (KARAR 439): nokta patch'te dump **zorunludur**. Dump'sız denetim
 sayfanın eski hâline bakar — kalkmış bir section'a patch önerir, taşınmış cümleye

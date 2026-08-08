@@ -1,7 +1,7 @@
-dize	tip	kapsam	karar	istisna	oneri
+dize	tip	kapsam	karar	ek_istisna	oneri
 köz	kelime	kamu metni	86,453	renk adı olarak iç talimatta serbest (köz #C44B2F)	sönmeyen kor
-@ocak.life	handle	her yerde	marka v1.4	yok	@ocak.biz
-Uluslararası Yolculuk	ürün adı	her yerde	437	yok	Dünya Yolculuğu
+@ocak.life	handle	canlı referans	marka v1.4	yok	@ocak.biz
+Uluslararası Yolculuk	ürün adı	canlı referans	437	yok	Dünya Yolculuğu
 Bilgi vermeyiz	kalıp	kamu metni	442	iç doküman (10-marka.md OCAK WAY)	Reçete vermeyiz, alan tutarız
 bilgi vermez	kalıp	kamu metni	442	iç doküman	reçete vermez
 Uzmanlık ayrıcalığı	kalıp	kamu metni	442	yok	Uzmanlık var; kürsü yok
@@ -11,15 +11,15 @@ ayda iki	sıklık sözü	kamu metni	444	yok	kaldır — takvim gösterir
 her ay	sıklık sözü	kamu metni	444	iç planlama metni	kaldır — takvim gösterir
 sınav	inkâr-eden-kelime	kamu metni	448	üçlü karşıtlık pozitife çözülüyorsa	cümleyi tamamen çıkar
 ulaşılabilir değil	reddeden dil	kamu metni	448	yok	yol tarif eden dile çevir
-Kadim Amerika	terim	kamu metni	448	yok	Amerikalar
+Kadim Amerika	terim	canlı referans	448	yok	Amerikalar
 tek dile getiren	tekelci okuma	kamu metni	448	yok	tek bir dilde buluşturan
 sembolik	fiyat dili	kamu metni	431	yok	kaldır — fiyat sayfada geçmez
-funnel	pazarlama terimi	her yerde	57	yok	kaldır
-conversion	pazarlama terimi	her yerde	57	yok	kaldır
-lead	pazarlama terimi	her yerde	57	İngilizce kod tanımlayıcısı	kaldır
+funnel	pazarlama terimi	canlı referans	57	yok	kaldır
+conversion	pazarlama terimi	canlı referans	57	yok	kaldır
+lead	pazarlama terimi	canlı referans	57	İngilizce kod tanımlayıcısı	kaldır
 gücü yetmeyenler	aşağılayıcı çerçeve	kamu metni	435	yok	erişim adaleti dilinden kur
 aynı deneyim online	yanlış eşitleme	kamu metni	435	yok	Aynı eşikler. Orada bedenle, burada sesle.
 büyümek	wellness kelimesi	kamu metni	312	somut bağlamda (kohort büyüklüğü)	markanın kendi cümlesinden kur
 genişlemek	wellness kelimesi	kamu metni	312	yok	markanın kendi cümlesinden kur
-#FFFFFF	renk	her yerde	marka görsel kimlik	yok	krem #F2EAE2
+#FFFFFF	renk	kod	marka görsel kimlik	yok	krem #F2EAE2
 Kaan	isim	site sayfası	89	iç doküman, brief, ledger	kaldır — site sayfalarında görünmez
