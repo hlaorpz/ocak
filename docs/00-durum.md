@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 mühürlendi
+**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 · 474 mühürlendi
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
@@ -61,7 +61,7 @@ repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır 
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`cb28afc`** (8 Ağu, ADIM 5 skill turu sonu) — canlı HEAD değil, dönemin son commit'i; sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`265d75c`** (8 Ağu, ADIM 5 skill turu sonu) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |

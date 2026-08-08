@@ -95,6 +95,10 @@ bölümünde güncellenir — ortada yazılırsa sonraki bölümlerin commit'ler
 satır doğduğu anda bayatlar. Aynı kural rakam taşıyan her satır için geçerli: satır
 sayısı, commit sayısı, dosya boyutu **en son ölçülür** (KARAR 470).
 
+⚠ **Sıfır sapma hedeflenmez (KARAR 474).** Satır kapanış commit'inden bir önceki
+commit'i taşır; fark tam olarak bir commit'tir ve sabit nokta gereği sıfıra inemez.
+Doğrulama `git log -2 --format='%h' | tail -1`.
+
 Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlatılmaz —
 üçü de kendi dosyasında yaşar. Şişerse yanlış kullanılıyordur.
 
@@ -110,6 +114,8 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   `docs/skills/` doğdu — üç skill, kanonik kaynak tek · `skill-sync.sh` symlink+zip,
   `--check` zip yüzeyini denetler · **B42 kapandı** · KARAR 473 mühürlendi ·
   B43 · B44 · B45 açıldı. → `90-kronoloji/2026-08.md`
+  Kapanış sonrası: KARAR 474 (dönem HEAD anlık görüntüdür) — `ocak-arsivci`'nin
+  DUR-7'si düzeltildi, 6 commit.
 - **8 Ağustos — ADIM 4 ✅** (4 commit + 3 kapanış + bu patch, sıfır kod commit'i)
   `CLAUDE.md` kökte · `baglam.sh` beş profil · project files boşaldı (`10-marka.md` hariç) ·
   **B36 açılış ölçümü**: isabet %57, `HİÇ` sıfır, kuyruk ~179± ve üçte ikisi mekanik ·
