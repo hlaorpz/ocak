@@ -90,6 +90,11 @@ Sohbet sonu patch'i **beş** bölümlüdür — KARAR 462'nin dördüne bu dosya
 4. `90-kronoloji/YYYY-AA.md` — append
 5. **`03-sira.md` — kuyruk sırası, biten `✅`, yeni iş eklenir**
 
+**Bölüm sırası bağlayıcıdır.** `00-durum.md`'nin *dönem HEAD* satırı patch'in **son**
+bölümünde güncellenir — ortada yazılırsa sonraki bölümlerin commit'leri onu geçer ve
+satır doğduğu anda bayatlar. Aynı kural rakam taşıyan her satır için geçerli: satır
+sayısı, commit sayısı, dosya boyutu **en son ölçülür** (KARAR 470).
+
 Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlatılmaz —
 üçü de kendi dosyasında yaşar. Şişerse yanlış kullanılıyordur.
 

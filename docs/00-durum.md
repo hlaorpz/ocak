@@ -59,7 +59,7 @@ repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır 
 
 | | |
 |---|---|
-| `main` HEAD | **`d914ba1`** (8 Ağu, ADIM 4 doküman turu) — sıfır kod commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`f42911f`** (8 Ağu, ADIM 4 doküman turu sonu) — canlı HEAD değil, dönemin son commit'i; sıfır kod commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
