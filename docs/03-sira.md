@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 7 Ağustos 2026 · doküman turu kapandı
+**Son güncelleme:** 8 Ağustos 2026 · ADIM 4 kapandı, B36 ölçüldü ve ikiye bölündü
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -13,11 +13,13 @@
 
 ## SIRADAKİ İŞ
 
-**ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. CC, repo.
+**ADIM 5** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint`. CC, repo.
+Kadro tanımı KARAR 458; kanonik kaynak `docs/skills/` (henüz yok, bu turda doğar).
 Brief Claude.ai'da yazılacak.
 
-⚠ `baglam.sh` profilleri **yedi** `20-ref-*` dosyasına göre kurulur, beşe göre değil.
-Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam metni).
+⚠ **`ocak-kararci`'ye onarım modu gerekmiyor.** B36 açılış ölçümü (`_uretilen/olcum-2026-08.md`):
+`HİÇ` sıfır — ledger kırık değil, sığ. Kuyruğun üçte ikisi tek mekanik desen; gereken
+bir dönüştürme betiği (B33/B37 kardeşi), ajan değil. **B36-a ADIM 5 ile aynı turda gidebilir.**
 
 ---
 
@@ -25,16 +27,19 @@ Yeni ikisi: `20-ref-program.md` (ürün/format) · `20-ref-marka.md` (marka tam 
 
 | # | iş | kim | nerede | ön koşul | nasıl açılır |
 |---|---|---|---|---|---|
-| 1 | **ADIM 4** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh` | CC | repo | yok | brief yazılacak (Claude.ai) |
+| 1 | **ADIM 5** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` | CC | repo | yok — ADIM 4 ✅ | KARAR 458 kadro tanımı |
 | 2 | **B39** — `ocak-kaynak-kanonu.md` + `Ocak-Mufredat.md` dağıtımı (447 satır, evsiz) | Claude.ai | ayrı sohbet | yok | `02-borclar.md` B39 — B32 deseni |
 | 3 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
-| 4 | **B36** — sığ kaynak satırları `#k` çapasına terfi (+B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | yok — B32 kapandı | ledger + ilgili dilimler |
+| 4a | **B36-a** — karar-listesi deseni (`- **KARAR N:** Başlık (Bölüm A.X)`) → `#k` terfisi, mekanik | CC | repo | yok | `02-borclar.md` B36 + `_uretilen/olcum-2026-08.md`; B33/B37 betik deseni |
+| 4b | **B36-b** — desen dışı kalanlar (162 · 231 · 381 + B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | B36-a | ledger + ilgili dilimler; kalan kuyruk B36-a sonrası yeniden ölçülür |
 | 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
-| 6 | **ADIM 5-6** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` · `ocak-kararci` · `ocak-metin` | CC | repo | ADIM 4 | KARAR 458 kadro tanımı |
+| 6 | **ADIM 6** — `ocak-kararci` · `ocak-metin` | CC + Claude.ai | repo | ADIM 5 | KARAR 458; `ocak-kararci` çapa yazarken KARAR 472'ye tabidir |
 | 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
-| 8 | **B38** — ledger çapa denetimi, örneklem bazlı (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 | `02-borclar.md` B38 — örneklem numaralarını Kaan verir |
+| 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
 
-**Hiçbiri ADIM 4'ü kilitlemiyor.** ADIM 4 kuyruğun başındadır; B39 · B35 · B36 · 251 sırası tercih meselesidir. B38 tanımı gereği sonuncudur.
+**Hiçbiri ADIM 5'i kilitlemiyor.** B39 · B35 · B36-b · 251 sırası tercih meselesidir.
+**B36-a ADIM 5 ile birleştirilebilir** — ikisi de CC, ikisi de repo, ikisi de betik işi.
+B38 tanımı gereği sonuncudur ve artık B36-a'ya da bağlıdır.
 
 ---
 
@@ -96,6 +101,11 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   ADIM 1 · ADIM 2 · ADIM 3 · ADIM 3b · B33 · B37 · B34 · arşiv kapanışı.
   TEYITSIZ 27 → 1 · kırık `kaynak` referansı 409 → 0 · 7 borç kapandı ·
   KARAR 465 · 466 · 467 mühürlendi. → `90-kronoloji/2026-08.md`
+- **8 Ağustos — ADIM 4 ✅** (4 commit + 3 kapanış + bu patch, sıfır kod commit'i)
+  `CLAUDE.md` kökte · `baglam.sh` beş profil · project files boşaldı (`10-marka.md` hariç) ·
+  **B36 açılış ölçümü**: isabet %57, `HİÇ` sıfır, kuyruk ~179± ve üçte ikisi mekanik ·
+  KARAR 469 · 470 · 471 · 472 mühürlendi · B40 · B41 · B42 açıldı.
+  → `90-kronoloji/2026-08.md`
 - **7 Ağustos — B32 ✅** `ocak-referans.md` dağıtımı (4 commit).
   3574 satır → 63 segment → 7 hedef. `20-ref-*` beşli → **yedili**.
   33 kaynak hücresi dönüştü · 1715 satır kronolojiye indi · `_arsiv/ocak-referans-v1.md`.
