@@ -470,3 +470,4 @@ no	tarih	baslik	durum	iliski	kaynak
 469	2026-08-08	Sır dokümanda yaşamaz — token/secret env'de ya da credential store'da	KALICI	←464	2026-08.md#k469
 470	2026-08-08	Nicel iddia ölçülebilir olur — rakam üretim yöntemiyle yazılır	KALICI	←465 · ↔456	2026-08.md#k470
 471	2026-08-08	Project files'ta kalan kopya türetilmiş aynadır — otorite repodadır	KALICI	←455 · ↔102	2026-08.md#k471
+472	2026-08-08	Çapa çözümleme sözleşmesi — `#kNNN` madde başlığına çözülür, literal dizeye değil	KALICI	←466 · ↔461	2026-08.md#k472
