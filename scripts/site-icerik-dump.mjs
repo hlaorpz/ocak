@@ -9,7 +9,7 @@
  *
  *   node --env-file=.env scripts/site-icerik-dump.mjs
  *
- * Çıktı: repo kökünde ocak-site-icerik.md (Claude.ai tarafında içerik tartışması için).
+ * Çıktı: docs/_uretilen/site-icerik.md (Claude.ai tarafında içerik tartışması için).
  * Bağımsız okuma script'i — loader/build/plugin'e dokunmaz.
  */
 
@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT_PATH = join(__dirname, '..', 'ocak-site-icerik.md');
+const OUT_PATH = join(__dirname, '..', 'docs', '_uretilen', 'site-icerik.md');
 
 const { NOTION_TOKEN, NOTION_PAGES_DB_ID } = process.env;
 if (!NOTION_TOKEN || !NOTION_PAGES_DB_ID) {
