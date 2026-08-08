@@ -294,6 +294,7 @@ uyaran belgede.
 | 8 | HEDEF YAPI `_uretilen/` için ".gitignore — script üretir" diyor | **klasör ignore'da değil**, yedi dosyanın yedisi de izleniyor (`b33-*.py`, `b37-*.py`, `bolme-kod-cozumu.tsv`, ledger teyit dosyaları). Not yalnız `site-icerik.md`'ye uygulanmış; klasör versiyonlanmış bir üretim arşivi olmuş. Doğru olan gerçektir — dönüşüm betiklerinin versiyonlanması KARAR 467(a)'nın gereği |
 | 9 | sapma kaydı `sayfa-yazim-rehberi.md`'yi "planda sayılmamış" diye anıyor | teyit edildi: `docs/sayfa-yazim-rehberi.md` 219 satır, yerinde. HEDEF YAPI düzeltilecek olan taraftır (sapma kaydının kendi tespiti) |
 | 10 | 6-ek maddesindeki `2026-02.md` + `00-devir.md` endişesi | **teyit edildi, iş yok**: ikisi de `docs/90-kronoloji/` altında (73 ve 503 satır). Ledger sayımı birebir tuttu — 50 + 27 = 77 |
+| 11 | HEDEF YAPI ağacı `docs/skills/` altında **beş** skill sayıyor | **üçü doğdu** (`ocak-arsivci` · `ocak-teshis` · `ocak-lint`, ADIM 5, 8 Ağu). `ocak-kararci` + `ocak-metin` eksik değil, **ADIM 6'ya ait** (KARAR 458) — ağaca bakıp "iki dizin kayıp" diye okumak yanlıştır. Ayrıca `ocak-notion` skill **tablosunda var, ağaçta yok** ve hiçbir ADIM kapsamına girmiş değil: sahipsiz, çözülmemiş |
 
 **Ayrıca:** KARAR 465'in kendi `kaynak`'ı `2026-08.md` — satır numarasız, çapasız.
 Çapa disiplinini mühürleyen karar sığ çapayla duruyor. Çıplak dosya adı taşıyan

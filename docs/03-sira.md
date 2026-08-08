@@ -13,13 +13,13 @@
 
 ## SIRADAKİ İŞ
 
-**ADIM 5** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint`. CC, repo.
-Kadro tanımı KARAR 458; kanonik kaynak `docs/skills/` (henüz yok, bu turda doğar).
-Brief Claude.ai'da yazılacak.
+**B36-a** — karar-listesi deseninin mekanik ölçümü ve aday tablosu. CC, repo.
+Brief: `2026-08-08-brief-b36a-donusum.md`. ADIM 5 commit'lerinden sonra koşulur.
 
-⚠ **`ocak-kararci`'ye onarım modu gerekmiyor.** B36 açılış ölçümü (`_uretilen/olcum-2026-08.md`):
-`HİÇ` sıfır — ledger kırık değil, sığ. Kuyruğun üçte ikisi tek mekanik desen; gereken
-bir dönüştürme betiği (B33/B37 kardeşi), ajan değil. **B36-a ADIM 5 ile aynı turda gidebilir.**
+⚠ **Ölçüm sonrası kapsam düzeltmesi:** `olcum-2026-08.md` "mekanik `#kNNN` terfisi"
+diyor; **KARAR 466 buna izin vermez** — `#k` tanımı gereği elle doğrulanmış çapadır.
+Betik `:NNNN` işaretçisini derin satıra taşıyabilir ve aday tablosu üretebilir;
+`#k` terfisi elle onaydan geçer.
 
 ---
 
@@ -27,7 +27,7 @@ bir dönüştürme betiği (B33/B37 kardeşi), ajan değil. **B36-a ADIM 5 ile a
 
 | # | iş | kim | nerede | ön koşul | nasıl açılır |
 |---|---|---|---|---|---|
-| 1 | **ADIM 5** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` | CC | repo | yok — ADIM 4 ✅ | KARAR 458 kadro tanımı |
+| 1 | **ADIM 5** ✅ — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` + `skill-sync.sh` + B42 | CC | repo | — | kapandı 8 Ağu |
 | 2 | **B39** — `ocak-kaynak-kanonu.md` + `Ocak-Mufredat.md` dağıtımı (447 satır, evsiz) | Claude.ai | ayrı sohbet | yok | `02-borclar.md` B39 — B32 deseni |
 | 3 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
 | 4a | **B36-a** — karar-listesi deseni (`- **KARAR N:** Başlık (Bölüm A.X)`) → `#k` terfisi, mekanik | CC | repo | yok | `02-borclar.md` B36 + `_uretilen/olcum-2026-08.md`; B33/B37 betik deseni |
@@ -106,6 +106,10 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   ADIM 1 · ADIM 2 · ADIM 3 · ADIM 3b · B33 · B37 · B34 · arşiv kapanışı.
   TEYITSIZ 27 → 1 · kırık `kaynak` referansı 409 → 0 · 7 borç kapandı ·
   KARAR 465 · 466 · 467 mühürlendi. → `90-kronoloji/2026-08.md`
+- **8 Ağustos — ADIM 5 ✅** (4 commit, sıfır site kodu commit'i)
+  `docs/skills/` doğdu — üç skill, kanonik kaynak tek · `skill-sync.sh` symlink+zip,
+  `--check` zip yüzeyini denetler · **B42 kapandı** · KARAR 473 mühürlendi ·
+  B43 · B44 · B45 açıldı. → `90-kronoloji/2026-08.md`
 - **8 Ağustos — ADIM 4 ✅** (4 commit + 3 kapanış + bu patch, sıfır kod commit'i)
   `CLAUDE.md` kökte · `baglam.sh` beş profil · project files boşaldı (`10-marka.md` hariç) ·
   **B36 açılış ölçümü**: isabet %57, `HİÇ` sıfır, kuyruk ~179± ve üçte ikisi mekanik ·

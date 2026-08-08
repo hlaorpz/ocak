@@ -12,8 +12,8 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
-| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B36-a · B42 |
-| **Claude.ai** | B35 · B36-b · B38 · B39 · B40 · B41 |
+| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B36-a · B45 · B42 ✅ |
+| **Claude.ai** | B35 · B36-b · B38 · B39 · B40 · B41 · B43 · B44 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -522,7 +522,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   zaten satır satır denetlenecek.
 - **Kaynak:** ADIM 4, `baglam.sh` profil tasarımı.
 
-## B42 — `site-icerik` üretim yolu HEDEF YAPI ile hizasız
+## B42 — `site-icerik` üretim yolu HEDEF YAPI ile hizasız ✅ KAPANDI (8 Ağu, ADIM 5)
 
 - [ ] **Sahip:** CC · **Tetikleyici:** ADIM 5 (scripts/skills turu)
 - **Sorun:** Üç ayrışma var, üçü de aynı dosyanın etrafında:
@@ -543,6 +543,15 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Bu turda dokunulmadı:** ADIM 4 doküman turudur; çıktı yolu değişikliği tüketici
   taraması ister ve kod turuna aittir (KARAR 463 ruhu).
 - **Kaynak:** ADIM 4 ADIM 0 raporu, Ç1 + Ç2 (8 Ağustos 2026).
+- **Sonuç (8 Ağu, ADIM 5):** `OUT_PATH` → `docs/_uretilen/site-icerik.md` · yorum satırı
+  da güncellendi · `docs/ocak-site-icerik.md` kalıntısı kaldırıldı · `.gitignore` deseni
+  kök-bağlı (`/ocak-site-icerik.md`) + yeni yol için satır. Tüketici taraması: **kod
+  tüketicisi yok**, yirmi eşleşmenin tamamı doküman/kronoloji/`.claude/` notu.
+  ⚠ **Kök kopya `./ocak-site-icerik.md` yerinde bırakıldı** — script yeniden koşana kadar
+  tek canlı dump; emekliye ayrılması ilk dump'tan sonra ayrı turdur.
+  ⚠ **Eylem sırası bağlayıcı çıktı:** kalıntı önce silinir, desen sonra kök-bağlı yapılır.
+  Ters sırada 146 KB türetilmiş artefakt izlenir hale gelir. Borç maddesi bu sırayı
+  yazmıyordu.
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)
@@ -597,3 +606,59 @@ Ek ✅ (7 Ağu, ADIM 3b): KARAR 380 çözüldü → `AKTIF`. KARAR 350 ve 143'ü
 doğrulandı**; kalan belirsizlik doküman değil kod sorusu → **B34**. Teşhis doğruydu:
 sebep kaydın eksikliği değil, brief'te beklenen kanıtın çıkarımdan üretilmiş olmasıydı.
 Bu gözlem KARAR 465'in doğrudan kaynağıdır.
+
+## B43 — `10-marka.md` iki ölü Pilot işaretçisi
+
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** `ocak-pilot.md` ADIM 3'te dağıtıldı. `10-marka.md:9` dağıtımı kabul
+  ediyor, ama iki gövde satırı hâlâ Pilot'a işaret ediyor:
+  - `:174` — "Tam sayfa listesi + URL + canlı durumlar için Pilot dosyasındaki
+    'Site Mimarisi' tablosuna bak." → hedef bugün `20-ref-site.md`, karşılığı **tam**.
+  - `:235` — "Detaylı tampon + sohbet sırası + lansman sonrası roadmap için Pilot
+    dosyasındaki SIRADAKİ ADIMLAR bölümüne bak."
+- ⚠ **İkinci işaretçinin hedefi tam karşılığı yok.** `03-sira.md` "sıradaki iş"i ve
+  LANSMAN bölümünü taşır; **"tampon" ve "lansman sonrası roadmap" hiçbir canlı dosyada
+  ev sahibi bulmuyor.** İki seçenek, karar B43 turunda: (a) işaretçi `03-sira.md` +
+  `02-borclar.md`'ye bölünür ve kapsamı daraltılır, (b) kavramın evsizliği kabul edilip
+  işaretçi düşürülür — **ölü işaretçi içerik değil adrestir**, düşürülmesi KIRPMA
+  YASAĞI'nı ihlal etmez. Seçenek (b) seçilirse evsiz kavram B39 ailesine not düşülür.
+- **Neden borç:** marka dosyası project files'ta ayna olarak duruyor (KARAR 471); ölü
+  işaretçi en çok orada zarar verir — bağlamı olmayan bir sohbet var olmayan dosyayı arar.
+- **Kaynak:** ADIM 5 brief hazırlığı + ADIM 5 ADIM 0 raporu Ç2, 8 Ağustos 2026.
+
+## B44 — `@ocak.life` bayat handle'ı — beş canlı dosyada, bir kısmı tarihsel kayıt
+
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** Marka v1.4 (28 Temmuz 2026) handle'ı `@ocak.biz` yaptı. `@ocak.life` hâlâ
+  geçiyor. Ölçüm (ADIM 5 ADIM 0, `grep -rn`, canlı dosyalar):
+  `docs/20-ref-site.md:128` (dosyada tek eşleşme) · `docs/10-marka.md` ·
+  `docs/20-ref-marka.md` · `docs/01-kararlar.tsv`. Ayrıca `_uretilen/` altında 2 —
+  **türetilmiş, dokunulmaz**, kaynağı düzelince yeniden üretilir.
+- ⚠ **SWEEP YASAK — önce sınıflandırma.** Eşleşmelerin bir kısmı **tarihsel kayıttır ve
+  korunur.** Teyitli vaka: `10-marka.md:3` sürüm notu `@ocak.life` → `@ocak.biz`
+  değişikliğinin **kendisini anlatıyor**; oradaki dize "düzeltilirse" kayıt yalan söyler.
+  Ledger satırı büyük olasılıkla aynı sınıfta (rename kararının başlığı). Bu tam olarak
+  KARAR 465'in uyardığı vakadır: *"`N → 0` biçimindeki grep kriterleri, aranan dizenin
+  korunması gereken tarihsel anlatımda da geçip geçmediği kontrol edilmeden yazılmaz."*
+- **Eylem:** her eşleşme tek tek **canlı referans** / **tarihsel kayıt** diye
+  sınıflandırılır; yalnız canlı referans düzeltilir. Sınıflandırma tablosu üretilir ve
+  borç maddesine iliştirilir.
+- **Kapanış kriteri:** `grep -c` sıfır **DEĞİLDİR.** Kriter sınıflandırma tablosunun
+  tamamlanmasıdır; tarihsel kayıtlar sayımda kalır.
+- **Neden borç:** `ocak-lint` yasak-dize listesinin ilk gerçek vakası ve `istisna`
+  sütununun ilk tatbiki. Marka dosyalarında (`10-marka.md`, `20-ref-marka.md`) bayat
+  handle en çok zarar veren yerdedir — brief bu ikisini saymıyordu, ADIM 0 buldu.
+- **Kaynak:** ADIM 5 brief hazırlığı + ADIM 5 ADIM 0 raporu Ç1, 8 Ağustos 2026.
+
+## B45 — `baglam.sh` bayt/karakter etiketi yanlış (`:65` + `:67`)
+
+- [ ] **Sahip:** CC
+- **Sorun:** İki satır, tek hata. `:65` → `BAYT=$((BAYT+${#l}+1))`; Bash `${#l}` UTF-8
+  locale'de **karakter** sayar, bayt değil. `:67` → çıktıyı `~$BAYT bayt` diye
+  etiketliyor. Türkçe metinde iki rakam ayrışır: ADIM 5 paketinde fark %5–8 ölçüldü
+  (`02-borclar.md` 45.231 bayt / 41.889 karakter).
+- **Eylem:** ikisinden **biri**, ikisi birden değil — ya `:67` etiketi `karakter`
+  yapılır, ya `:65` gerçek bayta çevrilir. Tek satırlık iş.
+- **Neden borç:** KARAR 470(b) vakası — ölçüm aracının kendi etiketi ölçtüğü şeyi
+  yanlış adlandırıyor.
+- **Kaynak:** ADIM 5 brief hazırlığı + ADIM 5 ADIM 0 raporu Ç3, 8 Ağustos 2026.

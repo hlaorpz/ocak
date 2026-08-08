@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ağustos 2026 · **ADIM 4 ✅** · KARAR 469 · 470 · 471 · 472 mühürlendi
+**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 mühürlendi
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 151 satır (`wc -l`, 8 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 153 satır (`wc -l`, 8 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -40,8 +40,10 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   `kod · icerik · marka · bot · dokuman`, manifest satırı + eksik-dosya guard'ı) +
   project files silme izni (14/14 ledger hedefi yaşıyor, sıfır `ÖLÜ`).
   Yedi `20-ref-*` dosyasının hepsi en az bir profilde. B01 (klon yeniden adlandırma) açık.
-- **ADIM 5 ⏭** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint`. Kadro tanımı KARAR 458;
-  **onarım modu gerekmiyor** (B36 ölçümü: `HİÇ` sıfır, kuyruk sığ ama kırık değil).
+- **ADIM 5 ✅** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` doğdu; `skill-sync.sh`
+  symlink+zip (KARAR 473). B42 kapandı. `ocak-notion` sapması çözülmedi.
+- **ADIM 6 ⏭** — `ocak-kararci` · `ocak-metin`. Kadro tanımı KARAR 458;
+  `ocak-metin` taslak-only, en az üç ay (KARAR 459).
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
   Çapa çözümlemesi KARAR 472'ye tabidir — `docs_karar(no)` kendi kuralını icat edemez.
 
@@ -59,7 +61,7 @@ repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır 
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`f42911f`** (8 Ağu, ADIM 4 doküman turu sonu) — canlı HEAD değil, dönemin son commit'i; sıfır kod commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`cb28afc`** (8 Ağu, ADIM 5 skill turu sonu) — canlı HEAD değil, dönemin son commit'i; sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
