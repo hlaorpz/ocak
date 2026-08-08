@@ -1,0 +1,181 @@
+no	dosya	mevcut_satir	puan	aday_kaynak	aday_metin	durum
+47	2026-02.md	72	0			ADAY YOK
+93	2026-05.md	86	5	2026-05.md:542	**Bu sohbetin işi:** 3 brief tek sohbette, 6 commit zinciri (`c4c2433` → `ea52845`), 6 sayfa kategori-ayrımı (sıfır kod / atmosfer fix / page override), ~10 Not	2 aday
+93	2026-05.md	86	3	2026-05.md:3810	"- **Veri merkezi (içerik canlı binding aktif Mayıs 2026, form veritabanı lansman sonrası):** Notion. Internal Integration ""Ocak Site"" kuruldu (KARAR 97), Sayfal"	2 aday
+96	2026-05.md	94	5	2026-05.md:3822	**Astro Mimarisi (KARAR 96) — Detay:**	8 aday
+96	2026-05.md	94	3	2026-05.md:4145	- `astro` → iki advisory feature-bağımlı: `define:vars` XSS sadece bu feature'ı kullanan sayfalarda, server island replay sadece server islands kullanılırsa. Pr	8 aday
+96	2026-05.md	94	3	2026-05.md:4017	**B. Davranış (KARAR 96 — dokunulmaz):**	8 aday
+97	2026-05.md	95	3	2026-05.md:3970	1. **`kso2025/ocak-site` public yapıldı.** Token zaten env'de (KARAR 97), public/private güvenlik için önemsiz. Bir sonraki sohbette Claude (veya Claude Code) r	2 aday
+97	2026-05.md	95	3	2026-05.md:3810	"- **Veri merkezi (içerik canlı binding aktif Mayıs 2026, form veritabanı lansman sonrası):** Notion. Internal Integration ""Ocak Site"" kuruldu (KARAR 97), Sayfal"	2 aday
+98	2026-05.md	96	6	2026-05.md:3846	**Repo Adı Düzeltmesi (KARAR 98):** Çekirdek v20'ye kadar `kso2025/Ocak` olarak yazıyordu — doğrusu `kso2025/ocak-site`. Eski repo silinmiş. Bu sohbette Çekirde	2 aday
+98	2026-05.md	96	2	2026-05.md:3811	- **admin.html:** İPTAL (KARAR 98). Notion workspace zaten admin paneli görevini görüyor — Kayıtlar, Başvurular, Etkinlikler database'leri Kaan için yeterli das	2 aday
+99	2026-05.md	102	5	2026-05.md:155	**Brief zinciri:** **Brief 1** (commit `dd198da`) — `scripts/notion-discover.mjs` ile Notion DB şemaları + örnek /cember sayfa dump'lanarak KARAR 99'un iskelet 	5 aday
+99	2026-05.md	102	4	2026-05.md:4015	**Kritik gözlem:** Astro iskeleti (KARAR 99'da kuruldu) atmosferi tahminden yazmıştı — opacity 0.14 (legacy 0.035), blur 140px (legacy yok), drift animation (le	5 aday
+99	2026-05.md	102	4	2026-05.md:3919	**KARAR 99 sonuç:** Astro iskelet üç katmanda yaşıyor — lokal (clone), GitHub (`astro-iskelet` branch), Vercel (preview deploy). main dokunulmadı, eski 3 statik	5 aday
+104	2026-05.md	119	5	2026-05.md:2290	**P6c /anadolu anchor nav atlandı (KARAR 104).** Sayfa uzun UX işi, lansman blocker değil. Lansman sonrası ilk hafta veya Brief G.5 / H'da değerlendirilir.	7 aday
+104	2026-05.md	119	5	2026-05.md:2121	**P5 atlandı (KARAR 104):** Paragraf gap baseline — opsiyonel + 60 dk sınırı. Lansman sonrası CSS refactor turu paketine eklendi.	7 aday
+104	2026-05.md	119	5	2026-05.md:121	**Bu sohbetin işi:** #21 Section Components'in ilk yarısı. Claude.ai (strateji + brief'ler) ↔ Claude Code (kod + test + commit) iki kanal arasında **Brief 1 → 3	7 aday
+112	2026-05.md	170	7	2026-05.md:177	**Brief zinciri:** **Brief 1** (KARAR 112) — `src/pages/[...slug].astro` dinamik route (rest spread, `/` + 18 sayfa), `getCollection('sayfalar')` slug map, `<Co	3 aday
+112	2026-05.md	170	6	2026-05.md:4755	**Bağlam:** Pipeline (KARAR 112) + atmosfer (KARAR 113) + hero glow parity (KARAR 114) çalışıyor. Ana sayfa kompozisyonu sıraya geldi: plugin prose output sade 	3 aday
+112	2026-05.md	170	2	2026-05.md:4606	### #23 Brief 1 — Pipeline Kurulumu (Dinamik Route + Plugin Render) (KARAR 112)	3 aday
+115	2026-05.md	173	5	2026-05.md:5183	**Item 1 — Nav alt sınırı (`95f1fbe`):** Kaan eyeball'da yakaladı, nav backdrop-blur sınırı body bg'ye keskin oturuyor, koyu geçiş bandı görünüyor. CC teşhis: `	8 aday
+115	2026-05.md	173	5	2026-05.md:1044	1. **Ana sayfa en sondaki Ateş Mektupları yerine form-anchor koydum, yanlış mı?** — Direkt cevap: yanlış değil ama F.5 scope'unu büyütüyor. Mevcut durumda ana s	8 aday
+115	2026-05.md	173	4	2026-05.md:883	"- **Bug B — ""Ateşin yanına gel"" yanlış davet metni:** /acik-kapi form üstündeki davet metni ""Ateşin yanına gel"" — Ateş Mektupları'nın iç CTA başlığından (KARAR "	8 aday
+116	2026-05.md	192	6	2026-05.md:5288	1. **KARAR 102 ruhu defansif çift katman pattern'i (KARAR 116) Notion-side niyet ayrımına ölçeklendi.** Item 9'da plugin programatik ayıramayacak yapısal eşitli	13 aday
+116	2026-05.md	192	5	2026-05.md:964	"2. **Kaan deploy disiplini ikinci tatbik (KARAR 116 pekiştirildi).** İlk denemede ""Deploy"" tuzağına düştü, panik yok — Çekirdek + Arşiv'den eski Active deployme"	13 aday
+116	2026-05.md	192	5	2026-05.md:861	"- **Deploy disiplini (KARAR 116 ikinci tatbik):** Kaan ilk denemede ""Deploy"" düğmesine bastı, yeni deployment yarattı (tuzak). Çekirdek + Arşiv'den eski Active "	13 aday
+101	2026-05.md	111	5	2026-05.md:4593	2. **B — `docs/sayfa-yazim-rehberi.md`:** Repo içi 3 satırlık konvansiyon notu. Kaan veya editör yeni sayfa açarken referans alır. KARAR 101 `.claude/notes.md`'	9 aday
+101	2026-05.md	111	5	2026-05.md:4348	2. **`.env corruption olayı + KARAR 101 rotate tetiklendi.** Brief 1 koşmaya başlamadan önce keşfedildi: `.env` dosyasının NOTION_TOKEN satırı yapıştırma kazası	9 aday
+101	2026-05.md	111	5	2026-05.md:3962	**Pratik öğrenim (KARAR 101 alt başlığı):** Sohbet transkriptlerinde token tutmamak imkânsız (ilk paylaşım için lazım), ama her token kullanım turunun sonunda r	9 aday
+102	2026-05.md	117	5	2026-05.md:5138	- **Katman 1 — Yazım disiplini (mevcut, hazır).** KARAR 111 `docs/sayfa-yazim-rehberi.md` + KARAR 102 plugin gerçeğe hizalanma + KARAR 108 normalize kuralları. 	24 aday
+102	2026-05.md	117	5	2026-05.md:4265	**Ember→Gold sapması ve düzeltmesi (KARAR 102 sapma 2'nin ötesinde, envanter vs spec çatışması):** Brief 4b ilk hâlinde glow 3 durağı da ember yazılmıştı. Claud	24 aday
+102	2026-05.md	117	5	2026-05.md:2648	"**KARAR 102 ruhu kararı:** Lansman öncesi ""uydurma SSS"" yazmak yerine lansman sonrası Açık Kapı'dan gelen gerçek soruları derleyip cevap yazmak — Kaan + Advaita"	24 aday
+147	2026-05.md	2701	0			ADAY YOK
+149	2026-05.md	2703	7	2026-05.md:3286	CLI auto-bind tuzağı (KARAR 149) kalıcı çözüldü. Production Branch fiili-`astro-iskelet`'ten resmî-`main`'e taşındı, `astro-iskelet` squash merge edildi (commit	7 aday
+149	2026-05.md	2703	4	2026-05.md:3524	"**Çıktılar:** 5 form'a görünmez ""website"" honeypot field (offscreen + tabindex/-1 + aria-hidden + autocomplete off, `display:none` değil), 5 Apps Script handler"	7 aday
+149	2026-05.md	2703	4	2026-05.md:3310	**Çıktılar:** CC ön tanı (Paket 1) 5 sapma tespit etti (KARAR 150, kanıt önce): plugin yolu `src/lib/`, `sonraki-bulusma` case zaten var ama OMIT'te, form-ancho	7 aday
+22	2026-02.md	38	0			ADAY YOK
+87	2026-05.md	65	3	2026-05.md:4279	**BirSonraki.astro:** Statik callout pattern (KARAR 87). Props: `text` (italik metin), opsiyonel `linkText` + `linkHref`. Stil: `--ember-alpha-15` tint bg + 3px	6 aday
+87	2026-05.md	65	3	2026-05.md:2098	**KARAR 87 disiplini netleştirildi:** ODA_MAP kapalı set, yeni sayfa = açık karar. Yeni sayfa eklendiğinde Çekirdek'te + ODA_MAP'te eş zamanlı güncelleme şart. 	6 aday
+87	2026-05.md	65	3	2026-05.md:2088	2. **Astro route** ✗ — `[notion-pages] /site-rehber ODA_MAP'te yok — sayfa atlandı`. `src/lib/oda-map.ts` 19 kapalı sayfa seti (KARAR 87), site-rehber yok. `not	6 aday
+90	2026-05.md	78	5	2026-05.md:574	**KARAR 90 v2 Notion gerçeği:** /ekip Notion'da güncel haliyle Şu An + Çekirdek 5 rol simya sembolleriyle (🜂 Nefes & Beden + 🜄 Psikolog · Terapist + 🜁 Ses & San	4 aday
+90	2026-05.md	78	4	2026-05.md:3573	**A — WhatsApp / bot entegrasyonu:** Site WhatsApp botuna yalnızca yönlendirme yapar (`wa.me` floating buton); AI entegrasyonu site kodunda değil, Railway/n8n +	4 aday
+90	2026-05.md	78	2	2026-05.md:2011	14. WhatsApp bot fix (KARAR 90)	4 aday
+92	2026-05.md	80	5	2026-05.md:90	**Bu sohbetin işi:** KARAR 92 ile başlatılan section etiketi retrofit turu tamamlandı. 13 sayfa (felsefe, sen-neredesin, araclar, bulusmalar, cember, mini-retre	5 aday
+92	2026-05.md	80	2	2026-05.md:4212	211058a #21: Plugin + token + atmosfer envanteri (KARAR 92, 93)            ← KARAR 102	5 aday
+92	2026-05.md	80	2	2026-05.md:4171	211058a #21: Plugin + token + atmosfer envanteri (KARAR 92, 93)	5 aday
+100	2026-05.md	103	7	2026-05.md:105	**Bu sohbetin işi:** #20 Astro Setup. Astro 5 + Vercel adapter + Notion client iskeleti üretildi: `package.json`, `astro.config.mjs`, `tsconfig.json`, `.env.exa	5 aday
+100	2026-05.md	103	5	2026-05.md:5139	"- **Katman 2 — Notion dashboard hissi (Cowork işi, lansman sonrası ilk hafta, 1-2 saat).** Database views: ""Bugün yayında olanlar"" (filtered Durum=Yayında + son"	5 aday
+100	2026-05.md	103	4	2026-05.md:3982	"**Claude için ders (KARAR 100 alt başlığı):** Kritik kısayolları yumuşaklığa kaçarak atlamayacak. ""Sormam haddim mi"" yerine ""soruyu sormak operasyonel hız için "	5 aday
+103	2026-05.md	118	6	2026-05.md:123	"**Yan kazanımlar (KARAR 103, 104):** Sohbet boyunca pratik öğrenimler kayda alındı — Claude Code'a uzun brief'ler kırpılıyor (parçalı veya dosya yöntemi), ""iler"	3 aday
+103	2026-05.md	118	4	2026-05.md:132	1. **Brief dosya formatı (KARAR 103 ışığında).** Her Brief Claude.ai'da yazıldı, `~/Desktop/brief-04a.md` … `04d.md` olarak kaydedildi (heredoc veya TextEdit Pl	3 aday
+103	2026-05.md	118	3	2026-05.md:2365	7. **Brief disiplin pekiştirildi.** Bu sohbette parça parça Markdown verme (KARAR 103) hep dosyaya kayıt yapmak yerine yapıştırılarak kullanıldı — TextEdit Plai	3 aday
+105	2026-05.md	127	5	2026-05.md:4725	**Bağlam:** Brief 2 sonrası eyeball sapması — Hero glow renkleri legacy verbatim (0.12/0.05/0.02) ama geometri + stop %'leri kaymıştı. Sapma KARAR 105 Brief 4b'	6 aday
+105	2026-05.md	127	5	2026-05.md:177	**Brief zinciri:** **Brief 1** (KARAR 112) — `src/pages/[...slug].astro` dinamik route (rest spread, `/` + 18 sayfa), `getCollection('sayfalar')` slug map, `<Co	6 aday
+105	2026-05.md	127	4	2026-05.md:160	3. **Build-artifact doğrulama vekalet etti (KARAR 105'ten devam).** Eyeball turu Brief 4'te bile yapılmadı; built CSS/HTML'i grep'leyip beklenen pattern'leri (`	6 aday
+106	2026-05.md	146	2	2026-05.md:4340	### #22 Content Collections + Notion Binding — Brief 1 Keşif (KARAR 106)	TEK ADAY
+108	2026-05.md	148	5	2026-05.md:5138	- **Katman 1 — Yazım disiplini (mevcut, hazır).** KARAR 111 `docs/sayfa-yazim-rehberi.md` + KARAR 102 plugin gerçeğe hizalanma + KARAR 108 normalize kuralları. 	5 aday
+108	2026-05.md	148	4	2026-05.md:5305	"5. **Asimetri kök neden teşhisi büyük öğrenim.** Kaan'ın ""ben yazdırdım sen markdown veriyordun"" yorumu, KARAR 108'in tarihçesini açıkladı. Plugin'in her sohbet"	5 aday
+108	2026-05.md	148	4	2026-05.md:579	- **/ekip Sapma 1** — 7 section eşli, **atmosfer.css table styling YOK** (Çıraklık 4 satır + /cember 12 ay döngüsü ikisi birden browser default ile basılıyordu)	5 aday
+109	2026-05.md	149	7	2026-05.md:4589	**Bağlam:** Brief 5b'de plugin SSS transform Notion'un bullet-italic authoring stiline hizalandı (KARAR 109). Bu stil 10 sayfada %100 tutarlı ama kasıtlı bir di	8 aday
+109	2026-05.md	149	4	2026-05.md:2416	"- **sonraki-bulusma + harici link (KARAR 109 + 110):** Etkinlikler DB'den canlı kart render. /seremoni, /workshop, /istanbul, /mini-retreat, /takvim'de. Kart ""K"	8 aday
+109	2026-05.md	149	4	2026-05.md:516	1. **EtkinlikTakvimi pattern'i — DB liste sayfası kalıbı.** SonrakiBulusma encapsulated component pattern'i (KARAR 109) genişledi: DB'den çekiyor + filtreliyor 	8 aday
+110	2026-05.md	150	3	2026-05.md:512	Etkinlikler DB'sinde lansman öncesi test verisi yoksa `bos-state` render edilir (1 hit), ay başlığı + kart 0. Kaan duyurulacak etkinlikleri DB'ye ekleyince Noti	2 aday
+110	2026-05.md	150	2	2026-05.md:4525	### #22 Brief 6 — Notion Webhook (Yayınla Checkbox) + #22 Kapanış (KARAR 110)	2 aday
+111	2026-05.md	151	5	2026-05.md:5138	- **Katman 1 — Yazım disiplini (mevcut, hazır).** KARAR 111 `docs/sayfa-yazim-rehberi.md` + KARAR 102 plugin gerçeğe hizalanma + KARAR 108 normalize kuralları. 	5 aday
+111	2026-05.md	151	4	2026-05.md:3262	"`.claude/notes.md` gitignored (KARAR 101) → tracked değişiklik yok → commit yok. Brief sonu CC raporu ""notes.md güncellendi"" geçer. Kanonik kayıt Pilot'a Claude"	5 aday
+111	2026-05.md	151	4	2026-05.md:155	**Brief zinciri:** **Brief 1** (commit `dd198da`) — `scripts/notion-discover.mjs` ile Notion DB şemaları + örnek /cember sayfa dump'lanarak KARAR 99'un iskelet 	5 aday
+113	2026-05.md	171	7	2026-05.md:177	**Brief zinciri:** **Brief 1** (KARAR 112) — `src/pages/[...slug].astro` dinamik route (rest spread, `/` + 18 sayfa), `getCollection('sayfalar')` slug map, `<Co	4 aday
+113	2026-05.md	171	6	2026-05.md:4755	**Bağlam:** Pipeline (KARAR 112) + atmosfer (KARAR 113) + hero glow parity (KARAR 114) çalışıyor. Ana sayfa kompozisyonu sıraya geldi: plugin prose output sade 	4 aday
+113	2026-05.md	171	5	2026-05.md:4649	- **Kritik borç (KARAR 113 başlangıcı):** Dinamik route ham HTML basıyor, component scoped `<style>` blokları (Hero, GrainOverlay, Reveal, BirSonraki, SonrakiBu	4 aday
+117	2026-05.md	193	5	2026-05.md:5128	"**Sohbet sonu enerjisi:** 8 commit, 4 Brief, 10 fix, 1 kalıcı script — Kaan disiplinli ilerledi. ""İçerik düzenleme + admin paneli"" gündemi getirdi → KARAR 117 3"	5 aday
+117	2026-05.md	193	5	2026-05.md:212	"**Stratejik yazışmalar (yan referans dosya):** Kaan iki uzun gündem getirdi — (a) İçerik düzenleme + admin paneli → KARAR 117 Notion CMS 3 katman; (b) ""Yaratıcı"	5 aday
+117	2026-05.md	193	4	2026-05.md:542	**Bu sohbetin işi:** 3 brief tek sohbette, 6 commit zinciri (`c4c2433` → `ea52845`), 6 sayfa kategori-ayrımı (sıfır kod / atmosfer fix / page override), ~10 Not	5 aday
+120	2026-05.md	371	5	2026-05.md:542	**Bu sohbetin işi:** 3 brief tek sohbette, 6 commit zinciri (`c4c2433` → `ea52845`), 6 sayfa kategori-ayrımı (sıfır kod / atmosfer fix / page override), ~10 Not	3 aday
+120	2026-05.md	371	4	2026-05.md:646	**KARAR 116 strip + KARAR 120 normalize otomatik düzeltme:** 2 asimetrik italik link artığı (`*notion.so/anadolu` → `/anadolu`, `_notion.so/mini-retreat` → `/mi	3 aday
+120	2026-05.md	371	2	2026-05.md:379	### #26 Brief 0 + Brief F — Ara Brief İkilisi (KARAR 120)	3 aday
+121	2026-05.md	372	2	2026-05.md:413	### #26 Brief G — Buluşmalar Derinleşmesi 4 Sayfa Page-Level Migration (KARAR 121)	TEK ADAY
+124	2026-05.md	540	3	2026-05.md:583	**Atmosfer.css table family (KARAR 124 B4.1):**	5 aday
+124	2026-05.md	540	2	2026-05.md:2012	15. Notion içerik temizlik kuyruğu (KARAR 124)	5 aday
+124	2026-05.md	540	2	2026-05.md:634	### #27 Brief C — /iletisim (KARAR 124, Page Override + AtesMektuplariCTA)	5 aday
+127	2026-05.md	1335	4	2026-05.md:3124	Fragment-split registry pattern (KARAR 127) iki yeni kanonik section'a genişletildi: `al-ol-ver` ve `sonraki-bulusma`. Plugin `src/lib/remark-ocak-sections.ts` 	2 aday
+127	2026-05.md	1335	3	2026-05.md:1686	JS handler: `result.etkinlikTarihi` string truthy gelirse `tarihEl.textContent`'a set ediyor (KARAR 127 niyeti tamamlandı). Apps Script `handleAcikKapi` artık `	2 aday
+130	2026-05.md	1639	5	2026-05.md:2008	11. **Başvuru formu deseni unification (KARAR 130)**	4 aday
+130	2026-05.md	1639	3	2026-05.md:2961	"- **KARAR 130 statü güncellemesi:** ""algısal damga"" çürüdü, gerçek bug'dı."	4 aday
+130	2026-05.md	1639	3	2026-05.md:2020	Başvuru formu unification (KARAR 130) Kaan'ın stratejik önerisi — ekosistem olgunlaşmasının net işareti, mimar perspektifi. Anadolu deseni güçlü çıktı, /cember 	4 aday
+131	2026-05.md	1640	5	2026-05.md:2009	12. **Safari Hero glow banding fix (KARAR 131)**	TEK ADAY
+151	2026-05.md	2931	6	2026-05.md:2944	- **Yeni bulgu — form-anchor success state persistence bug (KARAR 151).** Çember + Açık Kapı (form-anchor pattern KARAR 126) success state geldiğinde başlık+açı	4 aday
+151	2026-05.md	2931	4	2026-05.md:3306	**Açılış durumu (Pilot v40, #34 sonu):** Site Production canlı (Brief J + L), test 32/32, build 22 sayfa 0/0/0, GTM 5/5 form push doğrulandı. #35 prep'inde 3 pa	4 aday
+151	2026-05.md	2931	3	2026-05.md:3500	**Açılış durumu:** Site canlı Plan B sessiz + Brief J+L Production (KARAR 149+150). Test 32/32 build 22 sayfa. Form-anchor bug (KARAR 151) + bot trafiği (KARAR 	4 aday
+152	2026-05.md	2932	5	2026-05.md:2945	- **Yeni bulgu — bot trafiği (KARAR 152).** Notion Başvurular DB sessiz canlıda bot başvuruları aldı. Kaan kapakta sildi (sayım tutulmadı). Lansman öncesi honey	8 aday
+152	2026-05.md	2932	4	2026-05.md:3306	**Açılış durumu (Pilot v40, #34 sonu):** Site Production canlı (Brief J + L), test 32/32, build 22 sayfa 0/0/0, GTM 5/5 form push doğrulandı. #35 prep'inde 3 pa	8 aday
+152	2026-05.md	2932	3	2026-05.md:3552	**Özet:** 14 entry (#35a-#35n), 42 net KARAR ADAYI (KARAR 154-195 önerisi), Bölüm A 9 başlık altında güncelleme. Honeypot (KARAR 152) ÇÖZÜLDÜ. Açık #36 işleri: 	8 aday
+3	2026-02.md	16	0			ADAY YOK
+4	2026-02.md	17	0			ADAY YOK
+11	2026-02.md	24	0			ADAY YOK
+12	2026-02.md	25	0			ADAY YOK
+23	2026-02.md	42	0			ADAY YOK
+29	2026-02.md	48	0			ADAY YOK
+31	2026-02.md	50	0			ADAY YOK
+33	2026-02.md	55	0			ADAY YOK
+34	2026-02.md	56	0			ADAY YOK
+53	2026-05.md	21	0			ADAY YOK
+69	2026-05.md	44	0			ADAY YOK
+71	2026-05.md	46	0			ADAY YOK
+72	2026-05.md	47	0			ADAY YOK
+80	2026-05.md	55	0			ADAY YOK
+81	2026-05.md	56	0			ADAY YOK
+95	2026-05.md	88	0			ADAY YOK
+1	2026-02.md	14	0			ADAY YOK
+2	2026-02.md	15	0			ADAY YOK
+5	2026-02.md	18	0			ADAY YOK
+6	2026-02.md	19	0			ADAY YOK
+7	2026-02.md	20	0			ADAY YOK
+8	2026-02.md	21	0			ADAY YOK
+9	2026-02.md	22	0			ADAY YOK
+10	2026-02.md	23	0			ADAY YOK
+13	2026-02.md	26	0			ADAY YOK
+15	2026-02.md	31	0			ADAY YOK
+16	2026-02.md	32	0			ADAY YOK
+17	2026-02.md	33	0			ADAY YOK
+18	2026-02.md	34	0			ADAY YOK
+19	2026-02.md	35	0			ADAY YOK
+20	2026-02.md	36	0			ADAY YOK
+21	2026-02.md	37	0			ADAY YOK
+24	2026-02.md	43	0			ADAY YOK
+25	2026-02.md	44	0			ADAY YOK
+26	2026-02.md	45	0			ADAY YOK
+27	2026-02.md	46	0			ADAY YOK
+30	2026-02.md	49	0			ADAY YOK
+35	2026-02.md	57	0			ADAY YOK
+36	2026-02.md	58	0			ADAY YOK
+37	2026-02.md	59	0			ADAY YOK
+38	2026-02.md	60	0			ADAY YOK
+39	2026-02.md	61	0			ADAY YOK
+40	2026-02.md	65	0			ADAY YOK
+41	2026-02.md	66	0			ADAY YOK
+42	2026-02.md	67	0			ADAY YOK
+43	2026-02.md	68	0			ADAY YOK
+44	2026-02.md	69	0			ADAY YOK
+46	2026-02.md	71	0			ADAY YOK
+51	2026-05.md	19	2	2026-05.md:3634	### URL Yapısı — Türkçe Karaktersiz, Lowercase (KARAR 51)	TEK ADAY
+52	2026-05.md	20	2	2026-05.md:3640	### Çalışma Düzeni — Her Sayfa Ayrı Sohbet (KARAR 52, 53)	TEK ADAY
+54	2026-05.md	22	0			ADAY YOK
+55	2026-05.md	23	0			ADAY YOK
+56	2026-05.md	27	0			ADAY YOK
+57	2026-05.md	28	0			ADAY YOK
+58	2026-05.md	29	2	2026-05.md:3707	### Çalışma Sıralaması — İçerik → Site → Altyapı (KARAR 58)	TEK ADAY
+59	2026-05.md	33	0			ADAY YOK
+60	2026-05.md	34	0			ADAY YOK
+70	2026-05.md	45	0			ADAY YOK
+73	2026-05.md	48	0			ADAY YOK
+74	2026-05.md	49	0			ADAY YOK
+75	2026-05.md	50	0			ADAY YOK
+76	2026-05.md	51	0			ADAY YOK
+77	2026-05.md	52	0			ADAY YOK
+78	2026-05.md	53	0			ADAY YOK
+79	2026-05.md	54	0			ADAY YOK
+82	2026-05.md	57	0			ADAY YOK
+83	2026-05.md	58	2	2026-05.md:3687	### Buluşmalar Odası Durumu (KARAR 83)	TEK ADAY
+84	2026-05.md	59	0			ADAY YOK
+85	2026-05.md	63	2	2026-05.md:3700	### Yolculuk Odası Durumu (KARAR 85)	TEK ADAY
+86	2026-05.md	64	0			ADAY YOK
+88	2026-05.md	71	3	2026-05.md:3946	**Hiyerarşi (KARAR 88 + KARAR 101):**	2 aday
+88	2026-05.md	71	2	2026-05.md:3742	### Çekirdek + Arşiv İkili Yapısı (KARAR 88)	2 aday
+89	2026-05.md	77	6	2026-05.md:3873	"- `src/components/Footer.astro` — italik manifesto cümlesi (""Seni bize bağımlı yapmak için değil…"") + üç sütun link (Yol · Ocak · Temas) + alt çubuk. `selam@oca"	TEK ADAY
+91	2026-05.md	79	3	2026-05.md:623	2. **/advaita KARAR 91 cümlesi 2 hit (3 planlanmıştı)** — meta description + advaita-ve-ocak section kapanış var, hero altı eksik (hero ekleyince doğal düşer).	TEK ADAY
+94	2026-05.md	87	0			ADAY YOK
+107	2026-05.md	147	3	2026-05.md:158	1. **DI pattern standart oldu** (KARAR 107). Pure transformation logic dosyaları (`notion-pages.ts`, `notion-etkinlikler.ts`) Astro `import.meta.env` yerine cli	2 aday
+107	2026-05.md	147	2	2026-05.md:4380	### #22 Brief 2-3 — Sayfalar + Etkinlikler Content Layer Loader'ları (KARAR 107)	2 aday
+122	2026-05.md	373	3	2026-05.md:2485	"**Bağlam:** EtkinlikTakvimi (KARAR 122) ay-ay timeline render ediyor. Etkinlik 3-5+ ay'a yayıldığında scroll uzar, kullanıcı ""Eylül'de ne var?"" hızlı cevap iste"	2 aday
+122	2026-05.md	373	2	2026-05.md:472	### #26 Brief H — /takvim Etkinlikler Liste Sayfası Ay-Ay Timeline (KARAR 122)	2 aday
+128	2026-05.md	1637	0			ADAY YOK
+129	2026-05.md	1638	2	2026-05.md:1786	### Tepe band Brief G'ye devreden borç (KARAR 129)	TEK ADAY
+132	2026-05.md	1641	5	2026-05.md:2010	13. **CC auto update + npm permission ops (KARAR 132)**	2 aday
+132	2026-05.md	1641	2	2026-05.md:1930	### CC auto update fail (KARAR 132)	2 aday
+139	2026-05.md	2320	4	2026-05.md:2338	**KARAR 139 (#31):** Başvuru formu unification GENİŞLETİLDİ. KARAR 130 (/acik-kapi/kayit + /cember/basvuru) üstüne /seremoni → `/seremoni/kayit` eklendi + potan	2 aday
+139	2026-05.md	2320	3	2026-05.md:2413	**Form-anchor vs sonraki-bulusma + harici link ayrımı (KARAR 139 not):**	2 aday
+141	2026-05.md	2322	4	2026-05.md:2342	**KARAR 141 (#31):** Brief G.4 sonrası lansman öncesi kalan iş haritası. Brief H (/takvim 3 item, ayrı sohbet) + Brief I (lansman, ayrı sohbet) + sohbet sonu aç	TEK ADAY
+144	2026-05.md	2346	3	2026-05.md:2479	- **KARAR 144:** Lansman sonrası ilk hafta paketine 3 yeni madde (Bölüm A.32)	2 aday
+144	2026-05.md	2346	2	2026-05.md:2638	### 3 yeni madde lansman sonrası ilk hafta paketine (KARAR 144)	2 aday
+148	2026-05.md	2702	0			ADAY YOK
