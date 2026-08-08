@@ -55,16 +55,34 @@ Geçiş planının gövdesi yedi sayar — **plan bayattır, ledger esastır.**
 `#kNNN` elle doğrulanmış çapa · `dosya.md:NNNN` mekanik işaretçi.
 **Mekanik dönüşüm `#k` üretemez** — `#k` tanımı gereği elle doğrulanmıştır.
 
-## Kapanış doğrulaması — atlanamaz
+## Kapanış doğrulaması — atlanamaz (KARAR 474)
+
+**Dönem HEAD satırı = kapanış commit'inden bir önceki commit.** Sabit nokta problemidir:
+dosya kendi repo'sunun HEAD'ini yazar, o yazım da bir commit üretir. Fark **tam olarak
+bir commit'tir ve sıfıra inemez.** Satır canlı HEAD değil, **anlık görüntü** etiketidir.
+
+Kapanış commit'inden **önce** — satıra yazılacak hash budur:
 
 ```bash
 cd ~/Desktop/hlaorpz/ocak-site-clone
-wc -l docs/00-durum.md                                    # ≤200 (KARAR 457)
-git log -1 --format='%h'                                  # HEAD
-grep -n 'dönem HEAD' docs/00-durum.md                     # satırdaki hash ile karşılaştır
+wc -l docs/00-durum.md                     # ≤200 (KARAR 457)
+git log -1 --format='%h'                   # satıra BU yazılır
 ```
 
-**HEAD satırı tutmuyorsa commit'leme, raporla.** Bu skill'in var olma sebebi budur.
+Kapanış commit'inden **sonra** — doğrulama:
+
+```bash
+cd ~/Desktop/hlaorpz/ocak-site-clone
+git log -2 --format='%h' | tail -1         # satırdaki hash ile EŞİT olmalı
+grep 'dönem HEAD' docs/00-durum.md
+```
+
+`git log -1` ile karşılaştırma **yanlıştır ve hiçbir zaman geçmez.**
+
+Tutmuyorsa iki ihtimal vardır, ikisi de raporlanır:
+1. Satır kapanıştan önce yazıldı ve araya commit girdi → düzeltilir.
+2. Kapanıştan sonra fazladan commit atıldı → **meşrudur.** Satır bir sonraki dönemde
+   düzelir; geriye dönük düzeltme commit'i atılmaz.
 
 ## KIRPMA YASAĞI (KARAR 61)
 
@@ -89,4 +107,4 @@ yazılır.
 4. Mükerrer karar numarası
 5. `durum` dokuz değerin dışında
 6. `kaynak` boş
-7. Kapanışta HEAD satırı `git log -1` ile tutmuyor
+7. Kapanış sonrası `git log -2 --format='%h' | tail -1` HEAD satırıyla tutmuyor (KARAR 474)
