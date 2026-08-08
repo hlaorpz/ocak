@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 7 Ağustos 2026 · B37 + B34 · **KARAR 467 mühürlendi** (TEYITSIZ 3→1)
+**Son güncelleme:** 8 Ağustos 2026 · **ADIM 4 ✅** · KARAR 469 · 470 · 471 · 472 mühürlendi
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: ~138 satır. Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 151 satır (`wc -l`, 8 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -27,21 +27,28 @@
 
 ## ŞU AN NEREDEYİZ
 
-**Doküman mimarisi geçişi — ADIM 3 bitti.** Pilot dağıtıldı; artık `ocak-pilot.md` yok.
-Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı okumadan brief yazma** (plan beş yerinden bayat, B32 sonrası).
+**Doküman mimarisi geçişi — ADIM 4 bitti.** Tesisat kuruldu: `CLAUDE.md` repo kökünde,
+`baglam.sh` beş profille çalışıyor, project files boşaltıldı.
+Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı ve EK'ini okumadan brief yazma** (gövde dokuz yerinden bayat; ilk altısı 7 Ağu kaydında, üçü 8 Ağu ekinde).
 
 - **ADIM 1–2 ✅** — KARAR envanteri + ledger durum sütunu (453 satır).
 - **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.
 - **ADIM 3b ✅** — KARAR arkeolojisi. TEYITSIZ 27 → 3. B05·B06·B13·B20 kapandı;
   454 sahte satırı `REZERVE`'e döndü. Kalan: **B33** (ledger `kaynak` dönüşümü, CC,
   KARAR 465) ✅ kapandı. **B32 ✅** — `ocak-referans.md` dağıtıldı; beşli yedili oldu (`20-ref-program.md` + `20-ref-marka.md`). Kaynak dönüşümü aynı turda kapandı (KARAR 467).
-- **ADIM 4 ⏭** — repoya tam taşıma + `CLAUDE.md` + `baglam.sh`. B01 (klon yeniden
-  adlandırma) buna bağlı.
+- **ADIM 4 ✅** — `CLAUDE.md` (kök, dokuz bölüm) + `scripts/baglam.sh` (beş profil:
+  `kod · icerik · marka · bot · dokuman`, manifest satırı + eksik-dosya guard'ı) +
+  project files silme izni (14/14 ledger hedefi yaşıyor, sıfır `ÖLÜ`).
+  Yedi `20-ref-*` dosyasının hepsi en az bir profilde. B01 (klon yeniden adlandırma) açık.
+- **ADIM 5 ⏭** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint`. Kadro tanımı KARAR 458;
+  **onarım modu gerekmiyor** (B36 ölçümü: `HİÇ` sıfır, kuyruk sığ ama kırık değil).
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
+  Çapa çözümlemesi KARAR 472'ye tabidir — `docs_karar(no)` kendi kuralını icat edemez.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
-(KARAR 455). Her sohbet açılışında bağlam yapıştırılır.
+(KARAR 455). O kopya **otorite değil aynadır**; repo değişince elle tazelenir, çelişkide
+repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır — `baglam.sh` ile.
 
 **Sohbet sonu artık patch'tir (KARAR 462):** tam yenileme yok. Tek `docs-patch-YYYY-AA-GG.md`
 üretilir → CC uygular. `00-durum.md`'ye **hedefli** yazım, kronolojiye append.
@@ -52,7 +59,7 @@ kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek
 
 | | |
 |---|---|
-| `main` HEAD | **`3c04504`** (6 Ağu, yol haritası) — ADIM 3 commit'i bunun üstüne biner |
+| `main` HEAD | **`d914ba1`** (8 Ağu, ADIM 4 doküman turu) — sıfır kod commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
@@ -104,6 +111,10 @@ Hepsi "site bozulmaz, özellik sessizce düşer" sınıfı. Metinleri işaret ed
 - **4 Ağustos:** bakım turu — dört borç kapandı, iki içerik kalıntısı Notion'da düzeltildi.
 - **6 Ağustos:** doküman mimarisi geçişi (KARAR 455–463) + kod teyidi 3 tur (7 commit,
   altı borç kapandı) + ADIM 2 ledger + **ADIM 3 bölme**. → `90-kronoloji/2026-08.md`
+- **7–8 Ağustos:** B32 (referans dağıtımı, beşli → yedili) · B33 · B37 · B34 ·
+  **ADIM 4** (CLAUDE.md + baglam.sh + tam taşıma) · **B36 açılış ölçümü**
+  (mekanik çapaların %43'ü komşusunu gösteriyor, kuyruk ~179±, üçte ikisi tek desen) ·
+  KARAR 465–472. Sıfır kod commit'i. → `90-kronoloji/2026-08.md`
 
 ---
 
@@ -118,8 +129,10 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya Gün 0/Gün 1 önkoşulları | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
-| Sığ kaynak çapaları (B36) + KARAR 87 ayrıştırma (B35) | Claude.ai |
-| Doküman geçişi ADIM 4 | Kaan + CC |
+| Sığ çapa onarımı **B36-a** (karar-listesi deseni, mekanik) | CC |
+| Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
+| `10-marka.md` aynasının tazelenmesi (KARAR 471, ilk tatbik) | Kaan |
+| Doküman geçişi ADIM 5-6 | CC |
 
 ---
 
