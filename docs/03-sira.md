@@ -13,13 +13,21 @@
 
 ## SIRADAKİ İŞ
 
-**B36-a** — karar-listesi deseninin mekanik ölçümü ve aday tablosu. CC, repo.
-Brief: `2026-08-08-brief-b36a-donusum.md`. ADIM 5 commit'lerinden sonra koşulur.
+Kuyruk yeniden sıralanmayı bekliyor — aşağıdaki üç aday arasından seçim **Kaan'ın**.
 
-⚠ **Ölçüm sonrası kapsam düzeltmesi:** `olcum-2026-08.md` "mekanik `#kNNN` terfisi"
-diyor; **KARAR 466 buna izin vermez** — `#k` tanımı gereği elle doğrulanmış çapadır.
-Betik `:NNNN` işaretçisini derin satıra taşıyabilir ve aday tablosu üretebilir;
-`#k` terfisi elle onaydan geçer.
+**ADIM 6** — `ocak-kararci` + `ocak-metin` (KARAR 458). CC + Claude.ai, repo.
+`ocak-metin` **taslak-only**, Notion'a yazmaz, en az üç ay (KARAR 459).
+⚠ `ocak-notion` hâlâ sahipsiz: HEDEF YAPI tablosunda var, skill listesinde yok, hiçbir
+ADIM kapsamına girmedi. ADIM 6 açılırken karara bağlanır (sapma kaydı 11. satır).
+
+**B44** — bayat `@ocak.life` taraması, **canlı `docs/` dosyalarında**. İlk deneme bayat
+dosyada koşuldu, bulguları taşınamaz. Sınıflandırma tablosu + ESKİ→YENİ patch tek turda.
+
+**B47** — "ne nerede yaşar" haritası. En küçük iş, en geniş etki: bağlamı olmayan her
+sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
+
+**B36-b beklemede.** Cinsi değişti (kayıt yazma, çapa düzeltme değil) ve büyüdü
+(71 kayıtsız karar). Tek turluk iş değil; kendi planı yapılmadan açılmaz.
 
 ---
 
@@ -30,8 +38,8 @@ Betik `:NNNN` işaretçisini derin satıra taşıyabilir ve aday tablosu üreteb
 | 1 | **ADIM 5** ✅ — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` + `skill-sync.sh` + B42 | CC | repo | — | kapandı 8 Ağu |
 | 2 | **B39** — `ocak-kaynak-kanonu.md` + `Ocak-Mufredat.md` dağıtımı (447 satır, evsiz) | Claude.ai | ayrı sohbet | yok | `02-borclar.md` B39 — B32 deseni |
 | 3 | **B35** — KARAR 87 üç ayrı şeye atfediliyor; `00-durum.md` ODA_MAP işaretçisi kırık | Claude.ai | ayrı sohbet | yok | kronoloji dilimleri + ledger |
-| 4a | **B36-a** — karar-listesi deseni (`- **KARAR N:** Başlık (Bölüm A.X)`) → `#k` terfisi, mekanik | CC | repo | yok | `02-borclar.md` B36 + `_uretilen/olcum-2026-08.md`; B33/B37 betik deseni |
-| 4b | **B36-b** — desen dışı kalanlar (162 · 231 · 381 + B32'nin bulduğu 4 vaka) | Claude.ai | ayrı sohbet | B36-a | ledger + ilgili dilimler; kalan kuyruk B36-a sonrası yeniden ölçülür |
+| 4a | **B36-a** ✅ — mekanik desen ölçüldü; `#k` terfisi KARAR 466 gereği mümkün değil, yöntem yetersiz çıktı (2/5) | CC | repo | — | kapandı 8 Ağu |
+| 4b | **B36-b** — 71 sığ kararın kronolojide kaydı hiç yazılmamış; iş çapa düzeltme değil **kayıt yazma**. Tek turluk değil, kendi planı gerekir | Claude.ai | ayrı sohbet | B36-a ✅ | beklemede — `02-borclar.md` B36 + `_uretilen/b36a-rapor.md` |
 | 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
 | 6 | **ADIM 6** — `ocak-kararci` · `ocak-metin` | CC + Claude.ai | repo | ADIM 5 | KARAR 458; `ocak-kararci` çapa yazarken KARAR 472'ye tabidir |
 | 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
@@ -106,6 +114,13 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **8 Ağustos (öğleden sonra) — üç iş**
+  **B44-a ✅** `062f03b` — lint kapsam çelişkisi, tarihsel kayıt muafiyeti (KARAR 465).
+  **Arşiv ✅** `7fc2ac1` — 17 brief `_arsiv/2026-08-dokuman` + `2026-08-site`.
+  **B36-a ✅** `c6a969b` — desen ölçüldü, yöntem yetersiz (2/5), B36-b'ye devretti ve
+  büyüdü (71 kayıtsız karar). Ledger'a yazılmadı.
+  Yeni borç: **B46** (ölçüm aracı tuzakları) · **B47** (harita yok).
+  → `90-kronoloji/2026-08.md`
 - **6-7 Ağustos — doküman mimarisi turu ✅** (6 commit, sıfır kod commit'i)
   ADIM 1 · ADIM 2 · ADIM 3 · ADIM 3b · B33 · B37 · B34 · arşiv kapanışı.
   TEYITSIZ 27 → 1 · kırık `kaynak` referansı 409 → 0 · 7 borç kapandı ·

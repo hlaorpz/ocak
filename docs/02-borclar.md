@@ -429,6 +429,27 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Enum rename kuralı iki kayıtta** (`20-ref-protokoller.md`, yan yana). B32 taşıdı ama
   birleştirmedi — birleştirme yeniden yazımdır, KIRPMA YASAĞI kapsamı. B36'da tek kayda
   indirilir; ikisinin de benzersiz cümlesi korunur.
+- **B36-a ✅ (8 Ağu, `c6a969b`):** Desen mekanik olarak ölçüldü, ledger'a yazılmadı.
+  Betik: `_uretilen/b36a-desen-tespiti.py` · çıktı: `b36a-adaylar.tsv` (181 satır) +
+  `b36a-rapor.md`.
+  Ölçüm — popülasyon betikçe yeniden üretildi, `olcum-2026-08.md`'nin 418'i
+  devralınmadı; ledger 468→474 veri satırına büyüdü ama altı yeni satırın hiçbiri
+  `:NNNN` biçiminde değil, popülasyon sabit kaldı:
+  **418 mekanik · 119 sığ (%28.5) · tek-aday 12 · çok-aday 36 · adaysız 71 · çözülemeyen 0.**
+  Nokta örneklemesi **2/5** — DUR-3 tetiklendi, yöntem yetersiz.
+  ⚠ **Kapsam düzeltmesi:** `olcum-2026-08.md` "mekanik `#kNNN` terfisi" diyordu;
+  **KARAR 466 buna izin vermez** — `#k` tanımı gereği elle doğrulanmış çapadır.
+  Puanlama neden yanıldı: `ETIKET`/`BASLIK`/`PARANTEZ` sinyalleri **numaranın geçtiği**
+  satırı buluyor, **kararın kaydı olan** satırı değil. Üç vaka: `131` liste
+  girdisinden liste girdisine · `91` ters atıf yönü (kararı uygulayan satır) ·
+  `89` uzunluk bonusu tek parantez-içi atıfa en yüksek puanı verdi.
+- ⚠ **B36-b'nin cinsi değişti ve büyüdü.** Önceki tanım üç kararı (162 · 231 · 381)
+  sayıyordu ve iş "çapa düzeltme"ydi. Ölçüm gösterdi ki **119 sığ satırın 71'inin
+  (%60) adayı yok** — o kararların kronolojide karar-listesi indeksinden başka kaydı
+  **hiç yazılmamış.** Taşınacak hedef mevcut değil. B36-b'nin işi çapa düzeltme değil
+  **kayıt yazma**; her satır okuma ve yargı gerektirir, mekanikleşmez.
+  Tek-aday 12 satır mekanik taşımaya meşru ama tek başına tur açmaya değmez —
+  B36-b içinde eritilir.
 
 ## B38 — Ledger çapa denetimi (terminal kontrol)
 
@@ -649,6 +670,16 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   sütununun ilk tatbiki. Marka dosyalarında (`10-marka.md`, `20-ref-marka.md`) bayat
   handle en çok zarar veren yerdedir — brief bu ikisini saymıyordu, ADIM 0 buldu.
 - **Kaynak:** ADIM 5 brief hazırlığı + ADIM 5 ADIM 0 raporu Ç1, 8 Ağustos 2026.
+- ⚠ **Tarama bayat dosyada koşuldu (8 Ağu).** `ocak-lint`'in ilk sınamasında bulunan
+  satır numaraları `ocak-referans.md` ve `ocak-marka.md`'ye ait — ikisi de ADIM 3 ve
+  B32 ile dağıtıldı, artık otorite değil. Bulgular **taşınamaz**, satır numaraları
+  tutmaz. Tarama `docs/` altındaki canlı dosyalarda yeniden koşulur.
+- **Yan bulgu:** skill'in dağıtılmış dosyaları canlı sanması, project files aynasının
+  hâlâ bayat olduğunu düşündürüyor (KARAR 471). B44 turunda ölçülür.
+- **B44-a ✅ (8 Ağu, `062f03b`):** Veri dosyasının kendi çelişkisi kapandı —
+  `kapsam="her yerde"` yazan altı satırın altısı da kendi tanımını yakalıyordu.
+  `SKILL.md`'ye tarihsel kayıt muafiyeti eklendi, `istisna` → `ek_istisna`,
+  `kapsam` sözlüğü dört değere indirildi. Dize sayısı korundu (24).
 
 ## B45 — `baglam.sh` bayt/karakter etiketi yanlış (`:65` + `:67`)
 
@@ -662,3 +693,31 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Neden borç:** KARAR 470(b) vakası — ölçüm aracının kendi etiketi ölçtüğü şeyi
   yanlış adlandırıyor.
 - **Kaynak:** ADIM 5 brief hazırlığı + ADIM 5 ADIM 0 raporu Ç3, 8 Ağustos 2026.
+
+## B46 — ölçüm aracının kendisi hata kaynağı, dördüncü vaka
+
+- [ ] **Sahip:** CC
+- **Sorun:** Ölçüm araçları hata vermeden **yanlış rakam** veriyor. Dört vaka ölçüldü:
+  - `awk length` bayt sayar, karakter değil ("çığır" = 5 karakter, 9 bayt)
+  - `cut -c1-N` satırı kesince arkadaki kaydı gizler
+  - `grep -o` deseni satır sonu beklediği için hiç eşleşmedi; boş dize karşılaştırıldı
+    ve "tutmadı" raporlandı, oysa tutuyordu
+  - `grep` (`-F` olmadan) `$'\t'` kalıbındaki `$`'ı desen karakteri saydı, `0` döndü
+  - ayrıca `baglam.sh:65/:67` — B45, aynı ailenin beşincisi
+- **Eylem:** `ocak-teshis`'in "Rapor biçimi" bölümüne bir **araç tuzakları** alt başlığı;
+  her tuzağın yanına doğru aracı. B45 bu maddeye bağlanır ya da onunla birlikte kapanır.
+- **Neden borç:** KARAR 470 rakamın yöntemiyle yazılmasını istiyor; yöntem yanlışsa
+  rakam da yanlış ve **doğru rakam gibi görünüyor.**
+- **Kaynak:** ADIM 5 · B44-a · B36-a turları, 8 Ağustos 2026.
+
+## B47 — "ne nerede yaşar" haritası hiçbir dosyada yok
+
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** `docs/` yapısının kendisi — hangi dosya neyi taşır, bir soruya cevap
+  ararken nereye bakılır — yazılı değil. `CLAUDE.md` CC'ye bakıyor, `00-durum.md`
+  döneme, `03-sira.md` kuyruğa. Haritanın tamamı yalnız sohbet bağlamında yaşıyor.
+- **Neden borç:** Sistem tam olarak bunu önlemek için kuruldu. Bağlamı olmayan bir
+  sohbet `baglam.sh` çıktısını alır ama dosyaların **birbirine göre rolünü** bilmez.
+- **Eylem:** `docs/05-harita.md` (ya da `CLAUDE.md`'ye bölüm) — dosya tablosu +
+  "şu soruyu sorarsan şuraya bak" eşlemesi. Kısa tutulur, bakım maliyeti düşük olmalı.
+- **Kaynak:** 8 Ağustos 2026, gün sonu.

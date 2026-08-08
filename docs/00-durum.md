@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 · 474 mühürlendi
+**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 · 474 mühürlendi · B42 kapandı · B36-a ölçüldü
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
@@ -42,6 +42,10 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   Yedi `20-ref-*` dosyasının hepsi en az bir profilde. B01 (klon yeniden adlandırma) açık.
 - **ADIM 5 ✅** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` doğdu; `skill-sync.sh`
   symlink+zip (KARAR 473). B42 kapandı. `ocak-notion` sapması çözülmedi.
+- **B44-a ✅** — `ocak-lint` yasak-dize kapsam çelişkisi kapandı. `her yerde` kapsamı
+  altı satırda kendi tanımını yakalıyordu; tarihsel kayıt muafiyeti eklendi (KARAR 465).
+- **B36-a ✅** — desen ölçüldü, **yöntem yetersiz** çıktı (nokta örneklemesi 2/5).
+  Mekanik taşıma turu açılmadı; iş B36-b'ye devretti ve **büyüdü**.
 - **ADIM 6 ⏭** — `ocak-kararci` · `ocak-metin`. Kadro tanımı KARAR 458;
   `ocak-metin` taslak-only, en az üç ay (KARAR 459).
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
@@ -61,7 +65,7 @@ repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır 
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`265d75c`** (8 Ağu, ADIM 5 skill turu sonu) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`c6a969b`** (8 Ağu, gün sonu — B36-a turu sonu) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
@@ -101,6 +105,10 @@ Hepsi "site bozulmaz, özellik sessizce düşer" sınıfı. Metinleri işaret ed
   kaydırır. Test tarafı artık `TZ:'UTC'` ile korunuyor. → KARAR 385 + **464** (`vitest.config.ts:12` teyitli)
 - **"Kod var" ≠ "output var"** — durum component dosyasından değil `dist/` grep'inden
   okunur. → `20-ref-protokoller.md` (KARAR 355 / 408)
+
+⚠ **`02-borclar.md` bir yapılacaklar listesi değildir** — fark edilmiş ama kapatılmamış
+tutarsızlıkların defteridir. Ürün işi (ödeme, WhatsApp, Instagram, mail akışları) oraya
+girmez; o kuyruk başka yerde yaşar.
 
 ---
 
