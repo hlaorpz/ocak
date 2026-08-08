@@ -277,3 +277,25 @@ kendi başına durması meşru olabilir, o zaman düzeltilecek olan HEDEF YAPI'd
 
 **Ayrıca:** KARAR 461'in ledger `kaynak`'ı bu dosyayı gösteriyor, satır numarası yok —
 sığ çapa, B36 kapsamında.
+
+---
+
+## SAPMA KAYDI — EK (8 Ağustos 2026, ADIM 4 hazırlığı)
+
+Üstteki kayıt "aşağıdaki **beş** nokta" diyor, tablosu **altı** satır. Sayım
+kendi gövdesiyle tutmuyor — KARAR 470'in ilk vakası, hem de nicel disiplini
+uyaran belgede.
+
+| # | üstteki kayıt ne diyor | ölçüm |
+|---|---|---|
+| 3-ek | `20-ref-program.md` hiçbir profile girmiyor | **üç yetim var**: program, marka *ve* notion. Planın `icerik` profilindeki "taze notion dump" bir Notion export'udur, `20-ref-notion.md` değil; `marka` profilindeki "marka" `10-marka.md`'dir |
+| 6-ek | HEDEF YAPI dışında üç dosya (kanon 172 · müfredat 275 · sayfa-yazim-rehberi 219) | **beş** — `2026-02.md` ve `00-devir.md` de yok. Ledger'ın 77 satırı bu ikisine işaret ediyor (50 + 27; ölçüm: `kaynak` sütunu, çapa soyulmuş, 468 satır) |
+| 7 | — | `durum` enum artık dokuz değerle ledger'da mühürlü (KARAR 456 tam metni), plan gövdesi yedi sayıyor |
+| 8 | HEDEF YAPI `_uretilen/` için ".gitignore — script üretir" diyor | **klasör ignore'da değil**, yedi dosyanın yedisi de izleniyor (`b33-*.py`, `b37-*.py`, `bolme-kod-cozumu.tsv`, ledger teyit dosyaları). Not yalnız `site-icerik.md`'ye uygulanmış; klasör versiyonlanmış bir üretim arşivi olmuş. Doğru olan gerçektir — dönüşüm betiklerinin versiyonlanması KARAR 467(a)'nın gereği |
+| 9 | sapma kaydı `sayfa-yazim-rehberi.md`'yi "planda sayılmamış" diye anıyor | teyit edildi: `docs/sayfa-yazim-rehberi.md` 219 satır, yerinde. HEDEF YAPI düzeltilecek olan taraftır (sapma kaydının kendi tespiti) |
+| 10 | 6-ek maddesindeki `2026-02.md` + `00-devir.md` endişesi | **teyit edildi, iş yok**: ikisi de `docs/90-kronoloji/` altında (73 ve 503 satır). Ledger sayımı birebir tuttu — 50 + 27 = 77 |
+
+**Ayrıca:** KARAR 465'in kendi `kaynak`'ı `2026-08.md` — satır numarasız, çapasız.
+Çapa disiplinini mühürleyen karar sığ çapayla duruyor. Çıplak dosya adı taşıyan
+yedi satırın hepsi 456-464 aralığında, yani doküman mimarisinin kendi kararları.
+B36 kapsamı.

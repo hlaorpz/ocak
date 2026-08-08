@@ -12,8 +12,8 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
-| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 |
-| **Claude.ai** | B35 · B36 · B38 · B39 |
+| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B42 |
+| **Claude.ai** | B35 · B36 · B38 · B39 · B40 · B41 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -357,6 +357,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   `#38-blok`, `#41-madde5`, `#41-madde6`); **418'i mekanik `:NNN`.** Mekanik çapaların
   kaçının komşusunu gösterdiği bilinmiyor. B36 açılırken **önce örneklem ölçümü** yapılır
   (rastgele 10-20 mekanik satır, komşu-gösterme oranı); kuyruk boyutu ondan sonra yazılır.
+- **Açılış ölçümü yapıldı:** ADIM 4, `docs/_uretilen/olcum-2026-08.md` (8 Ağustos 2026).
 
 - **`kaynak` sütununda iki tanımsız biçim — şema eksiği.** KARAR 466 iki biçim
   tanımladı. Ledger fiilen **dört** biçim kullanıyor:
@@ -460,6 +461,57 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   düzeltilecek olan HEDEF YAPI'dır. B39'un ADIM 0'ında karara bağlanır,
   kapsamı şimdiden genişletilmez.
 - **Kaynak:** ADIM 4 açılış paketi hazırlığı, 8 Ağustos 2026.
+
+## B40 — "KIRPMA YASAĞI 61/88" konvansiyonu yanlış
+
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** Doküman genelinde KIRPMA YASAĞI `KARAR 61/88` diye anılıyor
+  (`2026-08.md:130`, KARAR 457 metni dahil). Ledger:
+  `61 = KIRPMA YASAĞI (KALICI)` · `88 = Çekirdek + arşiv ikili yapısı (SUPERSEDE)`.
+  88 KIRPMA kararı değil, artık var olmayan bir dosya yapısının kararı, ve
+  yürürlükten kalkmış. KARAR 462 zaten `88 → 145 → 397` zincirini kuruyor.
+- **Neden borç:** kalıcı bir kural, SUPERSEDE bir karara bağlanmış görünüyor.
+  Kırık değil — 61 doğru ve KALICI — ama konvansiyon yanlış yere işaret ediyor.
+- **Eylem:** 88'in KIRPMA soyu var mı, tam metninden ölçülür (`2026-05.md:71`).
+  Varsa "61/88" korunur ve 88'in ledger başlığı eksik demektir; yoksa doküman
+  genelinde `KARAR 61` tekilleştirilir. CLAUDE.md bugün **61** yazıyor.
+- **Kaynak:** ADIM 4 hazırlık ölçümü, 8 Ağustos 2026.
+
+## B41 — Ledger'da tema sütunu yok, `marka` profili filtreleyemiyor
+
+- [ ] **Sahip:** Claude.ai
+- **Sorun:** Geçiş planı `baglam.sh marka` profilini "kararlar(marka filtreli)"
+  olarak tanımlıyor. Ledger'da tema/alan sütunu yok; filtre `baslik` metnine
+  dayanmak zorunda ve sessizce yanlış keser — bir marka kararı "marka" kelimesini
+  içermeyebilir.
+- **Karar (ADIM 4):** `marka` profiline ledger **hiç** girmiyor. Yarım filtre,
+  filtresizden tehlikelidir (eksik olduğu görünmez).
+- **Eylem:** ya yedinci sütun (`alan`) açılır — 470 satır elden geçer, pahalı —
+  ya profil ledgersiz kalır. B38 ile aynı turda bakılabilir; ledger o zaman
+  zaten satır satır denetlenecek.
+- **Kaynak:** ADIM 4, `baglam.sh` profil tasarımı.
+
+## B42 — `site-icerik` üretim yolu HEDEF YAPI ile hizasız
+
+- [ ] **Sahip:** CC · **Tetikleyici:** ADIM 5 (scripts/skills turu)
+- **Sorun:** Üç ayrışma var, üçü de aynı dosyanın etrafında:
+  (a) `scripts/site-icerik-dump.mjs` çıktıyı **repo köküne** yazıyor; HEDEF YAPI
+      `_uretilen/site-icerik.md` diyor (KARAR 455).
+  (b) Dosya **iki kopya** hâlinde duruyor — `./ocak-site-icerik.md` ve
+      `./docs/ocak-site-icerik.md`, md5 eşit (`6859e845…`), 4.821 satır. İkincisi
+      script çıktısı değil; artık kaynağı belirsiz bir kalıntı.
+  (c) `.gitignore:42` deseni `ocak-site-icerik.md` — başında `/` yok, **her derinlikte**
+      eşleşiyor. `_uretilen/` altına taşınsa da ignore kapsamında kalır.
+- **Neden borç değil acil iş:** her iki kopya da aynı içerik, üretim yolu canlı,
+  kimse yanlış dosyayı okumuyor. Ama iki kopya = ADIM 0'ın bayat-dump tuzağı
+  (KARAR 355) için açık kapı.
+- **Eylem (tek tur):** `OUT_PATH` → `docs/_uretilen/site-icerik.md` · `.gitignore`
+  deseni kök-bağlı (`/ocak-site-icerik.md`) yapılıp yeni yol için satır eklenir ·
+  `docs/ocak-site-icerik.md` kalıntısı kaldırılır · script'in çıktı yolunu okuyan
+  tüketici var mı diye tek grep (`grep -rn "ocak-site-icerik" --exclude-dir=node_modules`).
+- **Bu turda dokunulmadı:** ADIM 4 doküman turudur; çıktı yolu değişikliği tüketici
+  taraması ister ve kod turuna aittir (KARAR 463 ruhu).
+- **Kaynak:** ADIM 4 ADIM 0 raporu, Ç1 + Ç2 (8 Ağustos 2026).
 
 ## B37 — `ocak-pilot.md:NNNN` referansları da kırık ✅ KAPANDI (7 Ağu, mekanik dönüşüm)
 - [ ] **Sahip:** CC (mekanik)

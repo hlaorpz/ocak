@@ -467,3 +467,5 @@ no	tarih	baslik	durum	iliski	kaynak
 466	2026-08-07	`kaynak` sütununun iki biçimi — `#kNNN` elle doğrulanmış çapa, `:NNNN` mekanik işaretçi	KALICI	←456	2026-08.md#k466
 467	2026-08-07	Dosya dağıtımı ledger dönüşümünü içerir — eşleme + dönüşüm + doğrulama aynı işin parçası	KALICI	←456 · ↔465	2026-08.md#k467
 468	2026-08-07	Sıra dosyası `03-sira.md` — sohbet sonu patch beş bölümlü olur	KALICI	←462	2026-08.md#k468
+469	2026-08-08	Sır dokümanda yaşamaz — token/secret env'de ya da credential store'da	KALICI	←464	2026-08.md#k469
+470	2026-08-08	Nicel iddia ölçülebilir olur — rakam üretim yöntemiyle yazılır	KALICI	←465 · ↔456	2026-08.md#k470
