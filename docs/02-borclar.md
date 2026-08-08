@@ -23,7 +23,7 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 
 ---
 
-## B01 — `ocak-site-clone` → `ocak-site` yeniden adlandırma
+## B01 — klon ve remote adı `ocak` olur
 - [ ] **Sahip:** Kaan + CC
 - **Tetikleyici:** ADIM 4, `baglam.sh` yazılırken — birlikte yapılır
 - **Gerekçe:** "clone" adı tek çalışma kopyası olduğunu değil, bir kopya olduğunu ima ediyor; yanıltıcı.
@@ -55,6 +55,9 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   gösterir.
 - **Sahip:** CC (adımlar 1-6) · Claude.ai (`CLAUDE.md` konvansiyon satırı)
 - **Kaynak:** 8 Ağustos 2026, gün sonu — hedef ad kararı Kaan'dan.
+- **Başlık düzeltmesi (8 Ağu):** blok önceden `ocak-site-clone → ocak-site` diyordu.
+  Hedef `ocak` olarak karara bağlanınca başlık gövdeyle çelişti; başlık gövdeye
+  uyduruldu. Ara hedef `ocak-site` hiçbir zaman uygulanmadı.
 
 ## B02 — Sabit-px pseudo audit yayılımı ✅ KAPANDI (6 Ağu, kod teyidi)
 - [x] **Sahip:** CC
