@@ -12,8 +12,8 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
-| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B42 |
-| **Claude.ai** | B35 · B36 · B38 · B39 · B40 · B41 |
+| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B36-a · B42 |
+| **Claude.ai** | B35 · B36-b · B38 · B39 · B40 · B41 |
 | **CC (mekanik)** | B37 ✅ |
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
@@ -350,13 +350,41 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   - **461** → `2026-08-06-ocak-gecis-plani.md`, satır numarası yok; ve o dosya beş
     yerinden bayat (sapma kaydı dosyanın sonunda).
 
-  **⚠ Kuyruk boyutu ölçülmedi.** Bu maddedeki eski "~37 sığ kaynak satırı" rakamının
-  kaynağı belirsizdir — **kendisi doğrulanmamış bir sayıdır** (KARAR 465 ihlali).
-  Gerçek ölçüm: ledger'ın **468 satırından yalnız 35'i** (`%7,5`) elle konmuş `#` çapası
-  taşıyor — **25'i `#kNNN` biçiminde**, 10'u başka `#` biçiminde (`#adim1` yedi satırda,
-  `#38-blok`, `#41-madde5`, `#41-madde6`); **418'i mekanik `:NNN`.** Mekanik çapaların
-  kaçının komşusunu gösterdiği bilinmiyor. B36 açılırken **önce örneklem ölçümü** yapılır
-  (rastgele 10-20 mekanik satır, komşu-gösterme oranı); kuyruk boyutu ondan sonra yazılır.
+  **Kuyruk boyutu ölçüldü (ADIM 4, 8 Ağustos 2026).** Bu maddedeki eski "~37 sığ kaynak
+  satırı" rakamının kaynağı belirsizdi ve **kendisi doğrulanmamış bir sayıydı**
+  (KARAR 465/470). Açılış ölçümü koşuldu: `docs/_uretilen/olcum-2026-08.md`.
+
+  **Popülasyon:** `kaynak` sütununda `^[0-9A-Za-z-]+\.md:\d+(,\d+)*$` eşleşen **418**
+  satır (kod dosyaları ve `dist` artefaktları hariç). Aşağıdaki dört-biçim tablosuyla
+  birebir tutuyor. **Örneklem:** sistematik, `no`'ya göre sıralı, adım 20 ofset 10 —
+  21 satır. Seçen taraf yok; yöntem yeniden üretilebilir.
+
+  | sınıf | 21 satır |
+  |---|---|
+  | KENDİ — kararın kendi metni orada | **12 (%57)** |
+  | KOMŞU — başka kararın metni / dönem özeti / indeks girdisi | **9 (%43)** |
+  | HİÇ — satır yok ya da ilgisiz | **0** |
+
+  `TEYITSIZ` yok. **`HİÇ` sıfır olması kuyruğun karakterini belirliyor: ledger kırık
+  değil, sığ.** Okuyan yanlış yere gitmiyor, yalnız derine inemiyor — maddenin en baştaki
+  teşhisi doğruydu, boyutu yanlıştı.
+
+  **Kuyruk boyutu:** nokta tahmin `418 × 9/21 ≈ 179` satır. **Tek rakam yazılmıyor** —
+  21'lik örneklemin güven aralığı geniş (~90-270). Kesin olan: eski "~37" en az **dört
+  kat** düşüktü.
+
+  **Kuyruğun üçte ikisi mekaniktir.** KOMŞU'ların **6'sı tek desenden** geliyor: erken
+  sohbetlerin `- **KARAR N:** Başlık (Bölüm A.X)` biçimli karar listeleri — çapa listenin
+  satırını gösteriyor, kararın metnini değil. Desen mekanik tespit edilebilir, dolayısıyla
+  mekanik onarılabilir (B33/B37 sınıfı bir dönüştürme betiği). Kalan üçü tekil ve elle
+  bakılır: **162** (görev listesi) · **231** (komşu kararın metni) · **381** (dönem özeti).
+
+  **ADIM 5-6'ya etkisi: `ocak-kararci`'ye onarım modu gerekmiyor.** Kadro tanımı
+  (KARAR 458) değişmiyor. B36 iki ayağa bölünüyor:
+  - **B36-a (mekanik, CC):** karar-listesi deseni → `#kNNN` terfisi. ADIM 5 ile aynı
+    turda gidebilir.
+  - **B36-b (elle, Claude.ai):** desen dışı kalanlar + aşağıdaki bilinen sığ çapalar.
+    B36-a bittikten sonra, kalan kuyruk yeniden ölçülür.
 - **Açılış ölçümü yapıldı:** ADIM 4, `docs/_uretilen/olcum-2026-08.md` (8 Ağustos 2026).
 
 - **`kaynak` sütununda iki tanımsız biçim — şema eksiği.** KARAR 466 iki biçim
@@ -417,6 +445,9 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
   çapası takip edilir, üç kategoriye ayrılır (kendi metnine · komşusuna · hiçbir yere).
   Oran çıkar, kuyruk boyutu **ondan sonra** yazılır. **Örneklemi Claude seçmez** —
   numaraları Kaan verir. Gerekçe: seçen taraf kendi kör noktasına göre seçer.
+- **Ön ölçüm yapıldı (ADIM 4):** aynı yöntem 21 satırlık örneklemle koşuldu, isabet
+  %57 çıktı. B38 bunu tekrarlamaz — B36-a bittikten **sonra** koşar ve mekanik onarımın
+  oranı ne kadar oynattığını ölçer. Karşılaştırma tabanı: `_uretilen/olcum-2026-08.md`.
 - **B36 ile ilişki:** B36 bilinen sığ çapaları terfi ettirir; B38 **bilinmeyenin oranını**
   ölçer. B36 önce, B38 en sonda — B36 bitince denetim onun ne kadarını kapattığını da
   gösterir.
