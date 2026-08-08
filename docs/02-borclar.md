@@ -29,6 +29,32 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Gerekçe:** "clone" adı tek çalışma kopyası olduğunu değil, bir kopya olduğunu ima ediyor; yanıltıcı.
 - **Neden şimdi değil:** CC'nin bildiği yol değişir. Yol değişimi ile `baglam.sh` yazımı aynı commit'te olmalı.
 - **Not:** KARAR 98 zaten bir "Repo Adı Düzeltmesi" içeriyor — bu ikinci tur, aynı hattın devamı.
+- **Hedef ad kararı (8 Ağu):** üç ad da **`ocak`** olur. Remote `hlaorpz/ocak`,
+  yerel klasör `~/Desktop/hlaorpz/ocak`, Vercel proje adı `ocak`. Bugüne kadar B01
+  yalnız "en az iki ad dolaşımda" diyordu, hedef yazılı değildi — artık yazılı.
+- ⚠ **Maliyet küçük değil, iş tek turda ve sırayla yapılır:**
+  1. GitHub'da repo yeniden adlandırılır (`ocak-site` → `ocak`). GitHub eski URL'yi
+     yönlendirir, ama yönlendirmeye güvenilmez.
+  2. `git remote set-url origin` güncellenir, `git remote -v` ile doğrulanır.
+  3. Yerel klasör yeniden adlandırılır. **Bu adım en pahalısı** — aşağıya bak.
+  4. Vercel proje bağlantısı denetlenir. `projectId` sabittir, ama repo adı değişince
+     bağlantının kendiliğinden düzeldiği **ölçülmeden varsayılmaz**; `list_deployments`
+     ile teyit edilir.
+  5. `.claude/settings.local.json` içindeki eski mutlak yol düzeltilir. Dosya
+     `.gitignore`'lu, commit'e girmez — elle yapılır ve raporlanır.
+  6. `.claude/notes.md` aynı sınıfta, yerel kalır.
+- ⚠ **`cd` öneki sözleşmesi kırılır.** Her brief'in her bash bloğu
+  `cd ~/Desktop/hlaorpz/ocak-site-clone` ile açılıyor — bu bir konvansiyon
+  (`CLAUDE.md`) ve `docs/_arsiv/` altındaki her brief dosyasında geçiyor.
+  **Arşivdeki brief'ler DÜZELTİLMEZ** (KIRPMA YASAĞI, KARAR 61): onlar koşulduğu günün
+  kaydıdır, yolun o gün ne olduğunu doğru söylüyorlar. Düzeltilecek olan `CLAUDE.md`
+  konvansiyon satırı ve **bundan sonra yazılan** brief'lerdir.
+- **Ölçüm gerekiyor, henüz yapılmadı:** `cd ~/Desktop/hlaorpz/ocak-site-clone` dizesinin
+  `docs/` altında kaç dosyada, kaç kez geçtiği. B01 turunun ADIM 0'ında ölçülür ve
+  arşiv/canlı diye ayrılır — sayı, işin arşive mi yoksa canlı dosyalara mı yığıldığını
+  gösterir.
+- **Sahip:** CC (adımlar 1-6) · Claude.ai (`CLAUDE.md` konvansiyon satırı)
+- **Kaynak:** 8 Ağustos 2026, gün sonu — hedef ad kararı Kaan'dan.
 
 ## B02 — Sabit-px pseudo audit yayılımı ✅ KAPANDI (6 Ağu, kod teyidi)
 - [x] **Sahip:** CC
