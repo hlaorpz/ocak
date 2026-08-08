@@ -46,3 +46,6 @@ ocak-site-dump-fable-*.md
 scripts/dump-fable.mjs
 .env*
 !.env.example
+
+# skill zip çıktısı (skill-sync.sh üretir, claude.ai'ye elle yüklenir)
+/docs/_uretilen/skill-zip/
