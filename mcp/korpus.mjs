@@ -258,7 +258,10 @@ export function korpusOzetSatiri(ozet) {
 
 // ── Başlık indeksi ───────────────────────────────────────────────────────────
 // '# ', '## ', '### ' ile başlayan satırlar. 02-borclar.md'nin '## BNN — ...'
-// satırları bu kurala girer (ölçüldü: 53 başlık, 50'si '## B' biçiminde).
+// satırları bu kurala girer. Ölçüm: python3, docs/02-borclar.md, 2026-08-09 —
+// toplam 58 başlık, 55'i '^## B[0-9]+' biçiminde (KARAR 470: rakam yöntemiyle
+// yazılır). ⚠ Bu rakam ledger/borç dosyası büyüdükçe bayatlar; kurala örnek
+// olsun diye durur, kriter olarak kullanılmaz.
 export function baslikIndeksi(satirlar) {
   const cikti = [];
   for (let i = 0; i < satirlar.length; i++) {
