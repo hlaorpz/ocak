@@ -44,7 +44,6 @@ scripts/*-dump.txt
 
 # Fable (copywriter) dump — tek seferlik, prod'dan üretilir; commit edilmez
 ocak-site-dump-fable-*.md
-scripts/dump-fable.mjs
 .env*
 !.env.example
 
