@@ -39,11 +39,20 @@ import {
 // ledger'ın tek bir yolu vardır ve o yol kararın kendisidir (KARAR 456).
 const LEDGER_YOLU = 'docs/01-kararlar.tsv';
 
-// Korpusun sınırını söyleyen dize. `docs_karar`'ın kod_dist dalı bunu `sebep`
-// olarak taşır — "neden okunmadı" sorusu cevapsız kalmasın.
+// ── B54: cevabın söylediği iki gerçek, bilerek AYRI ─────────────────────────
+// Borç metni "korpus git deposundan servis edilir" diyordu. Ama `korpusuTara()`
+// git'i SORMUYOR — diski yürüyor. Railway'de ikisi denk çünkü container bir
+// checkout; yerelde denk değil. O dizeyi tek başına yazmak, kodun arkasında
+// duramadığı bir iddia olurdu ve İLKE (b)'yi kırardı.
+//   KAPSAM_KURALI → kodun YAPTIĞI
+//   DAGITIM_NOTU  → ortamın GETİRDİĞİ
 const KAPSAM_KURALI =
   'Servis edilen küme: IZINLI_KOKLER (docs · scripts) + IZINLI_TEKIL (CLAUDE.md), ' +
   'sunucunun diskinden taze yürünerek. src/ · dist/ · mcp/ · node_modules korpusa dahil değildir.';
+
+const DAGITIM_NOTU =
+  "Dağıtım ortamı git checkout'udur; bu yüzden .gitignore'lu dosyalar burada bulunmaz " +
+  '(KARAR 479). Yerel diskte koşan bir kopya daha fazla dosya görür.';
 
 // Her cevabın ortak gövdesi: commit damgası (İLKE b) + korpus özeti (Kaan §3).
 function zarf(ozet, govde) {
@@ -64,6 +73,10 @@ function envanter() {
   const tarama = korpusuTara();
   const govde = {
     arac: 'docs_envanter',
+    // B54: korpusta adı geçen ama getirilemeyen dosya, sebebi söylenmezse
+    // "eksik olduğunu göstermeden eksik verir" — İLKE (d) boşluğu.
+    kapsam_kurali: KAPSAM_KURALI,
+    dagitim_notu: DAGITIM_NOTU,
     sutunlar: ['yol', 'satir', 'bayt', 'karakter', 'sinif'],
     toplam_dosya: tarama.ozet.toplam,
     dagilim: {
@@ -111,6 +124,9 @@ function oku({ yol, satir_baslangic, satir_bitis }) {
       bulunamadi: Boolean(coz.bulunamadi),
       reddedildi: !coz.bulunamadi,
       sebep: coz.sebep,
+      // B54: "bulunamadı" doğru ama yetmez — NİÇİN bulunamadığı da söylenir.
+      kapsam_kurali: KAPSAM_KURALI,
+      dagitim_notu: DAGITIM_NOTU,
       not: 'Benzer ad önerilmez. Var olan yollar için: docs_envanter()',
     });
   }
