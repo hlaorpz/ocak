@@ -476,3 +476,4 @@ no	tarih	baslik	durum	iliski	kaynak
 475	2026-08-09	`ocak-kararci` ↔ `ocak-arsivci` sınırı — kararcı içeriği üretir ve önden doğrular, arşivci dosyaya işler	KALICI	←458 · ↔456,468	2026-08.md#k475
 476	2026-08-09	`ocak-metin` ↔ `ocak-lint` sınırı — metin üretir, lint denetler; aynı kural iki dosyada tarif edilmez	KALICI	←458,459 · ↔473	2026-08.md#k476
 477	2026-08-09	`ocak-notion` dar kapsam — taze dump + marker sözleşmesi doğrulaması; sayfa listesi koddan okunur, taşınmaz	KALICI	←458 · ↔409,439	2026-08.md#k477
+478	2026-08-10	Sohbet sonu ikinci teslim — bir sonraki turun açılış promptu	KALICI	←468 · ↔462	2026-08.md#k478

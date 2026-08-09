@@ -771,6 +771,12 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   türetilir (dizin taraması eksi `İÇERİR`). Üç yetim dosya profillere dağıtılır.
 - **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
 
+- ⚠ **Kapsam notu (10 Ağu, ADIM 7 birinci dalga) — B48 KAPANMAZ, düzeltmenin şekli
+  değişti.** Manifest boşluğu duruyor. Ama MCP tasarımıyla birlikte `baglam.sh`'ın rolü
+  değişti: küçülüp **soğuk-başlangıç kanalı** olarak yaşayacak, `İÇERMEZ` listesi profil
+  listesinden değil **MCP envanterinden** anlam kazanacak. **B48 ADIM 7 ikinci
+  dalgasından önce kapatılmaz** — kapatılırsa iş iki kez yapılır. Kapanışı B51'e bağlı.
+
 ## B49 — kanonik section sayısı dört yüzeyde dört farklı (B31'in kardeşi)
 
 - [ ] **Sahip:** Claude.ai (tespit) → Advaita/Kaan (Notion ayağı)
@@ -835,3 +841,33 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   ayrışma yapısal olarak imkânsız, zip yüzeyinde yalnız *yakalanabilir*. `--check`
   yakalar; yeniden yükleme elle yapılır. **Skill dokunuşu içeren her turun son adımı
   `skill-sync.sh sync` + yüklemedir.** Nüks ayrı borç açmaz, bu bakım kuralına bağlanır.
+
+## B51 — `baglam.sh` küçültme + soğuk başlangıç profili
+
+- [ ] **Sahip:** CC · **Tetikleyici:** MCP birinci dalga oturunca
+- **Sorun:** `baglam.sh dokuman` bugün altı dosyayı ve 1940 satırı panoya basıyor.
+  MCP ayaktayken bu iş `docs_envanter()` + `docs_oku()` ile yapılabiliyor; script'in
+  tamamını taşımak bağlamı iki kez yakıyor.
+- **Eylem:** `dokuman` profili `00-durum.md` + `03-sira.md` + manifest'e iner. Manifest
+  "gerisi MCP'de, şu araçlarla" der — yani script kapanmaz, **soğuk-başlangıç kanalına**
+  dönüşür. MCP kapalıyken ya da bağlantı kurulmadan önce tek giriş yolu bu kalır.
+- **Bağ:** **B48 bu maddeyle birlikte kapanır.** `İÇERMEZ` listesi profil listesinden
+  değil MCP envanterinden türetilince B48'in sorunu tanım olarak ortadan kalkıyor.
+- **Kaynak:** ADIM 7 birinci dalga, 10 Ağustos 2026. Yedek yol ölçüldü, varsayılmadı:
+  MCP kapalıyken `baglam.sh dokuman` 1940 satır / 6 bölüm üretti, çıkış 0.
+
+## B52 — skill verisinin MCP'ye taşınması ve `--check` boşluğu
+
+- [ ] **Sahip:** Claude.ai (tasarım) → CC (uygulama) · **Tetikleyici:** birinci dalga
+  oturunca
+- **Sorun:** `ocak-lint`'in `yasak-dizeler.tsv`'si (başlık + 24 dize) ve
+  `ocak-kararci`'nin ledger sorguları bugün **yalnız CC yüzeyinde** koşuyor. Claude.ai
+  yüzeyinde o katmanlar okunuyor ama **çalıştırılamıyor** — skill metni kuralı anlatıyor,
+  veriyi sorgulayamıyor.
+- **Eylem:** MCP ikisini de canlı yapabilir; iki yüzey aynı veriye aynı yerden bakar.
+- ⚠ **Ama tasarlanmadan yapılmaz:** veri MCP'ye taşınırsa `skill-sync.sh --check` o
+  veriyi **artık denetlemez.** B50'nin kapanış notu zip yüzeyinin sessiz eskimesini
+  zaten kayda geçirdi; bu üçüncü bir katman ekler — symlink (ayrışma imkânsız) · zip
+  (ayrışma yakalanabilir) · MCP (ayrışma **denetimsiz**). Kapsama boşluğu keşfedilmez,
+  önceden tasarlanır.
+- **Kaynak:** ADIM 7 birinci dalga, 10 Ağustos 2026.
