@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 8 Ağustos 2026 · ADIM 4 kapandı, B36 ölçüldü ve ikiye bölündü
+**Son güncelleme:** 10 Ağustos 2026 · ADIM 7 birinci dalga ✅ — MCP canlı, ikinci dalga bağlantı ucuna kilitli
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -14,7 +14,12 @@
 ## SIRADAKİ İŞ
 
 **Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
-**ADIM 6 ✅ → ADIM 7 (MCP) → hold.** Borçlar hold sonrası, fırsat buldukça.
+**ADIM 6 ✅ → ADIM 7 birinci dalga ✅ → ADIM 7 ikinci dalga → hold.**
+
+⚠ **"Fırsat buldukça" bir kuyruk değildir.** İkinci dalga bittiğinde geriye yalnız
+borçlar kalıyor — bugün **33 açık iş** (ölçüm: `02-borclar.md` başlık sayacı, 10 Ağustos,
+B54/B55 sonrası). Sıra ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
+isteyen**, sahibe göre üç paralel hat. Aşağıdaki tablo o sırayı taşır.
 B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.
 
 **ADIM 6** ✅ — `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu (9 Ağustos).
@@ -43,10 +48,24 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 | 4b | **B36-b** — 71 sığ kararın kronolojide kaydı hiç yazılmamış; iş çapa düzeltme değil **kayıt yazma**. Tek turluk değil, kendi planı gerekir | Claude.ai | ayrı sohbet | B36-a ✅ | beklemede — `02-borclar.md` B36 + `_uretilen/b36a-rapor.md` |
 | 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
 | 6 | **ADIM 6** ✅ — `ocak-kararci` · `ocak-metin` · `ocak-notion` | CC + Claude.ai | repo | ADIM 5 | kapandı 9 Ağu |
-| 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
+| 7 | **ADIM 7 birinci dalga** ✅ — `mcp/` + üç araç, Railway'de canlı, claude.ai'ye bağlı | CC | Railway | — | kapandı 10 Ağu |
+| 7b | **ADIM 7 ikinci dalga** — `docs_karar(no)` + B54 envanter satırı + B53 bağlantı ucu + B51 | CC | repo + Railway | 7 ✅ | `02-borclar.md` B51·B53·B54 |
 | 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
 
-**Hiçbiri ADIM 5'i kilitlemiyor.** B39 · B35 · B36-b · 251 sırası tercih meselesidir.
+**Kapı işi: B01** — klon/remote/Vercel adı üçü de `ocak` olur. MCP bağlantısı bugün
+`ocak-site` adıyla kuruldu; B01 sonrası tek tıkla yeniden bağlanır. Ucuz, tek turluk,
+ve `cd` sözleşmesini bir kez düzeltir.
+
+**Üç hat paralel yürür** — sahip dağılımı `02-borclar.md`'nin **gövdelerinde** yaşar,
+`03-sira.md` tekrar etmez. ⚠ O dosyanın satır 14'teki sahip tablosu **bayattır** (B55);
+sahip rakamı ondan okunmaz, gövdelerden sayılır.
+
+⚠ **B48 ikinci dalgadan önce kapatılmaz** — `baglam.sh` küçülecek, manifestin şekli
+değişecek; erken kapatılırsa iş iki kez yapılır. B51 ile birlikte kapanır.
+⚠ **B51 MCP bağlanana kadar koşulmaz** — bağlantı ucu geçici olduğu sürece `baglam.sh`
+tek güvenilir kanal.
+**B36-b · B39 kendi planını ister.** **B38 tanımı gereği sonuncudur** (ön koşul: ADIM 7 + B36-a ✅).
+**B30 🔒 dokunulmaz** — `EtkinlikKart.astro:80-82` silinmez.
 **B36-a ADIM 5 ile birleştirilebilir** — ikisi de CC, ikisi de repo, ikisi de betik işi.
 B38 tanımı gereği sonuncudur ve artık B36-a'ya da bağlıdır.
 
@@ -117,6 +136,12 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **10 Ağustos — ADIM 7 birinci dalga ✅** (7 commit, sıfır site kodu commit'i)
+  `mcp/` doğdu: `docs_envanter` · `docs_oku` · `docs_ara`, Streamable HTTP, zorunlu Bearer.
+  Railway'de canlı, claude.ai'ye bağlı, bu turda gerçekten kullanıldı.
+  KARAR 478 (sohbet sonu ikinci teslim) · 479 (MCP git deposunu servis eder) mühürlendi.
+  B51 · B52 · B53 · B54 · B55 açıldı. `scripts/dump-fable.mjs` izlemeye alındı.
+  ⏸ İkinci dalga: `docs_karar` + B53 bağlantı ucu + B54. → `90-kronoloji/2026-08.md`
 - **9 Ağustos — ADIM 6 ✅** (4 commit, sıfır site kodu commit'i)
   `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu; kadro altıya tamamlandı.
   KARAR 475 (kararci↔arsivci sınırı) · 476 (metin↔lint sınırı) · 477 (notion dar

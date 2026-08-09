@@ -477,3 +477,4 @@ no	tarih	baslik	durum	iliski	kaynak
 476	2026-08-09	`ocak-metin` ↔ `ocak-lint` sınırı — metin üretir, lint denetler; aynı kural iki dosyada tarif edilmez	KALICI	←458,459 · ↔473	2026-08.md#k476
 477	2026-08-09	`ocak-notion` dar kapsam — taze dump + marker sözleşmesi doğrulaması; sayfa listesi koddan okunur, taşınmaz	KALICI	←458 · ↔409,439	2026-08.md#k477
 478	2026-08-10	Sohbet sonu ikinci teslim — bir sonraki turun açılış promptu	KALICI	←468 · ↔462	2026-08.md#k478
+479	2026-08-10	MCP git deposunu servis eder — servis edilen korpus çalışma dizini değil, ölçüm kriterleri `git ls-files` kümesine yazılır	KALICI	←461 · ↔470,471	2026-08.md#k479

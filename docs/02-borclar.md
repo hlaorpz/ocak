@@ -2,7 +2,13 @@
 
 **Son güncelleme:** 7 Ağustos 2026 · B37 + B34 — pilot referansları dönüştü, 143/350 kod teyidi (TEYITSIZ 3→1)
 
-**Durum:** 37 madde · **20 açık** · 17 kapandı/çözüldü/geri çekildi
+**Durum:** 55 madde · **33 açık iş** · 20 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+
+*Sayım yöntemi: gövdedeki `^## B[0-9]+` başlık satırları → 55. Kapanış ölçütü başlıktaki
+damga: `✅ KAPANDI` · `✅ ÇÖZÜLDÜ` · `✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` → 20.
+Açık = 55 − 20 − 2 = **33**. Ölçüm anı: **B54 ve B55 yazıldıktan sonra**, 10 Ağustos 2026.
+Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
+eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -894,3 +900,45 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   **DOKÜMAN DIŞI CEPHELER** tablosunda da görünür durur — orası kendi hattında yürüyen
   işlerin yeri ve bu tam olarak öyle bir iş.
 - **Kaynak:** ADIM 7 ek brief (yol-token auth yüzeyi), 10 Ağustos 2026.
+
+## B54 — servis edilemeyen dosyalar için envanter sebep söylemiyor
+
+- [ ] **Sahip:** CC · **Tetikleyici:** ADIM 7 ikinci dalga
+- **Sorun:** MCP korpusu git deposundan servis edilir (KARAR 479). `.gitignore`'lu
+  dosyalar container'da hiç yok — `docs_oku` onlara `bulunamadi` diyor. Cevap **doğru**
+  ama **niçin** bulunamadığını söylemiyor.
+- **Ölçüm (10 Ağustos, CC):** dokuz dosya bu sınıftaydı; `scripts/dump-fable.mjs`
+  izlemeye alındı (`306a15b`), geriye **sekiz** kaldı — altı `skill-zip/*.parmak` +
+  `notion-section-envanter.json` + `tasarim-notlari-dump.txt`. Sekizi de türetilmiş,
+  izlemeye alınmaları doğru **değil**; sorun erişim değil **açıklama**.
+- ⚠ **Neden borç:** sekizine de izlenen dosyalardan atıf var — `docs/02-borclar.md`,
+  `docs/20-ref-site.md`, `scripts/skill-sync.sh` dahil. Korpusta adı geçen ama
+  getirilemeyen bir dosya, sebebi söylenmezse **eksik olduğunu göstermeden eksik verir** —
+  B45/B46/B48 ailesinin tanımı, bu sefer MCP yüzeyinde. Tasarım ilkesi (d) boşluğu.
+- **Eylem:** `docs_envanter` cevabına sabit bir satır — *"Korpus git deposundan servis
+  edilir; `.gitignore`'lu dosyalar burada yoktur."* Yeni yetenek gerekmiyor, tek dize.
+- **Neden ayrı tur değil:** tek dize için deploy turu açılmaz; ikinci dalgada
+  `docs_karar` ile aynı brief'te gider.
+- **Kaynak:** ADIM 7 birinci dalga kapanışı, 10 Ağustos 2026.
+
+## B55 — `02-borclar.md`'nin sahip tablosu ile gövdeler ayrışmış
+
+- [ ] **Sahip:** Claude.ai (sözlük kararı) → CC (yazım)
+- **Sorun:** Dosyada iki sahip kaynağı var ve tutmuyorlar. Satır 14'teki tablo
+  bayat: kapanmış **B42 ✅**'yi açık sayıyor, **B36-a**'yı hâlâ yazıyor,
+  **B46 · B47 · B48 · B51 · B52 · B53** hiç geçmiyor. Gövdelerdeki
+  `**Sahip:**` satırları taze ama tek biçimde değil.
+- **Ölçüm (10 Ağustos, kapanış patch'i ADIM 0):** açık küme **31/31** iki yönde de
+  tuttu — **sorun kümede değil, sahip atamasında.** Gövde sayımı: Kaan 4
+  (B14·B15·B18·B19) + B07 ayrı biçimde (`Kaan (n8n)`), CC 8, Claude.ai 9,
+  altı melez sahip.
+- ⚠ **Önce sözlük kararı, sonra yazım.** Devir zinciri (`Claude.ai (metin) →
+  Advaita/Kaan (Notion)`, B31 · B49) tabloda tek sahip olarak mı görünecek,
+  ilk halka mı yazılacak, yoksa yeni bir gösterim mi? Bu karar verilmeden tablo
+  tazelenirse aynı ayrışma yeni biçimde doğar.
+- **Neden borç:** iki kaynak da kendi içinde tutarlı; birlikte okunduğunda
+  çelişiyorlar. Tablo indeks, gövde otorite — ama bunu hiçbir yer yazmıyor.
+  **B47'nin ("ne nerede yaşar" haritası yok) ikinci vakası.**
+- **Kapanış kriteri:** sözlük kararı yazılı **ve** tablo gövdelerden türetilmiş
+  **ve** hangisinin otorite olduğu dosyada beyan edilmiş. `grep` sıfırı kriter değildir.
+- **Kaynak:** ADIM 7 kapanış patch'i ADIM 0 raporu, 10 Ağustos 2026.

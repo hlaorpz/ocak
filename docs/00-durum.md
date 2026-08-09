@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 9 Ağustos 2026 · **ADIM 6 ✅** · KARAR 475 · 476 · 477 mühürlendi · kadro altı skill
+**Son güncelleme:** 10 Ağustos 2026 · **ADIM 7 birinci dalga ✅** · KARAR 478 · 479 · MCP canlı, bağlantı yol-token'la
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 153 satır (`wc -l`, 8 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 171 satır (`wc -l`, 10 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -27,8 +27,9 @@
 
 ## ŞU AN NEREDEYİZ
 
-**Doküman mimarisi geçişi — ADIM 4 bitti.** Tesisat kuruldu: `CLAUDE.md` repo kökünde,
-`baglam.sh` beş profille çalışıyor, project files boşaltıldı.
+**Doküman mimarisi geçişi — ADIM 7 birinci dalgası bitti.** Tesisat kuruldu: `CLAUDE.md`
+repo kökünde, `baglam.sh` beş profille çalışıyor, project files boşaltıldı, `mcp/` sunucusu
+Railway'de canlı. **Faz kapanmadı** — `docs_karar(no)` ve bağlantının kalıcı ucu ikinci dalgada.
 Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı ve EK'ini okumadan brief yazma** (gövde dokuz yerinden bayat; ilk altısı 7 Ağu kaydında, üçü 8 Ağu ekinde).
 
 - **ADIM 1–2 ✅** — KARAR envanteri + ledger durum sütunu (453 satır).
@@ -49,13 +50,21 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
 - **ADIM 6 ✅** — `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu; kadro altıya
   tamamlandı (KARAR 458). Sınırlar mühürlendi: 475 kararci↔arsivci · 476 metin↔lint ·
   477 notion dar kapsam. `ocak-metin` taslak-only, en az üç ay (KARAR 459).
-- **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
-  Çapa çözümlemesi KARAR 472'ye tabidir — `docs_karar(no)` kendi kuralını icat edemez.
+- **ADIM 7 birinci dalga ✅** — `mcp/` doğdu, Railway'de canlı, claude.ai'ye bağlı.
+  Üç araç: `docs_envanter` · `docs_oku` · `docs_ara`. Korpus **git deposundan** servis
+  edilir (KARAR 479) — bugün 105 dosya · 63 canlı · 42 arşiv (`docs_envanter`, `306a15b`).
+  Auth zorunlu; token bugün URL yolunda taşınıyor çünkü claude.ai connector diyaloğu
+  başlık kabul etmiyor — **ödün, B53'te görünür**.
+  ⏸ **İkinci dalga:** `docs_karar(no)` (çapa çözümlemesi KARAR 472'ye tabidir, kendi
+  kuralını icat edemez) · envanterin gitignore satırı (B54) · bağlantının başlığa geçmesi
+  (B53) · B51. `baglam.sh` **emekli edilmedi** — soğuk başlangıç ve MCP düşerse yedek.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
 (KARAR 455). O kopya **otorite değil aynadır**; repo değişince elle tazelenir, çelişkide
-repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır — `baglam.sh` ile.
+repo kazanır (KARAR 471). Bağlam iki kanaldan gelir: soğuk başlangıçta `baglam.sh`
+yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel diski değil
+(KARAR 479) — `.gitignore`'lu dosyalar oradan görünmez.
 
 **Sohbet sonu artık patch'tir (KARAR 462):** tam yenileme yok. Tek `docs-patch-YYYY-AA-GG.md`
 üretilir → CC uygular. `00-durum.md`'ye **hedefli** yazım, kronolojiye append.
@@ -143,7 +152,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sığ çapa onarımı **B36-a** (karar-listesi deseni, mekanik) | CC |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
 | `10-marka.md` aynasının tazelenmesi (KARAR 471, ilk tatbik) | Kaan |
-| Doküman geçişi ADIM 7 (MCP) | CC |
+| Doküman geçişi ADIM 7 ikinci dalga (`docs_karar`, B53 bağlantı ucu, B54, B51) | CC + Kaan |
 
 ---
 
