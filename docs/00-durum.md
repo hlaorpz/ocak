@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 10 Ağustos 2026 · **ADIM 7 birinci dalga ✅** · KARAR 478 · 479 · MCP canlı, bağlantı yol-token'la
+**Son güncelleme:** 9 Ağustos 2026 · **ADIM 7 ikinci dalga — A+B ✅** · KARAR 480 · 481 · `docs_karar` canlı
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 171 satır (`wc -l`, 10 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 175 satır (`python3`, 9 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -51,13 +51,14 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   tamamlandı (KARAR 458). Sınırlar mühürlendi: 475 kararci↔arsivci · 476 metin↔lint ·
   477 notion dar kapsam. `ocak-metin` taslak-only, en az üç ay (KARAR 459).
 - **ADIM 7 birinci dalga ✅** — `mcp/` doğdu, Railway'de canlı, claude.ai'ye bağlı.
-  Üç araç: `docs_envanter` · `docs_oku` · `docs_ara`. Korpus **git deposundan** servis
-  edilir (KARAR 479) — bugün 105 dosya · 63 canlı · 42 arşiv (`docs_envanter`, `306a15b`).
-  Auth zorunlu; token bugün URL yolunda taşınıyor çünkü claude.ai connector diyaloğu
-  başlık kabul etmiyor — **ödün, B53'te görünür**.
-  ⏸ **İkinci dalga:** `docs_karar(no)` (çapa çözümlemesi KARAR 472'ye tabidir, kendi
-  kuralını icat edemez) · envanterin gitignore satırı (B54) · bağlantının başlığa geçmesi
-  (B53) · B51. `baglam.sh` **emekli edilmedi** — soğuk başlangıç ve MCP düşerse yedek.
+  Korpus **git deposundan** servis edilir (KARAR 479) — 105 dosya · 63 canlı · 42 arşiv
+  (`docs_envanter`, `1d6726d`). Auth zorunlu; token URL yolunda — **ödün, B53'te görünür**.
+- **ADIM 7 ikinci dalga — A+B ✅** — `docs_karar(no)` doğdu, dört araç oldu.
+  Çapa sözleşmesi iki eksenli (KARAR 480); sığ çapa kendini bayrakla ilan ediyor
+  (KARAR 481). `docs_envanter` artık kapsamını ve dağıtım ödününü söylüyor — **B54 ✅**.
+  ⏸ **Kalan:** C parçası (B53, bağlantının başlığa geçmesi) claude.ai'de `Request headers`
+  bölümü olmadığı için **düşürüldü**; D parçası (B51) ona bağlı olduğu için koşulmadı.
+  İkisi de kendi hatlarında bekler. `baglam.sh` **emekli edilmedi**.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
@@ -75,7 +76,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`bfb43cc`** (10 Ağu, ADIM 7 birinci dalga — kapanış patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`1d6726d`** (9 Ağu, ADIM 7 ikinci dalga A+B — kapanış patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
@@ -128,6 +129,9 @@ girmez; o kuyruk başka yerde yaşar.
   kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
   birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,
   sosyal medya ajans v2. Dönemin HEAD'i `e8a16dd`. → `90-kronoloji/2026-07.md`
+- **9 Ağustos (ikinci tur):** ADIM 7 ikinci dalga A+B — `docs_karar` + B54, üç commit,
+  sıfır site kodu. Ledger'ın ölçülmüş sığlığı **126/418**'e genişledi (119 indeks + 7
+  komşu; b36a'nın 119'u bağımsız doğrulandı). KARAR 480 · 481. → `90-kronoloji/2026-08.md`
 - **4 Ağustos:** bakım turu — dört borç kapandı, iki içerik kalıntısı Notion'da düzeltildi.
 - **6 Ağustos:** doküman mimarisi geçişi (KARAR 455–463) + kod teyidi 3 tur (7 commit,
   altı borç kapandı) + ADIM 2 ledger + **ADIM 3 bölme**. → `90-kronoloji/2026-08.md`
@@ -152,7 +156,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sığ çapa onarımı **B36-a** (karar-listesi deseni, mekanik) | CC |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
 | `10-marka.md` aynasının tazelenmesi (KARAR 471, ilk tatbik) | Kaan |
-| Doküman geçişi ADIM 7 ikinci dalga (`docs_karar`, B53 bağlantı ucu, B54, B51) | CC + Kaan |
+| B53 bağlantı ucu (beta bekliyor) + B51 (B53'e bağlı) | Kaan + CC |
 
 ---
 

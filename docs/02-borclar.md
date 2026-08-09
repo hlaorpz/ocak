@@ -1,12 +1,12 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 7 Ağustos 2026 · B37 + B34 — pilot referansları dönüştü, 143/350 kod teyidi (TEYITSIZ 3→1)
+**Son güncelleme:** 9 Ağustos 2026 · ADIM 7 ikinci dalga — B54 ✅, B56 · B57 açıldı
 
-**Durum:** 55 madde · **33 açık iş** · 20 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 57 madde · **34 açık iş** · 21 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B[0-9]+` başlık satırları → 55. Kapanış ölçütü başlıktaki
 damga: `✅ KAPANDI` · `✅ ÇÖZÜLDÜ` · `✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` → 20.
-Açık = 55 − 20 − 2 = **33**. Ölçüm anı: **B54 ve B55 yazıldıktan sonra**, 10 Ağustos 2026.
+Açık = 57 − 21 − 2 = **34**. Ölçüm anı: **B56 ve B57 yazıldıktan, B54 kapandıktan sonra**, 9 Ağustos 2026.
 Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
 eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
 
@@ -739,6 +739,11 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
     ve "tutmadı" raporlandı, oysa tutuyordu
   - `grep` (`-F` olmadan) `$'\t'` kalıbındaki `$`'ı desen karakteri saydı, `0` döndü
   - ayrıca `baglam.sh:65/:67` — B45, aynı ailenin beşincisi
+  - `grep -cF '- **Kaynak:...'` — `-` ile başlayan çapa dizesini **seçenek** sandı ve
+    hata verdi. Ekranda uyarı göründü, "sapma" sanılabilirdi; `python3` ile tekrar
+    ölçüldüğünde altı çapanın altısı da temiz çıktı. **Altıncı vaka, 9 Ağustos 2026 —
+    ve bu sefer ölçen tarafın kendi aracında.** Doğru kullanım: `grep -cF -- 'dize'`
+    ya da ölçümü python3'e almak.
 - **Eylem:** `ocak-teshis`'in "Rapor biçimi" bölümüne bir **araç tuzakları** alt başlığı;
   her tuzağın yanına doğru aracı. B45 bu maddeye bağlanır ya da onunla birlikte kapanır.
 - **Neden borç:** KARAR 470 rakamın yöntemiyle yazılmasını istiyor; yöntem yanlışsa
@@ -871,6 +876,12 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   yüzeyinde o katmanlar okunuyor ama **çalıştırılamıyor** — skill metni kuralı anlatıyor,
   veriyi sorgulayamıyor.
 - **Eylem:** MCP ikisini de canlı yapabilir; iki yüzey aynı veriye aynı yerden bakar.
+- ⚠ **Boşluk 9 Ağustos'ta genişledi.** `docs_karar` doğdu ve `ocak-kararci`'nin ikizi
+  oldu — ama skill bunu **bilmiyor.** `SKILL.md` hâlâ yalnız kabuk sorgularını tarif
+  ediyor (`awk -F'\t' ...`); claude.ai yüzeyinde artık canlı bir araç var ve skill ondan
+  söz etmiyor. Skill'e dokunmamak bu turda **bilinçliydi** — B52 "tasarlanmadan yapılmaz"
+  diyor ve o tasarım hâlâ yapılmadı. Ama boşluk artık iki katmanlı: veri (`yasak-dizeler.tsv`)
+  **ve** araç farkındalığı.
 - ⚠ **Ama tasarlanmadan yapılmaz:** veri MCP'ye taşınırsa `skill-sync.sh --check` o
   veriyi **artık denetlemez.** B50'nin kapanış notu zip yüzeyinin sessiz eskimesini
   zaten kayda geçirdi; bu üçüncü bir katman ekler — symlink (ayrışma imkânsız) · zip
@@ -901,7 +912,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   işlerin yeri ve bu tam olarak öyle bir iş.
 - **Kaynak:** ADIM 7 ek brief (yol-token auth yüzeyi), 10 Ağustos 2026.
 
-## B54 — servis edilemeyen dosyalar için envanter sebep söylemiyor
+## B54 — servis edilemeyen dosyalar için envanter sebep söylemiyor ✅ KAPANDI (9 Ağu, ADIM 7 ikinci dalga)
 
 - [ ] **Sahip:** CC · **Tetikleyici:** ADIM 7 ikinci dalga
 - **Sorun:** MCP korpusu git deposundan servis edilir (KARAR 479). `.gitignore`'lu
@@ -920,6 +931,21 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Neden ayrı tur değil:** tek dize için deploy turu açılmaz; ikinci dalgada
   `docs_karar` ile aynı brief'te gider.
 - **Kaynak:** ADIM 7 birinci dalga kapanışı, 10 Ağustos 2026.
+- **Sonuç (9 Ağu, `824a39e`) — tek dize değil, iki alan.** Borç metni *"Korpus git
+  deposundan servis edilir"* dizesini öneriyordu. Ölçüm bunu düşürdü: `korpusuTara()`
+  **git'i sormuyor**, diski yürüyor (`readdirSync`). Railway'de ikisi denk çünkü
+  container bir checkout; **yerelde denk değil.** O dizeyi tek başına yazmak kodun
+  arkasında duramadığı bir iddia olurdu — tasarım ilkesi (b)'yi kırardı.
+  Yazılan iki alan gerçeği ikiye ayırıyor:
+  `kapsam_kurali` (kodun yaptığı: izinli kökler `docs` · `scripts` + tekil `CLAUDE.md`;
+  `src/` · `dist/` · **`mcp/`** · `node_modules` dışarıda) ve
+  `dagitim_notu` (ortamın getirdiği: dağıtım bir git checkout'u, `.gitignore`'lu dosyalar
+  burada yok — KARAR 479; yerel kopya daha fazla dosya görür).
+  Aynı `kapsam_kurali` `docs_oku`'nun **bulunamadi/reddedildi** dalına da eklendi —
+  borcun problem cümlesi tam olarak orayı gösteriyordu.
+  ⚠ **Yan bulgu:** `mcp/` `git ls-files`'da var ama korpusta yok. Üçüncü bir sınıf —
+  *izlenen ama servis edilmeyen*. Bu tur boyunca sözleşme sunucunun kendi kodu görülmeden
+  yazıldı. `kapsam_kurali` bunu artık söylüyor.
 
 ## B55 — `02-borclar.md`'nin sahip tablosu ile gövdeler ayrışmış
 
@@ -942,3 +968,48 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış kriteri:** sözlük kararı yazılı **ve** tablo gövdelerden türetilmiş
   **ve** hangisinin otorite olduğu dosyada beyan edilmiş. `grep` sıfırı kriter değildir.
 - **Kaynak:** ADIM 7 kapanış patch'i ADIM 0 raporu, 10 Ağustos 2026.
+
+## B56 — KARAR 478/479'un tarihi bir gün ileri
+
+- [ ] **Sahip:** Claude.ai (karar) → CC (yazım)
+- **Ölçüm (9 Ağustos 2026):** `date +%F` → `2026-08-09`. `git log --format='%ci' -10` →
+  son on commitin **onu da** `2026-08-09` (13:01 → 21:25). Ledger'ın 478 ve 479 satırları
+  `2026-08-10` diyor; `90-kronoloji/2026-08.md`'nin son blok başlıkları da "10 Ağustos".
+- **Sınıflandırma:** saat/TZ hatası **değil** — commit damgalarının onu da aynı günde.
+  **Yazım hatası**; o turun patch'i 10 Ağustos yazdı, ADIM 0 sorgulamadı, CC devraldı.
+- ⚠ **Düzeltme kuralı iki dosyada AYRIŞIR ve karar verilmedi:**
+  (a) `01-kararlar.tsv` **türetilmiş** dosyadır — "yanlışsa yeniden üretilir"
+      (KARAR 456). Buradaki `tarih` bir indeks alanı; düzeltilebilir.
+  (b) `90-kronoloji/2026-08.md` **append-only**'dir (KARAR 61). Blok başlığı o günün
+      kaydıdır; düzeltme değil **not** ister — KIRPMA YASAĞI kapsamı.
+  İkisine aynı işlemi uygulamak yanlış olur. **Önce kural, sonra yazım.**
+- **Neden borç:** iki dosya aynı olayı iki farklı günle anıyor. Kırık değil — okuyan
+  yanlış yere gitmiyor — ama `#k478`/`#k479` çapalarının hedefi tarih taşıyan bir başlık
+  ve bir gün sonra ölçen bunu sapma sanar. B40 ailesinin kardeşi: konvansiyon yanlış
+  yere işaret ediyor.
+- **Kapanış kriteri:** kural yazılı **ve** iki dosyaya ayrı ayrı uygulanmış **ve**
+  hangisinin düzeltildiği hangisinin not aldığı dosyada beyan edilmiş.
+- **Kaynak:** ADIM 7 ikinci dalga ADIM 0, DUR-8 (9 Ağustos 2026).
+
+## B57 — connector araç listesi sessizce bayatlıyor
+
+- [ ] **Sahip:** Kaan (bakım kuralı) · **Tetikleyici:** `mcp/`'ye her araç eklendiğinde
+- **Ölçüm (9 Ağustos 2026, canlı):** `1d6726d` deploy edildikten sonra `docs_envanter`
+  **yeni** cevabı döndürdü (damga `1d6726d`, `kapsam_kurali` ve `dagitim_notu` alanları
+  geldi) — yani sunucu güncel. Ama `docs_karar` claude.ai araç listesinde **yoktu**;
+  liste hâlâ üç araçtı. Connector kapatılıp açılınca dördüncü araç göründü.
+- **Mekanizma:** claude.ai araç listesini bağlantı kurulurken alıyor ve sunucu değişse de
+  kendiliğinden tazelemiyor. Veri tazeydi, **şema bayattı.**
+- ⚠ **Neden borç:** ayrışma **hata vermiyor.** Araç "yok" ile "henüz görünmüyor" ayırt
+  edilemiyor; CC'nin yerel testi dört anahtar döndürdüğü hâlde canlı yüzey üçünü
+  gösteriyordu. B45/B46/B48/B54 ailesinin tanımı — *eksik olduğunu göstermeden eksik
+  verir* — bu sefer connector yüzeyinde.
+- **B52 ile ilişki:** B52 üç katmanı sayıyordu (symlink · zip · MCP) ve MCP'yi
+  *"ayrışma denetimsiz"* diye işaretlemişti. Bu, o denetimsizliğin **ilk somut vakası** —
+  ama tahmin edilen yerde değil: veri katmanında değil **araç kaydı** katmanında.
+- **Eylem:** yeni araç eklenen her turun son adımı connector'ın kapatılıp açılmasıdır.
+  B50'nin *"skill dokunuşu = sync + yeniden yükleme"* bakım kuralının kardeşi; aynı yere
+  yazılır. Otomatikleşmez — istemci yüzeyi repodan görünmez.
+- **Kapanış kriteri:** bakım kuralı yazılı **ve** bir sonraki araç eklemesinde tatbik
+  edilmiş. `grep` sıfırı kriter değildir.
+- **Kaynak:** ADIM 7 ikinci dalga canlı doğrulaması (9 Ağustos 2026).
