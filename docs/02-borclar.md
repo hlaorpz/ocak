@@ -799,3 +799,26 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   `docs/sayfa-yazim-rehberi.md` = **219** satır. Tablodaki üç rakam de yerelde üretildi;
   brief'ten devralınmadı (KARAR 470).
 - **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
+
+## B50 — claude.ai skill yüzeyi hiç kurulmadı; `ocak-metin` bugün çağrılamıyor
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** yok, ilk fırsatta — `ocak-metin` gerektiren
+  her tur buna kilitli
+- **Sorun:** KARAR 473 iki yüzey tanımlıyor: CC yüzeyi symlink (kendiliğinden çalışır),
+  claude.ai yüzeyi **elle yüklenen zip**. Symlink ayağı 9 Ağustos'ta kanıtlandı — üç yeni
+  skill commit anında CC yüzeyinde göründü; ADIM 5'in "skill yükleme kanıtlanmadı"
+  maddesi böylece kapandı. **Zip ayağı hiç kurulmadı.** `ocak-lint`'in zip'i 8 Ağustos'tan
+  beri bekliyor; ADIM 6 ile sayı **altıya** çıktı (`docs/_uretilen/skill-zip/`).
+- ⚠ **En sivri sonuç:** `ocak-metin` **yalnız Claude.ai yüzeyinde** çalışan tek skill'dir
+  (KARAR 458 kadro tablosu). Zip yüklenmediği sürece doğmuş ama **çağrılamaz** durumda.
+  `ocak-lint` ve `ocak-kararci` iki yüzeyli oldukları için CC tarafında yaşıyor,
+  Claude.ai tarafında yok — yani yargı katmanları erişilemez.
+- **Neden borç, "yapılacak iş" değil:** kadro altıya tamamlandı diye kaydedildi; gerçek
+  şu ki yarısı tek bacaklı duruyor. Bağlamı olmayan bir sohbet `ocak-metin`'i var sanıp
+  çağırır ve bulamaz. Fark edilmiş ama kapatılmamış tutarsızlık — bu defterin tanımı.
+- **Eylem:** `docs/_uretilen/skill-zip/*.zip` altı dosya claude.ai Skills'e elle yüklenir.
+- **Kapanış kriteri:** altı skill'in altısı da claude.ai tarafında listeleniyor **ve**
+  `skill-sync.sh --check` "ayrışma yok" diyor. ⚠ `--check` tek başına yeterli değildir:
+  zip'in **üretilmiş** olduğunu denetler, **yüklenmiş** olduğunu değil. Yükleme repodan
+  görünmez.
+- **Kaynak:** ADIM 6 kapanış raporu (CC), 9 Ağustos 2026.

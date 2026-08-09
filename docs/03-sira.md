@@ -73,6 +73,7 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |
+| **B50** — claude.ai skill yüzeyi (altı zip elle yüklenir) | Kaan | `ocak-metin` yalnız o yüzeyde çalışır; yüklenene dek çağrılamaz |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion | sırasız |
 
 ---
