@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ağustos 2026 · **ADIM 5 ✅** · KARAR 473 · 474 mühürlendi · B42 kapandı · B36-a ölçüldü
+**Son güncelleme:** 9 Ağustos 2026 · **ADIM 6 ✅** · KARAR 475 · 476 · 477 mühürlendi · kadro altı skill
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
@@ -41,13 +41,14 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   project files silme izni (14/14 ledger hedefi yaşıyor, sıfır `ÖLÜ`).
   Yedi `20-ref-*` dosyasının hepsi en az bir profilde. B01 (klon yeniden adlandırma) açık.
 - **ADIM 5 ✅** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` doğdu; `skill-sync.sh`
-  symlink+zip (KARAR 473). B42 kapandı. `ocak-notion` sapması çözülmedi.
+  symlink+zip (KARAR 473). B42 kapandı. `ocak-notion` sapması ADIM 6'da çözüldü (KARAR 477).
 - **B44-a ✅** — `ocak-lint` yasak-dize kapsam çelişkisi kapandı. `her yerde` kapsamı
   altı satırda kendi tanımını yakalıyordu; tarihsel kayıt muafiyeti eklendi (KARAR 465).
 - **B36-a ✅** — desen ölçüldü, **yöntem yetersiz** çıktı (nokta örneklemesi 2/5).
   Mekanik taşıma turu açılmadı; iş B36-b'ye devretti ve **büyüdü**.
-- **ADIM 6 ⏭** — `ocak-kararci` · `ocak-metin`. Kadro tanımı KARAR 458;
-  `ocak-metin` taslak-only, en az üç ay (KARAR 459).
+- **ADIM 6 ✅** — `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu; kadro altıya
+  tamamlandı (KARAR 458). Sınırlar mühürlendi: 475 kararci↔arsivci · 476 metin↔lint ·
+  477 notion dar kapsam. `ocak-metin` taslak-only, en az üç ay (KARAR 459).
 - **ADIM 7** — docs MCP sunucusu, endgame. 4–6 oturmadan açılmaz.
   Çapa çözümlemesi KARAR 472'ye tabidir — `docs_karar(no)` kendi kuralını icat edemez.
 
@@ -65,7 +66,7 @@ repo kazanır (KARAR 471). Her sohbet açılışında bağlam yapıştırılır 
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`c6a969b`** (8 Ağu, gün sonu — B36-a turu sonu) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`01200e9`** (9 Ağu, ADIM 6 — `ocak-notion` commit'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
@@ -142,7 +143,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sığ çapa onarımı **B36-a** (karar-listesi deseni, mekanik) | CC |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
 | `10-marka.md` aynasının tazelenmesi (KARAR 471, ilk tatbik) | Kaan |
-| Doküman geçişi ADIM 5-6 | CC |
+| Doküman geçişi ADIM 7 (MCP) | CC |
 
 ---
 

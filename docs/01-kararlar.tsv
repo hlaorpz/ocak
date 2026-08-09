@@ -473,3 +473,6 @@ no	tarih	baslik	durum	iliski	kaynak
 472	2026-08-08	Çapa çözümleme sözleşmesi — `#kNNN` madde başlığına çözülür, literal dizeye değil	KALICI	←466 · ↔461	2026-08.md#k472
 473	2026-08-08	Skill senkron sözleşmesi — kanonik `docs/skills/`, CC yüzeyi symlink, `--check` zip yüzeyini denetler	KALICI	←458 · ↔463	2026-08.md#k473
 474	2026-08-08	Dönem HEAD anlık görüntüdür — kapanış commit'inden bir önceki, doğrulama `git log -2 | tail -1`	KALICI	←468	2026-08.md#k474
+475	2026-08-09	`ocak-kararci` ↔ `ocak-arsivci` sınırı — kararcı içeriği üretir ve önden doğrular, arşivci dosyaya işler	KALICI	←458 · ↔456,468	2026-08.md#k475
+476	2026-08-09	`ocak-metin` ↔ `ocak-lint` sınırı — metin üretir, lint denetler; aynı kural iki dosyada tarif edilmez	KALICI	←458,459 · ↔473	2026-08.md#k476
+477	2026-08-09	`ocak-notion` dar kapsam — taze dump + marker sözleşmesi doğrulaması; sayfa listesi koddan okunur, taşınmaz	KALICI	←458 · ↔409,439	2026-08.md#k477

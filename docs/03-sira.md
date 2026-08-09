@@ -13,12 +13,13 @@
 
 ## SIRADAKİ İŞ
 
-Kuyruk yeniden sıralanmayı bekliyor — aşağıdaki üç aday arasından seçim **Kaan'ın**.
+**Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
+**ADIM 6 ✅ → ADIM 7 (MCP) → hold.** Borçlar hold sonrası, fırsat buldukça.
+B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.
 
-**ADIM 6** — `ocak-kararci` + `ocak-metin` (KARAR 458). CC + Claude.ai, repo.
-`ocak-metin` **taslak-only**, Notion'a yazmaz, en az üç ay (KARAR 459).
-⚠ `ocak-notion` hâlâ sahipsiz: HEDEF YAPI tablosunda var, skill listesinde yok, hiçbir
-ADIM kapsamına girmedi. ADIM 6 açılırken karara bağlanır (sapma kaydı 11. satır).
+**ADIM 6** ✅ — `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu (9 Ağustos).
+Kadro altıya tamamlandı. Sınırlar mühürlendi: KARAR 475 · 476 · 477.
+`ocak-notion` sahipsizliği çözüldü — sapma kaydı EK 11. satırı kapandı.
 
 **B44** — bayat `@ocak.life` taraması, **canlı `docs/` dosyalarında**. İlk deneme bayat
 dosyada koşuldu, bulguları taşınamaz. Sınıflandırma tablosu + ESKİ→YENİ patch tek turda.
@@ -41,7 +42,7 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 | 4a | **B36-a** ✅ — mekanik desen ölçüldü; `#k` terfisi KARAR 466 gereği mümkün değil, yöntem yetersiz çıktı (2/5) | CC | repo | — | kapandı 8 Ağu |
 | 4b | **B36-b** — 71 sığ kararın kronolojide kaydı hiç yazılmamış; iş çapa düzeltme değil **kayıt yazma**. Tek turluk değil, kendi planı gerekir | Claude.ai | ayrı sohbet | B36-a ✅ | beklemede — `02-borclar.md` B36 + `_uretilen/b36a-rapor.md` |
 | 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
-| 6 | **ADIM 6** — `ocak-kararci` · `ocak-metin` | CC + Claude.ai | repo | ADIM 5 | KARAR 458; `ocak-kararci` çapa yazarken KARAR 472'ye tabidir |
+| 6 | **ADIM 6** ✅ — `ocak-kararci` · `ocak-metin` · `ocak-notion` | CC + Claude.ai | repo | ADIM 5 | kapandı 9 Ağu |
 | 7 | **ADIM 7** — docs MCP sunucusu (endgame, yapıştırma biter) | CC | Railway | 4-6 oturunca | KARAR 461 |
 | 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
 
@@ -114,6 +115,11 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **9 Ağustos — ADIM 6 ✅** (4 commit, sıfır site kodu commit'i)
+  `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu; kadro altıya tamamlandı.
+  KARAR 475 (kararci↔arsivci sınırı) · 476 (metin↔lint sınırı) · 477 (notion dar
+  kapsam) mühürlendi. B48 · B49 açıldı. Sıra kararı yazıldı: ADIM 7 sonra, hold.
+  → `90-kronoloji/2026-08.md`
 - **8 Ağustos (öğleden sonra) — üç iş**
   **B44-a ✅** `062f03b` — lint kapsam çelişkisi, tarihsel kayıt muafiyeti (KARAR 465).
   **Arşiv ✅** `7fc2ac1` — 17 brief `_arsiv/2026-08-dokuman` + `2026-08-site`.

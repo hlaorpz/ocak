@@ -750,3 +750,52 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Eylem:** `docs/05-harita.md` (ya da `CLAUDE.md`'ye bölüm) — dosya tablosu +
   "şu soruyu sorarsan şuraya bak" eşlemesi. Kısa tutulur, bakım maliyeti düşük olmalı.
 - **Kaynak:** 8 Ağustos 2026, gün sonu.
+
+## B48 — `baglam.sh` manifesti `docs/` kökündeki dosyaları saymıyor
+
+- [ ] **Sahip:** CC · **Tetikleyici:** profil bakımı turu; ADIM 7'den önce
+- **Sorun:** `dokuman` profilinin manifest satırı `İÇERMEZ` listesinde
+  `2026-08-06-ocak-gecis-plani.md`, `sayfa-yazim-rehberi.md`, `docs/skills/*` ve
+  `scripts/*` **hiç geçmiyor.** Yani `docs/` kökünde yaşayan ama profil listesinde
+  olmayan bir dosya **iki yönde birden görünmez**: ne gelir, ne "gelmedi" diye yazılır.
+  Eksik-dosya guard'ı da tetiklenmez, çünkü guard listedeki dosyalara bakar.
+- **Neden borç:** manifest satırının tek işi *"Claude ne göremediğini bilir"*. Bu tur
+  geçiş planı pakette yoktu ve dosya adı yalnız açılış promptunun kendi listesinden
+  çıkarıldı — manifest göstermedi. B45/B46 ailesinin kardeşi: **araç hata vermiyor,
+  eksik olduğunu göstermeden eksik veriyor.**
+- **Yan ayak — üç yetim `20-ref-*`:** `program` · `marka` · `notion` hiçbir profile
+  girmiyor (sapma kaydı EK, 3-ek). `ocak-notion` doğdu ama Claude.ai yüzeyi
+  `20-ref-notion.md`'yi hiçbir profilde göremiyor; skill'e "elle istenir" notu düşüldü.
+  B41 yalnız `marka` profilinin ledger ayağını kapsıyor, bu ondan geniş.
+- **Eylem:** manifest `İÇERMEZ` listesi profil listesinden değil `docs/` gerçeğinden
+  türetilir (dizin taraması eksi `İÇERİR`). Üç yetim dosya profillere dağıtılır.
+- **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
+
+## B49 — kanonik section sayısı dört yüzeyde dört farklı (B31'in kardeşi)
+
+- [ ] **Sahip:** Claude.ai (tespit) → Advaita/Kaan (Notion ayağı)
+- **Ölçüm (9 Ağustos 2026, ekli dosyalardan):**
+
+  | yüzey | sayı |
+  |---|---|
+  | `10-marka.md:184` | **8** — `al-ol-ver` ve `ic-ses` listede yok |
+  | `docs/sayfa-yazim-rehberi.md` | **5 + 10** (5 component-render, 10 plugin-transform) |
+  | kod — `remark-ocak-sections.ts` | **10** (`kayit-cta` KARAR 423 ile çıktı) |
+  | `/site-rehber` Notion sayfası | **11** — bayat, B31 |
+
+- **B31 ile ilişki:** B31 üç yüzeyi sayıyordu; **`10-marka.md`'nin 8'i dördüncü ve
+  B31'de yok.** Aynı hastalığın marka dosyasındaki nüksü.
+- **Neden borç:** `ocak-notion` doğdu ve doğrulamayı **koddan** yapıyor (KARAR 477) —
+  yani kırılma artık yakalanabilir. Ama dört yazılı kaynağın üçü hâlâ yanlış sayı
+  söylüyor ve okuyan onlara gidiyor.
+- **Eylem:** kod ölçülür (tek gerçek), sonra `10-marka.md` ve rehber hizalanır;
+  `/site-rehber` Notion ayağı B31 ile birlikte tek turda girilir. **Sweep yasak** —
+  KARAR 423'ün tarihsel anlatımı korunur (KARAR 465).
+- **Kod ayağı yerelde teyit edildi (CC, 9 Ağustos):** `CANONICAL_SECTIONS` = **10**
+  (`src/lib/remark-ocak-sections.ts`; ölçüm yöntemi: `awk` ile dizi gövdesi kesildi,
+  tırnaklı satır sayıldı) — `hero · bir-sonraki · sonraki-bulusma · al-ol-ver ·
+  siradaki-kapi · sss · mini-cta · buyuk-vurgu` + kalan ikisi.
+  `10-marka.md:184` = **8**, `al-ol-ver` ve `ic-ses` listede yok.
+  `docs/sayfa-yazim-rehberi.md` = **219** satır. Tablodaki üç rakam de yerelde üretildi;
+  brief'ten devralınmadı (KARAR 470).
+- **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
