@@ -800,7 +800,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   brief'ten devralınmadı (KARAR 470).
 - **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
 
-## B50 — claude.ai skill yüzeyi hiç kurulmadı; `ocak-metin` bugün çağrılamıyor
+## B50 ✅ KAPANDI (9 Ağu) — claude.ai skill yüzeyi hiç kurulmadı; `ocak-metin` bugün çağrılamıyor
 
 - [ ] **Sahip:** Kaan · **Tetikleyici:** yok, ilk fırsatta — `ocak-metin` gerektiren
   her tur buna kilitli
@@ -822,3 +822,16 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   zip'in **üretilmiş** olduğunu denetler, **yüklenmiş** olduğunu değil. Yükleme repodan
   görünmez.
 - **Kaynak:** ADIM 6 kapanış raporu (CC), 9 Ağustos 2026.
+- **Sonuç (9 Ağu) — iki ayak da yeşil:**
+  **(a)** Claude.ai yüzeyinde altı skill de listeleniyor; bugün doğan üçünün açıklama
+  metni commit'lenen frontmatter ile birebir — yüklenen zip'ler güncel sürüm.
+  Kanıtın cinsi **yüzey envanteri**, çağrı testi değil; CC tarafından üretilemez.
+  **(b)** `docs/skills` 6 dizin · `skill-zip` 6 `.zip` · `--check` ayrışma yok.
+  `ocak-metin` — kadronun tek Claude.ai-only skill'i — doğduğu günün akşamında
+  erişilebilir oldu. 8 Ağustos'tan beri bekleyen `ocak-lint` yüzeyi de aynı yüklemeyle
+  kapandı.
+- ⚠ **Kapanış kalıcı değil, tazeliğe bağlıdır.** `docs/skills/` altında bir dosya
+  değiştiğinde zip bayatlar ve claude.ai yüzeyi **sessizce** eskir — symlink yüzeyinde
+  ayrışma yapısal olarak imkânsız, zip yüzeyinde yalnız *yakalanabilir*. `--check`
+  yakalar; yeniden yükleme elle yapılır. **Skill dokunuşu içeren her turun son adımı
+  `skill-sync.sh sync` + yüklemedir.** Nüks ayrı borç açmaz, bu bakım kuralına bağlanır.
