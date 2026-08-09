@@ -871,3 +871,26 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   (ayrışma yakalanabilir) · MCP (ayrışma **denetimsiz**). Kapsama boşluğu keşfedilmez,
   önceden tasarlanır.
 - **Kaynak:** ADIM 7 birinci dalga, 10 Ağustos 2026.
+
+## B53 — MCP yol-token ödünü
+
+- [ ] **Sahip:** Kaan (beta erişimi) + CC (kaldırma) · **Tetikleyici:** claude.ai'de
+  **Request headers** bölümü göründüğü gün
+- **Sorun:** Token bugün **URL yolunda** taşınıyor (`/mcp/<token>`), çünkü claude.ai
+  custom connector diyaloğu başlık kabul etmiyor. Ölçüm 9 Ağustos, ekran teyidi:
+  diyalogda dört alan var — `Name` · `Remote MCP server URL` ·
+  `OAuth Client ID (optional)` · `OAuth Client Secret (optional)`. **Request headers
+  bölümü yok**; özellik Anthropic tarafında beta ve bu hesapta açık değil.
+- **Neden ödün:** yol-token başlıktakinden **zayıftır** — URL'ler Railway erişim
+  loglarına, tarayıcı geçmişine ve connector ayarına düşer. Başlık hiçbirine düşmez.
+- **Neden yine de yapıldı:** alternatif authless açmaktı ve reddedildi. Sunucu 113
+  dosya servis ediyor — strateji, fiyat kararları, lansman planı, `_arsiv` dahil.
+  **Tahmin edilmesi zor bir URL, gizli bir URL değildir**; ama korumasız bir uç hiç
+  gizli değildir.
+- **Kapanış:** başlık yüzeyine geçilir, **yol ucu koddan kaldırılır**, connector
+  yeniden yapılandırılır. Kaan Anthropic'ten erken erişim isteyebilir.
+- ⚠ **Bu borç kendiliğinden kapanmaz ve kapanmadığı görünmez.** Beta bir gün sessizce
+  açılır, kimse fark etmez, ödün kalıcılaşır. Bu yüzden `03-sira.md`'nin
+  **DOKÜMAN DIŞI CEPHELER** tablosunda da görünür durur — orası kendi hattında yürüyen
+  işlerin yeri ve bu tam olarak öyle bir iş.
+- **Kaynak:** ADIM 7 ek brief (yol-token auth yüzeyi), 10 Ağustos 2026.

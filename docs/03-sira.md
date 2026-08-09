@@ -74,6 +74,7 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |
 | **B50** ✅ — claude.ai skill yüzeyi (altı zip yüklendi) | Kaan | kapandı 9 Ağu — bakım: skill dokunuşundan sonra `sync` + yeniden yükleme |
+| **B53** — MCP yol-token ödünü: token URL yolunda taşınıyor, çünkü claude.ai connector diyaloğu başlık kabul etmiyor (Request headers beta, bu hesapta kapalı) | Kaan (beta erişimi) + CC (kaldırma) | ⚠ **açık ve kendiliğinden kapanmaz** — beta açıldığı gün başlığa geçilir, yol ucu koddan kaldırılır |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion | sırasız |
 
 ---
