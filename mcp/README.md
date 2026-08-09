@@ -93,18 +93,53 @@ sızdırmaz).
 Transport **Streamable HTTP** (MCP 2026-07-28). Eski SSE-only transport deprecated.
 Sunucu stateless çalışır — sticky session gerekmez.
 
-## Kimlik doğrulama
+## Kimlik doğrulama — iki yüzey, tek sır
 
-`Authorization: Bearer <token>` **her zaman zorunlu.** Authless mod koda hiç girmedi:
-`OCAK_MCP_TOKEN` tanımlı değilse sunucu ayağa kalkmaz, korumasız açılmaz.
+Token **her zaman zorunlu.** Authless mod koda hiç girmedi: `OCAK_MCP_TOKEN` tanımlı
+değilse sunucu ayağa kalkmaz. Tek env değişkeni; ikinci sır açılmadı.
+
+| yüzey | nasıl | ne zaman |
+|---|---|---|
+| **başlık** | `Authorization: Bearer <token>` · yol `/mcp` | **tercih edilen** |
+| **yol** | `/mcp/<token>` · başlık yok | claude.ai için, **geçici** (B53) |
+
+**Kurallar:**
+
+- Başlık varsa **başlık kazanır**; yoldaki değer o durumda hiç okunmaz.
+- Başarısız her hâl aynı **401**'e düşer — `/mcp/` (boş token), `/mcp/<yanlış>`,
+  `/mcp/<doğru>/fazladan`, tokensiz `/mcp`. ⚠ `/mcp/...` alt yolu **404 dönmez**:
+  404 ile 401 ayrımı "bu uçta bir şey var" bilgisini sızdırır.
+- Karşılaştırma sabit zamanlı: iki taraf da SHA-256 ile 32 bayta indirilip
+  `crypto.timingSafeEqual`'a verilir. Uzunluk kontrolüyle başlayan bir karşılaştırma
+  token **uzunluğunu** zamanlamayla sızdırır.
+- Token doğrulandıktan sonra istek yolu `/mcp`'ye normalize edilir — **araç katmanı
+  hangi yüzeyden gelindiğini bilmez**, kod dallanmaz.
+- Token hiçbir log satırına yazılmaz: tüm log çağrıları maskeleme yardımcısından
+  geçer (`/mcp/<token>` → `/mcp/***`). Tek bir satır değil, **hepsi** — bugün istek
+  yolu basmayan bir satır yarın basar.
 
 Token **Railway → Variables**'ta yaşar: `[TOKEN — Railway Variables, dokümanda tutulmaz]`
 (KARAR 469). Bu depoda hiçbir dosyada canlı token yoktur.
 
-Claude.ai tarafında token **Request headers** bölümüne girilir; değer şemasıyla
-birlikte yazılır — `Bearer <token>`, çıplak token değil. ⚠ Request headers özelliği
-Anthropic tarafında **beta** ve yavaş yayılıyor; hesapta görünmüyorsa bağlantı
-ertelenir — sunucu korumasız açılmaz.
+### ⚠ Yol yüzeyi bir ödündür ve geçicidir
+
+claude.ai'nin **Add custom connector** diyaloğu ölçüldü (9 Ağustos, ekran teyidi):
+dört alan var — `Name` · `Remote MCP server URL` · `OAuth Client ID (optional)` ·
+`OAuth Client Secret (optional)`. **Request headers bölümü yok**; özellik Anthropic
+tarafında beta ve bu hesapta açık değil. Yani `Authorization` başlığı claude.ai'den
+gönderilemiyor — sunucu doğru çalışıyor ama bağlanılamıyordu.
+
+Authless açmak reddedildi: sunucu 113 dosya servis ediyor — strateji, fiyat kararları,
+lansman planı, `_arsiv` dahil. **Tahmin edilmesi zor bir URL, gizli bir URL değildir**;
+ama korumasız bir uç hiç gizli değildir.
+
+Yol-token başlıktakinden **zayıftır**: URL'ler Railway erişim loglarına, tarayıcı
+geçmişine ve connector ayarına düşer.
+
+**Kapatma koşulu:** Request headers bu hesapta açıldığı gün başlığa geçilir ve
+**yol ucu koddan kaldırılır**, connector yeniden yapılandırılır. Borç kaydı **B53**;
+`03-sira.md`'de görünür durur — çünkü beta bir gün sessizce açılır, kimse fark etmez
+ve ödün kalıcılaşır.
 
 ## Railway yapılandırması
 
