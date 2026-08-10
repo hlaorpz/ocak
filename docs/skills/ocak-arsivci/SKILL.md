@@ -40,7 +40,7 @@ orada çakışma yoktur — ADIM 0 oraya uygulanmaz.
 ## Ledger bütünlüğü — her yazımdan sonra
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 awk -F'\t' 'NF!=6' docs/01-kararlar.tsv | wc -l                      # 0
 awk -F'\t' 'NR>1{print $1}' docs/01-kararlar.tsv | sort | uniq -d    # boş
 awk -F'\t' 'NR>1{print $4}' docs/01-kararlar.tsv | sort -u           # 9 değerin alt kümesi
@@ -64,7 +64,7 @@ bir commit'tir ve sıfıra inemez.** Satır canlı HEAD değil, **anlık görün
 Kapanış commit'inden **önce** — satıra yazılacak hash budur:
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 wc -l docs/00-durum.md                     # ≤200 (KARAR 457)
 git log -1 --format='%h'                   # satıra BU yazılır
 ```
@@ -72,7 +72,7 @@ git log -1 --format='%h'                   # satıra BU yazılır
 Kapanış commit'inden **sonra** — doğrulama:
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 git log -2 --format='%h' | tail -1         # satırdaki hash ile EŞİT olmalı
 grep 'dönem HEAD' docs/00-durum.md
 ```

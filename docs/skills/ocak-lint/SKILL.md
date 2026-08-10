@@ -29,7 +29,7 @@ site metninde yasaklar. Çelişki değil — marka dosyası v1.4 notu doktrinin 
 ### CC yüzeyi
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 while IFS=$'\t' read -r dize tip kapsam karar ek_istisna oneri; do
   [ "$dize" = "dize" ] && continue
   n=$(grep -c -i -- "$dize" "$HEDEF" 2>/dev/null || true)

@@ -24,7 +24,7 @@ geride kalır — bu iki kez yanlış teşhise yol açtı.
 gerekir; dün üretilmiş dump bugünün gerçeği değildir.
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 node --env-file=.env scripts/site-icerik-dump.mjs
 wc -l docs/_uretilen/site-icerik.md
 ```
@@ -52,7 +52,7 @@ yüzeyde dört farklı sayı taşıyor — `10-marka.md` **8** · `docs/sayfa-ya
 üretilmez; **kod otoritedir.**
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 
 # (a) koddaki kanonik liste — yol aranır, varsayılmaz
 grep -rn "CANONICAL_SECTIONS" src/ --include='*.ts' | head

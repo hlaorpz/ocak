@@ -38,7 +38,7 @@ Hiçbiri değilse yeni numara verilir.
 ## Numara tahsisi
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 awk -F'\t' 'NR>1{print $1}' docs/01-kararlar.tsv | sort -n | tail -1
 ```
 
@@ -72,7 +72,7 @@ kimse arkasına bakmaz.
 Listenin ledger'la tuttuğu sınanır — üretilen değerler bu dokuzun alt kümesi olmalı:
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 awk -F'\t' 'NR>1{print $4}' docs/01-kararlar.tsv | sort -u
 ```
 
@@ -107,7 +107,7 @@ yaz — çapa kayıttan sonra gelir.
 ## Yazımdan önce — dört sorgu
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 N=475   # üretilen numara
 
 awk -F'\t' -v n="$N" 'NR>1 && $1==n' docs/01-kararlar.tsv            # boş olmalı

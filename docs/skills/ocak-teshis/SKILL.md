@@ -17,7 +17,7 @@ değişiklik yapınca geride kalır ve iki kez yanlış teşhise yol açtı.
 düşer ve haftalarca fark edilmez.
 
 ```bash
-cd ~/Desktop/hlaorpz/ocak-site-clone
+cd ~/Desktop/hlaorpz/ocak
 npm run build
 grep -rn "ARANAN" dist/ | head
 ```

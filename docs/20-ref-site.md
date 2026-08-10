@@ -11,7 +11,7 @@ Aşağıdaki bölüm **yeni yazımdır** — Pilot'un dönem deltalarından dam�
 tam metni `90-kronoloji/2026-0{5,6,7}.md`'de birebir durur.
 
 - **Dal modeli:** `main` = production (push otomatik canlı). `astro-iskelet` = preview
-  tamponu. Çalışma dizini `~/Desktop/ocak-site-clone` (yeniden adlandırma borcu: B01).
+  tamponu. Çalışma dizini `~/Desktop/hlaorpz/ocak` (B01 ile yeniden adlandırıldı, 10 Ağu 2026).
 - **Vercel kimlik (kanonik):** Team ID `team_EVx2zHhI9iYscmqsuHckk599` · Project ID
   `prj_CxW3Nm85TGzdrZdePCk74WLAv23f`. **Slug bayatlar, ID kalır** (KARAR 389) — mevcut
   slug `hlaorpz`.
