@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 9 Ağustos 2026 · ADIM 7 ikinci dalga A+B ✅ — dört araç canlı; kalan iki parça B53'e kilitli
+**Son güncelleme:** 11 Ağustos 2026 · **B01 ✅ kapı kapandı** — sıra artık hold'da, sıradaki işi Kaan seçer
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -14,11 +14,19 @@
 ## SIRADAKİ İŞ
 
 **Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
-**ADIM 7 ikinci dalga A+B ✅ → B01 (kapı) → hold.**
+**ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → hold.**
+
+⚠ **Kapı kapandı, kuyruk boşaldı.** Yazılı ölçüt: **kapı → yayını kilitleyen → tek
+turluk → kendi planını isteyen**. Kapı bitti; yayını kilitleyen üç halkanın üçü de
+doküman dışı cephelerde ve sahibi Kaan. Doküman hattında sırada **tek turluk** işler
+var: **B47** (harita — en küçük iş, en geniş etki) sonra **B44** (bayat `@ocak.life`
+taraması). Seçim Kaan'ın; bu satır sırayı önerir, dayatmaz.
 
 ⚠ **"Fırsat buldukça" bir kuyruk değildir.** İkinci dalga bittiğinde geriye yalnız
-borçlar kalıyor — bugün **34 açık iş** (ölçüm: `02-borclar.md` başlık sayacı, 9 Ağustos,
-B56/B57 sonrası). Sıra ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
+borçlar kalıyor — bugün **36 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
+11 Ağustos, B01 kapanışı ve B58/B59/B60 açılışı sonrası; yöntem: `^## B` başlıkları
+60, damgası `[✅❌]` olan 22 kapandı, `[⏸🔵]` olan 2 iş değil, kalan 36). Sıra
+ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
 isteyen**, sahibe göre üç paralel hat. Aşağıdaki tablo o sırayı taşır.
 B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.
 
@@ -53,9 +61,14 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 | 7c | **ADIM 7 kalan iki parça** — B53 (bağlantı ucu, beta bekliyor) + B51 (B53'e bağlı) | Kaan + CC | Railway + repo | **B53 beta** | `02-borclar.md` B51 · B53 — kendi hatlarında |
 | 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
 
-**Kapı işi: B01** — klon/remote/Vercel adı üçü de `ocak` olur. MCP bağlantısı bugün
-`ocak-site` adıyla kuruldu; B01 sonrası tek tıkla yeniden bağlanır. Ucuz, tek turluk,
-ve `cd` sözleşmesini bir kez düzeltir.
+**Kapı işi: B01 ✅ (10 Ağu)** — klon/remote/Vercel adı üçü de `ocak` oldu. Tek tur,
+tek commit `50294e6`, canlı yol referansları 13 → 3.
+
+⚠ **Bu satır "ucuz, tek turluk" diyordu; `02-borclar.md` "maliyet küçük değil" diyordu.**
+İki dosya çelişiyordu ve borçlar dosyası haklıydı: iş tek tura sığdı ama içinde dört
+sapma, iki yanlış brief iddiası ve üç ayrı dış sistem teyidi vardı. **Aynı işin iki
+dosyada iki farklı maliyet tahmini taşıması B47'nin (harita) gerekçesidir** — hangi
+dosyanın hangi konuda otorite olduğu yazılı değil.
 
 **Üç hat paralel yürür** — sahip dağılımı `02-borclar.md`'nin **gövdelerinde** yaşar,
 `03-sira.md` tekrar etmez. ⚠ O dosyanın satır 14'teki sahip tablosu **bayattır** (B55);
@@ -93,7 +106,7 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |
-| **B50** ✅ — claude.ai skill yüzeyi (altı zip yüklendi) | Kaan | kapandı 9 Ağu — bakım: skill dokunuşundan sonra `sync` + yeniden yükleme |
+| **B50** ✅ — claude.ai skill yüzeyi (altı zip yüklendi) | Kaan | kapandı 9 Ağu — bakım: skill dokunuşundan sonra `sync` + yeniden yükleme. ⚠ Bayatlığın bedeli dosyanın taşıdığına göre değişir: **yol** bayatlığı gürültülüdür (CC `cd` yapamaz, durur), **kural** bayatlığı sessizdir (`yasak-dizeler.tsv` yanlış listeyle geçer). Sessiz sınıf önce yüklenir. `--check` yüklemeyi **ölçemez**, yalnız zip'i denetler (10 Ağu) |
 | **B53** — MCP yol-token ödünü: token URL yolunda taşınıyor, çünkü claude.ai connector diyaloğu başlık kabul etmiyor (Request headers beta, bu hesapta kapalı) | Kaan (beta erişimi) + CC (kaldırma) | ⚠ **açık ve kendiliğinden kapanmaz** — beta açıldığı gün başlığa geçilir, yol ucu koddan kaldırılır |
 | **B57** — connector araç listesi bayatlıyor: sunucu ilerler, claude.ai şemayı tazelemez, hata vermez | Kaan | bakım kuralı: yeni araç eklenen turun son adımı connector'ı kapat-aç |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion | sırasız |
@@ -138,6 +151,15 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **10 Ağustos — B01 ✅ kapı** (1 commit, sıfır site kodu)
+  Klon · remote · Vercel proje adı üçü de `ocak`. Canlı yol referansları 13 → 3
+  (kalan üçü bilerek korundu, sıfır kriteri yazılamazdı — KARAR 465'in ikinci vakası).
+  Vercel bağlantısı `githubRepoId` üzerinden kırılmadı, Railway/MCP sağlam, ikisi de
+  ölçüldü. CC dört sapma bildirdi, dördü de haklı. Yeni borç: **B58** (`.vercel.app`
+  domainleri proje adıyla yenilenmiyor — KARAR 389'un ikinci teyidi) · **B59**
+  (`20-ref-site.md:78` tarihli blokta iki bayat) · **B60** (skill kaydı dizin adı
+  değişince kırılıyor). Ledger'a satır eklenmedi.
+  → `90-kronoloji/2026-08.md`
 - **9 Ağustos (ikinci tur) — ADIM 7 ikinci dalga A+B ✅** (3 commit, sıfır site kodu)
   `docs_karar(no)` doğdu, dört araç oldu. **B54 kapandı** — envanter kapsamını ve dağıtım
   ödününü söylüyor. KARAR 480 (çapa sözleşmesi iki eksenli) · 481 (ölçüm aracı kusuru

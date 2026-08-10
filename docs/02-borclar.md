@@ -1,14 +1,21 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 9 Ağustos 2026 · ADIM 7 ikinci dalga — B54 ✅, B56 · B57 açıldı
+**Son güncelleme:** 11 Ağustos 2026 · B01 ✅ KAPANDI, B58 · B59 · B60 açıldı
 
-**Durum:** 57 madde · **34 açık iş** · 21 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 60 madde · **36 açık iş** · 22 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
-*Sayım yöntemi: gövdedeki `^## B[0-9]+` başlık satırları → 55. Kapanış ölçütü başlıktaki
-damga: `✅ KAPANDI` · `✅ ÇÖZÜLDÜ` · `✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` → 20.
-Açık = 57 − 21 − 2 = **34**. Ölçüm anı: **B56 ve B57 yazıldıktan, B54 kapandıktan sonra**, 9 Ağustos 2026.
+*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **60**. Kapanış ölçütü başlıktaki
+**damga**, kelimenin kendisi değil: `[✅❌]` geçen → **22** (`✅ KAPANDI` · `✅ ÇÖZÜLDÜ` ·
+`✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` biçimlerinin hepsi). İş değil: `[⏸🔵]` geçen → **2**.
+Açık = 60 − 22 − 2 = **36**. Ölçüm anı: **B01 kapandıktan, B58/B59/B60 yazıldıktan sonra**, 11 Ağustos 2026.
 Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
 eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
+
+⚠ *Yöntem 11 Ağustos'ta düzeltildi. Önceki hâli "başlık satırları → 55" diyordu, gerçek
+o gün de **57**'ydi — alt-rakam bayattı. Ayrıca B01 kapanış patch'i sayacı `✅ KAPANDI`
+**kelimesini** arayan bir grep ile tarif etmişti; o yöntem 39 veriyordu, çünkü `✅ ÇÖZÜLDÜ`
+(B03 · B28), `❌ GERİ ÇEKİLDİ` (B27) ve iş-değil ikilisini kaçırıyordu. Kelime değil
+**damga** aranır; ayrım kronolojide, 10 Ağustos B01 kaydında.*
 
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
@@ -29,8 +36,8 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 
 ---
 
-## B01 — klon ve remote adı `ocak` olur
-- [ ] **Sahip:** Kaan + CC
+## B01 — klon ve remote adı `ocak` olur ✅ KAPANDI (10 Ağu, tek tur)
+- [x] **Sahip:** Kaan + CC
 - **Tetikleyici:** ADIM 4, `baglam.sh` yazılırken — birlikte yapılır
 - **Gerekçe:** "clone" adı tek çalışma kopyası olduğunu değil, bir kopya olduğunu ima ediyor; yanıltıcı.
 - **Neden şimdi değil:** CC'nin bildiği yol değişir. Yol değişimi ile `baglam.sh` yazımı aynı commit'te olmalı.
@@ -64,6 +71,34 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 - **Başlık düzeltmesi (8 Ağu):** blok önceden `ocak-site-clone → ocak-site` diyordu.
   Hedef `ocak` olarak karara bağlanınca başlık gövdeyle çelişti; başlık gövdeye
   uyduruldu. Ara hedef `ocak-site` hiçbir zaman uygulanmadı.
+- **Kapanış (10 Ağu, commit `50294e6`):** altı adımın altısı koşuldu. Remote
+  `hlaorpz/ocak` · yerel klasör `~/Desktop/hlaorpz/ocak` · Vercel proje adı `ocak`.
+  Repo içi canlı yol referansları **13 satır → 3 satır** (ölçüm: `git ls-files` kümesi,
+  `docs/_arsiv/` hariç, `grep -F`, birim = eşleşen satır). Değişen: `docs/skills/` beş
+  `SKILL.md` (10 satır) + `20-ref-site.md:14` (1 satır) = 6 dosya · 11 satır.
+  `.gitignore`'lu iki dosya elle düzeltildi: `settings.local.json` 12 geçiş,
+  `notes.md` 1 geçiş (`:782`).
+- ⚠ **Maddenin iki iddiası ölçümle yanlışlandı — düzeltme burada, gövdede değil (KARAR 61):**
+  1. Gövde "`cd` öneki bir konvansiyon (`CLAUDE.md`)" ve "düzeltilecek olan `CLAUDE.md`
+     konvansiyon satırı" diyor. **`CLAUDE.md`'de o dize yok** — dosyanın 114 satırında
+     hiçbir mutlak yol geçmiyor (ölçüm: `grep -Fc`, 10 Ağu, CC teyitli). Dolayısıyla
+     `CLAUDE.md` bu turda **hiç değişmedi** ve "Sahip: … Claude.ai (`CLAUDE.md`
+     konvansiyon satırı)" satırı da yanlıştı. Konvansiyon yazılı bir kural değil,
+     brief'ten brief'e taşınan bir alışkanlıktı.
+  2. Gövde adım 5'i "eski mutlak yol" diye tarif ediyor ve `hlaorpz/` öneki varsayıyor.
+     Gerçekte `settings.local.json`'ın 12 geçişinin 12'si de **önek**siz eski yolu
+     (`/Users/kaan/Desktop/ocak-site-clone`) taşıyordu; dosya `hlaorpz/` alt klasörüne
+     taşınmayı hiç görmemişti.
+- **Sıfır kriteri yazılamadı, yazılmamalıydı da:** 13 → **3**, sıfır değil. Korunan üç
+  satır: `02-borclar.md:53` · `:58` (bu maddenin kendi gövdesi) ve
+  `_uretilen/b36a-desen-tespiti.py:8` (betiğin koşum künyesi). `docs/_arsiv/` altındaki
+  11 dosya · 56 satıra dokunulmadı. Bağımsız kanal doğruladı: beş skill dosyasının her
+  biri satır sayısı × 11 bayt küçüldü, korunan iki dosya **bayt olarak değişmedi**.
+- **Dış ayaklar ölçüldü, varsayılmadı:** Vercel git bağlantısı `githubRepoId
+  1162985583` üzerinden kurulu, repo adı değişince **kendiliğinden düzeldi**
+  (`list_deployments` → `githubRepo: ocak`, deploy READY). Railway/MCP sağlam: damga
+  `2c29952` → `50294e6` ilerledi. Skill yüklemesi **makineyle ölçülemez** — Kaan
+  gözle teyit etti, ölçüm değil beyandır.
 
 ## B02 — Sabit-px pseudo audit yayılımı ✅ KAPANDI (6 Ağu, kod teyidi)
 - [x] **Sahip:** CC
@@ -1013,3 +1048,53 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış kriteri:** bakım kuralı yazılı **ve** bir sonraki araç eklemesinde tatbik
   edilmiş. `grep` sıfırı kriter değildir.
 - **Kaynak:** ADIM 7 ikinci dalga canlı doğrulaması (9 Ağustos 2026).
+
+## B58 — Vercel `.vercel.app` domainleri proje adıyla yenilenmiyor
+- [ ] **Sahip:** Kaan
+- **Tetikleyici:** B01 (10 Ağu) — proje adı `ocak-site` → `ocak` yapıldı
+- **Ölçüm:** `get_project` (10 Ağu, B01 sonrası). `name: "ocak"` ✔ ama `domains`
+  dizisi üç `ocak-site-*` kaydını koruyor: `ocak-site.vercel.app` ·
+  `ocak-site-hlaorpz.vercel.app` · `ocak-site-git-main-hlaorpz.vercel.app`.
+  Son deployment'ın `branchAlias` alanı da hâlâ `ocak-site-git-main-hlaorpz.vercel.app`.
+- **Teşhis:** Vercel bu domainleri projeye **eklenmiş kayıt** olarak tutuyor, proje
+  adından her seferinde türetmiyor. B01 briefi tersini varsaymıştı; ölçüm yanlışladı.
+  Bu, **KARAR 389**'un ("slug bayatlar, ID kalır") ikinci teyidi — ve gösteriyor ki
+  bayatlama yalnız slug'da değil, addan türeyen **her** kayıtta olabiliyor.
+- **Etki:** pratikte yok. `www.ocak.biz` çalışıyor · deploy hook `tZR9LcwJq9` ID'ye
+  bağlı · canlı `docs/` altında bu üç domaine bağımlılık **0** (ölçüm: `docs_ara`,
+  kapsam `canli`; yalnız `90-kronoloji/2026-05.md`'de iki **tarihsel** kayıt var,
+  onlar dokunulmaz). Kozmetik kalıntı.
+- **Kapanış şartı:** panelden domain kayıtlarının yeniden adlandırılması, VEYA bu
+  bayatlığın kabul edildiğinin yazılması. İkisi de meşru — karar verilmedi.
+
+## B59 — `20-ref-site.md:78` iki bayat taşıyor, tarihli blok olduğu için düzeltilmedi
+- [ ] **Sahip:** Claude.ai
+- **Tetikleyici:** B01 ADIM 0.g ölçümü (10 Ağu)
+- **İçerik:** `20-ref-site.md` satır 78, `**Mevcut durum (31 Mayıs 2026, #35 dönemi
+  sonu):**` bloğunun içinde. İki bayat dize taşıyor: eski yol
+  `~/Desktop/ocak-site-clone` ve eski repo sahibi `kso2025/ocak-site`.
+- **Neden B01'de düzeltilmedi:** blok **tarihli anlık görüntüdür** — 31 Mayıs 2026
+  itibarıyla doğruydu. KIRPMA YASAĞI (KARAR 61) tarihli kaydı bugünkü gerçeğe göre
+  düzeltmeyi yasaklar. Aynı dosyanın **satır 14**'ü tarihsiz canlı referanstı ve
+  düzeltildi; ayrım bilinçlidir.
+- **Asıl soru bu maddede:** bir referans dosyasının içinde tarihli anlık görüntü
+  yaşamalı mı? `20-ref-*` ailesi "şu an nasıl" dosyasıdır; tarihli blok kronolojiye
+  aittir. Çözüm muhtemelen düzeltme değil **taşıma** — ama bu B32 sınıfı bir iştir,
+  tek satırlık değil.
+- **Kapsam uyarısı:** aynı desen `20-ref-*` ailesinin başka dosyalarında da olabilir;
+  ölçülmedi.
+
+## B60 — skill kaydı oturum başındaki mutlak yola bağlanıyor, dizin adı değişince kırılıyor
+- [ ] **Sahip:** CC + Kaan
+- **Tetikleyici:** B01 ADIM 3 (10 Ağu) — klasör yeniden adlandırıldı
+- **Belirti:** Skill aracı oturum boyunca altı skill'in hiçbirini açamadı; kayıt
+  `ocak-site-clone` yoluna bağlıydı. CC `SKILL.md`'leri diskten okuyup protokolü
+  elle izledi — iş yapıldı, ama denetim yüzeyi düştü.
+- **Kendiliğinden düzelir:** yeni oturum yeni yolu bağlar. Kalıcı hasar yok.
+- **Neden yine de borç:** `skill-sync.sh --check` bu kırılmayı **göremez** —
+  symlink'i ve zip'i denetler, oturumun bağladığı yolu değil. B50'nin bilinen
+  ölçülemezliğinin üçüncü yüzeyi (birincisi claude.ai yüklemesi, ikincisi
+  bayatlık, üçüncüsü bu). Ayrıca dizin yeniden adlandırma bir daha olursa aynı
+  şey tekrarlanır ve kimse beklemiyor olur.
+- **Kapanış şartı:** ya CLAUDE.md'ye "dizin adı değişen turda CC yeniden başlatılır"
+  satırı, ya da kırılmanın kabul edildiğinin yazılması.

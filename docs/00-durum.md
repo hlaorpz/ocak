@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 9 Ağustos 2026 · **ADIM 7 ikinci dalga — A+B ✅** · KARAR 480 · 481 · `docs_karar` canlı
+**Son güncelleme:** 11 Ağustos 2026 · **B01 ✅ kapı kapandı** — klon · remote · Vercel adı üçü de `ocak`
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 175 satır (`python3`, 9 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 184 satır (`python3`, 11 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -59,6 +59,10 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   ⏸ **Kalan:** C parçası (B53, bağlantının başlığa geçmesi) claude.ai'de `Request headers`
   bölümü olmadığı için **düşürüldü**; D parçası (B51) ona bağlı olduğu için koşulmadı.
   İkisi de kendi hatlarında bekler. `baglam.sh` **emekli edilmedi**.
+- **B01 ✅ (10 Ağu)** — klon · remote · Vercel proje adı üçü de `ocak`. Repo içi canlı yol
+  referansları 13 → 3 satır (kalan üçü bilerek korundu). Tek commit `50294e6`, sıfır site
+  kodu. Vercel git bağlantısı `githubRepoId` üzerinden **kırılmadı**, MCP damgası ilerledi
+  — ikisi de ölçüldü. Yeni borç: **B58 · B59 · B60**.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
@@ -76,13 +80,14 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`1d6726d`** (9 Ağu, ADIM 7 ikinci dalga A+B — kapanış patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`50294e6`** (10 Ağu, B01 — klon/remote/Vercel adı) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
+| Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
 | robots.txt | `Disallow: /` — **stealth sürüyor** |
 | Deploy hook | `tZR9LcwJq9` → dal **`astro-iskelet`**; Notion webhook + gece cron aynı hook'u paylaşır |
-| Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` |
+| Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** (10 Ağu) — `.vercel.app` domainleri `ocak-site-*` kaldı, **B58** |
 | Ödeme | banka sanal POS'a geçiliyor; entegratör belirsiz, `payment-provider.ts` stub |
 
 ---
@@ -129,6 +134,10 @@ girmez; o kuyruk başka yerde yaşar.
   kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
   birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,
   sosyal medya ajans v2. Dönemin HEAD'i `e8a16dd`. → `90-kronoloji/2026-07.md`
+- **10 Ağustos:** **B01 ✅** — kapı işi. GitHub remote · yerel klasör · Vercel proje adı
+  üçü de `ocak`. Bir commit, sıfır site kodu. CC dört sapma bildirdi, dördü de haklıydı;
+  biri brief'in `N → 0` kriterinin kendi kaydını sayması (KARAR 465'in ikinci vakası).
+  → `90-kronoloji/2026-08.md`
 - **9 Ağustos (ikinci tur):** ADIM 7 ikinci dalga A+B — `docs_karar` + B54, üç commit,
   sıfır site kodu. Ledger'ın ölçülmüş sığlığı **126/418**'e genişledi (119 indeks + 7
   komşu; b36a'nın 119'u bağımsız doğrulandı). KARAR 480 · 481. → `90-kronoloji/2026-08.md`
