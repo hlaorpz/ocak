@@ -3,7 +3,7 @@
 **Son güncelleme:** 11 Ağustos 2026 · **B47 ✅ harita** — otorite sırası yazıldı, KARAR 482
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
-> İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
+> İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
 > *Şu an: 192 satır (`python3`, 11 Ağustos). ⚠ Cap'e yaklaşıldı — bir sonraki dönem

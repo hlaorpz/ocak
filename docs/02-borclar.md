@@ -20,14 +20,19 @@ o gün de **57**'ydi — alt-rakam bayattı. Ayrıca B01 kapanış patch'i sayac
 *(Sayım düzeltmesi — D6: başlık "31 madde · 19 açık" diyordu, gerçek sayım B01–B30 üzerinden 30 madde · 20 açıktı. ADIM 3'te B31 açılınca 31 · 21 oldu.)*
 
 Numaralar sabittir, yeniden kullanılmaz. Kapanan maddeler silinmez — nasıl kapandığı bilgisi
-kendisi işe yarıyor (KARAR 61/88 ruhu).
+kendisi işe yarıyor (KARAR 61 ruhu).
 
 | Kim | Açık maddeler |
 |---|---|
-| **Kaan** | B07 · B14 · B18 · **B19** (yayını kilitleyen) · B28-kalan ayak |
-| **CC** | B09 · B10 · B11 · B12 · B15 · B16 · B17 · B26 · B36-a · B45 · B42 ✅ |
-| **Claude.ai** | B35 · B36-b · B38 · B39 · B40 · B41 · B43 · B44 |
-| **CC (mekanik)** | B37 ✅ |
+| **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
+| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 |
+| **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B40 · B41 · B43 · B44 · B49 · B52 · B55 · B56 · B59 |
+
+> **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
+> `**Sahip:**` satırı geçerlidir; tablo ondan türetilir, ters yön hiçbir zaman yapılmaz.
+> Devir zincirinin **ilk halkası** yazılır — tam zincir gövdede. İş değil sayılanlar
+> (B26 ⏸ · B30 🔵) ve alt maddeler (B36-a · B44-a) tabloda görünmez.
+> Türetme: 11 Ağustos 2026, 34 açık madde.
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
@@ -839,7 +844,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   türetilir (dizin taraması eksi `İÇERİR`). Üç yetim dosya profillere dağıtılır.
 - **Kaynak:** ADIM 6 açılış ölçümü, 9 Ağustos 2026.
 
-- ⚠ **Kapsam notu (10 Ağu, ADIM 7 birinci dalga) — B48 KAPANMAZ, düzeltmenin şekli
+- ⚠ **Kapsam notu (9 Ağu, ADIM 7 birinci dalga) — B48 KAPANMAZ, düzeltmenin şekli
   değişti.** Manifest boşluğu duruyor. Ama MCP tasarımıyla birlikte `baglam.sh`'ın rolü
   değişti: küçülüp **soğuk-başlangıç kanalı** olarak yaşayacak, `İÇERMEZ` listesi profil
   listesinden değil **MCP envanterinden** anlam kazanacak. **B48 ADIM 7 ikinci
@@ -921,7 +926,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   dönüşür. MCP kapalıyken ya da bağlantı kurulmadan önce tek giriş yolu bu kalır.
 - **Bağ:** **B48 bu maddeyle birlikte kapanır.** `İÇERMEZ` listesi profil listesinden
   değil MCP envanterinden türetilince B48'in sorunu tanım olarak ortadan kalkıyor.
-- **Kaynak:** ADIM 7 birinci dalga, 10 Ağustos 2026. Yedek yol ölçüldü, varsayılmadı:
+- **Kaynak:** ADIM 7 birinci dalga, 9 Ağustos 2026. Yedek yol ölçüldü, varsayılmadı:
   MCP kapalıyken `baglam.sh dokuman` 1940 satır / 6 bölüm üretti, çıkış 0.
 
 ## B52 — skill verisinin MCP'ye taşınması ve `--check` boşluğu
@@ -944,7 +949,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   zaten kayda geçirdi; bu üçüncü bir katman ekler — symlink (ayrışma imkânsız) · zip
   (ayrışma yakalanabilir) · MCP (ayrışma **denetimsiz**). Kapsama boşluğu keşfedilmez,
   önceden tasarlanır.
-- **Kaynak:** ADIM 7 birinci dalga, 10 Ağustos 2026.
+- **Kaynak:** ADIM 7 birinci dalga, 9 Ağustos 2026.
 
 ## B53 — MCP yol-token ödünü
 
@@ -987,7 +992,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   edilir; `.gitignore`'lu dosyalar burada yoktur."* Yeni yetenek gerekmiyor, tek dize.
 - **Neden ayrı tur değil:** tek dize için deploy turu açılmaz; ikinci dalgada
   `docs_karar` ile aynı brief'te gider.
-- **Kaynak:** ADIM 7 birinci dalga kapanışı, 10 Ağustos 2026.
+- **Kaynak:** ADIM 7 birinci dalga kapanışı, 9 Ağustos 2026.
 - **Sonuç (9 Ağu, `824a39e`) — tek dize değil, iki alan.** Borç metni *"Korpus git
   deposundan servis edilir"* dizesini öneriyordu. Ölçüm bunu düşürdü: `korpusuTara()`
   **git'i sormuyor**, diski yürüyor (`readdirSync`). Railway'de ikisi denk çünkü

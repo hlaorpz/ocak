@@ -61,7 +61,7 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 | 4b | **B36-b** — 71 sığ kararın kronolojide kaydı hiç yazılmamış; iş çapa düzeltme değil **kayıt yazma**. Tek turluk değil, kendi planı gerekir | Claude.ai | ayrı sohbet | B36-a ✅ | beklemede — `02-borclar.md` B36 + `_uretilen/b36a-rapor.md` |
 | 5 | **251** — ledger'ın son `TEYITSIZ` satırı, kaynak metni bulunamadı | Claude.ai | B36 ile birlikte | yok | `2026-06.md` #38 bloğu |
 | 6 | **ADIM 6** ✅ — `ocak-kararci` · `ocak-metin` · `ocak-notion` | CC + Claude.ai | repo | ADIM 5 | kapandı 9 Ağu |
-| 7 | **ADIM 7 birinci dalga** ✅ — `mcp/` + üç araç, Railway'de canlı, claude.ai'ye bağlı | CC | Railway | — | kapandı 10 Ağu |
+| 7 | **ADIM 7 birinci dalga** ✅ — `mcp/` + üç araç, Railway'de canlı, claude.ai'ye bağlı | CC | Railway | — | kapandı 9 Ağu |
 | 7b | **ADIM 7 ikinci dalga A+B** ✅ — `docs_karar(no)` + B54; KARAR 480 · 481 | CC | repo + Railway | 7 ✅ | kapandı 9 Ağu |
 | 7c | **ADIM 7 kalan iki parça** — B53 (bağlantı ucu, beta bekliyor) + B51 (B53'e bağlı) | Kaan + CC | Railway + repo | **B53 beta** | `02-borclar.md` B51 · B53 — kendi hatlarında |
 | 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
@@ -76,8 +76,9 @@ dosyada iki farklı maliyet tahmini taşıması B47'nin (harita) gerekçesidir**
 dosyanın hangi konuda otorite olduğu yazılı değil.
 
 **Üç hat paralel yürür** — sahip dağılımı `02-borclar.md`'nin **gövdelerinde** yaşar,
-`03-sira.md` tekrar etmez. ⚠ O dosyanın satır 14'teki sahip tablosu **bayattır** (B55);
-sahip rakamı ondan okunmaz, gövdelerden sayılır.
+`03-sira.md` tekrar etmez. ⚠ O dosyanın sahip tablosu bir **indekstir**, otorite gövdelerdir
+(KARAR 482 kural 1a). Tablo gövdelerden türetilir; çelişkide gövdedeki
+`**Sahip:**` satırı geçerlidir.
 
 ⚠ **B48 ikinci dalgadan önce kapatılmaz** — `baglam.sh` küçülecek, manifestin şekli
 değişecek; erken kapatılırsa iş iki kez yapılır. B51 ile birlikte kapanır.
@@ -179,7 +180,7 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   Ledger sığlığı **126/418** ölçüldü (b36a'nın 119'u doğrulandı, +7 komşu-satır yeni).
   C parçası (B53) beta yokluğundan düştü; D (B51) ona bağlı olduğu için koşulmadı.
   → `90-kronoloji/2026-08.md`
-- **10 Ağustos — ADIM 7 birinci dalga ✅** (7 commit, sıfır site kodu commit'i)
+- **9 Ağustos — ADIM 7 birinci dalga ✅** (7 commit, sıfır site kodu commit'i)
   `mcp/` doğdu: `docs_envanter` · `docs_oku` · `docs_ara`, Streamable HTTP, zorunlu Bearer.
   Railway'de canlı, claude.ai'ye bağlı, bu turda gerçekten kullanıldı.
   KARAR 478 (sohbet sonu ikinci teslim) · 479 (MCP git deposunu servis eder) mühürlendi.

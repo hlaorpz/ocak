@@ -476,8 +476,8 @@ no	tarih	baslik	durum	iliski	kaynak
 475	2026-08-09	`ocak-kararci` ↔ `ocak-arsivci` sınırı — kararcı içeriği üretir ve önden doğrular, arşivci dosyaya işler	KALICI	←458 · ↔456,468	2026-08.md#k475
 476	2026-08-09	`ocak-metin` ↔ `ocak-lint` sınırı — metin üretir, lint denetler; aynı kural iki dosyada tarif edilmez	KALICI	←458,459 · ↔473	2026-08.md#k476
 477	2026-08-09	`ocak-notion` dar kapsam — taze dump + marker sözleşmesi doğrulaması; sayfa listesi koddan okunur, taşınmaz	KALICI	←458 · ↔409,439	2026-08.md#k477
-478	2026-08-10	Sohbet sonu ikinci teslim — bir sonraki turun açılış promptu	KALICI	←468 · ↔462	2026-08.md#k478
-479	2026-08-10	MCP git deposunu servis eder — servis edilen korpus çalışma dizini değil, ölçüm kriterleri `git ls-files` kümesine yazılır	KALICI	←461 · ↔470,471	2026-08.md#k479
+478	2026-08-09	Sohbet sonu ikinci teslim — bir sonraki turun açılış promptu	KALICI	←468 · ↔462	2026-08.md#k478
+479	2026-08-09	MCP git deposunu servis eder — servis edilen korpus çalışma dizini değil, ölçüm kriterleri `git ls-files` kümesine yazılır	KALICI	←461 · ↔470,471	2026-08.md#k479
 480	2026-08-09	Çapa sözleşmesi iki eksenlidir — çözüm sonucu (`capa_cinsi`) ile çapanın kökeni (`capa_kaynagi`) ayrı alanlarda yaşar	KALICI	←466 · ↔472	2026-08.md#k480
 481	2026-08-09	Ölçüm aracı kendi zeminindeki kusuru bayrakla döndürür — sığ çapa `siglik: true` ile döner	KALICI	←456 · ↔470	2026-08.md#k481
 482	2026-08-11	Otorite sırası: indeks, indekslediği gövdeyi asla yenmez	KALICI	←102 · ↔456	2026-08.md#k482
