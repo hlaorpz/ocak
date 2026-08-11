@@ -104,7 +104,9 @@ dosyadan silmek yetmez.
 
 ---
 
-**Doküman haritası:** `docs/00-durum.md` (canlı, ≤200 satır) · `01-kararlar.tsv`
+**Doküman haritası:** tam hâli `docs/05-harita.md`'de — hangi dosya neyi taşır, ne
+taşımaz, kim yazar, nasıl bozulur, ve **çelişkide hangi yüzey kazanır** (KARAR 482).
+Kısa liste: `docs/00-durum.md` (canlı, ≤200 satır) · `01-kararlar.tsv`
 (ledger, indeks) · `02-borclar.md` · `03-sira.md` (kuyruk) · `10-marka.md` ·
 `20-ref-*.md` (tema referansları, yedi dosya) · `90-kronoloji/YYYY-AA.md`
 (append-only, asla yapıştırılmaz) · `_uretilen/` (script çıktısı) · `_arsiv/`.

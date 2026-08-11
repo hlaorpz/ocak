@@ -1,13 +1,13 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ağustos 2026 · B01 ✅ KAPANDI, B58 · B59 · B60 açıldı
+**Son güncelleme:** 11 Ağustos 2026 · B47 ✅ · B58 ✅ · B40 · B55 · B56 yeniden sınıflandı
 
-**Durum:** 60 madde · **36 açık iş** · 22 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 60 madde · **34 açık iş** · 24 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **60**. Kapanış ölçütü başlıktaki
-**damga**, kelimenin kendisi değil: `[✅❌]` geçen → **22** (`✅ KAPANDI` · `✅ ÇÖZÜLDÜ` ·
+**damga**, kelimenin kendisi değil: `[✅❌]` geçen → **24** (`✅ KAPANDI` · `✅ ÇÖZÜLDÜ` ·
 `✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` biçimlerinin hepsi). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 60 − 22 − 2 = **36**. Ölçüm anı: **B01 kapandıktan, B58/B59/B60 yazıldıktan sonra**, 11 Ağustos 2026.
+Açık = 60 − 24 − 2 = **34**. Ölçüm anı: **B47 ve B58 kapandıktan sonra**, 11 Ağustos 2026.
 Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
 eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
 
@@ -586,6 +586,10 @@ kendisi işe yarıyor (KARAR 61/88 ruhu).
 
 ## B40 — "KIRPMA YASAĞI 61/88" konvansiyonu yanlış
 
+- ⚠ **Yeniden sınıflandı (11 Ağu, B47):** karar borcu değil, **mekanik yazım**.
+  KARAR 482 kural 1(c): *konvansiyon, işaret ettiği kararla birlikte doğrulanır.*
+  88'in ledger başlığı ve durumu bilinen bir ölçüm; sonuç ne çıkarsa mekanik olarak
+  yazılır. Ayrı karar turu gerekmez.
 - [ ] **Sahip:** Claude.ai
 - **Sorun:** Doküman genelinde KIRPMA YASAĞI `KARAR 61/88` diye anılıyor
   (`2026-08.md:130`, KARAR 457 metni dahil). Ledger:
@@ -785,9 +789,9 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   rakam da yanlış ve **doğru rakam gibi görünüyor.**
 - **Kaynak:** ADIM 5 · B44-a · B36-a turları, 8 Ağustos 2026.
 
-## B47 — "ne nerede yaşar" haritası hiçbir dosyada yok
+## B47 — "ne nerede yaşar" haritası hiçbir dosyada yok ✅ KAPANDI (11 Ağu, commit `7f0396a`)
 
-- [ ] **Sahip:** Claude.ai
+- [x] **Sahip:** Claude.ai
 - **Sorun:** `docs/` yapısının kendisi — hangi dosya neyi taşır, bir soruya cevap
   ararken nereye bakılır — yazılı değil. `CLAUDE.md` CC'ye bakıyor, `00-durum.md`
   döneme, `03-sira.md` kuyruğa. Haritanın tamamı yalnız sohbet bağlamında yaşıyor.
@@ -796,6 +800,24 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Eylem:** `docs/05-harita.md` (ya da `CLAUDE.md`'ye bölüm) — dosya tablosu +
   "şu soruyu sorarsan şuraya bak" eşlemesi. Kısa tutulur, bakım maliyeti düşük olmalı.
 - **Kaynak:** 8 Ağustos 2026, gün sonu.
+- **Kapanış (11 Ağu, commit `7f0396a`):** `docs/05-harita.md` doğdu, 147 satır.
+- ⚠ **Bu maddenin başlığı ölçümle yanlışlandı — düzeltme burada, gövdede değil (KARAR 61):**
+  harita **hiçbir dosyada yok değildi, iki tane vardı.** `CLAUDE.md` sonundaki *Doküman
+  haritası* paragrafı ve `00-durum.md` başındaki *Ne arıyorsan / Nereye bak* tablosu;
+  ikisi de kısmi, ikisi de geçerli. Eksik olan **liste değil, otorite kuralıydı** —
+  çelişkide hangi yüzeyin kazandığı hiçbir yerde yazılı değildi. B55 gövdesi bunu zaten
+  teşhis etmişti (*"Tablo indeks, gövde otorite — ama bunu hiçbir yer yazmıyor"*);
+  madde okunmadan yazılmış bir başlık üçüncü kez yanılttı.
+- **Çözüm liste değil kural:** üçüncü bir liste kurulsaydı üçü ayrışırdı — B55'in
+  hastalığının üçüncü nüshası. `05-harita.md` iki şey taşır: **otorite sırası**
+  (ham gerçeklik → kronoloji → gövde → indeks → ayna) ve **dosya sözleşmeleri**
+  (ne taşır · ne taşımaz · kim yazar · nasıl bozulur). Mevcut iki listeye dokunmaz,
+  onlara işaret eder.
+- **Mühürlenen:** KARAR 482 — indeks, indekslediği gövdeyi asla yenmez.
+- **CC doğrulaması (commit öncesi):** dosyanın kendi kuralı 1(c) kendisine uygulandı.
+  Atıf yapılan on kararın (61 · 102 · 455 · 456 · 457 · 458 · 468 · 470 · 471 · 479)
+  onu da ledger'da tek kayıt ve **KALICI**; supersede/iptal yok. Üç nicel iddia da tuttu:
+  `20-ref-*` yedi, `docs/skills/` altı, `00-durum.md` cap 200.
 
 ## B48 — `baglam.sh` manifesti `docs/` kökündeki dosyaları saymıyor
 
@@ -984,6 +1006,11 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 
 ## B55 — `02-borclar.md`'nin sahip tablosu ile gövdeler ayrışmış
 
+- ⚠ **Yeniden sınıflandı (11 Ağu, B47):** "önce sözlük kararı" şartı **düştü**.
+  KARAR 482 kural 1(a) cevabı veriyor: *indeks, indekslediği gövdeyi asla yenmez.*
+  Tablo gövdelerden **türetilir**, ters yön hiçbir zaman yapılmaz. Geriye tek soru
+  kalıyor ve o da mekanik: devir zinciri (`Claude.ai (metin) → Advaita/Kaan (Notion)`)
+  tabloda **ilk halka** yazılır, gövde tam zinciri taşır.
 - [ ] **Sahip:** Claude.ai (sözlük kararı) → CC (yazım)
 - **Sorun:** Dosyada iki sahip kaynağı var ve tutmuyorlar. Satır 14'teki tablo
   bayat: kapanmış **B42 ✅**'yi açık sayıyor, **B36-a**'yı hâlâ yazıyor,
@@ -1006,6 +1033,14 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 
 ## B56 — KARAR 478/479'un tarihi bir gün ileri
 
+- ⚠ **Yeniden sınıflandı (11 Ağu, B47):** "önce kural" şartı **düştü**. KARAR 482
+  kural 1(b) cevabı veriyor: *türetilmiş dosya düzeltilir, append-only dosya not alır.*
+  Yani `01-kararlar.tsv`'nin `tarih` hücreleri **düzeltilir**, `90-kronoloji/2026-08.md`
+  blok başlığı **düzeltilmez, altına not düşülür**. İki dosyaya aynı işlem uygulanmaz.
+  Geriye yalnız yazım kaldı.
+- ⚠ **11 Ağustos'ta çakışma görünür oldu:** B01 gerçekten 10 Ağustos'a düştü, yani
+  `03-sira.md`'de "kapandı 10 Ağu" yazan ADIM 7 birinci dalgası ile B01 aynı tarihi
+  taşıyor — oysa aralarında bir gün var.
 - [ ] **Sahip:** Claude.ai (karar) → CC (yazım)
 - **Ölçüm (9 Ağustos 2026):** `date +%F` → `2026-08-09`. `git log --format='%ci' -10` →
   son on commitin **onu da** `2026-08-09` (13:01 → 21:25). Ledger'ın 478 ve 479 satırları
@@ -1049,8 +1084,8 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   edilmiş. `grep` sıfırı kriter değildir.
 - **Kaynak:** ADIM 7 ikinci dalga canlı doğrulaması (9 Ağustos 2026).
 
-## B58 — Vercel `.vercel.app` domainleri proje adıyla yenilenmiyor
-- [ ] **Sahip:** Kaan
+## B58 — Vercel `.vercel.app` domainleri proje adıyla yenilenmiyor ✅ KAPANDI (11 Ağu)
+- [x] **Sahip:** Kaan
 - **Tetikleyici:** B01 (10 Ağu) — proje adı `ocak-site` → `ocak` yapıldı
 - **Ölçüm:** `get_project` (10 Ağu, B01 sonrası). `name: "ocak"` ✔ ama `domains`
   dizisi üç `ocak-site-*` kaydını koruyor: `ocak-site.vercel.app` ·
@@ -1066,6 +1101,21 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   onlar dokunulmaz). Kozmetik kalıntı.
 - **Kapanış şartı:** panelden domain kayıtlarının yeniden adlandırılması, VEYA bu
   bayatlığın kabul edildiğinin yazılması. İkisi de meşru — karar verilmedi.
+- **Kapanış (11 Ağu):** ikisi birden oldu. Kaan panelden `ocak-site.vercel.app`'i sildi ve
+  `ocak-hlaorpz.vercel.app`'i ekledi. Kalan iki kayıt **sistem alias'ıydı** — panelde hiç
+  görünmüyorlardı çünkü silinebilir kayıt değiller, deploy anında proje adı + dal + scope'tan
+  türetiliyorlar.
+- ⚠ **Teşhis yanlıştı, ölçüm düzeltti.** Gövde "Vercel bu domainleri eklenmiş kayıt olarak
+  tutuyor, addan türetmiyor" diyordu. `c164ddd` push'unun deploy'u tersini gösterdi
+  (`list_deployments`, 11 Ağu): `branchAlias` **`ocak-site-git-main-hlaorpz` →
+  `ocak-git-main-hlaorpz`** olarak yeniden türedi. Deployment `name` `ocak-site` → `ocak`,
+  `inspectorUrl` `/hlaorpz/ocak-site/…` → `/hlaorpz/ocak/…`. Alias donmamış, türüyor.
+- ⚠ **`get_project` önbellekli cevap döndürdü** — Kaan'ın domain düzenlemesinden sonra bile
+  eski dört domaini ve **değişmemiş `updatedAt`** verdi. O okuma delil sayılmadı; delil
+  bir sonraki deploy'un meta'sı oldu. **KARAR 470 vakası: aracın taze olduğu da ölçülür.**
+- **KARAR 389 ile ilişki:** gövdenin "389'un ikinci teyidi" iddiası da düştü. Slug bayatladı
+  ama **kendiliğinden tazelendi** — 389 hâlâ doğru (*ID'ye yaslan*), ama bu vaka onun
+  teyidi değil.
 
 ## B59 — `20-ref-site.md:78` iki bayat taşıyor, tarihli blok olduğu için düzeltilmedi
 - [ ] **Sahip:** Claude.ai

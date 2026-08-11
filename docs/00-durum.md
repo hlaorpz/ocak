@@ -1,15 +1,17 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Ağustos 2026 · **B01 ✅ kapı kapandı** — klon · remote · Vercel adı üçü de `ocak`
+**Son güncelleme:** 11 Ağustos 2026 · **B47 ✅ harita** — otorite sırası yazıldı, KARAR 482
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61/88). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 184 satır (`python3`, 11 Ağustos). Kalan pay bir sonraki dönemin durumu içindir.*
+> *Şu an: 192 satır (`python3`, 11 Ağustos). ⚠ Cap'e yaklaşıldı — bir sonraki dönem
+> bloğu eklenmeden önce en eskisi kronolojiye iner.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
+| **hangi dosya neyi taşır, çelişkide kim kazanır** | **`05-harita.md`** |
 | bir kararın durumu / halefi | `01-kararlar.tsv` |
 | bir kararın **gerekçesi** | `90-kronoloji/YYYY-AA.md` — aylık dilim, tam tarihçe (tsv'nin `kaynak` sütunu işaret eder) |
 | açık borç, sahip, tetikleyici | `02-borclar.md` |
@@ -63,6 +65,9 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   referansları 13 → 3 satır (kalan üçü bilerek korundu). Tek commit `50294e6`, sıfır site
   kodu. Vercel git bağlantısı `githubRepoId` üzerinden **kırılmadı**, MCP damgası ilerledi
   — ikisi de ölçüldü. Yeni borç: **B58 · B59 · B60**.
+- **B47 ✅ (11 Ağu)** — `05-harita.md` doğdu. Liste değil **otorite sırası**: ham gerçeklik →
+  kronoloji → gövde → indeks → ayna. **KARAR 482** mühürlendi (indeks, indekslediği gövdeyi
+  asla yenmez). B40 · B55 · B56 karar borcu olmaktan çıktı, mekanik yazıma indi. **B58 ✅.**
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
@@ -80,14 +85,14 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`50294e6`** (10 Ağu, B01 — klon/remote/Vercel adı) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`7f0396a`** (11 Ağu, B47 — doküman haritası) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
 | robots.txt | `Disallow: /` — **stealth sürüyor** |
 | Deploy hook | `tZR9LcwJq9` → dal **`astro-iskelet`**; Notion webhook + gece cron aynı hook'u paylaşır |
-| Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** (10 Ağu) — `.vercel.app` domainleri `ocak-site-*` kaldı, **B58** |
+| Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu) |
 | Ödeme | banka sanal POS'a geçiliyor; entegratör belirsiz, `payment-provider.ts` stub |
 
 ---
@@ -134,6 +139,9 @@ girmez; o kuyruk başka yerde yaşar.
   kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
   birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,
   sosyal medya ajans v2. Dönemin HEAD'i `e8a16dd`. → `90-kronoloji/2026-07.md`
+- **11 Ağustos:** **B47 ✅ + B58 ✅** — doküman haritası (`05-harita.md`) yazıldı,
+  KARAR 482 mühürlendi. B47 gövdesinin "harita hiçbir dosyada yok" iddiası ölçümle
+  yanlışlandı: iki kısmi harita vardı, eksik olan **otorite kuralıydı**.
 - **10 Ağustos:** **B01 ✅** — kapı işi. GitHub remote · yerel klasör · Vercel proje adı
   üçü de `ocak`. Bir commit, sıfır site kodu. CC dört sapma bildirdi, dördü de haklıydı;
   biri brief'in `N → 0` kriterinin kendi kaydını sayması (KARAR 465'in ikinci vakası).

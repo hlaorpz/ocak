@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Ağustos 2026 · **B01 ✅ kapı kapandı** — sıra artık hold'da, sıradaki işi Kaan seçer
+**Son güncelleme:** 11 Ağustos 2026 · **B47 ✅ harita** — KARAR 482; B40 · B55 · B56 mekanik yazıma indi
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -14,18 +14,23 @@
 ## SIRADAKİ İŞ
 
 **Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
-**ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → hold.**
+**ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → B47 ✅ → hold.**
 
 ⚠ **Kapı kapandı, kuyruk boşaldı.** Yazılı ölçüt: **kapı → yayını kilitleyen → tek
 turluk → kendi planını isteyen**. Kapı bitti; yayını kilitleyen üç halkanın üçü de
 doküman dışı cephelerde ve sahibi Kaan. Doküman hattında sırada **tek turluk** işler
-var: **B47** (harita — en küçük iş, en geniş etki) sonra **B44** (bayat `@ocak.life`
-taraması). Seçim Kaan'ın; bu satır sırayı önerir, dayatmaz.
+var. **B47 ✅ kapandı (11 Ağu)** ve arkasından üç borç açtı: KARAR 482 sayesinde
+**B40 · B55 · B56** karar borcu olmaktan çıkıp mekanik yazıma indi — **üçü tek turda
+kapanabilir**, en ucuz iş şimdi bu. Sonra **B44** (bayat `@ocak.life` taraması).
+Seçim Kaan'ın; bu satır sırayı önerir, dayatmaz.
+
+⚠ **`00-durum.md` cap'e yaklaştı** (192/200, KARAR 457). Bir sonraki dönem bloğu
+eklenmeden önce en eski blok kronolojiye iner. Kendi turu gerekir, borç değil bakım.
 
 ⚠ **"Fırsat buldukça" bir kuyruk değildir.** İkinci dalga bittiğinde geriye yalnız
-borçlar kalıyor — bugün **36 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
-11 Ağustos, B01 kapanışı ve B58/B59/B60 açılışı sonrası; yöntem: `^## B` başlıkları
-60, damgası `[✅❌]` olan 22 kapandı, `[⏸🔵]` olan 2 iş değil, kalan 36). Sıra
+borçlar kalıyor — bugün **34 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
+11 Ağustos, B47 ve B58 kapanışı sonrası; yöntem: `^## B` başlıkları 60,
+damgası `[✅❌]` olan 24 kapandı, `[⏸🔵]` olan 2 iş değil). Sıra
 ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
 isteyen**, sahibe göre üç paralel hat. Aşağıdaki tablo o sırayı taşır.
 B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.
@@ -151,6 +156,13 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **11 Ağustos — B47 ✅ harita + B58 ✅** (1 commit, sıfır site kodu)
+  `05-harita.md` doğdu — liste değil **otorite sırası** (ham gerçeklik → kronoloji →
+  gövde → indeks → ayna) + dosya sözleşmeleri. **KARAR 482** mühürlendi: indeks,
+  indekslediği gövdeyi asla yenmez. B40 · B55 · B56 mekanik yazıma indi.
+  B47'nin "harita hiçbir dosyada yok" başlığı ölçümle yanlışlandı — iki kısmi harita
+  vardı; üçüncü vaka. B58 kapandı: `branchAlias` proje adından yeniden türedi, teşhis
+  yanlıştı. → `90-kronoloji/2026-08.md`
 - **10 Ağustos — B01 ✅ kapı** (1 commit, sıfır site kodu)
   Klon · remote · Vercel proje adı üçü de `ocak`. Canlı yol referansları 13 → 3
   (kalan üçü bilerek korundu, sıfır kriteri yazılamazdı — KARAR 465'in ikinci vakası).
