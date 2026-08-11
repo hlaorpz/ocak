@@ -481,3 +481,4 @@ no	tarih	baslik	durum	iliski	kaynak
 480	2026-08-09	Çapa sözleşmesi iki eksenlidir — çözüm sonucu (`capa_cinsi`) ile çapanın kökeni (`capa_kaynagi`) ayrı alanlarda yaşar	KALICI	←466 · ↔472	2026-08.md#k480
 481	2026-08-09	Ölçüm aracı kendi zeminindeki kusuru bayrakla döndürür — sığ çapa `siglik: true` ile döner	KALICI	←456 · ↔470	2026-08.md#k481
 482	2026-08-11	Otorite sırası: indeks, indekslediği gövdeyi asla yenmez	KALICI	←102 · ↔456	2026-08.md#k482
+483	2026-08-11	Belgenin düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz	KALICI	←470 · ↔465	2026-08.md#k483

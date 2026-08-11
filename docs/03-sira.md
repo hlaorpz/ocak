@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Ağustos 2026 · **B47 ✅ harita** — KARAR 482; B40 · B55 · B56 mekanik yazıma indi
+**Son güncelleme:** 11 Ağustos 2026 · **B40 · B55 · B56 ✅** — KARAR 483; `00-durum.md` cap'i tahliye edildi
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -14,23 +14,27 @@
 ## SIRADAKİ İŞ
 
 **Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
-**ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → B47 ✅ → hold.**
+**ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → B47 ✅ → B40 · B55 · B56 ✅ → hold.**
 
 ⚠ **Kapı kapandı, kuyruk boşaldı.** Yazılı ölçüt: **kapı → yayını kilitleyen → tek
 turluk → kendi planını isteyen**. Kapı bitti; yayını kilitleyen üç halkanın üçü de
 doküman dışı cephelerde ve sahibi Kaan. Doküman hattında sırada **tek turluk** işler
-var. **B47 ✅ kapandı (11 Ağu)** ve arkasından üç borç açtı: KARAR 482 sayesinde
-**B40 · B55 · B56** karar borcu olmaktan çıkıp mekanik yazıma indi — **üçü tek turda
-kapanabilir**, en ucuz iş şimdi bu. Sonra **B44** (bayat `@ocak.life` taraması).
+var. **B47 ✅ → B40 · B55 · B56 ✅ (11 Ağu).** KARAR 482 üçünü tek turda kapattırdı;
+bir kuralın işe yaradığının ölçüsü açık borçları ucuzlatmasıdır. Sırada **B44**
+(bayat `@ocak.life` taraması, tek turluk) ve **B45** (tek satır, gövdesi öyle diyor).
+Bekletmenin maliyeti olan tek borç **B36-b** — 71 kararın kronoloji kaydı hiç yazılmadı
+ve hatırlanarak yazılacak; diğerleri bugün ne kadar pahalıysa altı ay sonra da o kadar.
 Seçim Kaan'ın; bu satır sırayı önerir, dayatmaz.
 
-⚠ **`00-durum.md` cap'e yaklaştı** (192/200, KARAR 457). Bir sonraki dönem bloğu
-eklenmeden önce en eski blok kronolojiye iner. Kendi turu gerekir, borç değil bakım.
+✅ **`00-durum.md` cap'i tahliye edildi (11 Ağu, 184/200).** ADIM 1–6 blokları
+`90-kronoloji/2026-08.md`'ye **taşındı**, silinmedi (KARAR 61 · 457). "Kendi turu
+gerekir" denmişti; gerekmedi — kapanış patch'i cap'e dayandığı için tahliye zorunlu
+oldu ve aynı turda yapıldı. **Bakım kendi turunu bekleyemez, işi bloke ederse öne geçer.**
 
 ⚠ **"Fırsat buldukça" bir kuyruk değildir.** İkinci dalga bittiğinde geriye yalnız
-borçlar kalıyor — bugün **34 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
-11 Ağustos, B47 ve B58 kapanışı sonrası; yöntem: `^## B` başlıkları 60,
-damgası `[✅❌]` olan 24 kapandı, `[⏸🔵]` olan 2 iş değil). Sıra
+borçlar kalıyor — bugün **31 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
+11 Ağustos, B40 · B55 · B56 kapanışı sonrası; yöntem: `^## B` başlıkları 60,
+damgası `[✅❌]` olan 27 kapandı, `[⏸🔵]` olan 2 iş değil). Sıra
 ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
 isteyen**, sahibe göre üç paralel hat. Aşağıdaki tablo o sırayı taşır.
 B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.
@@ -157,6 +161,13 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **11 Ağustos (ikinci tur) — B40 · B55 · B56 ✅** (1 commit, sıfır site kodu)
+  KARAR 482'nin ilk uygulaması: üç borç da "önce karar" şartını düşürdü ve tek turda
+  kapandı. `61/88` → `61` (88 KIRPMA'nın halefi, kardeşi değil). Sahip tablosu
+  gövdelerden türetildi, beş bayat kalem çıktı. Ledger düzeltildi, kronoloji şerh aldı.
+  **KARAR 483** mühürlendi — düzyazı rakamı kendi gövdesiyle sınanır, dört ölçülmüş vaka.
+  Dört satır bilerek bırakıldı (iddia satırdan görünmüyordu). `00-durum.md` cap'i
+  aynı turda tahliye edildi. → `90-kronoloji/2026-08.md`
 - **11 Ağustos — B47 ✅ harita + B58 ✅** (1 commit, sıfır site kodu)
   `05-harita.md` doğdu — liste değil **otorite sırası** (ham gerçeklik → kronoloji →
   gövde → indeks → ayna) + dosya sözleşmeleri. **KARAR 482** mühürlendi: indeks,

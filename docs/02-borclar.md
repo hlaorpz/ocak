@@ -1,13 +1,13 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ağustos 2026 · B47 ✅ · B58 ✅ · B40 · B55 · B56 yeniden sınıflandı
+**Son güncelleme:** 11 Ağustos 2026 · B40 ✅ · B55 ✅ · B56 ✅ — KARAR 482'nin ilk uygulaması
 
-**Durum:** 60 madde · **34 açık iş** · 24 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 60 madde · **31 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **60**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **24** (`✅ KAPANDI` · `✅ ÇÖZÜLDÜ` ·
 `✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` biçimlerinin hepsi). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 60 − 24 − 2 = **34**. Ölçüm anı: **B47 ve B58 kapandıktan sonra**, 11 Ağustos 2026.
+Açık = 60 − 27 − 2 = **31**. Ölçüm anı: **B40 · B55 · B56 kapandıktan sonra**, 11 Ağustos 2026.
 Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
 eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
 
@@ -26,13 +26,13 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 |---|---|
 | **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
 | **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 |
-| **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B40 · B41 · B43 · B44 · B49 · B52 · B55 · B56 · B59 |
+| **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 |
 
 > **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
 > `**Sahip:**` satırı geçerlidir; tablo ondan türetilir, ters yön hiçbir zaman yapılmaz.
 > Devir zincirinin **ilk halkası** yazılır — tam zincir gövdede. İş değil sayılanlar
 > (B26 ⏸ · B30 🔵) ve alt maddeler (B36-a · B44-a) tabloda görünmez.
-> Türetme: 11 Ağustos 2026, 34 açık madde.
+> Türetme: 11 Ağustos 2026 (ikinci tur), 31 açık madde.
 | **CC (kod teyidi)** | B34 ✅ |
 | **İçerik (Advaita/Kaan)** | B04 · B08 |
 | **Planlı, tarih yok** | B30 (kilit — `EtkinlikKart.astro` silinmez) |
@@ -589,7 +589,7 @@ kendisi işe yarıyor (KARAR 61 ruhu).
   kapsamı şimdiden genişletilmez.
 - **Kaynak:** ADIM 4 açılış paketi hazırlığı, 8 Ağustos 2026.
 
-## B40 — "KIRPMA YASAĞI 61/88" konvansiyonu yanlış
+## B40 — "KIRPMA YASAĞI 61/88" konvansiyonu yanlış ✅ KAPANDI (11 Ağu, commit `b72c539`)
 
 - ⚠ **Yeniden sınıflandı (11 Ağu, B47):** karar borcu değil, **mekanik yazım**.
   KARAR 482 kural 1(c): *konvansiyon, işaret ettiği kararla birlikte doğrulanır.*
@@ -607,6 +607,24 @@ kendisi işe yarıyor (KARAR 61 ruhu).
   Varsa "61/88" korunur ve 88'in ledger başlığı eksik demektir; yoksa doküman
   genelinde `KARAR 61` tekilleştirilir. CLAUDE.md bugün **61** yazıyor.
 - **Kaynak:** ADIM 4 hazırlık ölçümü, 8 Ağustos 2026.
+- **Kapanış (11 Ağu, commit `b72c539`):** konvansiyon `KARAR 61`'e tekilleştirildi.
+  **Ölçüm (Claude.ai, `2026-05.md:3742`):** KARAR 88 bir **dosya yapısı** kararıdır —
+  master prompt'u `ocak-cekirdek.md` + `ocak-arsiv.md` diye ayırır — ve ikinci yarısı
+  *"Tam Dosya Değişim Modu"*, gövdesinde açıkça *"KARAR 61'in patch protokolü iki dosyalı
+  yapı için yetersiz kalıyordu"* diyerek patch modunun **yerine geçer**. Yani 88 KIRPMA'nın
+  kardeşi değil **halefi**, ve kendisi `→145` ile SUPERSEDE; patch modu sonradan KARAR 462
+  ile geri geldi. KIRPMA metni 61'e ait: `20-ref-protokoller.md:107`.
+- **Kriter 28 → 26, sıfır değil ve olamaz** (KARAR 465). Canlı düzeltme **2 satır**
+  (`00-durum.md` · `02-borclar.md`). Kalan 26 üç dokunulmaz kümede: `90-kronoloji/` 16
+  (6 dosya) · `_uretilen/` 7 (3 dosya) · bu maddenin kendi gövdesi 3.
+- ⚠ **Kronoloji banner'ları bilerek bırakıldı.** `2026-02.md:4` ve `2026-05.md:4`
+  *"Append-only. KIRPMA YASAĞI (KARAR 61/88) — bu dosya düzenlenmez"* diyor. Tarihsel
+  kayıt değil, dosya hakkında **canlı beyan** — düzeltmek cazipti. Append-only dosyaya
+  "sadece banner'a" dokunmak emsal açar; kozmetik kazanç emsal riskini karşılamıyor
+  (KARAR 482 kural 1b).
+- ⚠ **Brief'in sayısı yanlıştı:** düzyazı "24 satır" dedi, kendi tablosu 28'e topluyordu,
+  ölçüm de 28 verdi. Alt küme dağılımı da uydurmaydı (kronoloji 20 dedi, 16). CC ADIM 0'da
+  yakaladı ve DURDU. → **KARAR 483**.
 
 ## B41 — Ledger'da tema sütunu yok, `marka` profili filtreleyemiyor
 
@@ -1009,7 +1027,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   *izlenen ama servis edilmeyen*. Bu tur boyunca sözleşme sunucunun kendi kodu görülmeden
   yazıldı. `kapsam_kurali` bunu artık söylüyor.
 
-## B55 — `02-borclar.md`'nin sahip tablosu ile gövdeler ayrışmış
+## B55 — `02-borclar.md`'nin sahip tablosu ile gövdeler ayrışmış ✅ KAPANDI (11 Ağu, commit `b72c539`)
 
 - ⚠ **Yeniden sınıflandı (11 Ağu, B47):** "önce sözlük kararı" şartı **düştü**.
   KARAR 482 kural 1(a) cevabı veriyor: *indeks, indekslediği gövdeyi asla yenmez.*
@@ -1035,8 +1053,26 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış kriteri:** sözlük kararı yazılı **ve** tablo gövdelerden türetilmiş
   **ve** hangisinin otorite olduğu dosyada beyan edilmiş. `grep` sıfırı kriter değildir.
 - **Kaynak:** ADIM 7 kapanış patch'i ADIM 0 raporu, 10 Ağustos 2026.
+- **Kapanış (11 Ağu, commit `b72c539`):** tablo gövdelerden **yeniden türetildi**.
+  Yön tek: gövde → tablo; ters yön hiçbir koşulda (KARAR 482 kural 1a). Tablo artık
+  indeks olduğunu kendi altında **beyan ediyor** — kapanış kriterinin üçüncü ayağı buydu.
+- **Türetme kuralları:** yalnız açık maddeler · alt maddeler girmez · devir zincirinin
+  **ilk halkası** yazılır (tam zincir gövdede) · parantezli nitelemeler düşer ·
+  iş değil ikilisi tabloya girmez.
+- **Çıkan beş bayat kalem:** `B42 ✅` · `B37 ✅` (kapanmış) · `B36-a` · `B36-b` ·
+  `B28-kalan ayak` (alt madde / kapanmış madde ayağı). **B19** vurgusu korundu.
+- **Küme eşitliği doğrulandı:** `diff` boş, tablo 34 = açık madde 34.
+- ⚠ **Brief'in aracı eksikti, kriteri değil.** Türetme awk'ı yalnız `- [ ] **Sahip:**`
+  kalıbını arıyordu; **B38 ve B39** checkbox'sız `- **Sahip:**` biçimi kullanıyor ve
+  düşüyorlardı. CC ADIM 0'da yakaladı. Küme eşitliği kriteri bunu zaten tutacaktı —
+  **kriterin doğru olması aracın doğru olmasını garanti etmiyor.**
+- ⚠ **Kurallarda karşılığı olmayan bir durum:** üç maddede **ortak sahiplik** var
+  (B12 · B53 `Kaan+CC` · B60 `CC+Kaan`). Kural yalnız devir zincirini (`→`) kapsıyordu.
+  CC ilk adı aldı ve raporladı; doğru karar: "tablo toplamı = açık madde sayısı" kriteri
+  bir maddenin iki satırda görünmesini zaten yasaklıyor, ve "indeks giriş noktasını verir"
+  ilkesi aynı yere çıkıyor. **Kural metni bunu söylemeliydi; söylemiyordu.**
 
-## B56 — KARAR 478/479'un tarihi bir gün ileri
+## B56 — KARAR 478/479'un tarihi bir gün ileri ✅ KAPANDI (11 Ağu, commit `b72c539`)
 
 - ⚠ **Yeniden sınıflandı (11 Ağu, B47):** "önce kural" şartı **düştü**. KARAR 482
   kural 1(b) cevabı veriyor: *türetilmiş dosya düzeltilir, append-only dosya not alır.*
@@ -1065,6 +1101,31 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış kriteri:** kural yazılı **ve** iki dosyaya ayrı ayrı uygulanmış **ve**
   hangisinin düzeltildiği hangisinin not aldığı dosyada beyan edilmiş.
 - **Kaynak:** ADIM 7 ikinci dalga ADIM 0, DUR-8 (9 Ağustos 2026).
+- **Kapanış (11 Ağu, commit `b72c539`):** iki dosya **bilerek aynı işlemi görmedi**
+  (KARAR 482 kural 1b). `01-kararlar.tsv` türetilmiştir → 478/479'un `tarih` alanı
+  `2026-08-10` → `2026-08-09` **düzeltildi** (`NF!=6` 0, kalan `2026-08-10` satırı 0).
+  `90-kronoloji/2026-08.md` append-only'dir → başlık **değişmedi**, `:1109`'a **şerh**
+  düşüldü.
+- **Şerh dosya sonuna değil, yanlış başlığın hemen altına kondu.** KARAR 61 silmeyi ve
+  yeniden yazmayı yasaklar, **şerh düşmeyi değil**; 400 satır ötede duran bir not o bloğu
+  okuyana hiç görünmez ve varlık sebebi ortadan kalkar.
+- ⚠ **Kronolojide `## 10 Ağustos 2026` başlığı iki kez geçiyor** — `:1107` yanlış
+  (9 Ağustos işi, şerhli) · `:1381` doğru (B01). Şerh ayrımı yazıyor.
+- **Çapalar etkilenmedi:** `#k478`/`#k479` **karar satırlarına** çözülüyor (`:1158` · `:1209`),
+  tarih başlığına değil.
+- ⚠ **KALINTI — bilerek bırakıldı, dört satır.** `02-borclar.md`'de dört `10 Ağustos`
+  referansı muhtemelen 9 Ağustos işine ait ama **iddia satırın kendi metninden
+  görünmüyor**: B53'ün `Kaynak` satırı ("ADIM 7 ek brief" diyor, dalga demiyor) ·
+  B54'ün `Ölçüm` satırı (tur adı yok) · B55'in `Ölçüm` ve `Kaynak` satırları
+  ("kapanış patch'i" hangisi belirsiz). Şart "iddia satırdan görünsün"dü; görünmeyeni
+  düzeltmek tahmin olurdu. Canlı `10 Ağu` toplamı 29 → 23.
+  ⚠ Satır numaraları `b72c539` sonrası geçerlidir; bir sonraki yazımda kayar —
+  bu kalıntıya dönülürse **içerikten** aranır, numaradan değil.
+- ⚠ **Ölçüm zemini tur ortasında kaydı.** ADIM 0'daki satır numaraları ADIM 1–2'nin
+  +5 satırıyla geçersizleşti; numaraya göre düzeltilseydi sekiz satırın hepsi yanlış
+  yere yazılacaktı. CC ilk denemede fark etti ve içerikten yeniden ölçtü. Bu, KARAR 465'in
+  akrabası ama aynısı değil: 465 *ölçen metin ölçtüğü dizeyi içerir* der, buradaki
+  *ölçen işlem ölçtüğü zemini kaydırır*.
 
 ## B57 — connector araç listesi sessizce bayatlıyor
 

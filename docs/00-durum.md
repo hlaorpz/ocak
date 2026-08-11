@@ -1,13 +1,13 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Ağustos 2026 · **B47 ✅ harita** — otorite sırası yazıldı, KARAR 482
+**Son güncelleme:** 11 Ağustos 2026 · **B40 · B55 · B56 ✅** — KARAR 482'nin ilk uygulaması; KARAR 483
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 192 satır (`python3`, 11 Ağustos). ⚠ Cap'e yaklaşıldı — bir sonraki dönem
-> bloğu eklenmeden önce en eskisi kronolojiye iner.*
+> *Şu an: 184 satır (`python3`, 11 Ağustos). ADIM 1–6 blokları kronolojiye indi
+> (11 Ağu tahliyesi); pay yeniden açıldı.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -34,24 +34,9 @@ repo kökünde, `baglam.sh` beş profille çalışıyor, project files boşaltı
 Railway'de canlı. **Faz kapanmadı** — `docs_karar(no)` ve bağlantının kalıcı ucu ikinci dalgada.
 Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı ve EK'ini okumadan brief yazma** (gövde dokuz yerinden bayat; ilk altısı 7 Ağu kaydında, üçü 8 Ağu ekinde).
 
-- **ADIM 1–2 ✅** — KARAR envanteri + ledger durum sütunu (453 satır).
-- **ADIM 3 ✅** — Pilot bölünmesi + bu dosya + `20-ref-*` beşlisi + kronoloji dilimleri.
-- **ADIM 3b ✅** — KARAR arkeolojisi. TEYITSIZ 27 → 3. B05·B06·B13·B20 kapandı;
-  454 sahte satırı `REZERVE`'e döndü. Kalan: **B33** (ledger `kaynak` dönüşümü, CC,
-  KARAR 465) ✅ kapandı. **B32 ✅** — `ocak-referans.md` dağıtıldı; beşli yedili oldu (`20-ref-program.md` + `20-ref-marka.md`). Kaynak dönüşümü aynı turda kapandı (KARAR 467).
-- **ADIM 4 ✅** — `CLAUDE.md` (kök, dokuz bölüm) + `scripts/baglam.sh` (beş profil:
-  `kod · icerik · marka · bot · dokuman`, manifest satırı + eksik-dosya guard'ı) +
-  project files silme izni (14/14 ledger hedefi yaşıyor, sıfır `ÖLÜ`).
-  Yedi `20-ref-*` dosyasının hepsi en az bir profilde. B01 (klon yeniden adlandırma) açık.
-- **ADIM 5 ✅** — `ocak-arsivci` · `ocak-teshis` · `ocak-lint` doğdu; `skill-sync.sh`
-  symlink+zip (KARAR 473). B42 kapandı. `ocak-notion` sapması ADIM 6'da çözüldü (KARAR 477).
-- **B44-a ✅** — `ocak-lint` yasak-dize kapsam çelişkisi kapandı. `her yerde` kapsamı
-  altı satırda kendi tanımını yakalıyordu; tarihsel kayıt muafiyeti eklendi (KARAR 465).
-- **B36-a ✅** — desen ölçüldü, **yöntem yetersiz** çıktı (nokta örneklemesi 2/5).
-  Mekanik taşıma turu açılmadı; iş B36-b'ye devretti ve **büyüdü**.
-- **ADIM 6 ✅** — `ocak-kararci` · `ocak-metin` · `ocak-notion` doğdu; kadro altıya
-  tamamlandı (KARAR 458). Sınırlar mühürlendi: 475 kararci↔arsivci · 476 metin↔lint ·
-  477 notion dar kapsam. `ocak-metin` taslak-only, en az üç ay (KARAR 459).
+- **ADIM 1–6 ✅ (6–8 Ağu)** — ledger · Pilot bölünmesi · KARAR arkeolojisi · `CLAUDE.md`
+  + `baglam.sh` · altı skill kadrosu. Tam kayıt **11 Ağustos tahliyesiyle**
+  `90-kronoloji/2026-08.md`'ye indi (KARAR 457). Açık kalan tek ayak: **B36-b** (Claude.ai).
 - **ADIM 7 birinci dalga ✅** — `mcp/` doğdu, Railway'de canlı, claude.ai'ye bağlı.
   Korpus **git deposundan** servis edilir (KARAR 479) — 105 dosya · 63 canlı · 42 arşiv
   (`docs_envanter`, `1d6726d`). Auth zorunlu; token URL yolunda — **ödün, B53'te görünür**.
@@ -68,6 +53,10 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
 - **B47 ✅ (11 Ağu)** — `05-harita.md` doğdu. Liste değil **otorite sırası**: ham gerçeklik →
   kronoloji → gövde → indeks → ayna. **KARAR 482** mühürlendi (indeks, indekslediği gövdeyi
   asla yenmez). B40 · B55 · B56 karar borcu olmaktan çıktı, mekanik yazıma indi. **B58 ✅.**
+- **B40 · B55 · B56 ✅ (11 Ağu)** — KARAR 482'nin ilk uygulaması, tek commit `b72c539`.
+  `61/88` → `61` (88 KIRPMA'nın kardeşi değil, patch modunun halefi). Sahip tablosu
+  gövdelerden yeniden türetildi, beş bayat kalem çıktı. Ledger düzeltildi, kronoloji
+  **şerh** aldı — iki dosya bilerek aynı işlemi görmedi. **KARAR 483** mühürlendi.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
@@ -85,7 +74,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`7f0396a`** (11 Ağu, B47 — doküman haritası) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
+| `main` dönem HEAD | **`b72c539`** (11 Ağu, B40 · B55 · B56 — KARAR 482'nin ilk uygulaması) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
@@ -139,6 +128,9 @@ girmez; o kuyruk başka yerde yaşar.
   kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
   birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,
   sosyal medya ajans v2. Dönemin HEAD'i `e8a16dd`. → `90-kronoloji/2026-07.md`
+- **11 Ağustos (ikinci tur):** **B40 · B55 · B56 ✅** — KARAR 482'nin ilk uygulaması.
+  Üçü de "önce karar" şartını 482 sayesinde düşürdü. **KARAR 483** mühürlendi: brief'in
+  düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz — üç günde dört ölçülmüş vaka.
 - **11 Ağustos:** **B47 ✅ + B58 ✅** — doküman haritası (`05-harita.md`) yazıldı,
   KARAR 482 mühürlendi. B47 gövdesinin "harita hiçbir dosyada yok" iddiası ölçümle
   yanlışlandı: iki kısmi harita vardı, eksik olan **otorite kuralıydı**.
@@ -170,7 +162,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya Gün 0/Gün 1 önkoşulları | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
-| Sığ çapa onarımı **B36-a** (karar-listesi deseni, mekanik) | CC |
+| Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
 | `10-marka.md` aynasının tazelenmesi (KARAR 471, ilk tatbik) | Kaan |
 | B53 bağlantı ucu (beta bekliyor) + B51 (B53'e bağlı) | Kaan + CC |
