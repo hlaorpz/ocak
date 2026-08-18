@@ -341,19 +341,22 @@ export function tarihTrFormat(iso: string | undefined | null): string {
 /**
  * MailerLite `etkinlik_url` — buluşmanın kendi detay sayfası.
  * Kaynak Notion `Slug`; taban `astro.config.mjs` `site` ile aynı
- * (`https://ocak.biz`) — sayfanın kendi canonical'ı da oradan türer.
+ * (`https://www.ocak.biz`) — sayfanın kendi canonical'ı da oradan türer.
+ * Kanonik adres **www'lu**: köksüz `ocak.biz` 307 ile www'ye dönüyor, yani
+ * gerçekte servis eden host www. Mailde fazladan atlama olmasın diye doğrudan
+ * kanonik yazılır.
  *
  * `publicOrigin(request)` BİLEREK kullanılmadı: preview deploy'dan gelen bir
  * kayıt maile preview URL'i yazardı ve o adres deploy düşünce ölürdü. Mail
  * kalıcı bir yüzey, daima production'a bakar.
  *
- * Slug boşsa **boş string** döner — `https://ocak.biz/etkinlik/` gibi kırık bir
+ * Slug boşsa **boş string** döner — `https://www.ocak.biz/etkinlik/` gibi kırık bir
  * taban URL üretmez. Slug'sız etkinliğin detay sayfası zaten yoktur
  * (`[slug].astro` getStaticPaths onu atlar).
  */
 export function etkinlikUrlFormatla(slug: string | undefined | null): string {
   const s = (slug ?? '').trim();
-  return s ? `https://ocak.biz/etkinlik/${s}` : '';
+  return s ? `https://www.ocak.biz/etkinlik/${s}` : '';
 }
 
 export function etkinlikAdiFormatla(

@@ -5,7 +5,7 @@ import remarkOcakSections from './src/lib/remark-ocak-sections.ts';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://ocak.biz',
+  site: 'https://www.ocak.biz',
   output: 'static',
   adapter: vercel({
     webAnalytics: { enabled: false }, // Lansman sonrası açılabilir

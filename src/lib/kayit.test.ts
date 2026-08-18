@@ -211,7 +211,7 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
     odemeGerekli: false,
     referansNo: 'OCAK-12345',
     etkinlikBasligi: 'Elin Neyle Dolu?',
-    etkinlikUrl: 'https://ocak.biz/etkinlik/elin-neyle-dolu',
+    etkinlikUrl: 'https://www.ocak.biz/etkinlik/elin-neyle-dolu',
   };
 
   it('on alanın hepsi HER çağrıda döner — hiçbiri atlanmaz', () => {
@@ -348,8 +348,8 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
   });
 
   it('etkinlikUrlFormatla — slug varsa tam URL, yoksa BOŞ (kırık taban üretmez)', () => {
-    expect(etkinlikUrlFormatla('elin-neyle-dolu')).toBe('https://ocak.biz/etkinlik/elin-neyle-dolu');
-    expect(etkinlikUrlFormatla('  bu-ses-kimin  ')).toBe('https://ocak.biz/etkinlik/bu-ses-kimin');
+    expect(etkinlikUrlFormatla('elin-neyle-dolu')).toBe('https://www.ocak.biz/etkinlik/elin-neyle-dolu');
+    expect(etkinlikUrlFormatla('  bu-ses-kimin  ')).toBe('https://www.ocak.biz/etkinlik/bu-ses-kimin');
     // Slug'sız etkinliğin detay sayfası YOK — taban URL basmak kırık link olurdu.
     expect(etkinlikUrlFormatla('')).toBe('');
     expect(etkinlikUrlFormatla(null)).toBe('');
@@ -358,7 +358,7 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
 
   it('etkinlik_url kapıya TABİ DEĞİL — ödeme beklerken de gider', () => {
     const f = mailerLiteCustomFields({ ...TEMEL, odemeGerekli: true });
-    expect(f.etkinlik_url).toBe('https://ocak.biz/etkinlik/elin-neyle-dolu');
+    expect(f.etkinlik_url).toBe('https://www.ocak.biz/etkinlik/elin-neyle-dolu');
     expect(f.zoom_link).toBe('');
   });
 

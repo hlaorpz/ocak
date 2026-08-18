@@ -134,7 +134,7 @@ sayısıyla kasten eşit değil.
 | alan | nereden |
 |---|---|
 | `etkinlik_adi` | **KODDAN ÜRETİLİR** — `FORMAT_TIP[format] + " — " + seciliTarih` (örn. `"Çember — 10 Eylül 2026 · 20:00"`). Notion `Başlık` DEĞİL. |
-| `etkinlik_url` | `etkinlikUrlFormatla(Notion Slug)` → `https://ocak.biz/etkinlik/{slug}`. Taban `astro.config.mjs` `site` ile aynı; `publicOrigin(request)` **bilerek kullanılmadı** — preview deploy'dan gelen kayıt maile ölü bir preview URL'i yazardı. Slug boşsa **boş string** (kırık taban URL üretilmez). |
+| `etkinlik_url` | `etkinlikUrlFormatla(Notion Slug)` → `https://www.ocak.biz/etkinlik/{slug}`. Taban `astro.config.mjs` `site` ile aynı; `publicOrigin(request)` **bilerek kullanılmadı** — preview deploy'dan gelen kayıt maile ölü bir preview URL'i yazardı. Slug boşsa **boş string** (kırık taban URL üretilmez). |
 | `etkinlik_basligi` | Notion `Başlık` title property — buluşmanın kendi adı (örn. `"Elin Neyle Dolu?"`). `etkinlik_adi` ile **ayrı yaşar**, şablonda ayrı iş yapar. Kapıya tabi değil. |
 | `etkinlik_tarihi` | form dropdown etiketi (`formatEtkinlikTarihi`, saati **içerir**); yedek yol `tarihTrFormat(Tarih)` — o saatsizdir |
 | `etkinlik_saati` | online → Notion `Zoom Başlangıç Saati` · fiziksel → Notion `Saat`. Mekâna bağlı, cross-fallback yok. Normalize edilmez: fiziksel aralık (`20:00-23:00`) aralık olarak gider. |
@@ -151,12 +151,19 @@ yan yana yazılırsa saat iki kez basılır. Kod sorunu değil, şablon sorunudu
 bilinçli olarak düzeltilmedi.
 
 ⚠ **`etkinlik_url` yayın gecikmesi taşır.** Detay sayfası ancak production build
-Notion kaydını gördükten sonra doğar (n8n gecelik rebuild `0 0 0 * * *` ya da elle
-deploy). Ölçüm 18 Ağu: `bir-esikte-duruyorsun` **200**, ama `elin-neyle-dolu` ·
-`nereye-kadar-senin` · `hangi-tohumu-ekeceksin` **404** — kayıtlar Notion'a
-girmişti, production henüz almamıştı. Yeni etkinlik açılan gün kayıt gelirse mail
-o an ölü bir linke bakar. Not: `ocak.biz` → `www.ocak.biz` **307** ile döner,
-mailde bir ek atlama olur.
+Notion kaydını gördükten sonra doğar (n8n gecelik rebuild `0 0 0 * * *`, deploy hook
+`astro-iskelet` dalına bakar). Yeni etkinlik açılan gün, rebuild'den önce kayıt
+gelirse mail o an henüz var olmayan bir sayfaya bakar.
+
+*Kanıt notu: 18 Ağu ilk ölçümde dört slug 404 dönüyordu; aynı gün ikinci ölçümde
+altısı da **200**. Fark www değil **zaman** — arada production rebuild geçti.
+Yani mekanizma gerçek, ama 404 penceresi rebuild aralığı kadar dar. Kalıcı bir
+kırıklık değil, zamanlama riski.*
+
+**Kanonik adres www'lu.** Köksüz `ocak.biz` **307** ile `www.ocak.biz`'e dönüyor;
+`etkinlik_url` doğrudan kanoniği yazar ki mailde fazladan atlama olmasın.
+`astro.config.mjs` `site` de www'ye hizalandı (18 Ağu) — canonical, `og:url`,
+`og:image` ve sitemap hepsi oradan türüyor.
 
 **Kapsam dışı:** `katilimTipiCoz` bilinmeyen/boş `Mekân/Platform` değerinde
 `link`'e düşer — fiziksel bir etkinlikte mekân boşsa adres alanları hiç gitmez

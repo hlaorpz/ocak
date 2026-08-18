@@ -28,8 +28,8 @@ const {
 } = Astro.props;
 
 const fullTitle = title === 'OCAK' ? 'OCAK · Kadınların Kadim Ateşi' : `${title} · OCAK`;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://ocak.biz').toString();
-const ogImageUrl = new URL(ogImage, Astro.site ?? 'https://ocak.biz').toString();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.ocak.biz').toString();
+const ogImageUrl = new URL(ogImage, Astro.site ?? 'https://www.ocak.biz').toString();
 
 // Sayfa slug — main[data-page] üzerinden sayfa-özel CSS override (inline ember kuralı vb.)
 const pageSlug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home';
