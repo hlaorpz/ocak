@@ -1,4 +1,4 @@
-# AÇIK KAPI — BEŞ SAYFA, DEĞİŞEN PARÇALAR
+# AÇIK KAPI — ALTI SAYFA, DEĞİŞEN PARÇALAR
 
 `SKILL.md`'nin referans dosyası. Sabit bloklar orada, tema başına değişenler burada.
 Canlı hâlleri Notion Etkinlikler DB'sinde; bu dosya kalıbın kaydıdır.
@@ -12,6 +12,7 @@ Canlı hâlleri Notion Etkinlikler DB'sinde; bu dosya kalıbın kaydıdır.
 | 3 | Düşündüğüm, Hissettiğim, Yaptığım | Hizalanma | `dusundugum-hissettigim-yaptigim` |
 | 4 | Bu Ses Kimin? | Alt sesler | `bu-ses-kimin` |
 | 5 | Kökün Nerede Kaldı? | Kök | `kokun-nerede-kaldi` |
+| 6 | Nereye Kadar Senin? | Sınır | `nereye-kadar-senin` |
 
 ---
 
@@ -28,7 +29,9 @@ Zoom'a girersin. Ekrana Advaita gelir, bir mum yakar, niyetini söyler. İsterse
 
 [TEMA PARAGRAFI — "Önce tema açılır: …" ile başlar, üç öğe sayar]
 
-Sonra somut bir pratik. Ne olduğunu şimdiden anlatmıyoruz — anlatılınca bilgiye dönüşüyor, oysa yaşanacak bir şey. Kısa, ve hiçbir hazırlık istemiyor.
+Sonra pratik. Ne olacağını şimdiden söylemiyoruz — anlatılınca bilgiye dönüşüyor, oysa yaşanacak bir şey. Kimi akşam beden konuşur, kimi akşam ses, kimi akşam sessizlik; hiçbiri hazırlık istemiyor.
+
+Ortak olan şu: pratik biterken bir şey yerinden oynamış olur. Çoğu zaman küçüktür, çoğu zaman beklediğin yerden gelmez, çoğu zaman o akşam değil ertesi sabah gelir. Kimse onu senin yerine adlandırmaz; sen görürsün, biz alanı tutarız.
 
 Sonra sorular. Sohbet penceresine yazarsın, Advaita okur ve konuşur. Hiçbir şey yazmadan sadece durmak da olur.
 
@@ -39,13 +42,14 @@ Kimse düzeltilmiyor. Kimseye tavsiye verilmiyor. Reçete vermiyoruz, alan tutuy
 Kapanışta bir nefes, sonra mum söner. Ateş içimize taşınır.
 ```
 
-Beş tema paragrafı:
+Altı tema paragrafı:
 
 1. eşik ne demek, kadın oraya nasıl gelir, orada durmak neye benzer. Neden bazı geçişler yıllarca sürer, neden bazıları bir gecede olur.
 2. niyet nedir, istekten nasıl ayrılır, neden bazı istekler yerine geldiğinde bile doyurmaz.
 3. zihin, duygu ve eylem nasıl ayrı düşer, beden bunu nereden haber verir, uyumsuzluk neyi korumaya çalışır.
 4. içeride konuşan sesler nereden gelir, hangisi senin, hangisi devraldığın. Ve bir sesi susturmakla duymak arasındaki fark.
 5. kök nedir, toprakla mı taşınır yoksa insanla mı, ve bir kadın geride bıraktığını nasıl yanına alır.
+6. sınır nerede geçer, onu kim çizmiş, ve neden hayır demek bazen bir şeyi kaybetmek gibi hissettirir.
 
 ---
 
@@ -61,6 +65,7 @@ Açılış vuruşu `giris`ten hemen sonra, kapanış vuruşu kayıt butonunun ü
 | 3 | Bu üçü en son ne zaman aynı yöne baktı? | Üçünü aynı hizaya getirmek zorunda değilsin. Nerede ayrıldıklarını görmek yeter. |
 | 4 | Mesajı alındığında yol açılır. | Kimin konuştuğunu bilmek zorunda değilsin. Dinlemeye açık olman yeter. |
 | 5 | Bir eşik böyle de olur: iki yer arasında, yıllarca. | Ateş toprakta kalmadı. Seninle geldi. |
+| 6 | Bir kapı, kapanabildiği için kapıdır. | Kapamak, kimseyi dışarıda bırakmak değil. Kapının kimde olduğunu hatırlamak. |
 
 ⚠ 2·3·4 aynı kalıpta bitiyor: *"…zorunda değilsin, …yeter"*. Bilinçli — kadın butona
 basmadan önce son duyduğu şey talep değil izin. Ama **bir sonraki sayfa bu kalıbı
@@ -81,6 +86,7 @@ kısa vuruş, uzun akış, tekrar vuruş. Yalnız vuruş dizilirse metronom olur
 3. Doğru bildiğin bir şey var. / İçinden geçen başka bir şey. / Ve yaptığın, üçüncü bir şey.
 4. Bir şeyi çok istiyorsun.
 5. Bir hayat kurdun, başka bir yerde.
+6. Kapın hep açık. / Herkes içeri girebiliyor.
 
 ---
 
@@ -100,6 +106,10 @@ sayfada aynı: *"Hiçbir hazırlık gerekmiyor, hiçbir şey bilmen gerekmiyor."
 5. yeni gitmiş / yirmi yıldır orada · kendi dilinde ağlayacak kimsesi olmayan ·
    çocuğu anadilini yarım konuşan · cenazeye yetişemeyen · gitmeyi kendi seçtiği için
    özlemini söyleyemeyen
+6. herkese yetişen kendine sıra gelmeyen · "olur" dedikten sonra kendine kızan ·
+   hayır dediğinde sevilmemekten korkan · yakınlığı kaybetmemek için biraz daha veren ·
+   sınırını çoktan koymuş ama arkasında yalnız kalmış (— "bu geri adım değil, başka
+   bir yerden bakmak")
 
 ---
 
@@ -117,10 +127,13 @@ sayfada aynı: *"Hiçbir hazırlık gerekmiyor, hiçbir şey bilmen gerekmiyor."
 4. Burada hiçbir sesi kovmuyoruz. Duyulmamış bir ses susmaz — yolunu keserek konuşur.
 5. Kimse sana dönmeni söylemeyecek. Kalmanı da. Burada mesele gitmek ya da kalmak
    değil — neyi yanında taşıdığını görmek.
+6. Burada kimseye hayır demek öğretilmiyor. Sınır bir teknik değil — nerede bittiğini
+   bilen bir kadının duruşu. Bir akşamlığına o duruşun içeriden nasıl göründüğüne
+   bakarsın; sonrasını sen bilirsin.
 
 ---
 
-## KAYIT SORULARI — beş üçlü
+## KAYIT SORULARI — altı üçlü
 
 **1 · Eşik**
 - Şu an neyin eşiğindesin? / Bir cümle yeter. Adını koyamıyorsan onu da yaz.
@@ -147,6 +160,14 @@ sayfada aynı: *"Hiçbir hazırlık gerekmiyor, hiçbir şey bilmen gerekmiyor."
 - Orada seni en çok ne tutuyor? / Kalmanın da bir sebebi var; onu yaz.
 - Bu akşamdan ne ile çıkmak isterdin? / Bilmiyorsan "bilmiyorum" da bir cevap.
 
+**6 · Sınır**
+- Şu an kime ya da neye "hayır" diyemiyorsun? / Bir isim gerekmiyor; durumu yazman yeter.
+- Hayır dediğin ve arkasında durabildiğin bir an var mı? / Ne kadar küçük olduğu önemli değil.
+- Bu akşamdan ne ile çıkmak isterdin? / Bilmiyorsan "bilmiyorum" da bir cevap.
+
+*Üçüncü soru 1 · Eşik ve 5 · Kök ile birebir aynı — üç sayfada tekrarlıyor. Kalıbın
+demiri: kadın hangi temadan gelirse gelsin son soru "ne ile çıkmak isterdin" olur.*
+
 ---
 
 ## KAYITLI SAPMA
@@ -160,8 +181,17 @@ Sabit blok kuralını bozar, gerekçesi kayıtlı.
 
 ## ÖLÇÜM KÜNYESİ
 
-Beş gövde: 2.756–2.932 karakter · dokuz `## section:` · dört H2 · sekiz madde
+Altı gövde: **2.974–3.202** karakter · dokuz `## section:` · dört H2 · sekiz madde
 (Kök'te dokuz) · iki `buyuk-vurgu`.
+
+Ölçüm: **18 Ağustos 2026**, canlı Notion Etkinlikler DB kayıtları üzerinden
+(`[...detay].length`, code point sayımı — bu makinede `awk` bayt sayıyor, kullanılmadı).
+
+**Bekleyen delta:** altı gövde de `ne-olur`un dördüncü paragrafını **iki cümleli**
+taşıyor. Yukarıdaki sabit blok üç cümleli kanonik hâli yazar (KARAR 373); üçüncü uç
+(*"…çoğu zaman o akşam değil ertesi sabah gelir"*) her gövdeye **+45 karakter** ekler.
+Kaan Notion kayıtlarını geçirince aralık **3.019–3.247** olur ve bu künye yeniden
+ölçülür. Çember'in dört gövdesi üç cümleli hâli zaten taşıyor (3.824–4.113).
 
 Render doğrulaması (production, 17 Ağu 2026): `buyuk-vurgu` → 40px Cormorant italik
 altın `#D4A855` · H2 → 32px Cormorant italik krem `#F2EAE2` · gövde → 16px Jost

@@ -19,7 +19,7 @@ Ses ve yasak dizeler bu skill'in işi değil: ses `ocak-metin`'e, dize denetimi
 
 ## ÖNCE OKU
 
-`ornekler.md` — beş Açık Kapı sayfasının değişen parçaları. Yeni sayfa yazılmadan
+`ornekler.md` — altı Açık Kapı sayfasının değişen parçaları. Yeni sayfa yazılmadan
 önce en az ikisi okunur; kalıp oradan alınır, buradan değil.
 
 ---
@@ -102,8 +102,9 @@ Yerine yürümez, yanında yürür.
 - Geç kalırsan da gel, kapı kapanmıyor
 ```
 
-`ne-olur` bloğunun da yalnız **ikinci paragrafı** temaya göre değişir; kalan altı
-paragraf sabittir (`ornekler.md`'de tam hâli).
+`ne-olur` bloğunun da yalnız **ikinci paragrafı** temaya göre değişir; kalan yedi
+paragraf sabittir (`ornekler.md`'de tam hâli). Blok sekiz paragraftır — dördüncüsü
+(*"Ortak olan şu: pratik biterken…"*) üçüncünün devamıdır, ayrılmaz.
 
 ---
 
@@ -180,8 +181,10 @@ Kurallar:
 - **Yıldız (`*`) yazma.** `buyuk-vurgu` zaten italik basar; yıldız düz metin olarak
   görünür ya da çakışır.
 - Uzun paragrafları satır ortasından bölme — kopukluk oradan gelir.
-- Gövde ~2.800–3.000 karakter. Notion rich text tek parçada 2.000 taşır; yapıştırdıktan
-  sonra **son satırın yerinde olduğu kontrol edilir**, yoksa sessizce kırpılmıştır.
+- Gövde **2.974–3.202** karakter (Açık Kapı altı gövde, 18 Ağu 2026 ölçümü; üçüncü uç
+  geçirilince 3.019–3.247 — `ornekler.md` künyesi). Çember daha uzun: 3.824–4.113.
+  Notion rich text tek parçada 2.000 taşır; yapıştırdıktan sonra **son satırın yerinde
+  olduğu kontrol edilir**, yoksa sessizce kırpılmıştır.
 
 **Yapıştırma sonrası ölçüm** (`dist/` çıktısında, kaynak dosyada değil):
 dokuz `data-section` · dört `h2` · iki `ul` · iki `buyuk-vurgu` · sıfır düz metin
