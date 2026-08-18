@@ -139,8 +139,10 @@ kalıbı görünür kılıyor: **yedinci sayfa bu cümleyi kullanmaz.**
 
 ## KAYIT SORULARI — altı üçlü
 
-Üçüncü soru dizinin ortak kapanışıdır — tekrarı kasıtlıdır, kusur değil.
-Kalan iki soru her sayfada özgündür; denge kuralı orada işler.
+Üçüncü soru dizinin varsayılan kapanışıdır (4/6 sayfada birebir aynı) — tekrarı
+kasıtlıdır, kusur değil. Sapan iki sayfa: 2 · Niyet ve 4 · Alt sesler, ikisi de
+temanın kendi kapanışını taşır. Kalan iki soru her sayfada özgündür; denge kuralı
+orada işler.
 
 **1 · Eşik**
 - Şu an neyin eşiğindesin? / Bir cümle yeter. Adını koyamıyorsan onu da yaz.
@@ -172,11 +174,10 @@ Kalan iki soru her sayfada özgündür; denge kuralı orada işler.
 - Hayır dediğin ve arkasında durabildiğin bir an var mı? / Ne kadar küçük olduğu önemli değil.
 - Bu akşamdan ne ile çıkmak isterdin? / Bilmiyorsan "bilmiyorum" da bir cevap.
 
-*Ölçüm (18 Ağu 2026, canlı Notion + bu dosya birebir uyuşuyor): ortak kapanış
-`"Bu akşamdan ne ile çıkmak isterdin?"` **altı sayfanın dördünde** var — 1 · Eşik ·
-3 · Hizalanma · 5 · Kök · 6 · Sınır. İkisi kendi üçüncüsünü taşıyor: 2 · Niyet
-(*"Kendine en son ne zaman bir şey sordun?"*) · 4 · Alt sesler (*"O ses sana kimi
-hatırlatıyor?"*). Yukarıdaki kural diziyi tarif eder; iki sapma kayıtlıdır.*
+*Ölçüm 18 Ağu 2026: canlı Notion ile bu dosya birebir uyuşuyor (altı kaydın
+`kayitSorulari` üçüncü satırı karşılaştırıldı). Sapan üçüncüler — 2 · Niyet:
+"Kendine en son ne zaman bir şey sordun?" · 4 · Alt sesler: "O ses sana kimi
+hatırlatıyor?"*
 
 ---
 
