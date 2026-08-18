@@ -8,6 +8,7 @@ import {
   resolveMiniCtaBtn,
   katilimTipiCoz,
   mailerLiteCustomFields,
+  MAILERLITE_ALANLAR,
   etkinlikAdiFormatla,
   tarihTrFormat,
   uretReferansNo,
@@ -198,84 +199,98 @@ describe('katilimTipiCoz (Brief 5 KARAR 208)', () => {
   });
 });
 
-describe('mailerLiteCustomFields (Brief Katman 2 — online/fiziksel ayrımı)', () => {
-  it('online + link + şifre dolu → etkinlik_adi + katilim_linki + zoom_link + zoom_sifresi', () => {
-    const f = mailerLiteCustomFields({
-      etkinlikAdi: 'Çember — 21 Haziran 2026',
-      katilimTipi: 'link',
-      katilimLinki: 'https://zoom.us/j/123456789',
-      zoomSifresi: 'gizli42',
+describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
+  // Alan hijyeni: HER çağrı on alanın hepsini döndürür. Geçersiz olan boş
+  // string ile yazılır — gönderilmemesi MailerLite'ta eski değeri bırakıyordu.
+  const TEMEL = {
+    etkinlikAdi: 'Çember — 21 Haziran 2026',
+    katilimTipi: 'link' as const,
+    katilimLinki: 'https://zoom.us/j/123456789',
+    zoomSifresi: 'gizli42',
+    odemeGerekli: false,
+    referansNo: 'OCAK-12345',
+    etkinlikBasligi: 'Elin Neyle Dolu?',
+  };
+
+  it('on alanın hepsi HER çağrıda döner — hiçbiri atlanmaz', () => {
+    const f = mailerLiteCustomFields({ ...TEMEL });
+    expect(Object.keys(f).sort()).toEqual([...MAILERLITE_ALANLAR].sort());
+    const bos = mailerLiteCustomFields({
+      etkinlikAdi: 'X',
+      katilimTipi: 'adres',
+      odemeGerekli: true,
+      referansNo: '',
     });
-    expect(f).toEqual({
-      etkinlik_adi: 'Çember — 21 Haziran 2026',
-      katilim_linki: 'https://zoom.us/j/123456789',
-      zoom_link: 'https://zoom.us/j/123456789',
-      zoom_sifresi: 'gizli42',
-    });
+    expect(Object.keys(bos).sort()).toEqual([...MAILERLITE_ALANLAR].sort());
   });
 
-  it('online + link dolu + şifre BOŞ → zoom_sifresi SKIP', () => {
-    const f = mailerLiteCustomFields({
-      etkinlikAdi: 'Seremoni — 21 Haziran 2026',
-      katilimTipi: 'link',
-      katilimLinki: 'https://zoom.us/j/abc',
-      zoomSifresi: '',
-    });
-    expect(f).toEqual({
-      etkinlik_adi: 'Seremoni — 21 Haziran 2026',
-      katilim_linki: 'https://zoom.us/j/abc',
-      zoom_link: 'https://zoom.us/j/abc',
-    });
-    expect(f).not.toHaveProperty('zoom_sifresi');
+  it('online + ödeme YOK → katılım alanları dolu, mekân/adres boş', () => {
+    const f = mailerLiteCustomFields({ ...TEMEL });
+    expect(f.katilim_linki).toBe('https://zoom.us/j/123456789');
+    expect(f.zoom_link).toBe('https://zoom.us/j/123456789');
+    expect(f.zoom_sifresi).toBe('gizli42');
+    expect(f.etkinlik_mekan).toBe('');
+    expect(f.etkinlik_adres).toBe('');
+    expect(f.odeme_durumu).toBe('muaf');
   });
 
-  it('online + link BOŞ → SADECE etkinlik_adi (C-1: katilim_linki + zoom_* SKIP)', () => {
-    const f = mailerLiteCustomFields({
-      etkinlikAdi: 'Seremoni — 21 Haziran 2026',
-      katilimTipi: 'link',
-      katilimLinki: '',
-      zoomSifresi: '',
-    });
-    expect(f).toEqual({ etkinlik_adi: 'Seremoni — 21 Haziran 2026' });
+  it('ÖDEME KAPISI — online + ödeme gerekli → zoom alanları BOŞ', () => {
+    const f = mailerLiteCustomFields({ ...TEMEL, odemeGerekli: true });
+    expect(f.katilim_linki).toBe('');
+    expect(f.zoom_link).toBe('');
+    expect(f.zoom_sifresi).toBe('');
+    // Kapı kapalı olsa da kimlik alanları gider — kadın kaydının ulaştığını bilmeli.
+    expect(f.etkinlik_adi).toBe('Çember — 21 Haziran 2026');
+    expect(f.referans_no).toBe('OCAK-12345');
+    expect(f.odeme_durumu).toBe('bekliyor');
+    // Buluşmanın kendi adı kapıya tabi değil — ödeme beklerken de gider.
+    expect(f.etkinlik_basligi).toBe('Elin Neyle Dolu?');
   });
 
-  it('fiziksel + mekan + adres dolu → etkinlik_mekan + etkinlik_adres (zoom_* YOK)', () => {
+  it('ÖDEME KAPISI — fiziksel + ödeme gerekli → adres BOŞ ama mekân GİDER', () => {
     const f = mailerLiteCustomFields({
       etkinlikAdi: 'İstanbul — 18 Haziran 2026',
       katilimTipi: 'adres',
       mekan: 'İstanbul',
       mekanAdres: 'Kadıköy, Moda',
+      odemeGerekli: true,
+      referansNo: 'OCAK-77777',
     });
-    expect(f).toEqual({
-      etkinlik_adi: 'İstanbul — 18 Haziran 2026',
-      etkinlik_mekan: 'İstanbul',
-      etkinlik_adres: 'Kadıköy, Moda',
-    });
-    expect(f).not.toHaveProperty('zoom_link');
-    expect(f).not.toHaveProperty('katilim_linki');
-    expect(f).not.toHaveProperty('zoom_sifresi');
+    expect(f.etkinlik_adres).toBe('');
+    expect(f.etkinlik_mekan).toBe('İstanbul');
+    expect(f.odeme_durumu).toBe('bekliyor');
   });
 
-  it('fiziksel + adres BOŞ → SADECE etkinlik_adi + etkinlik_mekan', () => {
+  it('fiziksel + ödeme YOK → mekân + adres dolu, zoom alanları boş', () => {
     const f = mailerLiteCustomFields({
       etkinlikAdi: 'İstanbul — 18 Haziran 2026',
       katilimTipi: 'adres',
       mekan: 'İstanbul',
-      mekanAdres: '',
+      mekanAdres: 'Kadıköy, Moda',
+      odemeGerekli: false,
+      referansNo: 'OCAK-77777',
     });
-    expect(f).toEqual({
-      etkinlik_adi: 'İstanbul — 18 Haziran 2026',
-      etkinlik_mekan: 'İstanbul',
-    });
+    expect(f.etkinlik_mekan).toBe('İstanbul');
+    expect(f.etkinlik_adres).toBe('Kadıköy, Moda');
+    expect(f.katilim_linki).toBe('');
+    expect(f.zoom_link).toBe('');
+    expect(f.zoom_sifresi).toBe('');
   });
 
-  it('etkinlik_tarihi + etkinlik_saati dolu → her iki katilim tipinde de eklenir', () => {
+  it('format bazlı varsayım YOK — ayırıcı yalnız odemeGerekli', () => {
+    const ucretsizCember = mailerLiteCustomFields({ ...TEMEL, odemeGerekli: false });
+    const ucretliAcikKapi = mailerLiteCustomFields({
+      ...TEMEL,
+      etkinlikAdi: 'Açık Kapı — 4 Kasım 2026',
+      odemeGerekli: true,
+    });
+    expect(ucretsizCember.zoom_link).not.toBe('');
+    expect(ucretliAcikKapi.zoom_link).toBe('');
+  });
+
+  it('tarih + saat her iki katılım tipinde de yazılır', () => {
     const onl = mailerLiteCustomFields({
-      etkinlikAdi: 'Çember',
-      etkinlikTarihi: '21 Haziran 2026',
-      etkinlikSaati: '20:00',
-      katilimTipi: 'link',
-      katilimLinki: 'https://zoom.us/j/x',
+      ...TEMEL, etkinlikTarihi: '21 Haziran 2026', etkinlikSaati: '20:00',
     });
     expect(onl.etkinlik_tarihi).toBe('21 Haziran 2026');
     expect(onl.etkinlik_saati).toBe('20:00');
@@ -283,40 +298,59 @@ describe('mailerLiteCustomFields (Brief Katman 2 — online/fiziksel ayrımı)',
     const fiz = mailerLiteCustomFields({
       etkinlikAdi: 'İstanbul',
       etkinlikTarihi: '18 Haziran 2026',
-      etkinlikSaati: '19:30',
+      etkinlikSaati: '19:30-22:00',
       katilimTipi: 'adres',
       mekan: 'İstanbul',
+      odemeGerekli: false,
+      referansNo: 'OCAK-1',
     });
     expect(fiz.etkinlik_tarihi).toBe('18 Haziran 2026');
-    expect(fiz.etkinlik_saati).toBe('19:30');
+    // Fiziksel saat ARALIK kalır — normalize edilmez (madde 2-ii).
+    expect(fiz.etkinlik_saati).toBe('19:30-22:00');
   });
 
-  it('whitespace değerler trim edilir + boş whitespace SKIP', () => {
+  it('whitespace trim edilir; null/undefined boş stringe düşer', () => {
     const f = mailerLiteCustomFields({
       etkinlikAdi: 'X',
       etkinlikTarihi: '   ',
-      etkinlikSaati: undefined,
+      etkinlikSaati: null,
       katilimTipi: 'link',
       katilimLinki: '  https://zoom.us/j/abc  ',
       zoomSifresi: '  pw  ',
+      odemeGerekli: false,
+      referansNo: '  OCAK-9  ',
     });
-    expect(f).not.toHaveProperty('etkinlik_tarihi');
-    expect(f).not.toHaveProperty('etkinlik_saati');
+    expect(f.etkinlik_tarihi).toBe('');
+    expect(f.etkinlik_saati).toBe('');
     expect(f.katilim_linki).toBe('https://zoom.us/j/abc');
-    expect(f.zoom_link).toBe('https://zoom.us/j/abc');
     expect(f.zoom_sifresi).toBe('pw');
+    expect(f.referans_no).toBe('OCAK-9');
   });
 
-  it('null/undefined opsiyonel alanlar payload\'a girmez', () => {
+  it('referans_no ve odeme_durumu DAİMA yazılır (muaf dahil)', () => {
     const f = mailerLiteCustomFields({
-      etkinlikAdi: 'X',
-      etkinlikTarihi: null,
-      etkinlikSaati: null,
-      katilimTipi: 'adres',
-      mekan: null,
-      mekanAdres: undefined,
+      etkinlikAdi: 'X', katilimTipi: 'adres', odemeGerekli: false, referansNo: 'OCAK-55555',
     });
-    expect(f).toEqual({ etkinlik_adi: 'X' });
+    expect(f.referans_no).toBe('OCAK-55555');
+    expect(f.odeme_durumu).toBe('muaf');
+  });
+
+  it('etkinlik_basligi ayrı yaşar — etkinlik_adi ile karışmaz', () => {
+    const f = mailerLiteCustomFields({
+      ...TEMEL,
+      etkinlikAdi: 'Çember — 10 Eylül 2026 · 20:00',
+      etkinlikBasligi: 'Elin Neyle Dolu?',
+    });
+    expect(f.etkinlik_adi).toBe('Çember — 10 Eylül 2026 · 20:00');
+    expect(f.etkinlik_basligi).toBe('Elin Neyle Dolu?');
+  });
+
+  it('etkinlik_basligi boşsa boş string — alan yine yazılır (hijyen)', () => {
+    const f = mailerLiteCustomFields({
+      etkinlikAdi: 'X', katilimTipi: 'link', odemeGerekli: false, referansNo: 'OCAK-1',
+    });
+    expect(f).toHaveProperty('etkinlik_basligi');
+    expect(f.etkinlik_basligi).toBe('');
   });
 });
 

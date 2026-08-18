@@ -218,12 +218,27 @@ export function katilimTipiCoz(mekan: string | undefined | null): 'link' | 'adre
 }
 
 /**
- * Brief Katman 2: MailerLite custom field payload'u — online vs fiziksel
- * ayrımlı. Daima yazılan: `etkinlik_adi`, opsiyonel `etkinlik_tarihi` /
- * `etkinlik_saati`. Online (link) etkinlikte `zoom_link` + `katilim_linki`
- * (C-1 geriye uyum) + `zoom_sifresi`; fiziksel etkinlikte `etkinlik_mekan`
- * + `etkinlik_adres`. Boş/whitespace değerler payload'a hiç girmez
- * (otomasyon tarafında `{$x}` boş basmasın diye field'ı göndermeyiz).
+ * MailerLite custom field payload'u — on alan, HER kayıtta hepsi yazılır.
+ *
+ * ── Alan hijyeni (brief-mailerlite-odeme-kapisi, madde 2-i) ──
+ * Eski davranış boş değeri payload'a HİÇ koymuyordu. MailerLite subscriber
+ * alanları kalıcıdır: alan gönderilmezse önceki kayıttan kalan değer yerinde
+ * durur. Online kayıttan sonra yüz yüze kayıt yapan kadının `zoom_link`'i
+ * eskisiyle dolu kalıyordu — mail ona geçen ayın linkini gösterebiliyordu.
+ * Artık geçersiz alan **boş string** ile yazılır, böylece silinir. MailerLite
+ * koşulları (`{$x}` boş mu) ancak bu şekilde güvenilir olur.
+ *
+ * ── Ödeme kapısı (madde 1) ──
+ * `odemeGerekli` true iken katılım alanları boş gider:
+ * `katilim_linki` · `zoom_link` · `zoom_sifresi` · `etkinlik_adres`.
+ * `etkinlik_mekan` GİDER — şehir gizli bilgi değil, kadın nereye geleceğini
+ * bilmeli; gizlenen kapı numarası. Ayırıcı yalnız `odemeGerekli`; format
+ * bazlı varsayım yapılmaz (Açık Kapı da ücretli olabilir). 0-TL ve tam burs
+ * `odemeGerekli=false` ürettiği için normal akıştan geçer, ayrı dal yok.
+ * Havale de kapalıdır: para kayıttan günler sonra gelir, hiç gelmeyebilir —
+ * KARAR 220'nin success ekranına verdiği kural maile de uygulanır.
+ *
+ * Ödeme alınınca linkin gönderilmesi ayrı iştir (n8n → Notion Ödeme Durumu).
  */
 export type MailerLiteFieldGirdi = {
   etkinlikAdi: string;
@@ -238,25 +253,55 @@ export type MailerLiteFieldGirdi = {
   mekan?: string | null;
   /** Fiziksel ise adres detayı (Notion Konum Detay). */
   mekanAdres?: string | null;
+  /** Ödeme kapısı anahtarı — true ise katılım alanları boş gönderilir. */
+  odemeGerekli: boolean;
+  /** `OCAK-XXXXX` — havale açıklamasının eşleştirme anahtarı, daima yazılır. */
+  referansNo: string;
+  /**
+   * Notion `Başlık` — buluşmanın KENDİ adı ("Elin Neyle Dolu?").
+   * `etkinlikAdi` ile karıştırma: o format+tarih ("Çember — 10 Eylül 2026 ·
+   * 20:00"), bu sayfanın adı. İkisi ayrı yaşar, şablonda ayrı iş yapar.
+   */
+  etkinlikBasligi?: string | null;
 };
 
+/** MailerLite'a yazılan alanların tam listesi — envanter tek kaynak. */
+export const MAILERLITE_ALANLAR = [
+  'etkinlik_adi',
+  'etkinlik_basligi',
+  'etkinlik_tarihi',
+  'etkinlik_saati',
+  'katilim_linki',
+  'zoom_link',
+  'zoom_sifresi',
+  'etkinlik_mekan',
+  'etkinlik_adres',
+  'referans_no',
+  'odeme_durumu',
+] as const;
+
 export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, string> {
-  const fields: Record<string, string> = { etkinlik_adi: g.etkinlikAdi };
-  const ekle = (k: string, v: string | undefined | null) => {
-    if (v && v.trim()) fields[k] = v.trim();
-  };
-  ekle('etkinlik_tarihi', g.etkinlikTarihi);
-  ekle('etkinlik_saati', g.etkinlikSaati);
-  if (g.katilimTipi === 'link') {
+  const t = (v: string | undefined | null) => (v ?? '').trim();
+  const online = g.katilimTipi === 'link';
+  // Kapı açık = ödeme beklenmiyor (ücretsiz, tam burs ya da 0-TL).
+  const kapiAcik = !g.odemeGerekli;
+  return {
+    etkinlik_adi: t(g.etkinlikAdi),
+    // Buluşmanın kendi adı — kapıya tabi değil, daima gider.
+    etkinlik_basligi: t(g.etkinlikBasligi),
+    etkinlik_tarihi: t(g.etkinlikTarihi),
+    etkinlik_saati: t(g.etkinlikSaati),
     // C-1 geriye uyum: katilim_linki mevcut şablonu kırmasın diye korunur.
-    ekle('katilim_linki', g.katilimLinki);
-    ekle('zoom_link', g.katilimLinki);
-    ekle('zoom_sifresi', g.zoomSifresi);
-  } else {
-    ekle('etkinlik_mekan', g.mekan);
-    ekle('etkinlik_adres', g.mekanAdres);
-  }
-  return fields;
+    katilim_linki: online && kapiAcik ? t(g.katilimLinki) : '',
+    zoom_link: online && kapiAcik ? t(g.katilimLinki) : '',
+    zoom_sifresi: online && kapiAcik ? t(g.zoomSifresi) : '',
+    // Kapıya TABİ DEĞİL — şehir adı gizli bilgi değil.
+    etkinlik_mekan: online ? '' : t(g.mekan),
+    etkinlik_adres: !online && kapiAcik ? t(g.mekanAdres) : '',
+    referans_no: t(g.referansNo),
+    // `alindi` bu turda kod tarafından yazılmaz — n8n işi (ödeme onayı).
+    odeme_durumu: g.odemeGerekli ? 'bekliyor' : 'muaf',
+  };
 }
 
 /**

@@ -132,8 +132,10 @@ type EtkinlikOkuma = {
   zoomSifresi: string;
   /** Notion "Tarih" date.start — ISO. tarihTrFormat ile Türkçe'ye çevrilir. */
   tarihISO: string;
-  /** Notion "Zoom Başlangıç Saati" varsa o, yoksa "Saat" rich_text — "20:00" gibi. */
+  /** Online'da Notion "Zoom Başlangıç Saati", fiziksel etkinlikte "Saat" — mekâna bağlı. */
   saat: string;
+  /** Notion "Başlık" title — buluşmanın kendi adı ("Elin Neyle Dolu?"). */
+  baslik: string;
   /** Notion "Konum Detay" rich_text — fiziksel etkinliklerde adres. */
   konumDetay: string;
   /** Aşama 3b-fix — etkinlik bazlı Kayıt Tipi. Boş → 'Direkt' (eski etkinlikler için güvenli default). */
@@ -156,16 +158,25 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   const mekan = props['Mekân/Platform']?.select?.name ?? '';
   const zoomSifresi = richTextStr(props, 'Zoom Şifresi');
   const tarihISO = props['Tarih']?.date?.start ?? '';
-  // Online'da "Zoom Başlangıç Saati" (Katman 1'in yeni kolonu), fiziksel
-  // etkinliklerde mevcut "Saat" rich_text. İkisinden hangisi doluysa onu al.
+  // Online'da "Zoom Başlangıç Saati", fiziksel etkinliklerde "Saat".
+  // Alan hijyeni (madde 2-ii): eskiden `zoomSaat || klasikSaat` düz OR'du ve
+  // mekâna BAKMIYORDU. Canlı veride iki alan da dolu olduğu için Zoom saati
+  // her zaman kazanıyordu — fiziksel kakao 20:00-23:00 sürerken mailde
+  // "20:00" yazıyordu, kadına yanlış bilgi. Artık eşleme mekâna bağlı;
+  // cross-fallback YOK, çünkü fallback tam da o hatayı geri getirir.
   const zoomSaat = richTextStr(props, 'Zoom Başlangıç Saati');
   const klasikSaat = richTextStr(props, 'Saat');
-  const saat = zoomSaat || klasikSaat;
+  const saat = katilimTipiCoz(mekan) === 'link' ? zoomSaat : klasikSaat;
   const konumDetay = richTextStr(props, 'Konum Detay');
+  // Notion "Başlık" TITLE property — richTextStr rich_text okur, title değil.
+  const baslik = (props['Başlık']?.title ?? [])
+    .map((t: any) => t.plain_text ?? '')
+    .join('')
+    .trim();
   // Aşama 3b-fix — Kayıt Tipi okuma; default 'Direkt' (eski etkinlikler).
   const kayitTipiRaw = props['Kayıt Tipi']?.select?.name;
   const kayitTipi: KayitTipi = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, konumDetay, kayitTipi };
+  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, baslik, konumDetay, kayitTipi };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -643,6 +654,11 @@ export const POST: APIRoute = async ({ request }) => {
     zoomSifresi: etk.zoomSifresi,
     mekan: etk.mekan,
     mekanAdres: etk.konumDetay,
+    // Ödeme kapısı: ücret bekleyen kayıtta katılım alanları boş gider.
+    // `odemeGerekli` = hesap.toplam > 0 — kademe + askı + promo sonrası.
+    odemeGerekli,
+    referansNo,
+    etkinlikBasligi: etk.baslik,
   });
 
   // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.

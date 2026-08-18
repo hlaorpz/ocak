@@ -1,15 +1,15 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 18 Ağustos 2026 · B61 açıldı — cc-brief-v2 KARAR 1
+**Son güncelleme:** 18 Ağustos 2026 · B61 · B62 açıldı
 
-**Durum:** 61 madde · **32 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 62 madde · **33 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
-*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **61**. Kapanış ölçütü başlıktaki
+*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **62**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
 `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 61 − 27 − 2 = **32**. Ölçüm anı: **B61 açıldıktan sonra**, 18 Ağustos 2026.*
+Açık = 62 − 27 − 2 = **33**. Ölçüm anı: **B62 açıldıktan sonra**, 18 Ağustos 2026.*
 
-*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 61 · `grep '^## B' | grep -c '[✅❌]'`
+*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 62 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
 
 ⚠ *18 Ağustos düzeltmesi: bu paragraf damgalı sayısını **24** yazıyordu, ama kendi
@@ -34,7 +34,7 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
-| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 |
+| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 · B62 |
 | **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 |
 
 > **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
@@ -1256,3 +1256,23 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   bozmuyor, temizlik ise zincirli ve **ayrı commit hak ediyor**. Bu turda
   açılmadı çünkü ritim işiyle aynı commit'e girmesi mekanik dönüşüm ile semantik
   işi karıştırırdı (KARAR 61 / commit disiplini).
+
+## B62 — `katilimTipiCoz` bilinmeyen mekânda online'a düşüyor, adres alanları sessizce boş gidiyor
+- [ ] **Sahip:** CC
+- **Tetikleyici:** brief-mailerlite-odeme-kapisi (18 Ağu), madde 2-iv —
+  kapsam dışı bırakıldı, borç olarak açılması istendi.
+- **Belirti:** `kayit.ts:215` — `if (!mekan || mekan === 'Online') return 'link';`
+  Notion `Mekân/Platform` boşsa **ya da tanınmayan bir değerse** katılım tipi
+  `link` olur. Fiziksel bir etkinlikte o alan boş kalırsa MailerLite'a
+  `etkinlik_mekan` ve `etkinlik_adres` **boş** gider; kadın nereye geleceğini
+  mailden öğrenemez. Hata sessizdir — log yok, uyarı yok.
+- **Neden default böyle:** yorumda yazılı — lansman etkinlikleri 6/6 Online'dı,
+  defansif fallback bilinçli olarak online tarafa kondu. O gün doğruydu;
+  fiziksel etkinlik (Şehir Akşamı, yüz yüze kakao) sayısı arttıkça varsayım
+  ters yöne çalışmaya başladı.
+- **Bugün neden yakmıyor:** ölçüldü (18 Ağu) — canlı kayıtların hepsinde
+  `Mekân/Platform` dolu. Risk gerçek ama tetiklenmemiş.
+- **Kapanış şartı:** ya bilinmeyen değer için `console.warn` + fiziksel varsayım,
+  ya da `Mekân/Platform` boş kaydın kayıt akışına hiç girmemesi (loader guard).
+  Karar verilmeden dokunulmaz — `mekanTipi` (`etkinlik-kategori.ts:88`) zaten
+  bilinmeyen değerde `warn` basıyor, iki yüzey aynı desene çekilebilir.

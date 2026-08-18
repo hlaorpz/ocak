@@ -81,6 +81,76 @@ Toplam tahmini: 5-7 saatlik iş, dağıtık.
 
 Şu an mevcut akışta MailerLite mail template'inde Zoom linki sabit yazıyor — her etkinlik için elle güncelleniyor (yüksek işçilik). Çözüm: MailerLite'a "zoom_link", "event_title", "event_date" custom field'ları eklemek, template'te `{{zoom_link}}` placeholder kullanmak, Apps Script (sonra n8n) abone eklerken bu field'ları doldurmak. Bir kez kuruldu mu, MailerLite tarafındaki işçilik sıfıra düşer.
 
+> ⚠ **Yukarısı PLANDI, gerçekleşen hâli aşağıdadır.** Plan üç alan öngörmüştü
+> (`zoom_link`, `event_title`, `event_date`); `event_title` ve `event_date`
+> **hiç var olmadı** — isimler Türkçeleşti ve alan sayısı on bire çıktı. Plan
+> cümlesi tarihsel kayıt olarak duruyor, silinmedi (KARAR 61).
+
+#### Alan envanteri — ON BİR ALAN (ölçüm 18 Ağustos 2026)
+
+Kaynak: `src/lib/kayit.ts:243-305` (`MailerLiteFieldGirdi` + `MAILERLITE_ALANLAR:269`
++ `mailerLiteCustomFields`), çağrı yeri `src/pages/api/kayit.ts:648`, saat eşlemesi
+`src/pages/api/kayit.ts:169`. Ölçüm helper'ın dört senaryoda çalıştırılmasıyla
+alındı, koddan çıkarımla değil. Satır numaraları kayarsa `MAILERLITE_ALANLAR`
+dizisi tek kaynaktır — envanter ondan doğrulanır.
+
+Üçü bu turda eklendi — `referans_no` · `odeme_durumu` · `etkinlik_basligi`.
+MailerLite panelinde TEXT olarak **açık, 18 Ağu teyitli**. Panelde olmayan bir alan
+sessizce yutulur (hata dönmez), o yüzden kod tarafı ile panel tarafı birlikte
+denetlenir.
+
+**Her kayıtta on birinin hepsi yazılır.** Geçersiz olan **boş string** ile gider,
+atlanmaz — atlanırsa MailerLite subscriber'da önceki kayıttan kalan değer
+yerinde kalıyor ve mail geçen ayın linkini gösterebiliyordu.
+
+| alan | online · ödeme yok | online · ödeme var | fiziksel · ödeme yok | fiziksel · ödeme var |
+|---|---|---|---|---|
+| `etkinlik_adi` | dolu | dolu | dolu | dolu |
+| `etkinlik_basligi` | dolu | dolu | dolu | dolu |
+| `etkinlik_tarihi` | dolu | dolu | dolu | dolu |
+| `etkinlik_saati` | dolu | dolu | dolu | dolu |
+| `katilim_linki` | **dolu** | boş | boş | boş |
+| `zoom_link` | **dolu** | boş | boş | boş |
+| `zoom_sifresi` | **dolu** | boş | boş | boş |
+| `etkinlik_mekan` | boş | boş | **dolu** | **dolu** |
+| `etkinlik_adres` | boş | boş | **dolu** | boş |
+| `referans_no` | dolu | dolu | dolu | dolu |
+| `odeme_durumu` | `muaf` | `bekliyor` | `muaf` | `bekliyor` |
+
+**Ödeme kapısı.** `odemeGerekli === true` iken katılım alanları boş gider:
+`katilim_linki` · `zoom_link` · `zoom_sifresi` · `etkinlik_adres`.
+`etkinlik_mekan` kapıya tabi değildir — şehir adı gizli bilgi değil, gizlenen
+kapı numarasıdır. Ayırıcı **yalnız** `odemeGerekli` (`hesap.toplam > 0`);
+format bazlı varsayım yapılmaz, Açık Kapı da ücretli olabilir. Havale de
+kapalıdır (para kayıttan günler sonra gelir, hiç gelmeyebilir) — KARAR 220'nin
+success ekranına verdiği kural maile de uygulanır, iki yüzey tek kural.
+
+**Değerlerin kaynağı** — on bir alan, **on satır**: `katilim_linki` ile `zoom_link`
+aynı Notion alanından beslendiği için tek satırda birleşti. Satır sayısı alan
+sayısıyla kasten eşit değil.
+
+| alan | nereden |
+|---|---|
+| `etkinlik_adi` | **KODDAN ÜRETİLİR** — `FORMAT_TIP[format] + " — " + seciliTarih` (örn. `"Çember — 10 Eylül 2026 · 20:00"`). Notion `Başlık` DEĞİL. |
+| `etkinlik_basligi` | Notion `Başlık` title property — buluşmanın kendi adı (örn. `"Elin Neyle Dolu?"`). `etkinlik_adi` ile **ayrı yaşar**, şablonda ayrı iş yapar. Kapıya tabi değil. |
+| `etkinlik_tarihi` | form dropdown etiketi (`formatEtkinlikTarihi`, saati **içerir**); yedek yol `tarihTrFormat(Tarih)` — o saatsizdir |
+| `etkinlik_saati` | online → Notion `Zoom Başlangıç Saati` · fiziksel → Notion `Saat`. Mekâna bağlı, cross-fallback yok. Normalize edilmez: fiziksel aralık (`20:00-23:00`) aralık olarak gider. |
+| `katilim_linki` · `zoom_link` | ikisi de Notion `Katılım Linki` (aynı değer; `katilim_linki` C-1 geriye uyum) |
+| `zoom_sifresi` | Notion `Zoom Şifresi` |
+| `etkinlik_mekan` | Notion `Mekân/Platform` select |
+| `etkinlik_adres` | Notion `Konum Detay` |
+| `referans_no` | kayıt anında üretilen `OCAK-XXXXX` — havale açıklamasının eşleştirme anahtarı |
+| `odeme_durumu` | türetilir: `odemeGerekli ? 'bekliyor' : 'muaf'`. Üçüncü değer `alindi` **kod tarafından hiç yazılmaz** — n8n işi (Notion `Ödeme Durumu` değişiminde). |
+
+**Şablon tuzağı:** `etkinlik_tarihi` normal akışta saati zaten içerir
+(`"21 Haziran 2026 · 20:00"`). `{$etkinlik_tarihi}` ile `{$etkinlik_saati}`
+yan yana yazılırsa saat iki kez basılır. Kod sorunu değil, şablon sorunudur;
+bilinçli olarak düzeltilmedi.
+
+**Kapsam dışı:** `katilimTipiCoz` bilinmeyen/boş `Mekân/Platform` değerinde
+`link`'e düşer — fiziksel bir etkinlikte mekân boşsa adres alanları hiç gitmez
+(B62).
+
 ---
 
 ## A.19 — VERİ ETİK ÇERÇEVESİ (KARAR 57)
