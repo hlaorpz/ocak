@@ -83,23 +83,24 @@ Toplam tahmini: 5-7 saatlik iş, dağıtık.
 
 > ⚠ **Yukarısı PLANDI, gerçekleşen hâli aşağıdadır.** Plan üç alan öngörmüştü
 > (`zoom_link`, `event_title`, `event_date`); `event_title` ve `event_date`
-> **hiç var olmadı** — isimler Türkçeleşti ve alan sayısı on bire çıktı. Plan
+> **hiç var olmadı** — isimler Türkçeleşti ve alan sayısı on ikiye çıktı. Plan
 > cümlesi tarihsel kayıt olarak duruyor, silinmedi (KARAR 61).
 
-#### Alan envanteri — ON BİR ALAN (ölçüm 18 Ağustos 2026)
+#### Alan envanteri — ON İKİ ALAN (ölçüm 18 Ağustos 2026)
 
-Kaynak: `src/lib/kayit.ts:243-305` (`MailerLiteFieldGirdi` + `MAILERLITE_ALANLAR:269`
-+ `mailerLiteCustomFields`), çağrı yeri `src/pages/api/kayit.ts:648`, saat eşlemesi
-`src/pages/api/kayit.ts:169`. Ölçüm helper'ın dört senaryoda çalıştırılmasıyla
-alındı, koddan çıkarımla değil. Satır numaraları kayarsa `MAILERLITE_ALANLAR`
-dizisi tek kaynaktır — envanter ondan doğrulanır.
+Kaynak: `src/lib/kayit.ts:243-310` (`MailerLiteFieldGirdi` + `MAILERLITE_ALANLAR:271`
++ `mailerLiteCustomFields`), URL helper `src/lib/kayit.ts:354`, çağrı yeri
+`src/pages/api/kayit.ts:652`, saat eşlemesi `src/pages/api/kayit.ts:172`. Ölçüm
+helper'ın dört senaryoda çalıştırılmasıyla alındı, koddan çıkarımla değil. Satır
+numaraları kayarsa `MAILERLITE_ALANLAR` dizisi tek kaynaktır — envanter ondan doğrulanır.
 
-Üçü bu turda eklendi — `referans_no` · `odeme_durumu` · `etkinlik_basligi`.
+Dördü bu turda eklendi — `referans_no` · `odeme_durumu` · `etkinlik_basligi` ·
+`etkinlik_url`.
 MailerLite panelinde TEXT olarak **açık, 18 Ağu teyitli**. Panelde olmayan bir alan
 sessizce yutulur (hata dönmez), o yüzden kod tarafı ile panel tarafı birlikte
 denetlenir.
 
-**Her kayıtta on birinin hepsi yazılır.** Geçersiz olan **boş string** ile gider,
+**Her kayıtta on ikisinin hepsi yazılır.** Geçersiz olan **boş string** ile gider,
 atlanmaz — atlanırsa MailerLite subscriber'da önceki kayıttan kalan değer
 yerinde kalıyor ve mail geçen ayın linkini gösterebiliyordu.
 
@@ -107,6 +108,7 @@ yerinde kalıyor ve mail geçen ayın linkini gösterebiliyordu.
 |---|---|---|---|---|
 | `etkinlik_adi` | dolu | dolu | dolu | dolu |
 | `etkinlik_basligi` | dolu | dolu | dolu | dolu |
+| `etkinlik_url` | dolu | dolu | dolu | dolu |
 | `etkinlik_tarihi` | dolu | dolu | dolu | dolu |
 | `etkinlik_saati` | dolu | dolu | dolu | dolu |
 | `katilim_linki` | **dolu** | boş | boş | boş |
@@ -125,13 +127,14 @@ format bazlı varsayım yapılmaz, Açık Kapı da ücretli olabilir. Havale de
 kapalıdır (para kayıttan günler sonra gelir, hiç gelmeyebilir) — KARAR 220'nin
 success ekranına verdiği kural maile de uygulanır, iki yüzey tek kural.
 
-**Değerlerin kaynağı** — on bir alan, **on satır**: `katilim_linki` ile `zoom_link`
+**Değerlerin kaynağı** — on iki alan, **on bir satır**: `katilim_linki` ile `zoom_link`
 aynı Notion alanından beslendiği için tek satırda birleşti. Satır sayısı alan
 sayısıyla kasten eşit değil.
 
 | alan | nereden |
 |---|---|
 | `etkinlik_adi` | **KODDAN ÜRETİLİR** — `FORMAT_TIP[format] + " — " + seciliTarih` (örn. `"Çember — 10 Eylül 2026 · 20:00"`). Notion `Başlık` DEĞİL. |
+| `etkinlik_url` | `etkinlikUrlFormatla(Notion Slug)` → `https://ocak.biz/etkinlik/{slug}`. Taban `astro.config.mjs` `site` ile aynı; `publicOrigin(request)` **bilerek kullanılmadı** — preview deploy'dan gelen kayıt maile ölü bir preview URL'i yazardı. Slug boşsa **boş string** (kırık taban URL üretilmez). |
 | `etkinlik_basligi` | Notion `Başlık` title property — buluşmanın kendi adı (örn. `"Elin Neyle Dolu?"`). `etkinlik_adi` ile **ayrı yaşar**, şablonda ayrı iş yapar. Kapıya tabi değil. |
 | `etkinlik_tarihi` | form dropdown etiketi (`formatEtkinlikTarihi`, saati **içerir**); yedek yol `tarihTrFormat(Tarih)` — o saatsizdir |
 | `etkinlik_saati` | online → Notion `Zoom Başlangıç Saati` · fiziksel → Notion `Saat`. Mekâna bağlı, cross-fallback yok. Normalize edilmez: fiziksel aralık (`20:00-23:00`) aralık olarak gider. |
@@ -146,6 +149,14 @@ sayısıyla kasten eşit değil.
 (`"21 Haziran 2026 · 20:00"`). `{$etkinlik_tarihi}` ile `{$etkinlik_saati}`
 yan yana yazılırsa saat iki kez basılır. Kod sorunu değil, şablon sorunudur;
 bilinçli olarak düzeltilmedi.
+
+⚠ **`etkinlik_url` yayın gecikmesi taşır.** Detay sayfası ancak production build
+Notion kaydını gördükten sonra doğar (n8n gecelik rebuild `0 0 0 * * *` ya da elle
+deploy). Ölçüm 18 Ağu: `bir-esikte-duruyorsun` **200**, ama `elin-neyle-dolu` ·
+`nereye-kadar-senin` · `hangi-tohumu-ekeceksin` **404** — kayıtlar Notion'a
+girmişti, production henüz almamıştı. Yeni etkinlik açılan gün kayıt gelirse mail
+o an ölü bir linke bakar. Not: `ocak.biz` → `www.ocak.biz` **307** ile döner,
+mailde bir ek atlama olur.
 
 **Kapsam dışı:** `katilimTipiCoz` bilinmeyen/boş `Mekân/Platform` değerinde
 `link`'e düşer — fiziksel bir etkinlikte mekân boşsa adres alanları hiç gitmez

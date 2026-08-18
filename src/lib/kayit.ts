@@ -263,12 +263,15 @@ export type MailerLiteFieldGirdi = {
    * 20:00"), bu sayfanın adı. İkisi ayrı yaşar, şablonda ayrı iş yapar.
    */
   etkinlikBasligi?: string | null;
+  /** Buluşmanın detay sayfası — `etkinlikUrlFormatla(Slug)`. Slug yoksa boş. */
+  etkinlikUrl?: string | null;
 };
 
 /** MailerLite'a yazılan alanların tam listesi — envanter tek kaynak. */
 export const MAILERLITE_ALANLAR = [
   'etkinlik_adi',
   'etkinlik_basligi',
+  'etkinlik_url',
   'etkinlik_tarihi',
   'etkinlik_saati',
   'katilim_linki',
@@ -289,6 +292,8 @@ export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, 
     etkinlik_adi: t(g.etkinlikAdi),
     // Buluşmanın kendi adı — kapıya tabi değil, daima gider.
     etkinlik_basligi: t(g.etkinlikBasligi),
+    // Detay sayfası — kapıya tabi değil, sayfa herkese açık.
+    etkinlik_url: t(g.etkinlikUrl),
     etkinlik_tarihi: t(g.etkinlikTarihi),
     etkinlik_saati: t(g.etkinlikSaati),
     // C-1 geriye uyum: katilim_linki mevcut şablonu kırmasın diye korunur.
@@ -333,6 +338,24 @@ export function tarihTrFormat(iso: string | undefined | null): string {
  * uzun varyant FORMAT_NOTION_FORMAT (Etkinlikler DB "Format") değil —
  * MailerLite şablonunda kısa daha doğal.
  */
+/**
+ * MailerLite `etkinlik_url` — buluşmanın kendi detay sayfası.
+ * Kaynak Notion `Slug`; taban `astro.config.mjs` `site` ile aynı
+ * (`https://ocak.biz`) — sayfanın kendi canonical'ı da oradan türer.
+ *
+ * `publicOrigin(request)` BİLEREK kullanılmadı: preview deploy'dan gelen bir
+ * kayıt maile preview URL'i yazardı ve o adres deploy düşünce ölürdü. Mail
+ * kalıcı bir yüzey, daima production'a bakar.
+ *
+ * Slug boşsa **boş string** döner — `https://ocak.biz/etkinlik/` gibi kırık bir
+ * taban URL üretmez. Slug'sız etkinliğin detay sayfası zaten yoktur
+ * (`[slug].astro` getStaticPaths onu atlar).
+ */
+export function etkinlikUrlFormatla(slug: string | undefined | null): string {
+  const s = (slug ?? '').trim();
+  return s ? `https://ocak.biz/etkinlik/${s}` : '';
+}
+
 export function etkinlikAdiFormatla(
   format: KayitFormat,
   seciliTarih: string | undefined | null,

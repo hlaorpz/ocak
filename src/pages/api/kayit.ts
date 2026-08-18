@@ -31,6 +31,7 @@ import {
   katilimTipiCoz,
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  etkinlikUrlFormatla,
   uretBenzersizReferansNo,
   type RefUniqueQuery,
   tarihTrFormat,
@@ -136,6 +137,8 @@ type EtkinlikOkuma = {
   saat: string;
   /** Notion "Başlık" title — buluşmanın kendi adı ("Elin Neyle Dolu?"). */
   baslik: string;
+  /** Notion "Slug" rich_text — detay sayfası URL parçası. Boş olabilir. */
+  slug: string;
   /** Notion "Konum Detay" rich_text — fiziksel etkinliklerde adres. */
   konumDetay: string;
   /** Aşama 3b-fix — etkinlik bazlı Kayıt Tipi. Boş → 'Direkt' (eski etkinlikler için güvenli default). */
@@ -168,6 +171,7 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   const klasikSaat = richTextStr(props, 'Saat');
   const saat = katilimTipiCoz(mekan) === 'link' ? zoomSaat : klasikSaat;
   const konumDetay = richTextStr(props, 'Konum Detay');
+  const slug = richTextStr(props, 'Slug');
   // Notion "Başlık" TITLE property — richTextStr rich_text okur, title değil.
   const baslik = (props['Başlık']?.title ?? [])
     .map((t: any) => t.plain_text ?? '')
@@ -176,7 +180,7 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   // Aşama 3b-fix — Kayıt Tipi okuma; default 'Direkt' (eski etkinlikler).
   const kayitTipiRaw = props['Kayıt Tipi']?.select?.name;
   const kayitTipi: KayitTipi = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, baslik, konumDetay, kayitTipi };
+  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, baslik, slug, konumDetay, kayitTipi };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -659,6 +663,7 @@ export const POST: APIRoute = async ({ request }) => {
     odemeGerekli,
     referansNo,
     etkinlikBasligi: etk.baslik,
+    etkinlikUrl: etkinlikUrlFormatla(etk.slug),
   });
 
   // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.
