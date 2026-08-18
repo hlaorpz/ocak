@@ -218,7 +218,10 @@ export function katilimTipiCoz(mekan: string | undefined | null): 'link' | 'adre
 }
 
 /**
- * MailerLite custom field payload'u — on alan, HER kayıtta hepsi yazılır.
+ * MailerLite custom field payload'u — **on iki alan**, HER kayıtta hepsi yazılır.
+ * Sayı `MAILERLITE_ALANLAR` dizisinden doğrulanır; bu satır ondan türer.
+ * (Sayı üç turda 10 → 11 → 12 oldu, bu başlık ikisini kaçırdı — 19 Ağustos
+ * 2026'da diziye karşı ölçülüp düzeltildi.)
  *
  * ── Alan hijyeni (brief-mailerlite-odeme-kapisi, madde 2-i) ──
  * Eski davranış boş değeri payload'a HİÇ koymuyordu. MailerLite subscriber
@@ -307,6 +310,48 @@ export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, 
     // `alindi` bu turda kod tarafından yazılmaz — n8n işi (ödeme onayı).
     odeme_durumu: g.odemeGerekli ? 'bekliyor' : 'muaf',
   };
+}
+
+/**
+ * MailerLite `fields` payload'u — `name` + custom field'lar. Taşıma katmanının
+ * saf ucu; `/api/kayit`'teki `mailerLiteEkle` bunu çağırıp `fetch` eder.
+ *
+ * ── Neden ayrı bir helper ──
+ * `mailerLiteEkle` bir route dosyasında (`src/pages/api/kayit.ts`) yaşıyor ve
+ * `src/pages/` altına test konamıyor (her dosya route sayılır — bkz.
+ * `havale-vade.ts` başlığı). Payload kurulumu bu yüzden lib'e alındı: saf
+ * mantık lib'de yaşar, test lib'de koşar. `fetch` route'ta kalır.
+ *
+ * ── Alan hijyeni: boş string GİDER ──
+ * `mailerLiteCustomFields` geçersiz alanı boş string ile yazar ki MailerLite'ta
+ * **silinsin**. Eski taşıma katmanı (`if (v && v.trim())`) o boş string'i görüp
+ * alanı payload'dan düşürüyordu; MailerLite subscriber alanları kalıcı olduğu
+ * için önceki kayıttan kalan değer yerinde kalıyordu. Canlı vaka (19 Ağustos
+ * 2026): Slug'ı boş "Konuk Ateşi" kaydında `etkinlik_url` iki kayıt önceki
+ * "Ekmeden Önce" adresinde kaldı — mail doğru buluşmayı yazıp yanlış sayfaya
+ * götürdü. Ödeme kapısı da aynı mekanikle deliniyordu: ücretli kayıtta boşlanan
+ * `zoom_link` gönderilmediği için eski link yerinde kalıyordu.
+ *
+ * Artık `ekFields`'in HER anahtarı payload'a girer — değeri boş olsa da.
+ *
+ * ── `name` bu kuraldan MUAF ──
+ * İsim boşken boş gönderilirse mail "Merhaba ," diye açılır. `name` custom
+ * field değil, subscriber'ın kendi adı; hijyen kuralı ona işlemez. Mevcut
+ * davranış korunuyor: `name` daima yazılır ve `ekFields` onu **ezemez**.
+ */
+export function mailerLiteFieldsPayload(
+  ad: string,
+  ekFields?: Record<string, string>,
+): Record<string, string> {
+  const fields: Record<string, string> = { name: ad };
+  if (!ekFields) return fields;
+  for (const [k, v] of Object.entries(ekFields)) {
+    // `name` muafiyeti: ekFields'ten gelen bir `name` anahtarı subscriber adını
+    // ezmesin (bugün MAILERLITE_ALANLAR'da yok; defansif).
+    if (k === 'name') continue;
+    fields[k] = v ?? '';
+  }
+  return fields;
 }
 
 /**

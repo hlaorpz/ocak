@@ -104,6 +104,37 @@ denetlenir.
 atlanmaz — atlanırsa MailerLite subscriber'da önceki kayıttan kalan değer
 yerinde kalıyor ve mail geçen ayın linkini gösterebiliyordu.
 
+> **Bu cümle 19 Ağustos 2026'ya kadar DOĞRU DEĞİLDİ — ölçüm kapsamı eksikti.**
+> Yukarıdaki matris `mailerLiteCustomFields` çıktısına karşı ölçülmüştü; helper
+> gerçekten on iki alanı boş string ile üretiyordu. Ama taşıma katmanı
+> (`mailerLiteEkle`, `api/kayit.ts:386`) `if (v && v.trim())` ile boş alanı
+> payload'dan **düşürüyordu** — yani MailerLite'a hiç gitmiyordu ve tarif edilen
+> hata aynen sürüyordu. Tele giden alan sayısı senaryoya göre **7–10**'du,
+> 12 değil.
+>
+> Canlı vaka (19 Ağustos): Notion `Slug`'ı boş "Konuk Ateşi" kaydında
+> `etkinlik_url` iki kayıt önceki `…/etkinlik/ekmeden-once` değerinde kaldı —
+> mail doğru buluşmayı yazıp yanlış sayfaya götürdü. Ödeme kapısı da aynı
+> mekanikle deliniyordu: ücretli kayıtta boşlanan `zoom_link` gönderilmediği
+> için önceki kayıttan kalan link yerinde kalıyordu (kapı yalnız **ilk kez**
+> kayıt olan kadında kapanıyordu).
+>
+> Filtre kaldırıldı; payload kurulumu `mailerLiteFieldsPayload`
+> (`lib/kayit.ts`) ile lib'e alındı ve **taşıma katmanı test edildi** — daha
+> önce hiç testi yoktu, filtre bu yüzden commit'ten commit'e sağ kalmıştı.
+> Düzeltme sonrası ölçüm: dört senaryonun dördünde de **12/12 alan tele
+> çıkıyor, düşen 0** (`dist/` çıktısına karşı, `.vercel/output/_functions`).
+> `name` bu kuraldan muaftır — custom field değil, subscriber'ın kendi adı.
+>
+> Cümle silinmedi (KARAR 61); artık doğru olduğu için yerinde duruyor, bu not
+> ne zamandan beri doğru olduğunu kayda geçiriyor.
+
+**Aynı filtre `src/lib/forms-backend.ts:43`'te DURUYOR — bilinçli.** O yüzey
+(`/api/form`: ates-mektuplari · anadolu-basvuru) etkinlik alanı taşımıyor,
+bayatlama sorunu yok; ayrıca orada `name` filtrenin **içinden** geçiyor
+(`fields: { name, phone }`), kaldırmak isim boşken `name: ""` göndermek olurdu.
+Ayrı bir iş — bkz. borç kaydı.
+
 | alan | online · ödeme yok | online · ödeme var | fiziksel · ödeme yok | fiziksel · ödeme var |
 |---|---|---|---|---|
 | `etkinlik_adi` | dolu | dolu | dolu | dolu |

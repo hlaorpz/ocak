@@ -30,6 +30,7 @@ import {
   kademeTutari,
   katilimTipiCoz,
   mailerLiteCustomFields,
+  mailerLiteFieldsPayload,
   etkinlikAdiFormatla,
   etkinlikUrlFormatla,
   uretBenzersizReferansNo,
@@ -369,23 +370,22 @@ async function mailerLiteEkle(args: {
   ad: string;
   groupId: string;
   /**
-   * Brief 5 Yol C: opsiyonel MailerLite custom field'lar. Sadece doluysa
-   * payload'a eklenir — Notion `Katılım Linki` boş etkinliklerde
-   * `katilim_linki` hiç gönderilmez (C-1 güvenlik ağı).
-   * Alanlar: etkinlik_adi (örn "Çember — 21 Haziran 2026"), katilim_linki
-   * (Zoom URL veya adres). İkisi de global TEXT custom field; Kaan
-   * MailerLite panelinde önceden açtı.
+   * MailerLite custom field'ları — `MAILERLITE_ALANLAR` (on iki alan) tek
+   * kaynak, `mailerLiteCustomFields` üretir. Panelde TEXT olarak açık olmalı;
+   * panelde tanımsız alan MailerLite tarafında sessizce yutulur.
+   *
+   * BOŞ DEĞER DE GÖNDERİLİR. Eskiden `if (v && v.trim())` ile boş alan
+   * payload'dan düşürülüyordu ve bu "C-1 güvenlik ağı" diye bir özellik
+   * sayılıyordu; gerçekte hijyeni deliyordu — düşen alan MailerLite'ta
+   * silinmeyip önceki kayıttan kalan değeri koruyordu. Kural ve gerekçe
+   * `mailerLiteFieldsPayload` başlığında (lib/kayit.ts).
    */
   ekFields?: Record<string, string>;
 }): Promise<{ ok: boolean; status: number; error?: string }> {
   if (!MAILERLITE_API_KEY) return { ok: false, status: 0, error: 'no-api-key' };
   try {
-    const fields: Record<string, string> = { name: args.ad };
-    if (args.ekFields) {
-      for (const [k, v] of Object.entries(args.ekFields)) {
-        if (v && v.trim()) fields[k] = v;
-      }
-    }
+    // Payload kurulumu lib'de (testlenebilir); `name` muafiyeti orada.
+    const fields = mailerLiteFieldsPayload(args.ad, args.ekFields);
     const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
       headers: {

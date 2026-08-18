@@ -8,6 +8,7 @@ import {
   resolveMiniCtaBtn,
   katilimTipiCoz,
   mailerLiteCustomFields,
+  mailerLiteFieldsPayload,
   MAILERLITE_ALANLAR,
   etkinlikUrlFormatla,
   etkinlikAdiFormatla,
@@ -370,6 +371,93 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
     expect(f.etkinlik_basligi).toBe('');
     expect(f).toHaveProperty('etkinlik_url');
     expect(f.etkinlik_url).toBe('');
+  });
+});
+
+// ── Taşıma katmanı (Y1) ────────────────────────────────────────────────────
+// `mailerLiteEkle` route dosyasında yaşadığı için test edilemiyordu ve boş-alan
+// filtresi commit'ten commit'e sağ kaldı: helper boş string üretiyor, filtre
+// alanı düşürüyor, MailerLite önceki kayıttan kalan değeri koruyordu. Canlı
+// vaka 19 Ağustos 2026 — Slug'sız "Konuk Ateşi" kaydında `etkinlik_url` iki
+// kayıt önceki "Ekmeden Önce" adresinde kaldı. Payload kurulumu artık lib'de,
+// test burada.
+describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () => {
+  it('boş string alan payload\'a GİRER — düşürülmez', () => {
+    const p = mailerLiteFieldsPayload('Kaan', {
+      etkinlik_adi: 'Açık Kapı — 4 Ocak 2027',
+      etkinlik_url: '',
+      zoom_link: '',
+    });
+    expect(p).toHaveProperty('etkinlik_url');
+    expect(p.etkinlik_url).toBe('');
+    expect(p).toHaveProperty('zoom_link');
+    expect(p.zoom_link).toBe('');
+    expect(p.etkinlik_adi).toBe('Açık Kapı — 4 Ocak 2027');
+  });
+
+  it('canlı vaka — Slug boş etkinlikte etkinlik_url boş GÖNDERİLİR (eski değer silinsin)', () => {
+    const ml = mailerLiteCustomFields({
+      etkinlikAdi: 'Açık Kapı — 4 Ocak 2027',
+      etkinlikBasligi: 'Konuk Ateşi',
+      etkinlikUrl: '', // Notion Slug boş → etkinlikUrlFormatla('') === ''
+      katilimTipi: 'link',
+      katilimLinki: 'https://zoom.us/j/1',
+      odemeGerekli: false,
+      referansNo: 'OCAK-532897',
+    });
+    const p = mailerLiteFieldsPayload('Kaan', ml);
+    expect(p.etkinlik_url).toBe('');
+  });
+
+  it('ödeme kapısı tele çıkar — ücretli kayıtta zoom alanları BOŞ gönderilir', () => {
+    const ml = mailerLiteCustomFields({
+      etkinlikAdi: 'Çember — 10 Eylül 2026',
+      katilimTipi: 'link',
+      katilimLinki: 'https://zoom.us/j/gizli',
+      zoomSifresi: 'gizli42',
+      odemeGerekli: true,
+      referansNo: 'OCAK-532896',
+    });
+    const p = mailerLiteFieldsPayload('Kaan', ml);
+    for (const alan of ['katilim_linki', 'zoom_link', 'zoom_sifresi'] as const) {
+      expect(p).toHaveProperty(alan);
+      expect(p[alan]).toBe('');
+    }
+    expect(p.odeme_durumu).toBe('bekliyor');
+  });
+
+  it('on iki alanın hepsi tele çıkar — dört senaryoda da eksiksiz', () => {
+    const TABAN = {
+      etkinlikAdi: 'X', referansNo: 'OCAK-1',
+      etkinlikBasligi: 'B', etkinlikUrl: 'https://www.ocak.biz/etkinlik/s',
+    };
+    const senaryolar = [
+      { ...TABAN, katilimTipi: 'link' as const, katilimLinki: 'z', odemeGerekli: false },
+      { ...TABAN, katilimTipi: 'link' as const, katilimLinki: 'z', odemeGerekli: true },
+      { ...TABAN, katilimTipi: 'adres' as const, mekan: 'İzmir', odemeGerekli: false },
+      { ...TABAN, katilimTipi: 'adres' as const, mekan: 'İzmir', odemeGerekli: true },
+    ];
+    for (const s of senaryolar) {
+      const p = mailerLiteFieldsPayload('Kaan', mailerLiteCustomFields(s));
+      const customKeys = Object.keys(p).filter((k) => k !== 'name');
+      expect(customKeys.sort()).toEqual([...MAILERLITE_ALANLAR].sort());
+    }
+  });
+
+  it('`name` MUAF — boşken de yazılır, kural ona işlemez', () => {
+    const p = mailerLiteFieldsPayload('Kaan', { etkinlik_adi: '' });
+    expect(p.name).toBe('Kaan');
+    // Mevcut davranış korunuyor: name daima payload'da.
+    expect(mailerLiteFieldsPayload('', {})).toHaveProperty('name');
+  });
+
+  it('`name` ekFields\'ten EZİLEMEZ', () => {
+    const p = mailerLiteFieldsPayload('Kaan', { name: '', etkinlik_adi: 'X' } as Record<string, string>);
+    expect(p.name).toBe('Kaan');
+  });
+
+  it('ekFields yoksa yalnız name döner', () => {
+    expect(mailerLiteFieldsPayload('Kaan')).toEqual({ name: 'Kaan' });
   });
 });
 
