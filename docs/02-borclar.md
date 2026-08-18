@@ -1,15 +1,15 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 18 Ağustos 2026 · B61 · B62 açıldı
+**Son güncelleme:** 19 Ağustos 2026 · B63 açıldı
 
-**Durum:** 62 madde · **33 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 63 madde · **34 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
-*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **62**. Kapanış ölçütü başlıktaki
+*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **63**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
 `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 62 − 27 − 2 = **33**. Ölçüm anı: **B62 açıldıktan sonra**, 18 Ağustos 2026.*
+Açık = 63 − 27 − 2 = **34**. Ölçüm anı: **B63 açıldıktan sonra**, 19 Ağustos 2026.*
 
-*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 62 · `grep '^## B' | grep -c '[✅❌]'`
+*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 63 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
 
 ⚠ *18 Ağustos düzeltmesi: bu paragraf damgalı sayısını **24** yazıyordu, ama kendi
@@ -34,7 +34,7 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
-| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 · B62 |
+| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 · B62 · B63 |
 | **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 |
 
 > **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
@@ -1276,3 +1276,30 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   ya da `Mekân/Platform` boş kaydın kayıt akışına hiç girmemesi (loader guard).
   Karar verilmeden dokunulmaz — `mekanTipi` (`etkinlik-kategori.ts:88`) zaten
   bilinmeyen değerde `warn` basıyor, iki yüzey aynı desene çekilebilir.
+
+## B63 — `forms-backend.ts` boş-alan filtresi duruyor, `/api/kayit`'teki kaldırıldı
+- [ ] **Sahip:** CC
+- **Tetikleyici:** Y1 düzeltmesi (`92e580e`, 19 Ağu). Aynı filtre iki dosyadaydı;
+  biri düzeltildi, öteki **ölçülüp bilinçli bırakıldı** — brief'in kendi kuralı
+  ("ayrım gerekiyorsa yalnız `kayit.ts`'i değiştir, ötekini borç olarak bırak").
+- **Kalan satır:** `src/lib/forms-backend.ts:43` — `if (v && v.trim()) fields[k] = v;`
+- **Neden dokunulmadı — üç ölçülmüş fark:**
+  (a) **`name` konumu.** `/api/kayit`'te `name` döngünün **dışında** atanıyordu
+  (`{ name: args.ad }`), filtreye hiç girmiyordu. `forms-backend`'de `name`
+  `args.fields`'in **içinden** geçiyor (`fields: { name: ad, phone: telefon }`) —
+  filtreyi kaldırmak isim boşken `name: ""` göndermek olurdu, mail "Merhaba ,"
+  diye açılır.
+  (b) **Tip.** `Record<string, string | undefined>` (öteki `Record<string, string>`) —
+  `phone` undefined gelebiliyor, boş-geçiş kararı ayrı düşünmeyi gerektirir.
+  (c) **Amaç.** O yüzeyin akışları (`/api/form`: `ates-mektuplari` ·
+  `anadolu-basvuru`) **etkinlik alanı taşımıyor**; bayatlama sorunu orada yok.
+  `ates-mektuplari` zaten hiç `fields` göndermiyor.
+- **Bugün neden yakmıyor:** taşınan alan `name` + `phone`; ikisi de kalıcı
+  subscriber alanı ama kayıttan kayda değişmiyor. Y1'in canlı vakası (etkinlik
+  alanının önceki kayıttan kalması) bu yüzeyde üretilemiyor.
+- **Kapanış şartı:** `name` muafiyeti korunarak filtre kaldırılır — ya çağrı
+  yerinde `name` `fields`'ten çıkarılıp ayrı parametreye alınır, ya
+  `mailerLiteFieldsPayload` (`lib/kayit.ts`) bu yüzeyde de kullanılır. İkincisi
+  tercih edilirse `string | undefined` tipi de tek yerde çözülür.
+- **Gerekçenin tam hâli:** `20-ref-bot.md`, alan envanteri bölümü — Y1 notunun
+  sonundaki "Aynı filtre `forms-backend.ts:43`'te DURUYOR — bilinçli" paragrafı.
