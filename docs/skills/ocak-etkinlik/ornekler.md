@@ -3,7 +3,7 @@
 `SKILL.md`'nin referans dosyası. Sabit bloklar orada, tema başına değişenler burada.
 Canlı hâlleri Notion Etkinlikler DB'sinde; bu dosya kalıbın kaydıdır.
 
-**Yay:** tanı → adlandır → sına → ayıkla. Beşincisi (Kök) yaya değil, kitleye bağlı.
+**Yay:** tanı → adlandır → sına → ayıkla → koru. Kök yaya değil, kitleye bağlı.
 
 | # | başlık | tema | slug |
 |---|---|---|---|
@@ -131,9 +131,16 @@ sayfada aynı: *"Hiçbir hazırlık gerekmiyor, hiçbir şey bilmen gerekmiyor."
    bilen bir kadının duruşu. Bir akşamlığına o duruşun içeriden nasıl göründüğüne
    bakarsın; sonrasını sen bilirsin.
 
+⚠ 1 ve 6 aynı cümleyle bitiyor: *"…içeriden ne göründüğüne bakarsın; sonrasını sen
+bilirsin."* 1 ve 2 zaten aynı kapanışı paylaşıyordu — o bilinçliydi. Üçüncü tekrar
+kalıbı görünür kılıyor: **yedinci sayfa bu cümleyi kullanmaz.**
+
 ---
 
 ## KAYIT SORULARI — altı üçlü
+
+Üçüncü soru dizinin ortak kapanışıdır — tekrarı kasıtlıdır, kusur değil.
+Kalan iki soru her sayfada özgündür; denge kuralı orada işler.
 
 **1 · Eşik**
 - Şu an neyin eşiğindesin? / Bir cümle yeter. Adını koyamıyorsan onu da yaz.
@@ -165,8 +172,11 @@ sayfada aynı: *"Hiçbir hazırlık gerekmiyor, hiçbir şey bilmen gerekmiyor."
 - Hayır dediğin ve arkasında durabildiğin bir an var mı? / Ne kadar küçük olduğu önemli değil.
 - Bu akşamdan ne ile çıkmak isterdin? / Bilmiyorsan "bilmiyorum" da bir cevap.
 
-*Üçüncü soru 1 · Eşik ve 5 · Kök ile birebir aynı — üç sayfada tekrarlıyor. Kalıbın
-demiri: kadın hangi temadan gelirse gelsin son soru "ne ile çıkmak isterdin" olur.*
+*Ölçüm (18 Ağu 2026, canlı Notion + bu dosya birebir uyuşuyor): ortak kapanış
+`"Bu akşamdan ne ile çıkmak isterdin?"` **altı sayfanın dördünde** var — 1 · Eşik ·
+3 · Hizalanma · 5 · Kök · 6 · Sınır. İkisi kendi üçüncüsünü taşıyor: 2 · Niyet
+(*"Kendine en son ne zaman bir şey sordun?"*) · 4 · Alt sesler (*"O ses sana kimi
+hatırlatıyor?"*). Yukarıdaki kural diziyi tarif eder; iki sapma kayıtlıdır.*
 
 ---
 
