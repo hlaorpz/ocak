@@ -2794,3 +2794,119 @@ section[data-section="form-anchor"][data-form-anchor]:empty {
     padding: var(--space-2) var(--space-3);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   /etkinlik/[slug] GÖVDE RİTMİ — cc-brief-v2
+   ═══════════════════════════════════════════════════════════════════════
+   Kapsam neden bu selector: ritim değerleri (--rhythm-block,
+   --rhythm-section-top/bottom) GENEL token'lar; `dist/` ölçümünde generic
+   prose baseline 27 sayfada 141 section instance'ında aktif. Token'a
+   dokunmak tüm siteyi oynatırdı (cc-brief-v2 KARAR 3). `main[data-page]`
+   Layout.astro:35'te pathname'den türer → `etkinlik/<slug>` prefix'i tam
+   olarak bu route'u ve gelecekteki etkinlik sayfalarını kapsar.
+
+   `> .ocak-container >` zinciri şart: detayHtml wrapper'ı yalnız gövde
+   section'larını taşır. `sonraki-bulusma` ve `kayit-btn` o div'in KARDEŞİ
+   (etkinlik/[slug].astro:132-161) — kendi gramerleri var, ritim onlara
+   sızmamalı.
+
+   Specificity: (0,3,2) > baseline (0,2,1). Mobil baseline'ı (768px, satır
+   1502) da ezdiği için mobil değerler bu blokta TEKRAR verilir — yoksa
+   telefonda masaüstü ritmi uygulanırdı.
+
+   Gövde H2 stili BİLİNÇLİ OLARAK BURADA YOK — iki gerekçe, ikisi de ölçülü:
+
+    (a) Sapma yok. Etkinlik gövde H2'si `/hikaye` gövde H2'siyle birebir:
+        Cormorant Garamond · 32px · italic · 400 · rgb(242,234,226) ·
+        lh 43.2px · center · mb 24px. /hikaye'de dört H2'nin ayrık stil
+        sayısı 1 → site deseni tek, etkinlik sayfası zaten onun içinde.
+        Kural yazmak sapmayı DÜZELTMEZ, sapmayı AÇAR (Kaan kararı).
+
+    (b) Köz (--ember) bu sayfada zaten dört yüzeyde: hero overline · liste
+        bullet ::before · aşağıdaki ayraç · kayıt CTA butonunun dolu zemini
+        (hepsi rgb(196,75,47) olarak ölçüldü). Başlıkları da köze çekmek
+        beşinci tekrar olurdu ve kayıt butonunu sıradanlaştırırdı — köz o
+        sayfada eylem rengi, başlık rengi değil.
+
+   Not: başlıklara köz uygulama önerisi bir tur değerlendirildi ve GERİ
+   ÇEKİLDİ. Yeniden açılacaksa yukarıdaki iki ölçümün de yeniden
+   yapılması gerekir; "denenmemiş fikir" değildir.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 1 — Section bandı 48/64 → 40/48. Yatay 32px korunur (--rhythm-section-x). */
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] {
+  padding: 2.5rem var(--rhythm-section-x) var(--space-7);
+  /* Baseline zaten veriyor; hairline ::before'unun çapası olduğu için
+     bu blokta da açıkça durur (baseline değişirse ayraç kaymasın). */
+  position: relative;
+}
+
+/* 2 — Paragraf bloğu 32 → 24px: boşluk satır yüksekliğinin (30.4px) altına
+       iner, paragraflar tek nefes olarak okunur. */
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] p,
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] ul,
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] ol {
+  margin-bottom: var(--space-5);
+}
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] ul,
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] ol {
+  margin-top: var(--space-5);
+}
+
+/* 3 — Madde arası paragraf boşluğundan dar: liste tek blok olarak okunsun.
+       GLOBAL DEĞİL — atmosfer.css:1224 yorumu li↔p eşitliğinin bilinçli bir
+       karar olduğunu söylüyor; o karar site genelinde yerinde duruyor. */
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] li {
+  margin-bottom: var(--space-3);
+}
+
+/* Son-çocuk sıfırlaması TEKRAR gerekiyor: yukarıdaki p/ul/li kuralları
+   (0,3,3) baseline'ın `p:last-child` ve `> :last-child` resetlerini (0,2,2)
+   eziyor. Sıfırlanmazsa section altına kaçak margin biner ve bölüm araları
+   eşit olmaktan çıkar (baseline yorumundaki 9rem sapmasının aynısı). */
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] > :last-child {
+  margin-bottom: 0;
+}
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section] :is(ul, ol):last-child > li:last-child {
+  margin-bottom: 0;
+}
+
+/* 4 — Bölüm ayracı: köz renginde hairline (cc-brief-v2 — Varyant B).
+       Köz NOKTA glyph'i seçilmedi: o glyph manifesto-vurgu'nun imzası
+       (remark-ocak-sections.ts:35 "imza ayrımı"), altı kez tekrarlanırsa
+       ayrım bulanır. Hairline aynı rengi taşır, imzayı harcamaz.
+
+       Ayraç ALMAYAN iki durum:
+        - ilk bölüm (üstünde Hero var, ayraç anlamsız — brief şartı)
+        - buyuk-vurgu (nefes anı; üstüne çizgi çekmek altın satırı kutuya alır)
+
+       buyuk-vurgu'dan SONRAKİ bölüm ayracını ALIR: eyeball turunda çift-ayraç
+       endişesi doğrulanmadı — altın satır + altındaki hairline bölümü
+       kapatıp yenisini açıyor, sıkışık okunmuyor. */
+main[data-page^="etkinlik/"] > .ocak-container > section[data-section]:not(:first-child):not([data-section="buyuk-vurgu"])::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(196, 75, 47, 0.55),
+    transparent
+  );
+}
+
+/* Mobil — baseline'ın 768px bloğu (satır 1502) bu blokla eziliyor, değerler
+   burada yeniden verilir. Band bir kademe küçülür: 32/24/40. */
+@media (max-width: 768px) {
+  main[data-page^="etkinlik/"] > .ocak-container > section[data-section] {
+    padding: var(--space-6) var(--space-5) 2.5rem;
+  }
+
+  main[data-page^="etkinlik/"] > .ocak-container > section[data-section]:not(:first-child):not([data-section="buyuk-vurgu"])::before {
+    width: 48px;
+  }
+}
