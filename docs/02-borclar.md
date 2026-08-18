@@ -1,13 +1,22 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ağustos 2026 · B40 ✅ · B55 ✅ · B56 ✅ — KARAR 482'nin ilk uygulaması
+**Son güncelleme:** 18 Ağustos 2026 · B61 açıldı — cc-brief-v2 KARAR 1
 
-**Durum:** 60 madde · **31 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 61 madde · **32 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
-*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **60**. Kapanış ölçütü başlıktaki
-**damga**, kelimenin kendisi değil: `[✅❌]` geçen → **24** (`✅ KAPANDI` · `✅ ÇÖZÜLDÜ` ·
-`✅ TEŞHİSLE KAPANDI` · `❌ GERİ ÇEKİLDİ` biçimlerinin hepsi). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 60 − 27 − 2 = **31**. Ölçüm anı: **B40 · B55 · B56 kapandıktan sonra**, 11 Ağustos 2026.
+*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **61**. Kapanış ölçütü başlıktaki
+**damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
+`✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
+Açık = 61 − 27 − 2 = **32**. Ölçüm anı: **B61 açıldıktan sonra**, 18 Ağustos 2026.*
+
+*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 61 · `grep '^## B' | grep -c '[✅❌]'`
+→ 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
+
+⚠ *18 Ağustos düzeltmesi: bu paragraf damgalı sayısını **24** yazıyordu, ama kendi
+aritmetiği (`60 − 27 − 2 = 31`) zaten **27** kullanıyordu — satır kendi içinde çelişikti
+ve 24 hiçbir ölçümle tutmuyordu. Ölçüldü: 27. Aritmetik doğruydu, ara rakam bayattı.
+Bu tam olarak paragrafın kendi uyardığı hata tipi — rakam devralınmış, yeniden
+ölçülmemişti.*
 Alt maddeler (B36-a, B44-a) ayrı sayılmadı — kendi başlıkları yok. **Bu satır bir sonraki
 eklemede yeniden ölçülür, devralınmaz** (KARAR 470).*
 
@@ -25,7 +34,7 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 | Kim | Açık maddeler |
 |---|---|
 | **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
-| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 |
+| **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 |
 | **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 |
 
 > **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
@@ -1214,3 +1223,36 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   şey tekrarlanır ve kimse beklemiyor olur.
 - **Kapanış şartı:** ya CLAUDE.md'ye "dizin adı değişen turda CC yeniden başlatılır"
   satırı, ya da kırılmanın kabul edildiğinin yazılması.
+
+## B61 — `Anadolu Yolculuğu` ölü dizeleri depoda duruyor, sapma sıfır
+- [ ] **Sahip:** CC
+- **Tetikleyici:** cc-brief-v2 KARAR 1 (18 Ağu) — Kaan Notion `Format` select'inden
+  `Anadolu Yolculuğu` seçeneğini **sildi** (rename değil). Formatlar `/bulusmalar`
+  adlarıyla aynı küme; orada zaten `Yolculuk` yazıyor.
+- **Ölçüldü, acil değil:** Notion `Format` canlı option'ları **7**, dump script'inin
+  `EXPECTED` listesiyle **birebir** — iki yönde de sapma yok. 28 kaydın hiçbirinde
+  `Format` boş değil (select option'ı silinince sessiz boşalma olabilirdi, olmamış);
+  kayıtta olup option'da olmayan yetim değer de yok. `Yolculuk` zaten `EXPECTED`'te.
+  **Build sonrası sapma uyarısı sıfır** — ölçüt kod değişmeden karşılanıyor.
+- **Kalan iş:** `Anadolu Yolculuğu` dizesi depoda **22 satır / 13 dosya**
+  (`grep -rn` · `src/` + `scripts/` · `*.ts,*.astro,*.mjs,*.css,*.json`).
+  `anadolu-yolculugu` → **0 satır**.
+- **Neden tek satırlık değil — temizlik zincirli:** `FORMAT_KATEGORI` (`etkinlik-kategori.ts:25`)
+  satırını düşürmek `EtkinlikKategori` tipindeki `'anadolu'` ayağını da düşürür;
+  ona bağlı dört yüzey daha var — `SLUG_KATEGORI['/anadolu']` (`:135`),
+  `KATEGORI_SIRA` (`:70`), `KATEGORI_HEADING.anadolu` (`:154`), `BULUSMALAR_DISI`
+  (`bulusmalar.astro:51`) — artı bir test kırılır
+  (`etkinlik-kategori.test.ts:108`, `slugToFormatHam('anadolu')`).
+- **Dokunulmayacaklar (ayrım bilinçli):** sayfa metinleri kullanıcıya görünen başlıktır
+  (`AnadoluHarita.astro:89` · `AnadoluBasvuru.astro:269` · `anadolu/basvuru.astro:10`);
+  yorumlar tarihsel anlatımdır (`config.ts:220` · `remark-ocak-sections.ts:147,804` ·
+  `etkinlik-kategori.ts:59,160` · `bulusmalar.astro:48` · `yolculuk/kayit.astro:4` ·
+  `kayit.test.ts:24`). `notion-section-envanter.json:34` script çıktısı, ilgisiz.
+- **Temiz olan:** `FORMAT_NOTION_FORMAT` / `KayitFormat` (`kayit.ts:35`) bu değeri
+  **hiç içermedi** — kayıt route'ları baştan ayrıktı (`/anadolu/basvuru`).
+- **Kapanış şartı:** beş yüzey + test tek commit'te birlikte taşınır.
+- **BİLİNÇLİ OLARAK AÇIK BIRAKILDI** — Kaan kararı, 18 Ağustos 2026 (cc-brief-v2
+  kapanışı). Unutulmuş borç değildir: sapma sıfır olduğu için bugün hiçbir şeyi
+  bozmuyor, temizlik ise zincirli ve **ayrı commit hak ediyor**. Bu turda
+  açılmadı çünkü ritim işiyle aynı commit'e girmesi mekanik dönüşüm ile semantik
+  işi karıştırırdı (KARAR 61 / commit disiplini).
