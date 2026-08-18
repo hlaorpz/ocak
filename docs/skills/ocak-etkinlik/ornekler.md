@@ -192,17 +192,14 @@ Sabit blok kuralını bozar, gerekçesi kayıtlı.
 
 ## ÖLÇÜM KÜNYESİ
 
-Altı gövde: **2.974–3.202** karakter · dokuz `## section:` · dört H2 · sekiz madde
-(Kök'te dokuz) · iki `buyuk-vurgu`.
+Altı gövde: **3.019–3.247 karakter** (ölçüm 18 Ağu 2026, canlı Notion gövdeleri) ·
+dokuz `## section:` · dört H2 · sekiz madde (Kök'te dokuz) · iki `buyuk-vurgu`.
 
-Ölçüm: **18 Ağustos 2026**, canlı Notion Etkinlikler DB kayıtları üzerinden
-(`[...detay].length`, code point sayımı — bu makinede `awk` bayt sayıyor, kullanılmadı).
+Sayım `[...detay].length` (code point) — bu makinede `awk` bayt sayıyor, kullanılmadı.
 
-**Bekleyen delta:** altı gövde de `ne-olur`un dördüncü paragrafını **iki cümleli**
-taşıyor. Yukarıdaki sabit blok üç cümleli kanonik hâli yazar (KARAR 373); üçüncü uç
-(*"…çoğu zaman o akşam değil ertesi sabah gelir"*) her gövdeye **+45 karakter** ekler.
-Kaan Notion kayıtlarını geçirince aralık **3.019–3.247** olur ve bu künye yeniden
-ölçülür. Çember'in dört gövdesi üç cümleli hâli zaten taşıyor (3.824–4.113).
+Üçüncü uç (*"…çoğu zaman o akşam değil ertesi sabah gelir"*) altı kayda da geçirildi;
+bekleyen delta kapandı. Çember bandı ayrıdır ve daha yüksektir (3.824–4.113) —
+`ornekler-cember.md` künyesine bak.
 
 Render doğrulaması (production, 17 Ağu 2026): `buyuk-vurgu` → 40px Cormorant italik
 altın `#D4A855` · H2 → 32px Cormorant italik krem `#F2EAE2` · gövde → 16px Jost

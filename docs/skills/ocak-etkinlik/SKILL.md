@@ -19,8 +19,11 @@ Ses ve yasak dizeler bu skill'in işi değil: ses `ocak-metin`'e, dize denetimi
 
 ## ÖNCE OKU
 
-`ornekler.md` — altı Açık Kapı sayfasının değişen parçaları. Yeni sayfa yazılmadan
-önce en az ikisi okunur; kalıp oradan alınır, buradan değil.
+`ornekler.md` — Açık Kapı bekçisi (altı sayfa)
+`ornekler-cember.md` — Çember bekçisi (dört sayfa)
+
+Yazılacak formatın dosyası okunur, en az iki sayfa. Kalıp oradan alınır,
+buradan değil. İki dosya karıştırılmaz — sabit blokları ayrıdır.
 
 ---
 
@@ -126,7 +129,7 @@ Metin bu cümleyi **söylemez** — kadının kurması için alan bırakır.
 
 | ne | neden |
 |---|---|
-| **"çember"** | ayrı format, ayrı sayfa — kadın hangi ürüne baktığını karıştırır |
+| **"çember"** | ayrı format, ayrı sayfa — kadın hangi ürüne baktığını karıştırır (Açık Kapı'da yasak; Çember sayfasında zorunlu — yasak listesi format başına okunur.) |
 | süre · kapasite · ücret · "sembolik" | DB alanı gösterir; süre iddiası format başına tek yerde |
 | sıklık ("ayda bir", "her ay") | takvim değişince metin yalan söyler |
 | emoji · hashtag · birinci tekil | site OCAK'ın "biz" sesiyle konuşur |
@@ -181,8 +184,9 @@ Kurallar:
 - **Yıldız (`*`) yazma.** `buyuk-vurgu` zaten italik basar; yıldız düz metin olarak
   görünür ya da çakışır.
 - Uzun paragrafları satır ortasından bölme — kopukluk oradan gelir.
-- Gövde **2.974–3.202** karakter (Açık Kapı altı gövde, 18 Ağu 2026 ölçümü; üçüncü uç
-  geçirilince 3.019–3.247 — `ornekler.md` künyesi). Çember daha uzun: 3.824–4.113.
+- Gövde **3.019–3.247** karakter (Açık Kapı altı gövde, 18 Ağu 2026 ölçümü —
+  `ornekler.md` künyesi). Çember ayrı ve daha uzun: **3.824–4.113**
+  (`ornekler-cember.md` künyesi).
   Notion rich text tek parçada 2.000 taşır; yapıştırdıktan sonra **son satırın yerinde
   olduğu kontrol edilir**, yoksa sessizce kırpılmıştır.
 
@@ -202,7 +206,12 @@ sayfanın kadını başka bir saat diliminde. Sapma yapılırsa **gerekçesi yaz
 
 ## BAŞKA FORMATLAR
 
-Bu iskelet **Açık Kapı** için ölçüldü. Çember farklı mekanik taşır — söz değneği,
-sekiz on altı kadın, **kayıt alınmaz**, iki mekân (online + yüz yüze). `ne-olur`,
-`pratik-bilgi` ve `kimin-icin` baştan yazılır; `kayıt alınır` satırı tersine döner.
-Çember bekçisi yazılana kadar bu skill Açık Kapı dışında **kalıp dayatmaz**.
+**Çember bekçisi yazıldı** — `ornekler-cember.md`, dört sayfa, Ağustos 2026.
+Aynı dokuz bölümlü iskelet ve çerçeve kuralı geçerli; ama `ne-olur` (on paragraf,
+dördüncüsü değişken) · `pratik-bilgi` · `kim-tutuyor` son paragrafı · `kimin-icin` ·
+`yaninda-getir` · karakter bandı **ayrıdır**. Çember yazarken Çember dosyası okunur;
+Açık Kapı bloklarına dokunulmaz.
+
+Seremoni · Atölye · Mini Retreat · Şehir Akşamı bekçileri henüz yok. Bu skill onlara
+kalıp dayatmaz; yazılacaklarında önce canlı format sayfası ve `20-ref-program.md`
+ölçülür, sonra iskelet uyarlanır.
