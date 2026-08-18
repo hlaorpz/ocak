@@ -482,3 +482,7 @@ no	tarih	baslik	durum	iliski	kaynak
 481	2026-08-09	Ölçüm aracı kendi zeminindeki kusuru bayrakla döndürür — sığ çapa `siglik: true` ile döner	KALICI	←456 · ↔470	2026-08.md#k481
 482	2026-08-11	Otorite sırası: indeks, indekslediği gövdeyi asla yenmez	KALICI	←102 · ↔456	2026-08.md#k482
 483	2026-08-11	Belgenin düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz	KALICI	←470 · ↔465	2026-08.md#k483
+484	2026-08-19	Bir rakam tek yüzeyde yaşar — kural bir yerde, envanter başka yerde	KALICI	←470 · ↔483	2026-08.md#k484
+485	2026-08-19	İçerik build'i kod dalıyla aynı yerden gelir — deploy hook `main`'e bakar	ACIK-BORC	B64	2026-08.md#k485
+486	2026-08-19	Katılım linki ödeme alınmadan hiçbir yüzeyde gösterilmez — kural maile de uygulanır	AKTIF	←220	2026-08.md#k486
+487	2026-08-19	Canlı production polling ile dövülmez — doğrulama tek atışlık ya da gerçek tarayıcıyla	KALICI	↔355	2026-08.md#k487

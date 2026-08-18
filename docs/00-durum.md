@@ -1,13 +1,13 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Ağustos 2026 · **B40 · B55 · B56 ✅** — KARAR 482'nin ilk uygulaması; KARAR 483
+**Son güncelleme:** 19 Ağustos 2026 · **Y1 ✅** (`92e580e`) · KARAR 484–487 · B63–B74 açıldı
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 184 satır (`python3`, 11 Ağustos). ADIM 1–6 blokları kronolojiye indi
-> (11 Ağu tahliyesi); pay yeniden açıldı.*
+> *Şu an: 195 satır (`wc -l`, 19 Ağustos) — **pay 5 satır**. Sonraki ekleme tahliye ister:
+> en eski dönem bloğu (12–20 Temmuz) kronolojiye iner, silinmez.*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -74,15 +74,17 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`b72c539`** (11 Ağu, B40 · B55 · B56 — KARAR 482'nin ilk uygulaması) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474); sıfır site kodu commit'i, `dist/` değişmedi |
-| Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = preview tamponu |
+| `main` dönem HEAD | **`1546622`** (19 Ağu, B63 doküman) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e` (kod) `→ 1546622` (doküman) |
+| Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
-| Test | **181/181** yeşil — 10 dosya. 176→181 farkı KARAR 464'ün 5 TZ sınır testi |
+| Test | **193/193** yeşil — 10 dosya. 181→193 farkı: MailerLite alan/kapı testleri + Y1 taşıma katmanı (7) |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
 | robots.txt | `Disallow: /` — **stealth sürüyor** |
-| Deploy hook | `tZR9LcwJq9` → dal **`astro-iskelet`**; Notion webhook + gece cron aynı hook'u paylaşır |
+| Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
+| Deploy hook | ⚠ `tZR9LcwJq9` → **`astro-iskelet`** (ölü dal). Yenisi `notion-content-update-main` → `main` **oluşturuldu ama çağıran yok** — **B64**. Notion webhook + gece cron hâlâ eskisini paylaşır |
 | Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu) |
-| Ödeme | banka sanal POS'a geçiliyor; entegratör belirsiz, `payment-provider.ts` stub |
+| Ödeme | **Kart entegrasyonu reddedildi → havale/EFT, elle takip.** `payment-provider.ts` stub duruyor, kart yüzeyi kapatılmadı. Ödeme onayı zinciri **EKSİK**: `odeme_durumu = alindi` yazımı yok → Mail 2/3 hiç tetiklenmiyor, link elle yollanıyor |
+| MailerLite | **On iki custom field** (envanter `20-ref-bot.md`). Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
 
 ---
 
@@ -124,6 +126,15 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **18–19 Ağustos (içerik + altyapı):** Çember bekçisi kuruldu — `ocak-etkinlik` artık
+  **iki bekçili**: `ornekler.md` (Açık Kapı, altı sayfa, 3.019–3.247 kr) +
+  `ornekler-cember.md` (Çember, dört sayfa, 3.824–4.113 kr). Seremoni bekçisi **yok**;
+  iki sayfa ölçüldü (4.254–5.197 kr) ama iki nokta eğri vermiyor — **B66**.
+  Etkinlik sayfaları: Açık Kapı 6 canlı · Çember 4 canlı (`elin-neyle-dolu` ·
+  `neyi-bekliyorsun` · `ekmeden-once` · `hangi-tohumu-ekeceksin`) · Seremoni 2 taslak
+  (kakao · `hasat-ve-sukran` 22 Eylül). MailerLite on ikinci alana çıktı; **Y1** kapandı
+  (`92e580e`) — boş alan artık tele çıkıyor. **Promote kazası** teşhis edildi (KARAR 485),
+  **403 yanlış alarmı** kayda geçti (KARAR 487). → `90-kronoloji/2026-08.md`
 - **12–20 Temmuz (14 sohbet, KARAR 363–453):** hero geçişi, etkinlik liste tek-kabuk,
   kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
   birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,

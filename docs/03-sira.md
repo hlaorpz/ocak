@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Ağustos 2026 · **B40 · B55 · B56 ✅** — KARAR 483; `00-durum.md` cap'i tahliye edildi
+**Son güncelleme:** 19 Ağustos 2026 · yeni sıra kararı — **B64 kuyruğun başı**; KARAR 484–487
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -12,6 +12,32 @@
 ---
 
 ## SIRADAKİ İŞ
+
+**Sıra kararı — 19 Ağustos 2026 (docs-patch-2026-08-19).** Öncelik sırasıyla:
+
+1. **B64 — deploy hook URL geçişi** (Kaan). **Kuyruğun başı.** Bu kapanmadan Notion
+   içerik güncellemeleri siteye düşmüyor; her yayın için elle boş commit gerekiyor.
+   Bir işi değil, **bütün içerik hattını** bloke ediyor.
+2. **B69 — MailerLite şablon değişkenleri** (Kaan). Sonrası: otomasyon durumu netleşir
+   (aktif mi pause mu) ve gerekirse aktive edilir.
+3. **B68 — `pratik-bilgi` altı satır** (Claude.ai → Notion). Havale gerçeğiyle hizalama;
+   bekçi dosyalarına ücretli/ücretsiz varyant ayrımı girer.
+4. **n8n ödeme onayı akışı** (Kaan). `odeme_durumu = alindi` yazımı. **Bu olmadan Mail
+   2/3 hiç tetiklenmiyor** — ödeme gelince link elle yollanıyor. Brief hazır, verilmedi.
+   Notion `Ödeme Durumu` değişimi → MailerLite alan güncellemesi; **idempotency işareti
+   şart**, yoksa her gece aynı mail gider. *Borç kaydı yok — ürün işi (bkz. `00-durum.md`
+   uyarısı: ürün kuyruğu `02-borclar.md`'ye girmez).*
+5. **B65 — zip yüklemesi** · **B72 — test verisi temizliği** (ikisi de Kaan).
+   B72 sırası önemli: erken temizlik Y1/kapı doğrulamalarının zeminini siler.
+6. **B74 — iPhone Safari eyeball** (Kaan). On bir commit birikti.
+7. Üçüncü seremoni sayfası → **B66 seremoni bekçisi** (Claude.ai).
+8. **Atölye formatı** — başka sohbette başladı, bekçisi ayrı.
+
+*Tek turluk temizlik, sıra dışı: **B67** (`ornekler-cember.md` tek dosya) · **B70** ·
+**B71** (ikisi de Notion nokta patch'i). Kendi turlarını beklemezler, önlerine gelen
+Notion turuna binerler.*
+
+---
 
 **Sıra kararı verildi (8 Ağustos akşamı, 9 Ağustos'ta yazıldı):**
 **ADIM 7 ikinci dalga A+B ✅ → B01 ✅ → B47 ✅ → B40 · B55 · B56 ✅ → hold.**
@@ -32,9 +58,11 @@ gerekir" denmişti; gerekmedi — kapanış patch'i cap'e dayandığı için tah
 oldu ve aynı turda yapıldı. **Bakım kendi turunu bekleyemez, işi bloke ederse öne geçer.**
 
 ⚠ **"Fırsat buldukça" bir kuyruk değildir.** İkinci dalga bittiğinde geriye yalnız
-borçlar kalıyor — bugün **31 açık iş** (ölçüm: `02-borclar.md` başlık sayacı,
-11 Ağustos, B40 · B55 · B56 kapanışı sonrası; yöntem: `^## B` başlıkları 60,
-damgası `[✅❌]` olan 27 kapandı, `[⏸🔵]` olan 2 iş değil). Sıra
+borçlar kalıyor — **açık iş sayısı `02-borclar.md` başlık sayacında yaşar, burada
+tekrar edilmez** (KARAR 484). *(11 Ağustos'ta bu satır "31 açık iş" diyordu ve
+yöntemini de taşıyordu: `^## B` başlıkları 60, damgalı 27, iş-değil 2. Rakam
+19 Ağustos'ta bayatladı — 74 madde · 45 açık. Sayı iki yüzeyde yaşadığı için
+bayatladı; tarihsel kayıt olarak duruyor, otorite artık tek yüzeyde.)* Sıra
 ölçütü: **kapı → yayını kilitleyen → tek turluk → kendi planını
 isteyen**, sahibe göre üç paralel hat. Aşağıdaki tablo o sırayı taşır.
 B44 ve B47 borç kuyruğunda bekler; kapanmaları için ayrı tur açılır.

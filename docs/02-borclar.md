@@ -1,16 +1,20 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · B63 açıldı
+**Son güncelleme:** 19 Ağustos 2026 · B63–B74 açıldı (docs-patch-2026-08-19)
 
-**Durum:** 63 madde · **34 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 74 madde · **45 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
-*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **63**. Kapanış ölçütü başlıktaki
+*Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
 `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 63 − 27 − 2 = **34**. Ölçüm anı: **B63 açıldıktan sonra**, 19 Ağustos 2026.*
+Açık = 74 − 27 − 2 = **45**. Ölçüm anı: **B74 açıldıktan sonra**, 19 Ağustos 2026.*
 
-*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 63 · `grep '^## B' | grep -c '[✅❌]'`
+*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 74 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
+
+⚠ *19 Ağustos: tek turda **on iki** yeni kayıt açıldı (B63–B74) — açık sayısı 33'ten
+45'e çıktı, kapanan yok. Bu bir gerileme değil, **görünürlük artışı**: kayıtların
+çoğu daha önce fark edilmiş ama hiçbir deftere yazılmamış işlerdi.*
 
 ⚠ *18 Ağustos düzeltmesi: bu paragraf damgalı sayısını **24** yazıyordu, ama kendi
 aritmetiği (`60 − 27 − 2 = 31`) zaten **27** kullanıyordu — satır kendi içinde çelişikti
@@ -33,9 +37,9 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 
 | Kim | Açık maddeler |
 |---|---|
-| **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 |
+| **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 · **B64** · B65 · B69 · B72 · B73 · B74 |
 | **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 · B62 · B63 |
-| **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 |
+| **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 · B66 · B67 · B68 · B70 · B71 |
 
 > **Bu tablo indekstir, otorite gövdelerdir** (KARAR 482 kural 1a). Çelişkide gövdedeki
 > `**Sahip:**` satırı geçerlidir; tablo ondan türetilir, ters yön hiçbir zaman yapılmaz.
@@ -1303,3 +1307,101 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   tercih edilirse `string | undefined` tipi de tek yerde çözülür.
 - **Gerekçenin tam hâli:** `20-ref-bot.md`, alan envanteri bölümü — Y1 notunun
   sonundaki "Aynı filtre `forms-backend.ts:43`'te DURUYOR — bilinçli" paragrafı.
+
+## B64 — Deploy hook URL geçişi; yeni hook oluşturuldu ama kimse çağırmıyor
+- [ ] **Sahip:** Kaan
+- **Tetikleyici:** KARAR 485. Eski hook `tZR9LcwJq9` (`notion-content-update`)
+  `astro-iskelet` dalına bakıyor — ölü dal, `main`'den 85 commit geride.
+- **Belirti:** Her Notion güncellemesi ve gecelik cron (`0 0 0 * * *`) oradan build
+  alıyor; üretilen build preview olarak doğuyor, içerik siteye düşmüyor. İçerik
+  yayınlamak için her seferinde elle boş commit atmak gerekiyor (`cf38cc4` örneği).
+- **Yapılan:** yeni hook `notion-content-update-main` (branch `main`) **oluşturuldu**.
+  Çağıran yok — eski URL n8n'de ve/veya Notion webhook'unda duruyor.
+- **Kapanış şartı:** yeni URL çağıran her yere yazılır · Notion'da bir düzenlemeyle
+  tetiklenir · üretilen build'in `githubCommitRef: main` **ve** `target: production`
+  olduğu doğrulanır · eski hook Revoke edilir.
+
+## B65 — `ocak-etkinlik.zip` yeniden yüklemesi
+- [ ] **Sahip:** Kaan
+- **Tetikleyici:** B50'nin (✅ 9 Ağu) devamı — önceki yükleme `ornekler-cember.md`
+  henüz yokken yapıldı, claude.ai yüzeyindeki skill tek bekçili kaldı.
+- **Kapanış şartı:** zip'te üç dosya doğrulanır (`unzip -l` — `SKILL.md` ·
+  `ornekler.md` · `ornekler-cember.md`), claude.ai skill yüzeyine yüklenir.
+
+## B66 — Seremoni bekçisi yok; iki nokta eğri vermiyor
+- [ ] **Sahip:** Claude.ai
+- **Ölçüm:** iki seremoni sayfası yazıldı — kakao **5.197 kr** · `hasat-ve-sukran`
+  **4.254 kr**. Bant **943 kr**; Açık Kapı (3.019–3.247, bant 228) ve Çember
+  (3.824–4.113, bant 289) yanında dağınık.
+- **Belirti:** `ne-olur` her seremonide baştan yazılıyor — sabit blok çıkmıyor.
+  İki nokta bir eğri tanımlamaz; bekçi damıtmak için üçüncü sayfa gerekiyor.
+- **Kapanış şartı:** üçüncü seremoni sayfası yazılınca `ornekler-seremoni.md` damıtılır.
+
+## B67 — `ornekler-cember.md:41` ölçü birimi tutarsızlığı + KAYIT SORULARI mührü
+- [ ] **Sahip:** Claude.ai
+- **(a)** Satır "yedi paragraflı" diyor, doğrusu **"sekiz paragraflı"**. Kök sebep
+  ölçü birimi karışması: Çember için **toplam** paragraf, Açık Kapı için **sabit**
+  paragraf sayısı kullanılmıştı — iki bekçi aynı kelimeyi farklı şey için kullandı.
+- **(b)** KAYIT SORULARI mühründeki `4/6` ifadesi ölçülen hâline çekilmişti —
+  **teyit edilmedi**, edilecek.
+- **Kapanış şartı:** tek commit, `ornekler-cember.md` dışına çıkmaz.
+
+## B68 — `pratik-bilgi` ilk satırı ücretli formatlarda yalan söylüyor
+- [ ] **Sahip:** Claude.ai → Notion
+- **Belirti:** dört Çember + iki Seremoni sayfasında *"kaydını yaptığında bağlantı
+  e-postana gelir"* yazıyor. Havale/EFT'ye dönüldüğü için **yanlış**: bağlantı ödeme
+  ulaştığında gidiyor (KARAR 486, ödeme kapısı). Doğrusu *"katılım payın ulaştığında
+  bağlantı e-postana gelir"*.
+- **Kapsam dışı:** Açık Kapı ücretsiz — o altı sayfaya dokunulmaz.
+- **Kapanış şartı:** altı Notion kaydı düzeltilir + bekçi dosyalarına **ücretli /
+  ücretsiz varyant ayrımı** girer (yoksa sonraki sayfa aynı yalanı üretir).
+
+## B69 — MailerLite şablon değişkenleri düz metin basıyor
+- [ ] **Sahip:** Kaan
+- **Belirti:** subject satırı `{$etkinlik_baslıgı}` diye **literal** basıyor — elle
+  yazılmış, Insert personalization ile konmamış. (Ayrıca değişken adı da yanlış:
+  gerçek alan `etkinlik_basligi`, Türkçe karakterli değil.) Gövde değişkenleri
+  denetlenmedi. Footer İngilizce.
+- **Kapanış şartı:** üç mailde subject + gövde + footer düzeltilir, test maili
+  **Gmail koyu tema** ve **Outlook**'ta görülür.
+
+## B70 — `/seremoni` SSS'inde kayıt çelişkisi
+- [ ] **Sahip:** Claude.ai → Notion
+- **Belirti:** soru *"Kayıt yapılıyor mu?"* → cevap *"Hayır"*. Cevap ses/video
+  kaydını anlatıyor ama soru **katılım kaydı** gibi okunuyor; `/seremoni/kayit`
+  rotası mevcut ve kayıt alıyor.
+- **Kapanış şartı:** Notion nokta patch — soru *"Seremoni kaydediliyor mu?"* olur,
+  cevaba *"(Katılım kaydı ayrı.)"* eklenir.
+
+## B71 — `/cember` render kalıntıları (Notion işaretlemesi sızmış)
+- [ ] **Sahip:** Claude.ai → Notion
+- **Belirti:** üç dize yanlış etikete düşüyor —
+  `"Bu ateş OCAK'ın ateşi."` → `<code>` ·
+  `"Ateş sönmüyor, içimize taşınıyor."` ve
+  `"ateşin en sıcak, en dayanıklı çekirdeği"` → `<del>`.
+- **Kapanış şartı:** üçü de gövde metni olur (KARAR 118 yazım disiplini).
+
+## B72 — Test verisi temizliği
+- [ ] **Sahip:** Kaan
+- **Ölçüm:** Notion Kayıtlar DB'sinde **on bir** test kaydı, MailerLite'ta **beş**
+  test abonesi.
+- **Kapanış şartı:** Eylül'de gerçek kayıt gelmeden temizlenir. Erken temizlik
+  Y1/kapı doğrulamalarının zeminini siler — sıralama önemli.
+
+## B73 — `pre-merge-kayit-penceresi` tag'i push edilmedi
+- [ ] **Sahip:** Kaan
+- **Belirti:** yerelde duruyor, remote'ta yok. `git push --tags` yerine tek tag
+  push edildiği için kaldı (19 Ağu, `kurtarma-2026-08-19` gönderilirken bilinçli).
+- **Kapanış şartı:** gönderilecek mi karar verilir; gönderilmeyecekse yerelden
+  silinir ve sebebi buraya yazılır.
+
+## B74 — iPhone Safari eyeball borcu (on bir commit birikti)
+- [ ] **Sahip:** Kaan
+- **Tetikleyici:** CLAUDE.md madde 9 / KARAR 388 — merge öncesi gerçek cihaz
+  eyeball'ı otomatikleşmez. Ölçüldü: `02-borclar.md`'de böyle bir kayıt **yoktu**
+  (B11 Safari **hero glow banding**, ayrı iş), bu yüzden açıldı.
+- **Belirti:** `/etkinlik/[slug]` mobil ritmi (`≤768px` bloğu) **hiçbir gerçek
+  cihazda görülmedi**. Ritim CSS'i "promote yok, eyeball Kaan'da" diye bekletilirken
+  push production'a çıktı; adım atlandı.
+- **Kapanış şartı:** gerçek iPhone Safari'de `/etkinlik/[slug]` + bir kayıt sayfası
+  görülür. Test yeşili ≠ göz temiz.
