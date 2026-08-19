@@ -1,6 +1,7 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 20 Ağustos 2026 · **fikir kuyruğu korpusa alındı** — B108–B120 açıldı,
+**Son güncelleme:** 20 Ağustos 2026 · **fikir kuyruğu korpusa alındı** — B108–B120 açıldı ·
+**FİKİR HAVUZU** ve **KARAR ADAYLARI** başlıkları doğdu (F-1…F-5 · A-1…A-5),
 karar mühürlenmedi (ledger 523'te sabit) · önceki: **Marka işareti ✅ · başlık kanonu ✅** —
 KARAR 522 · 523; borçlar B105 · B107 (B106 aynı gün kapandı) ·
 WABA display name turu (KARAR 519–521 · B103–B104 · KARAR 410 SUPERSEDE) ·
@@ -215,13 +216,10 @@ hattın (ürün · doküman · sosyal) önüne geçmez. İçlerinden yalnız iki
 **B118 + B119** (banner ile atomik) ve **B114** (Gün 0 kurucu görselin önkoşulu).
 Kalanlar sahibine göre kendi hattında erir. Açık iş sayacı `02-borclar.md` başlığında yaşar.
 
-⚠ **Patch'in yazılmayan iki bölümü Kaan'da:** beş **karar adayı** (A-1 "Retreat"→"İnziva" ·
-A-2 manifesto cümlesi · A-3 Açık Kapı çekim mekaniği · A-4 alt yönlendirme kutuları ·
-A-5 arşiv şifre modeli — bu sonuncusu B120'nin içinde) ve beş **fikir** (F-1 İçerik Üstadı ·
-F-2 Yazı Dili Üstadı · F-3 Social Media Agent · F-4 Yoga dersleri · F-5 ortak operasyonel
-takvim). Kaynak `docs-patch-2026-08-19c.md` Bölüm 4–5; nereye yazılacakları karar bekliyor.
-*F-1 · F-2 · F-3 ve **B117** aynı aileden — OCAK sesini taşıyan yüzeyler; tek çatı altında
-düşünülmeleri önerildi, karar değil gözlem.*
+**Patch'in Bölüm 4–5'i 20 Ağustos'ta yerleşti** (Kaan kararı): beş fikir → bu dosyanın
+sonundaki **FİKİR HAVUZU**, beş karar adayı → **KARAR ADAYLARI**. İkisi de sıra değildir,
+kuyruğun önüne geçmezler. **Hiçbiri mühürlenmedi — ledger `523`'te sabit.**
+*(19 Ağustos'ta bu satır "nereye yazılacakları karar bekliyor" diyordu; yer kararı verildi.)*
 
 ---
 
@@ -445,3 +443,56 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   3574 satır → 63 segment → 7 hedef. `20-ref-*` beşli → **yedili**.
   33 kaynak hücresi dönüştü · 1715 satır kronolojiye indi · `_arsiv/ocak-referans-v1.md`.
   → `90-kronoloji/2026-08.md`
+
+---
+
+## FİKİR HAVUZU
+
+**Borç değil, karar adayı değil — henüz fikir.** `02-borclar.md` ürün/fikir kuyruğu taşımaz —
+aynı ayrım yukarıda n8n maddesinde de yazılı (*"Borç kaydı yok — ürün işi"*). Borç dosyası
+sahibi **ve** kapanış şartı olan işi tutar; buradakilerin ikisi de yok, kaydın
+**kaybolmaması** için duruyorlar. Bir fikir borca dönüşecekse
+`02-borclar.md`'ye **sahip + kapanış şartıyla** geçer, buradan silinmez — taşınır (KARAR 61).
+
+**Kaynak:** claude.ai 19 Ağustos sohbeti · `docs-patch-2026-08-19c.md` Bölüm 4.
+20 Ağustos'ta buraya yazıldı.
+
+| # | fikir | cinsi | not |
+|---|---|---|---|
+| **F-1** | **İçerik Üstadı** — içerik + ton üreten ajan | araç fikri | iş tarifi yazılmadı |
+| **F-2** | **Yazı Dili Üstadı** — var olan metnin sesini bozmadan parlatan editör-ajan | araç fikri | F-1'den ayrı: o **üretir**, bu **korur** |
+| **F-3** | **Social Media Agent** — sosyal içerik üreten/planlayan ajan | araç fikri | gelen mesaja cevap veren bottan ayrı |
+| **F-4** | **Yoga dersleri** — düzenli pratik formatı | program fikri | format ailesine girer mi, ayrı mı |
+| **F-5** | **Ortak operasyonel takvim** (Advaita + Kaan) | operasyon | ilk adımı olabilecek iş **zaten sırada**: "Planlama takvimi view'ı" (yukarıda, KARAR 515) |
+
+> **F-1 · F-2 · F-3 ve `02-borclar.md`'deki B117 aynı aileden:** OCAK sesini taşıyan yüzeyler.
+> Tek çatı altında düşünülmeleri önerildi — **bu bir karar değil, gözlem.** Dördü de bugün
+> ayrı ayrı duruyor; birleştirme kararı verilmedi.
+
+⚠ **Mevcut skill kadrosuyla karıştırılmaz.** `ocak-metin` ve `ocak-lint` bugün canlı ve
+sınırları mühürlü (KARAR 476: metin üretir ↔ lint denetler). F-1/F-2 bu ikilinin
+yerine geçmez; kapsamları yazılmadan ilişkileri de tanımlanamaz.
+
+---
+
+## KARAR ADAYLARI
+
+⚠ **Hiçbiri mühürlenmedi. Ledger `523`'te sabit.** Bunlar KARAR **değildir** — numara
+taşımazlar, `01-kararlar.tsv`'ye girmediler, hiçbir yüzeyi bağlamazlar. Mühür Kaan'ın
+onayıyla, `ocak-kararci` üzerinden, **ayrı turda** yapılır. Buradaki tablo yalnız
+soruyu ve ölçülmüş zeminini tutar.
+
+**Kaynak:** claude.ai 19 Ağustos sohbeti · `docs-patch-2026-08-19c.md` Bölüm 5.
+20 Ağustos'ta buraya yazıldı; zemin ölçümleri aynı gün koşuldu.
+
+| aday | soru | zemin (ölçüldü) |
+|---|---|---|
+| **A-1** | **"Retreat" → "İnziva"** olsun mu | ⚠ **Tek satırlık iş değil, ölçüldü:** `src/` altında **28 dosya · 84 geçiş**; `docs/` altında **19 dosya**. Rota adı `/mini-retreat`, kategori enum'u `etkinlik-kategori.ts:13,23,128` (Notion `Mini Retreat` ↔ slug eşlemesi), üç test dosyası. Değişirse URL + Notion + `10-marka.md` + bekçi dosyaları birlikte döner. **TEYITSIZ:** "bilinçli İngilizce istisnaydı" gerekçesi hiçbir dosyada yazılı bulunamadı — `20-ref-marka.md:49` yalnız **marka adı** için İngilizce alternatifleri eliyor, "Retreat" için mühür yok |
+| **A-2** | Manifesto cümlesi (**KORUNACAK İFADE #1**) kalsın mı | ⚠ **Marka çekirdeğine dokunur.** Cümle `10-marka.md:158`'de *"(Metin değişmez)"* damgası taşıyor; #35 döneminde yalnız **konumu** değişti (footer → `manifesto-vurgu` kanonik section'ı), ifade aynı kaldı. Kaldırma önerisi çekirdek revizyonudur, kopya rötuşu değil |
+| **A-3** | **Açık Kapı çekim mekaniği** — ücretsizliği ne görünür kılar (rozet vb.) | ⚠ **"Davet ≠ Satış" bağlayıcı** (KORUNACAK İFADE #7, `10-marka.md:164`); aciliyet/funnel dili üretilemez. Fiyatın sayfada geçmemesi ayrıca KARAR 432 (KALICI) — "sembolik" de "yatırım" da denmez |
+| **A-4** | **Alt yönlendirme kutuları** doğru hedefe mi gidiyor | **Önce ölçüm, sonra karar.** İddia doğrulanmadı; bugün elde hiçbir sayı yok. Ölçülene kadar aday bile sayılmaz |
+| **A-5** | **Arşiv şifre modeli** — tek şifre mi, dönem bazlı mı | **B120'nin içinde yaşıyor** (`02-borclar.md`), orada açık karar olarak işaretli. Ayrı mühür gerekir. Etik duvar değişmez: fiziksel çember ve paylaşım turu kaydedilmez (KARAR 57, KALICI) |
+
+> **A-2 ile A-3 aynı sınıra bakıyor.** İkisi de KORUNACAK İFADELER listesine dokunuyor —
+> biri metnin kendisine (#1), öbürü sınırına (#7). Liste on maddedir ve mühürlüdür;
+> bir maddesine dokunan öneri, listenin bütününe dokunduğunu bilerek yazılır.
