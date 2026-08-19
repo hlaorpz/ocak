@@ -1,17 +1,21 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · B75–B76 açıldı (Faz 1 §1–§2 + ek brief kod turu)
+**Son güncelleme:** 19 Ağustos 2026 · B75–B76 açıldı, **B76 aynı gün kapandı** (canlı teyit)
 
-**Durum:** 76 madde · **47 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 76 madde · **46 açık iş** · 28 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
 `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 76 − 27 − 2 = **47**. Ölçüm anı: **B76 açıldıktan sonra**, 19 Ağustos 2026.*
+Açık = 76 − 28 − 2 = **46**. Ölçüm anı: **B76 kapandıktan sonra**, 19 Ağustos 2026.*
 
 *19 Ağustos, ikinci ölçüm (Faz 1 kod turu): toplam 74 → **76**, açık 45 → **47**.
 Kapanan yok, damgalı sayısı **27**'de sabit — B75 ve B76 ikisi de yeni kayıt.
 Sayaç devralınmadı, üç grep yeniden koşuldu.*
+
+*19 Ağustos, üçüncü ölçüm (aynı turun canlı teyidi): **B76 kapandı** — damgalı
+27 → **28**, açık 47 → **46**. Toplam 76'da sabit. Aynı gün açılıp aynı gün
+kapanan tek kayıt; ölçüm push sonrası canlı aboneden alındı, `dist/`ten değil.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 74 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
@@ -1423,8 +1427,8 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   alanları elle tamamlanır. `kadinAdiBirlestir` tek parçalı girdide de doğru
   çalışıyor (testli), elle düzeltme yolunda çağrılabilir.
 
-## B76 — MailerLite `last_name` konumu canlı teyit edilmedi
-- [ ] **Sahip:** CC + Kaan
+## B76 — MailerLite `last_name` konumu canlı teyit edilmedi ✅ KAPANDI
+- [x] **Sahip:** CC + Kaan · **Kapandı:** 19 Ağustos 2026, `62d4e80` canlıyken
 - **Tetikleyici:** Faz 1 §2 (`9fca383`) — `last_name` `fields` içine, `name` ile
   aynı seviyeye yazıldı (KARAR D5). **Bu konum repodan ölçülemiyor.**
 - **Belirti:** repo yalnız `name`'in `fields` içinde gittiğini kanıtlıyor
@@ -1437,3 +1441,20 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış şartı:** push sonrası test aboneyle kayıt olunur, MailerLite panelinde
   abonenin **Last name** alanı dolu görülür. Boşsa konum yanlış demektir ve
   payload düzeltilir.
+- **Kapanış ölçümü (19 Ağu, `62d4e80` canlıyken):** `www.ocak.biz/acik-kapi/kayit`
+  üzerinden gerçek kayıt atıldı (damgalı adres `kaan+b76-1787129984070@yap.com.tr`,
+  abone id `196220217536283724`, referans `OCAK-CYUD`). MailerLite'tan okunan
+  ham değerler:
+
+  ```
+  name      = 'B76Test'
+  last_name = 'Soyadteyit1787129984070'
+  ```
+
+  **`last_name` DOLU** — konum doğru, `fields` içi. Aynı okuma D8'i de doğruladı:
+  `city = None`, yani şehir MailerLite'a gitmiyor (envanter on ikide).
+- **Yan kazanım — artık ölçülmüş bir gerçek:** MailerLite'ın ön-tanımlı alanlarının
+  **hepsi** `fields` içinde yaşıyor. Abone yanıtında görülenler: `name` ·
+  `last_name` · `city` · `company` · `country` · `phone` · `state` · `z_i_p`.
+  Bu, D5 kararının dayandığı çıkarımı artık çıkarım olmaktan çıkarıyor —
+  ileride ön-tanımlı bir alan daha eklenecekse yeri tartışmalı değil.
