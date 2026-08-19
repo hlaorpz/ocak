@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · B75–B76 açıldı, **B76 aynı gün kapandı** (canlı teyit)
+**Son güncelleme:** 19 Ağustos 2026 · Faz 1 kapanışı · B77–B79 açıldı · B74 **kısmi**
 
-**Durum:** 76 madde · **46 açık iş** · 28 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 79 madde · **49 açık iş** · 28 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -16,6 +16,13 @@ Sayaç devralınmadı, üç grep yeniden koşuldu.*
 *19 Ağustos, üçüncü ölçüm (aynı turun canlı teyidi): **B76 kapandı** — damgalı
 27 → **28**, açık 47 → **46**. Toplam 76'da sabit. Aynı gün açılıp aynı gün
 kapanan tek kayıt; ölçüm push sonrası canlı aboneden alındı, `dist/`ten değil.*
+
+*19 Ağustos, dördüncü ölçüm (Faz 1 kapanış patch'i): toplam 76 → **79**, açık
+46 → **49**. Damgalı **28**'de sabit — bu turda kapanan yok. **B74 KISMİ**:
+kayıt sayfası ayağı görüldü, `/etkinlik/[slug]` ritim ayağı açık kaldı; madde
+bilerek damgasız bırakıldı, yani açık sayılıyor. Kapanış şartı daraltılmadı —
+daraltmak borcu kapatmaz, kaydını siler (Kaan kararı). Y1 bu sayaca girmez:
+borç numarası değil, kod turu etiketi.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 74 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
@@ -1413,6 +1420,16 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   push production'a çıktı; adım atlandı.
 - **Kapanış şartı:** gerçek iPhone Safari'de `/etkinlik/[slug]` + bir kayıt sayfası
   görülür. Test yeşili ≠ göz temiz.
+- **KISMİ KAPANIŞ (19 Ağu, `9036791` üzerinde):** iki ayağın **biri** tamam.
+  - ✅ **Kayıt sayfası ayağı** — hatalı zorunlu alan nav'ın altında kalmıyor
+    (`Şehir` · `Telefon` · `E-posta`), success bloğu regresyonsuz, Alıcı
+    unvanında `A.Ş.` bütün. Kaan gerçek cihazda gördü.
+  - ⬜ **`/etkinlik/[slug]` mobil ritim ayağı — HÂLÂ AÇIK.** `≤768px` bloğu hiçbir
+    gerçek cihazda görülmedi; borcun **doğuş sebebi** buydu.
+- **⚠ Şart daraltılmadı, bilinçli (Kaan kararı).** Kapanış şartını kayıt
+  sayfasına indirmek borcu kapatmaz, **kaydını siler** — ritim CSS'i yine
+  görülmemiş olurdu. Madde bu yüzden damgasız duruyor ve **açık sayılmaya devam
+  ediyor**; sayaçta kapanan olarak görünmez.
 
 ## B75 — Soyad + zorunlu Şehir öncesi kayıtlarda alanlar eksik
 - [ ] **Sahip:** Kaan
@@ -1458,3 +1475,49 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   `last_name` · `city` · `company` · `country` · `phone` · `state` · `z_i_p`.
   Bu, D5 kararının dayandığı çıkarımı artık çıkarım olmaktan çıkarıyor —
   ileride ön-tanımlı bir alan daha eklenecekse yeri tartışmalı değil.
+
+## B77 — Notion'da Slug'sız etkinlik yayına girebiliyor
+- [ ] **Sahip:** Kaan (veri disiplini)
+- **Tetikleyici:** Y1 canlı vakası (`92e580e`, 19 Ağu) — Slug'ı boş "Konuk Ateşi"
+  kaydında `etkinlik_url` üretilemedi. `etkinlikUrlFormatla` boş slug'da **bilerek**
+  boş string döner (kırık taban URL `.../etkinlik/` üretmemek için), yani kod doğru
+  davranıyor; eksik olan **veri**.
+- **Belirti:** yayına giren bir etkinliğin Slug'ı boşsa detay sayfası doğmaz
+  (`getStaticPaths` onu atlar) ve maile giden `etkinlik_url` boş gider. Kadın
+  buluşmanın adını görür, sayfasını göremez.
+- **Bu bir kod işi DEĞİL.** Kapı koymak (Slug boşken kaydı reddetmek) kadını
+  Notion'daki bir eksiklik yüzünden cezalandırmak olurdu.
+- **Kapanış şartı:** `siteGoster=true` olan her etkinlikte `Slug` dolu — Notion
+  tarafında alışkanlık ya da template zorunluluğu. Ölçüm: yayın açık etkinliklerde
+  boş Slug sayısı 0.
+
+## B78 — Vercel env değişkenlerinin hepsi Non-sensitive
+- [ ] **Sahip:** Kaan
+- **Belirti:** 17 değişkenin **17'si** Non-sensitive olarak tanımlı — aralarında
+  `NOTION_TOKEN` · `MAILERLITE_API_KEY` · `ZOOM_CLIENT_SECRET` ·
+  `ZOOM_WEBHOOK_SECRET` · `RESEND_API_KEY` var. Non-sensitive değerler Vercel
+  arayüzünde ve API'de **okunabilir** kalır.
+- **Neden şimdi görünür oldu:** Faz 1'de `MAILERLITE_API_KEY` canlı teyit için
+  okundu (B76). Anahtar hiçbir dokümana yazılmadı (CLAUDE.md §8) ama okunabilir
+  olması başlı başına bir yüzey.
+- **Bu bir sızıntı kaydı DEĞİL** — sır dokümana girmedi, commit'e girmedi.
+  Yapılandırma sıkılaştırması.
+- **Kapanış şartı:** yukarıdaki beş anahtar (ve varsa öteki sırlar) Vercel'de
+  **Sensitive** işaretlenir. ⚠ Sensitive'e çevirmek değeri **yeniden girmeyi**
+  gerektirir ve üç ortamda da (Production · Preview · Development) yapılmalı;
+  atlanan ortam sessizce boş kalır ve o ortamdaki akış çalışmayı durdurur.
+
+## B79 — Faz 2 eşleştirme regex'i ÜÇ referans formatını tanımalı
+- [ ] **Sahip:** CC (Faz 2 turunda)
+- **Tetikleyici:** KARAR 489 — referans kodu `OCAK-XXXX`'e geçti, **migration yok**.
+- **Belirti:** Notion `Kayıtlar`'da üç format yan yana yaşıyor:
+  `OCAK-XXXXX` (5 hane rakam, Brief 6) · `OCAK-XXXXXX` (6 hane rakam, 2026-06-14) ·
+  `OCAK-XXXX` (4 karakter alfanümerik, Faz 1). Banka açıklamasından kod ayıklayacak
+  regex üçünü de tanımak zorunda.
+- **Tuzak:** **uzunluğa göre ayrıştırma yapılmamalı.** `OCAK-` sonrası 4/5/6
+  karakter olabilir ve son çare kodu **5 karakter alfanümerik** — yani uzunluk tek
+  başına formatı belirlemiyor.
+- **Bağ:** `KARAR 489`. Tip tarafı zaten hazır: `lib/api.ts` `referansNo` serbest
+  `string`, uzunluk varsayımı taşımıyor (Faz 1'de not düşüldü).
+- **Kapanış şartı:** Faz 2 eşleştirme regex'i üç formatı da yakalıyor, testte
+  üçü de örneklenmiş.

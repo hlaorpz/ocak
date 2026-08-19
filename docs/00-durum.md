@@ -1,13 +1,16 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 19 Ağustos 2026 · **Y1 ✅** (`92e580e`) · KARAR 484–487 · B63–B74 açıldı
+**Son güncelleme:** 19 Ağustos 2026 · **Faz 1 kapandı** (`9036791`) · KARAR 488–491 · B77–B79 açıldı
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 195 satır (`wc -l`, 19 Ağustos) — **pay 5 satır**. Sonraki ekleme tahliye ister:
-> en eski dönem bloğu (12–20 Temmuz) kronolojiye iner, silinmez.*
+> *Şu an: 198 satır (`wc -l`, 19 Ağustos ikinci tur) — **pay 2 satır**. Bu turda dört
+> dönem bloğu tahliye edildi (12–20 Temmuz · 9 Ağu ikinci tur · 6 Ağu · 4 Ağu, 10 satır);
+> özetleri `90-kronoloji/2026-08.md` sonuna **taşındı**, silinmedi. Sonraki tahliye
+> adayı: `7–8 Ağustos`. **`ŞU AN NEREDEYİZ` bloğu aday DEĞİL** — kapanmış tur gibi
+> görünür ama içinde canlı iş var (B36-b · B53/B51 · `baglam.sh` emekli edilmedi).*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -74,16 +77,18 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`1546622`** (19 Ağu, B63 doküman) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e` (kod) `→ 1546622` (doküman) |
+| `main` dönem HEAD | **`9036791`** (19 Ağu, Faz 1 §1 ikinci tur) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791` |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
-| Test | **193/193** yeşil — 10 dosya. 181→193 farkı: MailerLite alan/kapı testleri + Y1 taşıma katmanı (7) |
+| Test | **246/246** yeşil — 13 dosya. 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
 | robots.txt | `Disallow: /` — **stealth sürüyor** |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ⚠ `tZR9LcwJq9` → **`astro-iskelet`** (ölü dal). Yenisi `notion-content-update-main` → `main` **oluşturuldu ama çağıran yok** — **B64**. Notion webhook + gece cron hâlâ eskisini paylaşır |
 | Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu) |
-| Ödeme | **Kart entegrasyonu reddedildi → havale/EFT, elle takip.** `payment-provider.ts` stub duruyor, kart yüzeyi kapatılmadı. Ödeme onayı zinciri **EKSİK**: `odeme_durumu = alindi` yazımı yok → Mail 2/3 hiç tetiklenmiyor, link elle yollanıyor |
+| Ödeme | **Kart akışı `KART_AKISI` env anahtarıyla KAPALI** (KARAR 488) — kod silinmedi, altı tüketici anahtarın arkasında. Tek yol **banka havalesi/EFT**, takip elle. Varsayılan kapalı: açmak için `KART_AKISI=acik` gerekir |
+| Referans kodu | **`OCAK-` + 4 karakter**, 29'luk alfabe (`Z` yok — yanlış okunursa geçerli kod üretir; `L` var — `1` alfabede yok, hata gürültülü çıkar). Uzay 29⁴ = 707.281. Notion'da 5 ve 6 haneli eski rakamsal kodlar da yaşıyor, **migration yok** |
+| ⚠ Ödeme onayı | **Kapı doğru, açan mekanizma YOK.** `odeme_durumu` üçüncü değeri `alindi` hiçbir kod tarafından yazılmıyor → ödemesi gelen kadına Zoom/adres bilgisi **elle** gidiyor. n8n akışı kurulana kadar böyle (`03-sira.md` madde 2, sıranın en kritik maddesi) |
 | MailerLite | **On iki custom field** (envanter `20-ref-bot.md`). Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
 
 ---
@@ -126,6 +131,14 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **19 Ağustos (Faz 1 — ödeme yüzeyi):** Kart akışı **silinmeden** kapatıldı
+  (`KART_AKISI`, KARAR 488). Referans kodu `OCAK-XXXX`'e indi — 29'luk alfabe,
+  15 maddelik kara liste (KARAR 489 · 490). Havale açıklamasından **isim çıktı**,
+  satır saf ASCII oldu. Forma **Soyad** eklendi, **Şehir** ve **Telefon** sunucuda
+  zorunlulaştı; `last_name` MailerLite'a canlı aboneden teyitli (**B76 ✅**).
+  `A.Ş.` satır kırılması CSS'ti, düzeldi. Geçersiz alan kaydırması bir kez kör
+  uygulanıp canlıda kapanmadı, `nav-kaydir.ts` ortak yardımcısıyla düzeldi
+  (KARAR 491 bu hatadan doğdu). → `90-kronoloji/2026-08.md`
 - **18–19 Ağustos (içerik + altyapı):** Çember bekçisi kuruldu — `ocak-etkinlik` artık
   **iki bekçili**: `ornekler.md` (Açık Kapı, altı sayfa, 3.019–3.247 kr) +
   `ornekler-cember.md` (Çember, dört sayfa, 3.824–4.113 kr). Seremoni bekçisi **yok**;
@@ -135,10 +148,6 @@ girmez; o kuyruk başka yerde yaşar.
   (kakao · `hasat-ve-sukran` 22 Eylül). MailerLite on ikinci alana çıktı; **Y1** kapandı
   (`92e580e`) — boş alan artık tele çıkıyor. **Promote kazası** teşhis edildi (KARAR 485),
   **403 yanlış alarmı** kayda geçti (KARAR 487). → `90-kronoloji/2026-08.md`
-- **12–20 Temmuz (14 sohbet, KARAR 363–453):** hero geçişi, etkinlik liste tek-kabuk,
-  kayıt penceresi + TZ fix, banka POS geçişi, liste ailesi tek gramer, kayıt butonu
-  birleştirme (`kayit-cta` emekli), Yolculuk 7. kapı ürün+metin, Fable editoryal turu,
-  sosyal medya ajans v2. Dönemin HEAD'i `e8a16dd`. → `90-kronoloji/2026-07.md`
 - **11 Ağustos (ikinci tur):** **B40 · B55 · B56 ✅** — KARAR 482'nin ilk uygulaması.
   Üçü de "önce karar" şartını 482 sayesinde düşürdü. **KARAR 483** mühürlendi: brief'in
   düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz — üç günde dört ölçülmüş vaka.
@@ -149,12 +158,6 @@ girmez; o kuyruk başka yerde yaşar.
   üçü de `ocak`. Bir commit, sıfır site kodu. CC dört sapma bildirdi, dördü de haklıydı;
   biri brief'in `N → 0` kriterinin kendi kaydını sayması (KARAR 465'in ikinci vakası).
   → `90-kronoloji/2026-08.md`
-- **9 Ağustos (ikinci tur):** ADIM 7 ikinci dalga A+B — `docs_karar` + B54, üç commit,
-  sıfır site kodu. Ledger'ın ölçülmüş sığlığı **126/418**'e genişledi (119 indeks + 7
-  komşu; b36a'nın 119'u bağımsız doğrulandı). KARAR 480 · 481. → `90-kronoloji/2026-08.md`
-- **4 Ağustos:** bakım turu — dört borç kapandı, iki içerik kalıntısı Notion'da düzeltildi.
-- **6 Ağustos:** doküman mimarisi geçişi (KARAR 455–463) + kod teyidi 3 tur (7 commit,
-  altı borç kapandı) + ADIM 2 ledger + **ADIM 3 bölme**. → `90-kronoloji/2026-08.md`
 - **7–8 Ağustos:** B32 (referans dağıtımı, beşli → yedili) · B33 · B37 · B34 ·
   **ADIM 4** (CLAUDE.md + baglam.sh + tam taşıma) · **B36 açılış ölçümü**
   (mekanik çapaların %43'ü komşusunu gösteriyor, kuyruk ~179±, üçte ikisi tek desen) ·

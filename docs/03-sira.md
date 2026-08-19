@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 · yeni sıra kararı — **B64 kuyruğun başı**; KARAR 484–487
+**Son güncelleme:** 19 Ağustos 2026 (ikinci tur) · **Faz 1 kapandı**; KARAR 488–491 · B77–B79
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -13,7 +13,52 @@
 
 ## SIRADAKİ İŞ
 
-**Sıra kararı — 19 Ağustos 2026 (docs-patch-2026-08-19).** Öncelik sırasıyla:
+### ⛔ LANSMAN ÖN KOŞULU — ertelenemez
+
+**İade cümlesi.** `teslimat-iade.astro:57-58` + `mesafeli-satis.astro:123-124` hâlâ
+*"ödemenin yapıldığı kart üzerinden iade"* diyor. Kart akışı KARAR 488 ile kapandı →
+cümle **yanıltıcı** ve tüketicinin itirazda fiilen dayanacağı madde. Faz 1'de taslak
+yorumda bırakıldı, muhasebeci/hukuk onayı bekliyor.
+
+⚠ **`robots` `Allow` bu cümle düzelmeden açılmaz.** Lansman tanımı (KARAR 149) =
+robots Allow + duyuru; bu satır o tanımın önünde duruyor.
+
+### Faz 1'i tamamlayan sıra
+
+1. **Notion `Kayıtlar` alanları** (Kaan, elle) — `Beklenen Tutar` (number) +
+   `Mail Gitti` (checkbox). 2. maddenin ön koşulu.
+2. **n8n ödeme onayı akışı** (Kaan) — `Ödendi` + `Mail Gitti` boş → MailerLite
+   `odeme_durumu=alindi` → detay maili → `Mail Gitti` ✓. **Sıranın en kritik
+   maddesi:** bu kurulana kadar detay mailleri **elle** gidiyor. `odeme_durumu`'nun
+   üçüncü değerini hiçbir kod yazmıyor — kapı doğru çalışıyor, açan mekanizma yok.
+   **İdempotency işareti şart**, yoksa her gece aynı mail gider.
+   *Borç kaydı yok — ürün işi (`02-borclar.md` ürün kuyruğu taşımaz).*
+3. **Success ekranına kopyalama tuşları** (CC) — IBAN · tutar · kod, **üçü ayrı**.
+4. **Kayıt sonrası WhatsApp** (Kaan + CC) — `wa.me` butonu → 24 saatlik pencere →
+   ödeme bilgileri ücretsiz serbest metin olarak. B19 display name hattına bağlı.
+
+### Faz 2 — dışarıdan bekleniyor, başlayamaz
+
+5. **VakıfBank portal uygulaması onayı**; `accountList` + `accountTransactions`
+   API Management'tan eklenecek.
+6. **`Description` alanı testi** — servis çıktısı gönderenin açıklamasını kırpıyor
+   mu. KARAR 489'un "elle yazılabilir kod" gerekçesi buna dayanıyor.
+7. **Uyumsoft `SendInvoice`** + mükellef sorgusu (e-Fatura / e-Arşiv ayrımı).
+8. **Muhasebeci cevabı** — fatura zamanı · e-ticaret serisi · KDV oranı · **adres
+   zorunlu mu** · KVKK-saklama çakışması. Adres cevabı gelirse kayıt formundaki
+   konum bloğu baştan tasarlanır (İl + İlçe + açık adres) ve `Şehir` alanının
+   serbest-metin yapısı o turda değişir.
+
+⚠ **Faz 2 hesabı: `TR63 0001 5001 5800 7391 5595 37`.** İlk API testinde kullanılan
+`TR62 … 7312 3179 27` **farklı hesaptır** — karıştırılırsa eşleştirme boş döner.
+
+⚠ **B79** — Faz 2'nin eşleştirme regex'i **üç** referans formatını tanımak zorunda
+(`OCAK-XXXXX` · `OCAK-XXXXXX` · `OCAK-XXXX`), uzunluğa göre ayrıştırma yapılamaz.
+
+---
+
+**Sıra kararı — 19 Ağustos 2026 (docs-patch-2026-08-19).** Doküman hattı; yukarıdaki
+ürün sırasıyla **paralel** yürür, biri ötekini beklemez. Öncelik sırasıyla:
 
 1. **B64 — deploy hook URL geçişi** (Kaan). **Kuyruğun başı.** Bu kapanmadan Notion
    içerik güncellemeleri siteye düşmüyor; her yayın için elle boş commit gerekiyor.
@@ -29,7 +74,9 @@
    uyarısı: ürün kuyruğu `02-borclar.md`'ye girmez).*
 5. **B65 — zip yüklemesi** · **B72 — test verisi temizliği** (ikisi de Kaan).
    B72 sırası önemli: erken temizlik Y1/kapı doğrulamalarının zeminini siler.
-6. **B74 — iPhone Safari eyeball** (Kaan). On bir commit birikti.
+6. **B74 — iPhone Safari eyeball** (Kaan). **KISMİ:** kayıt sayfası ayağı 19 Ağu'da
+   görüldü ✅; **`/etkinlik/[slug]` mobil ritim ayağı hâlâ açık** — borcun doğuş
+   sebebi oydu. Kapanış şartı bilerek daraltılmadı.
 7. Üçüncü seremoni sayfası → **B66 seremoni bekçisi** (Claude.ai).
 8. **Atölye formatı** — başka sohbette başladı, bekçisi ayrı.
 
@@ -189,6 +236,16 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **19 Ağustos — FAZ 1 ✅** (8 commit: 6 kod, 2 doküman)
+  Kart akışı `KART_AKISI` ile kapatıldı, kod silinmedi (**KARAR 488**). Referans kodu
+  `OCAK-XXXX`'e indi — 29'luk alfabe + 15 maddelik kara liste (**489** · **490**).
+  Havale açıklamasından isim çıktı, satır saf ASCII. Forma **Soyad**, sunucuya
+  **Şehir** ve **Telefon** kapıları; `last_name` canlı aboneden teyitli (**B76 ✅**).
+  `A.Ş.` kırılması CSS'ti, düzeldi. Geçersiz alan kaydırması bir kez kör uygulanıp
+  canlıda kapanmadı → `nav-kaydir.ts` ortak yardımcısı (**KARAR 491** bu hatadan doğdu;
+  mekanizma **KARAR 395**'in uygulaması, yeni karar değil).
+  Test 193 → **246**. Yeni borç: **B77** · **B78** · **B79**. **B74 kısmi.**
+  → `90-kronoloji/2026-08.md`
 - **11 Ağustos (ikinci tur) — B40 · B55 · B56 ✅** (1 commit, sıfır site kodu)
   KARAR 482'nin ilk uygulaması: üç borç da "önce karar" şartını düşürdü ve tek turda
   kapandı. `61/88` → `61` (88 KIRPMA'nın halefi, kardeşi değil). Sahip tablosu

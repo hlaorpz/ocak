@@ -486,3 +486,7 @@ no	tarih	baslik	durum	iliski	kaynak
 485	2026-08-19	İçerik build'i kod dalıyla aynı yerden gelir — deploy hook `main`'e bakar	ACIK-BORC	B64	2026-08.md#k485
 486	2026-08-19	Katılım linki ödeme alınmadan hiçbir yüzeyde gösterilmez — kural maile de uygulanır	AKTIF	←220	2026-08.md#k486
 487	2026-08-19	Canlı production polling ile dövülmez — doğrulama tek atışlık ya da gerçek tarayıcıyla	KALICI	↔355	2026-08.md#k487
+488	2026-08-19	Kart akışı silinmez, `KART_AKISI` env anahtarıyla kapatılır	AKTIF	←363 · ←217	2026-08.md#k488
+489	2026-08-19	Referans kodu `OCAK-` + 4 karakter, 29 karakterlik alfabe	AKTIF	←210 · ↔490	2026-08.md#k489
+490	2026-08-19	Kod alfabesinde ölçüt: yanlış okuma geçersiz karakter üretmeli	KALICI	↔489	2026-08.md#k490
+491	2026-08-19	Bir brief maddesini yanlışlayan kanıt öteki maddelerine de uygulanır	KALICI	←156 · ↔102	2026-08.md#k491
