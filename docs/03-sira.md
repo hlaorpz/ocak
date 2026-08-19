@@ -1,6 +1,8 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (B turu) · sosyal/lansman hattı açıldı; KARAR 492–495 · B80–B87
+**Son güncelleme:** 19 Ağustos 2026 (üç-format turu) · KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE
+
+**Sıradaki iş:** **B64 → B69 → B68 → n8n ödeme onayı** — bu patch'ten sonra.
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -36,6 +38,31 @@ robots Allow + duyuru; bu satır o tanımın önünde duruyor.
 3. **Success ekranına kopyalama tuşları** (CC) — IBAN · tutar · kod, **üçü ayrı**.
 4. **Kayıt sonrası WhatsApp** (Kaan + CC) — `wa.me` butonu → 24 saatlik pencere →
    ödeme bilgileri ücretsiz serbest metin olarak. B19 display name hattına bağlı.
+
+### 🔶 KAAN'DA BEKLEYEN GİRDİ — borç değil, girdi
+
+Üç gövde canlıda ama **künye alanları boş**. Bunlar tartışma değil, veri; gelmeden
+sayfalar tamamlanamaz.
+
+- **Kakao × 2:** başlık · tarih · saat · kapasite · ücret · kayıt kapanışı ·
+  tedarikçi adı (KARAR 505 gereği **sayfada değil, kayıt sonrası mailde**) ·
+  online kayıt kapanışının **kargo süresine** bağlanması · yüz yüze **akşam mı yarım
+  gün mü** (akşam varsayıldı; gün olursa **üç dize değişir** — `ne-olur` H2, üçüncü
+  kayıt sorusu, `giris`) · mat/minder mekândan çıkıyor mu.
+- **Ritüel Tasarımı:** tarih (hangi **iki ardışık cumartesi**) · ücret ve model ·
+  kapasite (12–16 önerildi) · kayıt penceresi · tema alanı · **ödev sorusunun metni** ·
+  MailerLite ödev kampanyası metni ve gönderim zamanı (KARAR 512 — ilk oturumdan
+  3–4 gün önce, welcome mailine **girmez**).
+- ⏸ **Kayıt sonrası e-posta bekçinin beşinci çıktısı olsun mu** — Kaan **askıya aldı**,
+  karar değil. ⚠ Geriye dönük yük: Açık Kapı'nın **altı**, Çember'in **dört** sayfası
+  için bu e-posta **hiç yazılmadı**.
+
+### 🔶 ADVAITA'DA BEKLEYEN ONAY
+
+- Yüz yüzede **ortadaki alana nesne bırakılıyor mu** — gövdede *"bırakırsın"* yazılı,
+  Kaan teyidi var, **Advaita teyidi yok**.
+- **Kartın anlamı** doğru anlatıldı mı (*"kişiye özel değil, hepimize birden"*).
+- ⚠ **Ritüel Tasarımı gövdesinin hiçbir bölümü Advaita'ya gösterilmedi.**
 
 ### Faz 2 — dışarıdan bekleniyor, başlayamaz
 
@@ -263,6 +290,17 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **17–19 Ağustos — ÜÇ FORMAT ✅** (tek doküman commit'i, sıfır kod)
+  Açık Kapı bekçisi mühürlendi (altı gövde) · Seremoni iki gövde · Atölye bir gövde;
+  **üçü de canlıda**. Bekçi mekaniği sekiz kararla yazıya geçti (**KARAR 496–503**) —
+  "çember" kelimesi, çerçeve kuralı, H2, köz yasağı, kod bloğu teslimi, kayıt soruları,
+  `pratik-bilgi` ölçü değil, ritim CSS kapsamı. Seremoni beş (**504–508**), Atölye dört
+  (**509–512**). **KARAR 79 SUPERSEDE** — Ritüel Tasarımı seri program değil, iki
+  oturumluk tek atölye. Üst karar **KARAR 513**: türev yüzey kaynaktan yeniden
+  üretilmediğinde yalan söyler — beş yüzey aynı gün bayat çıktı, **beşincisi bu turun
+  brief'iydi.** Brief'in beş iddiası ADIM 0 ölçümüyle yanlışlandı; üç borç maddesi
+  yanlış öncülle düştü, bir "kapanan madde" borca döndü (**B100**).
+  Yeni borç: **B88–B100** (on üç). → `90-kronoloji/2026-08.md`
 - **19 Ağustos — FAZ 1 ✅** (8 commit: 6 kod, 2 doküman)
   Kart akışı `KART_AKISI` ile kapatıldı, kod silinmedi (**KARAR 488**). Referans kodu
   `OCAK-XXXX`'e indi — 29'luk alfabe + 15 maddelik kara liste (**489** · **490**).

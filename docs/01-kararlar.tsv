@@ -250,7 +250,7 @@ no	tarih	baslik	durum	iliski	kaynak
 76	2026-05-19	Kayıtlar database	AKTIF		2026-05.md:51
 77	2026-05-19	Etkinlikler 9 view yapısı	AKTIF		2026-05.md:52
 78	2026-05-19	Yaz gündönümü — iki ayrı buluşma	AKTIF		2026-05.md:53
-79	2026-05-19	Ritüel tasarımı — ilk atölye	AKTIF		2026-05.md:54
+79	2026-05-19	Ritüel tasarımı — ilk atölye	SUPERSEDE	→509	2026-05.md:54
 82	2026-05-19	Notion operasyonu — pratik prensipler	KALICI		2026-05.md:57
 83	2026-05-19	Buluşmalar odası tamamlandı	AKTIF		2026-05.md:58
 84	2026-05-19	Açık Kapı ücreti geçici boş (PARK EDİLDİ)	SUPERSEDE	→432	2026-05.md:59
@@ -494,3 +494,21 @@ no	tarih	baslik	durum	iliski	kaynak
 493	2026-08-19	Sosyal medya katman mimarisi — taban kişisiz akar, üst opsiyonel biner	AKTIF	←453 · ←450	2026-08.md#k493
 494	2026-08-19	Yeniden yazma kararı sezgiyle değil dört-kova ölçümüyle verilir	KALICI	↔483	2026-08.md#k494
 495	2026-08-19	Dump araçları kabul testiyle koşulur — HTTP 200 içerik garantisi değildir	KALICI	↔355 · ↔408	2026-08.md#k495
+496	2026-08-19	Açık Kapı gövdesinde "çember" kelimesi geçmez; Çember'de zorunlu	KALICI	←206	2026-08.md#k496
+497	2026-08-19	Çerçeve kuralı — sayfa başına iki buyuk-vurgu, üçüncüsü vuruşu harcar	KALICI		2026-08.md#k497
+498	2026-08-19	Etkinlik gövdesi içi başlık H2'dir, H3 değil	KALICI		2026-08.md#k498
+499	2026-08-19	Köz gövdeye girmez — renk hiyerarşisi üç katmanlı ve dolu	KALICI		2026-08.md#k499
+500	2026-08-19	Etkinlik gövdesi sohbet içinde kod bloğu olarak verilir, dosya olarak değil	KALICI		2026-08.md#k500
+501	2026-08-19	Kayıt soruları kalıbı — üç açık uçlu soru, her birinin altında bir rahatlatıcı satır	KALICI		2026-08.md#k501
+502	2026-08-19	pratik-bilgi madde sayısı bekçi ölçüsü değildir; sabit olan ortak cümlelerdir	KALICI	↔470	2026-08.md#k502
+503	2026-08-19	Etkinlik ritim CSS kapsamı main[data-page^="etkinlik/"] — token'lara dokunulmaz	AKTIF		2026-08.md#k503
+504	2026-08-19	Kakao seremonisinin ekseni "niyet" değil, "cevabını aradığın soru"	AKTIF		2026-08.md#k504
+505	2026-08-19	Kakao tedarik doktrini — online kadın sipariş eder, yüz yüze Advaita getirir	AKTIF		2026-08.md#k505
+506	2026-08-19	Unvan yasağı genişledi — Cacaoista/Kakaoista/Cacaoiste kamu metninde geçmez	KALICI	←442	2026-08.md#k506
+507	2026-08-19	"Kadim Maya seremonisi" iddiası yasaktır — format 2003 sonrası	KALICI	↔506	2026-08.md#k507
+508	2026-08-19	Advaita'nın ham Instagram postları _arsiv/'e girer, 20-ref-* olarak değil	KALICI	↔482	2026-08.md#k508
+509	2026-08-19	Ritüel Tasarımı seri program değil — iki oturumluk tek atölye	AKTIF	←79	2026-08.md#k509
+510	2026-08-19	Atölye sayfa iskeleti on bölümdür; elinde-ne-kalir kanonik bölüm	KALICI		2026-08.md#k510
+511	2026-08-19	Açık Kapı'nın sabit ne-olur bloğu Atölye'de kullanılmaz	KALICI	←442	2026-08.md#k511
+512	2026-08-19	Atölye ödevi kayıt anında gitmez — ayrı MailerLite kampanyası	AKTIF	←228	2026-08.md#k512
+513	2026-08-19	Türev yüzey, kaynaktan yeniden üretilmediğinde yalan söyler — tazelik kapısı	KALICI	↔355 · ↔495	2026-08.md#k513

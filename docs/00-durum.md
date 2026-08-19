@@ -1,12 +1,12 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 19 Ağustos 2026 · **B turu** · KARAR 492–495 · B80–B87 açıldı · B04 ✅
+**Son güncelleme:** 19 Ağustos 2026 · **üç-format turu** · KARAR 496–513 · B88–B100 açıldı · KARAR 79 →509 SUPERSEDE
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 198 satır (`wc -l`, 19 Ağustos B turu) — **pay 2 satır**. Bu turda üç dönem
+> *Şu an: 200 satır (`wc -l`, 19 Ağustos üç-format turu) — **pay 0, tavan doldu**. Önceki turda üç dönem
 > bloğu daha tahliye edildi (7–8 Ağu · 10 Ağu · 11 Ağu ikinci tur, 11 satır); özetleri
 > `90-kronoloji/2026-08.md` sonuna **taşındı**, silinmedi ve inmeden önce kalem kalem
 > kronolojiye karşı doğrulandı. Sonraki tahliye adayı: `11 Ağustos` (B47 · B58).
@@ -79,7 +79,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`523606b`** (19 Ağu, Faz 1 kapanış patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791 → 523606b` |
+| `main` dönem HEAD | **`a758994`** (19 Ağu, B turu patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791 → 523606b → a758994` |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **246/246** yeşil — 13 dosya. 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
@@ -137,6 +137,8 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **17–19 Ağustos (üç format birden):** Etkinlik üretimi dört formata yayıldı — Açık Kapı (altı gövde, bekçi mühürlü) · Çember (bekçi + dört gövde) · Seremoni (iki gövde, bekçi yok) ·
+  Atölye (bir gövde, bekçi yok). **Üç yeni gövde canlıda.** → `90-kronoloji/2026-08.md`
 - **19 Ağustos (B turu — sosyal medya + AÇILIŞ):** Sosyal v2 planı taze site dumpına karşı
   ölçüldü — **27 aynen · 3 cümle düzeltmesi · 0 yeniden yazım · 5 yeni malzeme**; baştan yazım
   düştü, v2.1 patch'lendi ve `30-sosyal.md` olarak repoya alındı. **AÇILIŞ 24–27 Eylül 2026**

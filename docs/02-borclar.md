@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · B turu · **B80–B87 açıldı · B04 ✅ kapandı**
+**Son güncelleme:** 19 Ağustos 2026 · üç-format turu · **B88–B100 açıldı · kapanan yok**
 
-**Durum:** 87 madde · **56 açık iş** · 29 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 100 madde · **69 açık iş** · 29 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -31,9 +31,18 @@ yeniden koşuldu. Not: bu turun "kapananlar" listesindeki diğer iki kalem (İ22
 kararı · `/hikaye` közü) **B numaralı madde değildi** — doğrudan içerik kararı,
 kayıtları `90-kronoloji/2026-08.md`'de. Sayaca girmezler.*
 
-*Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 87 · `grep -E '^## B' | grep -cE '[✅❌]'`
+*19 Ağustos, altıncı ölçüm (üç-format turu): toplam 87 → **100**, açık 56 → **69**.
+Damgalı **29**'da sabit — bu turda kapanan yok. On üç yeni kayıt **B88–B100**. Sayaç
+devralınmadı, üç grep yeniden koşuldu. **B57 kapanmadı ama cins buldu:** KARAR 513
+onu kapsıyor, doktrin borcu kapatmaz — kapatan tazelik kapısıdır ve kurulmadı; madde
+damgasız kaldı, yani açık sayılıyor. Brief'in tablosu 15 satırdı: üçü **yanlış öncülle
+düştü** (üç gövde Notion'a girdi · `/atolye` SSR, eksik değil · smoke kalıntısı gerçek
+etkinlik çıktı), biri **kapanan madde diye gelip borca döndü** (B100, hız sözü) → 13.*
+
+*Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 100 · `grep -E '^## B' | grep -cE '[✅❌]'`
 → 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
-`grep -E '^## B' | grep -cE '[⏸🔵]'` → 2. Açık = 87 − 29 − 2 = **56**.*
+`grep -E '^## B' | grep -cE '[⏸🔵]'` → 2. Açık = 100 − 29 − 2 = **69**.
+Damga ölçütü başlıktaki `[✅❌]`, kelimenin kendisi değil (10 Ağu B01 kaydı).*
 
 ⚠ *19 Ağustos: tek turda **on iki** yeni kayıt açıldı (B63–B74) — açık sayısı 33'ten
 45'e çıktı, kapanan yok. Bu bir gerileme değil, **görünürlük artışı**: kayıtların
@@ -1180,6 +1189,11 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   edilemiyor; CC'nin yerel testi dört anahtar döndürdüğü hâlde canlı yüzey üçünü
   gösteriyordu. B45/B46/B48/B54 ailesinin tanımı — *eksik olduğunu göstermeden eksik
   verir* — bu sefer connector yüzeyinde.
+- **19 Ağustos eki — kapanmadı, cins buldu.** KARAR 513 (türev yüzey doktrini) bu maddeyi
+  kapsıyor: connector araç listesi bir **türev yüzey**, sunucu şeması kaynak. Ama doktrin
+  borcu kapatmaz — kapatan **tazelik kapısıdır**, ve bu yüzey için kurulmadı. B96 (skill
+  zip) ve B97 (Railway checkout) kardeşleri. Kapanış koşulu değişmedi: araç listesi
+  kullanılmadan önce sunucu damgasına karşı ölçülür, tutmuyorsa üretim durur.
 - **B52 ile ilişki:** B52 üç katmanı sayıyordu (symlink · zip · MCP) ve MCP'yi
   *"ayrışma denetimsiz"* diye işaretlemişti. Bu, o denetimsizliğin **ilk somut vakası** —
   ama tahmin edilen yerde değil: veri katmanında değil **araç kaydı** katmanında.
@@ -1601,3 +1615,139 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - [ ] **Sahip:** Claude
 - **Belirti:** söz değneği reels'i **MJ-zoom** kaldı. Gerçek değnek makrosu
   çekildiğinde değiştirilecek.
+
+---
+
+## B88 — `ornekler-seremoni.md` bekçisi yazılacak
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** üçüncü Seremoni gövdesi yazılmadan önce
+- **Malzeme:** iki gövde, iki mekân varyantı (online · yüz yüze). Bant **4.870–5.197 kr**
+  (künye ölçümü, code point). İki nokta eğri vermiyor ama bant beyanı için yeterli —
+  Çember bekçisi de dört sayfayla kuruldu.
+- **Taşınacak sapmalar:** `yaninda-getir` mekân başına ayrı liste (Çember'in "beş sabit +
+  bir temaya özel" kalıbı buraya **taşınmaz**) · `kimin-icin` kapanışı mekâna göre bölük ·
+  "Geç kalırsan…" maddesi iki sayfadan da **çıkarıldı** · sağlık/kontrendikasyon katmanı yeni.
+- **Bağ:** KARAR 504 · 505 · B66 (Seremoni bekçisi yokluğu, bu maddenin selefi)
+
+## B89 — `ornekler-atolye.md` bekçisi yazılacak
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** **ikinci** Atölye sayfası
+- **Belirti:** tek sayfadan bant çıkmaz. Elde **4.895 kr** tek nokta var (Ritüel Tasarımı,
+  künye ölçümü). Kalıp ikinci Atölye sayfasına kadar **aday**, kanon değil.
+- **Sabitlenen:** on bölüm iskeleti (KARAR 510) · `elinde-ne-kalir` kanonik bölüm ·
+  sabit `ne-olur` bloğu **yok** (KARAR 511) · vurgu ekseni söz→eylem.
+
+## B90 — `/atolye` sayfasında Ritüel Tasarımı yanlış kutuda
+
+- [ ] **Sahip:** Kaan (Notion) · **Tetikleyici:** KARAR 509 mühürlendi, doğrudan sonucu
+- **Belirti:** `seri-atolyeler` bloğunda duruyor; **tek-seferlik listeye** taşınacak.
+  İki oturumluk tek atölye, dört haftalık seri program değil.
+
+## B91 — KARAR 79'un izleri iki referans dosyasında duruyor
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** KARAR 509 supersede'i
+- **Ölçüm (19 Ağu 2026, `grep`):** iki nokta, ikisi de yerinde —
+  `20-ref-program.md:320` (*"Ritüel Tasarımı" — 4 hafta. Kişisel ritüel defteri.*) ·
+  `20-ref-notion.md:104` (*Ritüel Tasarımı (Seri Program, 4 hafta, Advaita)*, Workshop
+  Şablonları #1).
+- ⚠ **Neden borç:** ledger 79'u SUPERSEDE işaretledi ama gövdeler eski hâli **beyan
+  etmeye devam ediyor**. İndeks düzeldi, indekslenen düzelmedi (KARAR 482'nin tersi yönü).
+
+## B92 — `10-marka.md` Maya/Aztek soy hattı iddiası yanlış
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** KARAR 507
+- **Belirti:** `10-marka.md:24` — *"Kakao seremonisi (Cacaoista, Maya/Aztek)"* →
+  *"(Cacaoista)"*. Soy hattı iddiası **yanlış** (Kaan teyidi); kakaonun modern seremoni
+  formatı 2003 sonrası.
+- **Not:** proje dosyası aynası KARAR 471 gereği **elle** tazelenir — repo değişince
+  ayna otomatik gelmez.
+- **Kalan ayak:** site katmanında kalıntı var mı — `dist/` grep'i koşulmadı.
+
+## B93 — "Kayıt" çift anlamı ayrıştırılmadı
+
+- [ ] **Sahip:** Claude.ai → Notion · **Tetikleyici:** yedinci Açık Kapı sayfası
+- **Çelişki:** `/seremoni` SSS *"Kayıt yapılıyor mu? Hayır"* (`90-kronoloji/2026-07.md:907`)
+  = ses/video kaydı · Açık Kapı sabit satırı *"Kayıt alınır… sonradan izlersin"* = aynı
+  kelime, oturuma katılım kaydı **değil**, oturumun kaydı. Aynı kelime iki anlamda.
+- **Ölçüm (19 Ağu 2026, `dist/` grep `Kayıt alınır`):** **altı** canlı Açık Kapı sayfası —
+  `bir-esikte-duruyorsun` · `bu-ses-kimin` · `dusundugum-hissettigim-yaptigim` ·
+  `istek-mi-ihtiyac-mi` · `kokun-nerede-kaldi` · `nereye-kadar-senin`. Çember temiz.
+  Diğer format sayfaları **ölçülmedi** — SSR oldukları için `dist/`te statik karşılıkları yok (B95 notu).
+
+## B94 — Lint çelişkisi: site mi haklı, kanon mu
+
+- [ ] **Sahip:** Kaan (karar) · **Tetikleyici:** `ocak-lint` bir sonraki taraması
+- **Belirti:** `/acik-kapi` canlı gövdesinde "sembolik" **2**, sıklık sözü **4** geçiş;
+  `yasak-dizeler.tsv` **ikisini de** yasaklıyor. `/cember` temiz.
+- ⚠ **Neden borç:** karar yok. Ya site düzelecek ya yasak listesi muafiyet alacak —
+  ikisi de yapılmadığı sürece lint her turda aynı iki bulguyu üretir ve gürültüye döner.
+  (KARAR 432 muafiyetinin B04'te işlediği kalıbın ikinci vakası.)
+
+## B95 — `20-ref-program.md` Açık Kapı format sayımı bayat
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** bir sonraki `20-ref-*` turu
+- **Belirti:** dosya **dört** Açık Kapı formatı yazıyor; canlı site **üç** diyor
+  (Mevsim Buluşması yok).
+- **Yanında duran cevaplanmış soru — borç değil, kayıt:** altı format sayfası
+  (`acik-kapi` · `cember` · `seremoni` · `atolye` · `mini-retreat` · `sehir-aksami`)
+  `dist/`te statik olarak **yok**; hepsinde `export const prerender = false` ve SSR ile
+  `_render.func` üzerinden çıkıyorlar (davet linki `?etkinlik=` param'ı için, "Eyeball #4
+  Fix 2d"). Tasarım, eksik değil. Bu yüzden `dist/` grep'i bu altı sayfayı **görmez** —
+  ölçüm yaparken hatırla.
+
+## B96 — Skill zip'i için tazelik kapısı yok
+
+- [ ] **Sahip:** CC + Claude.ai · **Tetikleyici:** KARAR 513
+- **Kural (kurulacak):** bir skill açılmadan önce `docs_oku` ile kanonik `SKILL.md`
+  bayt/satır ölçüsü alınır, zip'inkiyle karşılaştırılır; **tutmuyorsa üretim durur.**
+- **Doğduğu hasar (19 Ağu):** zip beş sayfalık sürümde donmuştu → ölçülebilir hasar
+  (bandın altında gövde + eksik `ne-olur` paragrafı). Zip yeniden yüklendi, **konteynere
+  yansımadı** — md5 aynı kaldı (`7127de37…`). Yani yükleme başarılı görünüp etkisizdi.
+
+## B97 — MCP checkout tazeliği: düğme yanlış öğretiyor
+
+- [ ] **Sahip:** CC · **Tetikleyici:** KARAR 513
+- **Ölçüm (19 Ağu):** Railway `ocak-mcp` **ayarları temiz** — auto-deploy açık, watch path
+  yok, branch `main`. Sorun ayarda değil **düğmede**: checkout `1546622`'de donmuştu,
+  `49ea8e2` inmemişti.
+- **Öğrenilen:** Railway'in **"Redeploy" düğmesi taze commit çekmez** — son başarılı
+  deployment'ı tekrar koşar. Taze commit için **"Deploy latest commit"** (Cmd+K).
+  `49ea8e2`'nin ilk build'i sürerken Redeploy'a basılması build'i **REMOVED**'a düşürdü.
+- **Açık kalan:** kalıcı çözüm. Elle disiplin bir tazelik kapısı değildir.
+
+## B98 — Ritüel Tasarımı gövdesi `ocak-lint`'ten geçmedi
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** gövde Notion'a girdi, tarama borcu kaldı
+- **Belirti:** `ocak-etkinlik` skill'inin **9. üretim adımı** (yasak dize taraması)
+  koşulmadı. Gövde canlıda (`dist/etkinlik/rituel-tasarimi`, 4.768 kr `<main>` metni)
+  ama taramasız.
+- **Bağ:** KARAR 506 · 507 bu turda mühürlendi — yeni yasak dizeler henüz hiçbir gövdeye
+  karşı koşulmadı.
+
+## B99 — Altıncı Açık Kapı sayfasında +1 karakter ayrışması
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** bir sonraki künye ölçümü
+- **Belirti:** *6 · Sınır* gövdesi kanonik `ne-olur` bloğuyla **3.248 kr**; künye tavanı
+  **3.247**. Bir karakter.
+- **Ayrışmayan iki ihtimal:** (a) gerçek sapma — gövde bandın dışında · (b) tavanın
+  altıncı sayfayı hiç görmemesi — bant beş sayfayla ölçülüp altıncı eklendiğinde
+  yenilenmemiş. **Karar için canlı Notion gövdesiyle diff gerek.**
+- **Not:** `awk length` bu makinede **bayt** sayıyor (`çığır` → 9). Ölçüm `python3 len()`
+  ile yapılacak, yoksa +1 gürültüsü ölçüm aracından gelir (KARAR 470).
+
+## B100 — Bekçi ayağı bayat: Açık Kapı hız sözü
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** yedinci Açık Kapı sayfası yazılmadan önce
+- **Belirti:** Açık Kapı `pratik-bilgi` hız sözü — *"Kayıt alınır, hemen ardından
+  e-postana düşer"* — teslim hızı vaat ediyordu. Altı canlı sayfada **Notion'da
+  düzeltildi** (Kaan, 19 Ağu). `docs/skills/ocak-etkinlik/SKILL.md:104` **hâlâ eski
+  cümleyi taşıyor.**
+- ⚠ **Neden borç:** sabit blok **kaynağı** türevinden geride. Yedinci sayfa bekçiden
+  yazılacağı için hız sözü **geri gelir** — KARAR 513'ün tersten vakası: bu sefer bayat
+  olan türev değil, kaynağın kendisi.
+- **Kapanış koşulu:** yeni cümle **canlı gövdeden okunup** `SKILL.md`'ye taşınır.
+  Cümle **uydurulmaz**; bir Açık Kapı sayfasının `pratik-bilgi` bloğundan birebir alınır.
+- **Ölçüm notu (19 Ağu 13:39 build'i):** eski cümle o build'de **altı** sayfada
+  görünüyordu — düzeltme build'den sonra. **Bir sonraki deploy'da altı sayfa yeniden
+  ölçülecek:** hepsi temizse borç yalnız `SKILL.md`'ye daralır; **bir tanesi bile eskiyse
+  Notion tarafı da açık kalır.**
