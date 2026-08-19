@@ -7,7 +7,7 @@ Klasör **düz**; alt dizin yok. Ayrım dosya adı önekiyle yapılır.
 
 ## Kullanım haritası
 
-site → `public/` · Instagram ve WhatsApp → `ocak-kare-*` · antet ve banner → `ocak-antet-*` + `ocak-banner-*` · baskı ve damga → tek renk SVG (**bu klasörde yok**, aşağıya bak)
+site → `public/` · Instagram ve WhatsApp → `ocak-kare-*` · antet ve banner → `ocak-antet-*` + `ocak-banner-*` · baskı ve damga → `ocak-isaret-mono-*`
 
 | Yüzey | Dosya |
 |---|---|
@@ -16,18 +16,33 @@ site → `public/` · Instagram ve WhatsApp → `ocak-kare-*` · antet ve banner
 | Antet · banner | `ocak-antet-1200x300.png` · `ocak-banner-1600x400.png` |
 | Paylaşım önizlemesi | `ocak-og-1200x630.png` |
 | iOS ana ekran | `ocak-appicon.svg` (kare tuval, opak kömür zemin, %15 marj) |
-| Baskı · damga · kaşe · gravür | Tek renk (`mono`) SVG — **bu klasörde yok.** Bkz. aşağıdaki eksik listesi. |
+| Baskı · damga · kaşe · gravür | `ocak-isaret-mono-krem.svg` (`#F2EAE2`, koyu zemin) · `ocak-isaret-mono-koz.svg` (`#C44B2F`, krem kâğıt). Tek yol, gradyansız. |
+| İşaret rasteri | `isaret-512.png` — ⚠ **512×498, kare değil.** Bkz. aşağıdaki not. |
 | Künye sunumu | `isaret.html` — bağımsız tek dosya sayfa (dış bağımlılık: Google Fonts) |
 
 ## Künye ile disk arasındaki fark (20 Ağu 2026 ölçümü)
 
-Künye `svg/` ve `png/` **alt klasörleri** tarif ediyor; bu klasör düz. Ayrıca künyede adı geçen dört dosya burada yok:
+Künye `svg/` ve `png/` **alt klasörleri** tarif ediyor; bu klasör düz.
 
-| Künyede yazan | Nerede |
-|---|---|
-| `ocak-isaret-mono-krem.svg` | `Desktop/Ocak/xLogOcak/` |
-| `ocak-isaret-mono-koz.svg` | `Desktop/Ocak/xLogOcak/` |
-| `isaret-512.png` | `Desktop/Ocak/xLogOcak/` |
-| `logo-dikey-800.png` | hiçbir yerde bulunamadı |
+**Kapandı (20 Ağu):** künyede adı geçip eksik olan `ocak-isaret-mono-krem.svg`,
+`ocak-isaret-mono-koz.svg` ve `isaret-512.png` `Desktop/Ocak/xLogOcak`'tan alındı.
 
-Tersi de var: `ocak-kare-*` (10 dosya), `ocak-antet-*`, `ocak-banner-*`, `ocak-og-*` ve `isaret.html` künyelerin hiçbirinde listelenmiyor. Mutabakat Kaan'ın kararını bekliyor.
+**`logo-dikey-800.png` hâlâ yok** — künyede yazıyor, hiçbir kaynakta bulunamadı.
+
+### İki şerh — üretim gerektirir
+
+**1 · Mono SVG'lerin dolgu kuralı düzeltildi.** `xLogOcak` düzeltme öncesi settir; oradaki
+tüm SVG'ler `fill-rule="evenodd"` taşıyor — künyenin *Yapılmaz* listesindeki tam madde.
+Kopyalanan iki mono dosyada `nonzero`'ya çekildi. Güvenli: harf yolu (`d`), `transform`
+ve `viewBox` `ocak-isaret.svg` ile birebir aynı; tek fark renk. Klasördeki yedi SVG'nin
+tamamı artık `nonzero`. *(Künye ve `isaret.html` metninde geçen "evenodd" kuralı anlatan
+cümledir, öznitelik değil.)*
+
+**2 · `isaret-512.png` kare değil — 512×498.** Künyenin *Kare varlık şartı* maddesinin
+ihlali; `f7e4d73`'ün düzelttiği hatanın (180×175, 32×31) aynısı. Kare tuvalde yeniden
+üretilmeli. Şu an hiçbir yüzeye bağlı değil, kaynak olarak duruyor.
+
+### Künyede listelenmeyen varlıklar
+
+`ocak-kare-*` (10 dosya), `ocak-antet-*`, `ocak-banner-*`, `ocak-og-*` ve `isaret.html`
+künyelerin hiçbirinde geçmiyor. Mutabakat Kaan'ın kararını bekliyor.
