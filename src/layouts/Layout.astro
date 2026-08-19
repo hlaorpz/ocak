@@ -27,7 +27,13 @@ const {
   noindex = false,
 } = Astro.props;
 
-const fullTitle = title === 'OCAK' ? 'OCAK · Kadınların Kadim Ateşi' : `${title} · OCAK`;
+// Başlığı kim üretiyorsa markayı da o koyar — Layout artık son ek eklemez,
+// `title` birebir basılır. Sayfalar DB'sinde tam sayfa başlığı yaşıyor
+// (kod dokunmaz); Etkinlikler DB'sinde `baslik` etkinlik ADIdır, sayfa başlığı
+// değil (KARAR 422 — dropdown label'ı da onu kullanır), o yüzden marka çağrı
+// yerinde eklenir; kod sabitleri de çağrı yerinde eklenir.
+// Eski koşullu `fullTitle` iki sahip üretiyordu: Notion başlığı zaten "OCAK"
+// taşıyan sekiz sayfada başlık iki kez markalanıyordu.
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://www.ocak.biz').toString();
 const ogImageUrl = new URL(ogImage, Astro.site ?? 'https://www.ocak.biz').toString();
 
@@ -46,7 +52,7 @@ const isProd = import.meta.env.PROD;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{fullTitle}</title>
+    <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -54,14 +60,14 @@ const isProd = import.meta.env.PROD;
     {/* Open Graph */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="OCAK" />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="tr_TR" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
 

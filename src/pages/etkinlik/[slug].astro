@@ -120,7 +120,10 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
 // →" tümü linki). Geçmiş etkinlik özel akış (format sayfasına yönlendirme
 // metni brief sözlüğü dışı) hardcoded kalır, sadece section attr rebrand.
 ---
-<Layout title={etkinlik.baslik} description={description} oda="Buluşmalar">
+<!-- `baslik` etkinliğin ADIdır, sayfa başlığı değil — dropdown label'ı da onu
+     kullanır (KARAR 422). Marka bu yüzden Notion'da değil burada eklenir.
+     Aşağıdaki Hero'nun `title`'ı sayfa içi başlık; o markasız kalır. -->
+<Layout title={`${etkinlik.baslik} · OCAK`} description={description} oda="Buluşmalar">
   <Hero
     oda="Buluşmalar"
     overline={etkinlik.tip}

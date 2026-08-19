@@ -14,7 +14,7 @@ if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
 const ref = Astro.url.searchParams.get('ref') ?? '';
 const hata = Astro.url.searchParams.get('hata') ?? '';
 ---
-<Layout title="Ödeme tamamlanmadı" description="Ödeme tamamlanmadı. Tekrar deneyebilirsin." oda="OCAK" noindex>
+<Layout title="Ödeme tamamlanmadı · OCAK" description="Ödeme tamamlanmadı. Tekrar deneyebilirsin." oda="OCAK" noindex>
   <article class="ocak-yasal">
     <div class="ocak-odeme-iptal">
       <h1>Ödeme tamamlanmadı.</h1>
