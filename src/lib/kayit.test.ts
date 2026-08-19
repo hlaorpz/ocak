@@ -16,6 +16,7 @@ import {
   uretReferansNo,
   uretBenzersizReferansNo,
   REF_KARA_LISTE,
+  havaleAciklamasi,
   paraBirimiGoster,
   type KayitFormat,
 } from './kayit';
@@ -631,6 +632,38 @@ describe('uretReferansNo (Faz 1 §3 — karışmayan alfabe)', () => {
     expect(ref).not.toMatch(/\s/);
     expect(ref.length).toBe(9); // "OCAK-" (5) + 4 karakter
     // Eski format 11 karakterdi; kod KISALIYOR, uzunluk riski yok.
+  });
+});
+
+describe('havaleAciklamasi (Faz 1 §1 — isim çıktı, saf ASCII)', () => {
+  // Bu fonksiyonun tek işi: banka açıklama alanına ne yazılacağını söylemek.
+  // Önceki hâli `"{ad} — {referansNo}"` idi ve üç ASCII dışı karakter
+  // taşıyordu (ş · ü · em dash U+2014). Türk bankacılık uygulamalarının o
+  // alanda ne yaptığını repodan ölçemiyoruz — bu yüzden ölçebildiğimiz şeyi
+  // çiviliyoruz: çıktı saf ASCII olmalı.
+
+  it('çıktı YALNIZ referans kodudur — isim, ayraç, boşluk yok', () => {
+    for (let i = 0; i < 200; i++) {
+      const ref = uretReferansNo();
+      const aciklama = havaleAciklamasi(ref);
+      expect(aciklama).toBe(ref);
+      expect(aciklama).toMatch(/^OCAK-[2-9A-Z]{4}$/);
+      expect(aciklama).not.toMatch(/\s/);
+    }
+  });
+
+  it('ASCII dışı karakter YOK — em dash ve Türkçe harfler dahil', () => {
+    // Yazdırılabilir ASCII aralığı: U+0020–U+007E. Em dash (U+2014) ve
+    // ş/ğ/ı/ç/ö/ü bu aralığın dışında; ikisi de gerilerse burası kırılır.
+    const hepsi = Array.from({ length: 500 }, () => havaleAciklamasi(uretReferansNo())).join('');
+    expect(hepsi).toMatch(/^[\x20-\x7E]+$/);
+    for (const k of '—şğıçöüŞĞİÇÖÜ') {
+      expect(hepsi).not.toContain(k);
+    }
+  });
+
+  it('dokuz karakter — banka açıklamasına sığar, kırpılacak şey yok', () => {
+    expect(havaleAciklamasi(uretReferansNo())).toHaveLength(9);
   });
 });
 

@@ -342,6 +342,39 @@ export async function uretBenzersizReferansNo(
 }
 
 /**
+ * Havale açıklama metni — kadının bankada açıklama alanına yazacağı dize.
+ *
+ * Faz 1 §1 (2026-08-19): **isim çıkarıldı.** Önceki hâl `"{ad} — {referansNo}"`
+ * idi ("Ayşe Gülşah — OCAK-7K3F", 23 karakter / 28 bayt, üç ASCII dışı
+ * karakter: `ş` `ü` ve em dash `—` U+2014).
+ *
+ * İki gerekçe, ikisi de o satırı savunulamaz kılıyordu:
+ * (a) **ASCII dışı karakter riski.** Em dash ve Türkçe harfler Türk bankacılık
+ *     uygulamalarının açıklama alanında kırpılabiliyor, değiştirilebiliyor ya
+ *     da reddedilebiliyor. Kadın kopyalayıp yapıştırdığında ne olacağını
+ *     repodan ÖLÇEMİYORUZ — ölçemediğimiz bir şey eşleştirmenin ortasında
+ *     duramaz.
+ * (b) **İsim bilgi taşımıyor.** Faz 2'nin yedek eşleştirme kanalı gönderenin
+ *     adını BANKA KAYDINDAN okuyacak, açıklama metninden değil. İsim o satırda
+ *     yalnız risk taşıyordu.
+ *
+ * Yeni hâl saf ASCII, büyük harf, dokuz karakter — kırpılacak bir şey yok.
+ *
+ * ── Neden özdeşlik fonksiyonu? ──
+ * Gövde bugün argümanı aynen döndürüyor. Fonksiyon yine de duruyor, çünkü
+ * "banka açıklama alanına ne yazılır" sorusunun **adlandırılmış tek cevabı**
+ * o: iki çağrı yeri (`api/kayit.ts` askı dalı + ana dal) buradan besleniyor,
+ * test buraya çakılıyor ve Faz 2'nin ayrıştırıcısı bu sözleşmeye bakacak.
+ * Biçim bir gün ön ek kazanırsa tek yerde kazanır.
+ *
+ * Route'ta değil lib'de yaşıyor çünkü `src/pages/` altındaki her dosya route,
+ * oraya test konamıyor — Y1'de `mailerLiteFieldsPayload` aynı sebeple taşındı.
+ */
+export function havaleAciklamasi(referansNo: string): string {
+  return referansNo;
+}
+
+/**
  * Brief 5 Yol C: Notion Etkinlikler DB "Mekân/Platform" select değerini
  * katılım tipine eşler. 'Online' → 'link' (Zoom URL); diğer (İzmir/İstanbul/
  * Ege/Anadolu) → 'adres'. Boş / bilinmeyen → 'link' default (lansman

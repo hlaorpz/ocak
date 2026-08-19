@@ -32,6 +32,7 @@ import {
   mailerLiteCustomFields,
   mailerLiteFieldsPayload,
   etkinlikAdiFormatla,
+  havaleAciklamasi,
   etkinlikUrlFormatla,
   uretBenzersizReferansNo,
   type RefUniqueQuery,
@@ -46,20 +47,9 @@ import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
-/**
- * Havale açıklama metni — kullanıcı bankada görür. Tasarım turu 3 (ADIM 3):
- * "Ad — OCAK-XXXX" formatı. Önceden uzun format+tarih+saat vardı; bankada
- * Kaan'ın eşleştirmesi referans kodunu görmekle anlık. Kısa ve net.
- *
- * Faz 1 §3 — kod 11 karakterden 9'a KISALDI (`OCAK-532897` → `OCAK-7K3F`);
- * bu alanda uzunluk riski yok, aksine banka açıklamasında daha rahat duruyor.
- * Kod artık harf+rakam karışık: salt rakamsal bir kod, açıklamanın içindeki
- * tutar/tarih/telefon kalabalığından ayırt edilemiyordu — Faz 2'nin otomatik
- * eşleştirmesi bu ayırt edilebilirliğin üstüne kurulacak.
- */
-function havaleAciklamasi(args: { ad: string; referansNo: string }): string {
-  return `${args.ad} — ${args.referansNo}`;
-}
+// Havale açıklama metni — Faz 1 §1'de lib'e taşındı (`lib/kayit.ts`), çünkü
+// route'a test konamıyor ve brief bu çıktının saf ASCII olduğunu assert
+// etmeyi istedi. İsim de o turda çıktı; gerekçe fonksiyonun başlığında.
 
 // havaleVadeMetni → src/lib/havale-vade.ts (B23). Saf mantık lib'de yaşar;
 // `src/pages/` altındaki her dosya route olduğu için test dosyası buraya konamaz.
@@ -505,7 +495,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
     // Tasarım turu 3 (ADIM 3) — havale açıklama: "Ad — OCAK-XXXX". Kaan
     // bankada eşleştirmeyi referans no üzerinden yapar (kısa, net).
-    const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
+    const aciklamaSablonu = havaleAciklamasi(referansNo);
 
     // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, PayTR
     // Aşama 6). Sayfa origin Vercel `x-forwarded-*` header'larından
@@ -728,7 +718,7 @@ export const POST: APIRoute = async ({ request }) => {
   // sade. "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00".
   // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXX". Format+tarih
   // gerekmez (referans no banka açıklamasında eşleştirme için yeterli).
-  const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
+  const aciklamaSablonu = havaleAciklamasi(referansNo);
   // ADIM 1 — havale vade metni (Direkt+havale success'inde gösterilecek):
   // 3+ gün varsa "3 gün içinde", yakınsa "ilettiğinde döneceğiz".
   const vadeMetni = havaleVadeMetni(etk.tarihISO);
