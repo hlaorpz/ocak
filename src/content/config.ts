@@ -121,16 +121,6 @@ const sayfalar = defineCollection({
     durum: z.enum(['Taslak', 'Onay Bekliyor', 'Onaylandı', 'Yayında']),
     ogImage: z.string().optional(),
     notion_id: z.string(),
-    // Brief brief-fotolu-onizleme.md İş 2 + ek-brief-foto-oranlari.md Değişiklik 1.
-    // Fotolu önizleme alanları (optional). Master sayfa bu alanları okumaz; sadece
-    // /onizleme/* iskeleti tüketir → master davranışı sıfır değişir (alanlar boşken
-    // HTML byte-identik kalır). Atmosfer: 3 ayrı konumlu property, her biri ana
-    // sayfada belirli bir banda denk gelir.
-    heroImage: z.string().optional(),
-    portreImage: z.string().optional(),
-    atmosfer1: z.string().optional(),
-    atmosfer2: z.string().optional(),
-    atmosfer3: z.string().optional(),
     // Body fragment'ları (#29 Brief F.5 + KARAR 127 genişletme).
     // PageContent helper bu diziyi iterate eder:
     //   - markdown → set:html

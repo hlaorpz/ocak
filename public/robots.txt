@@ -4,8 +4,9 @@
 # User-agent: *
 # Allow: /
 # Disallow: /test
-# Disallow: /onizleme
 # Sitemap: https://www.ocak.biz/sitemap-index.xml
+#
+# /onizleme 19 Ağu 2026'da emekli edildi (Haziran sızıntısı geri alındı)
 
 User-agent: *
 Disallow: /

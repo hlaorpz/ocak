@@ -23,8 +23,6 @@ export default defineConfig({
   integrations: [
     sitemap({
       // /test KARAR 143 — Kaan görsel referansı, Google görmemeli.
-      // /onizleme/* (Brief brief-fotolu-onizleme.md) — fotolu önizleme oyun alanı,
-      // master ile yan yana canlı ama Google indekslemesin (robots.txt'te de disallow).
       //
       // KARAR 488 — kart akışı kapalıyken üç /odeme/* route'u elenir. Bunlar
       // `prerender = false` OLMASINA RAĞMEN sitemap'e giriyordu; dist/ ölçümüyle
@@ -32,7 +30,6 @@ export default defineConfig({
       // "SSR route sitemap'e girmez" varsayımı bu kurulumda tutmuyor.
       filter: (page) =>
         !page.includes('/test') &&
-        !page.includes('/onizleme') &&
         (KART_ACIK || !KART_ROUTELARI.some((r) => page.includes(r))),
     }),
   ],
