@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 708 688" width="708" height="688">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><g transform="translate(30.72,44.32) scale(1.35955)">
   <defs>
     <radialGradient id="kor" gradientUnits="userSpaceOnUse" cx="354" cy="345" r="200">
       <stop offset="0"    stop-color="#D97F51"/>
@@ -11,4 +11,4 @@
   </defs>
   <rect width="708" height="688" clip-path="url(#counter)" fill="url(#kor)"/>
   <path transform="translate(-29,656) scale(1,-1)" d="M366 -12Q294 -12 235.5 13.5Q177 39 135.5 84.0Q94 129 71.5 187.5Q49 246 49 312Q49 393 80.5 454.0Q112 515 164.0 555.5Q216 596 278.0 616.0Q340 636 401 636Q475 636 533.5 609.5Q592 583 633.0 538.0Q674 493 695.5 436.0Q717 379 717 319Q717 249 689.0 189.0Q661 129 612.5 84.0Q564 39 500.5 13.5Q437 -12 366 -12ZM402 8Q472 8 529.0 40.5Q586 73 619.5 136.5Q653 200 653 291Q653 386 616.5 458.5Q580 531 514.0 572.5Q448 614 359 614Q243 614 178.0 542.0Q113 470 113 346Q113 276 133.5 214.5Q154 153 192.5 106.5Q231 60 284.0 34.0Q337 8 402 8Z" fill="#F2EAE2" fill-rule="nonzero"/>
-</svg>
+</g></svg>
