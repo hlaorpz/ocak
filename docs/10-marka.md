@@ -210,6 +210,8 @@ Bu metin Sohbet #6'da validasyon aldı — okutulan her kadın ağladı. Ana Say
 
 Detay + foto stili: Arşiv KARAR 35, 36.
 
+**Marka işareti:** Cormorant "O", iç boşlukta kor — mühür KARAR 522, künye `20-ref-marka.md`.
+
 ---
 
 ## ETİK ÇERÇEVE (KARAR 57)

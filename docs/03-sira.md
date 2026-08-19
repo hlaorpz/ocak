@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (WABA display name turu) · KARAR 519–521 · B103–B104 açıldı ·
+**Son güncelleme:** 19 Ağustos 2026 · **Marka işareti ✅ · başlık kanonu ✅** — KARAR 522 · 523; yeni borçlar B105 · B107 (B106 aynı gün kapandı)
 KARAR 410 SUPERSEDE · önceki: WA yüzen buton turu (KARAR 517–518 · KARAR 396 SUPERSEDE) ·
 B102 turu · gölge satır turu (KARAR 514–516 · B101) · üç-format turu
 (KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
@@ -27,6 +27,18 @@ yorumda bırakıldı, muhasebeci/hukuk onayı bekliyor.
 
 ⚠ **`robots` `Allow` bu cümle düzelmeden açılmaz.** Lansman tanımı (KARAR 149) =
 robots Allow + duyuru; bu satır o tanımın önünde duruyor.
+
+✅ **Marka işareti mühürlendi ve yerleşti (18–19 Ağu, KARAR 522 · 523).** Doküman
+hattının dışından gelen ilk iş — ürün tarafına dönüşün başlangıcı.
+
+Sırada iki hat (B106 aynı gün kapandı — `c45332e`):
+1. **B105** — işaretin dış yüzeylere uygulanması (Kaan; Instagram, WhatsApp, e-posta,
+   OG kartı).
+2. **Görsel üretim** — Midjourney kurucu görseli, sosyal plan Gün 0 kilidi. KARAR 522
+   renk kilidini kullanır; kurucu prompt'un renk satırı ona daraltılacak, `--chaos` 8→4
+   düşürülecek. Midjourney V8.x — plan V6/V7 varsayımıyla yazılmış, `--sw` 60 düşük
+   (90–110), otuz günlük seri için moodboard (`--p`) tek `--sref`'ten daha uygun.
+
 
 ### Faz 1'i tamamlayan sıra
 

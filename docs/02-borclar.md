@@ -1865,3 +1865,75 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış şartı:** `…0888`'e yazılan bir mesajın bota düştüğü **canlı round-trip** ile teyit
   edilir. Kod grep'i yeterli değildir.
 - **Bağ:** KARAR 396 · 518 · 519 · 521 · B19 · B103.
+
+## B105 — işaret canlı yüzeylerin yarısına uygulanmadı
+
+**Sahip:** Kaan · **Tetikleyici:** KARAR 522; site tarafı kapandı, dış yüzeyler açık.
+
+**Kapandı (19 Ağu, `fd5c44a` + `f7e4d73`):** `public/` beş varlık · `Layout.astro`
+üç icon link · `Nav.astro` logo. Nav yüksekliği 60px masaüstü / 62.5px iPhone 13,
+değişmedi. vitest 246/246 sabit.
+
+**Açık — hepsi Kaan'ın elinde, kod işi değil:**
+1. Instagram @ocak.biz profil görseli
+2. WhatsApp Kanalı görseli
+3. Resend e-posta şablonlarının antedi
+4. **OG kartı** — 1200×630. Geçici bir kart üretildi ama logodan ibaret; iyi bir OG
+   kartı hero cümlesini de taşır (*İçindeki ateş sönmedi*). Ayrı tasarım işi.
+
+Varlıklar hazır: `OCAK-logo/png-kare/` (avatar) · `OCAK-logo/dikdortgen/` (banner, antet).
+Ayrıca `10-marka.md`'nin project-file aynası elle tazelenmeli (KARAR 455/471).
+
+## B106 ✅ — Sayfalar loader görünürlük filtresi (aynı gün açıldı ve kapandı)
+
+**Sahip:** CC · **Açıldı ve kapandı:** 19 Ağustos, commit `c45332e`.
+
+KARAR 515 yayın tetikleyicisiyle görünürlük kaynağını ayırmıştı. Etkinlikler tarafında
+uygulanmıştı — `config.ts:200` `if (!fm.siteGoster || fm.durum === 'İptal') continue`.
+**Sayfalar tarafında yoktu:** `fetchSayfalar` sorgusu çıplaktı (`notion-pages.ts:282`),
+`Durum` okunuyor (`:308`) ve frontmatter'a yazılıyordu (`:337`) ama hiçbir yerde
+tüketilmiyordu. `"Yayınla"` dizesi kodda hiç geçmiyordu.
+
+Sonuç: `Durum = Taslak` olan `/site-rehber` canlıdaydı ve sitemap'teydi. Kaan `Yayınla`
+işaretini kaldırıp sayfanın kapandığını sanmıştı; kapanmamıştı. **Sahip olunduğu sanılan
+bir kontrolün olmaması, hiç kontrol olmamasından tehlikelidir** — yarım kalmış bir sayfa
+"yayınlamadım" diye bırakılır ve sonraki build onu canlıya alır.
+
+`config.ts`'teki FIXME'nin gerekçesi bayatlamıştı: *"19 sayfa Onay Bekliyor'da, filtre
+eklenirse loader boş döner."* Ölçüm günü Onay Bekliyor **sıfırdı**.
+
+**Uygulama.** `fetchSayfalar` artık `Durum === 'Yayında'` süzüyor. Desen Etkinlikler'den
+alındı, tek fark yerleşim: süzme **transform'dan önce**, çünkü `transformPage` her sayfa
+için Notion'dan blok çekiyor — elenecek satırın bloklarını çekmenin anlamı yok.
+`Yayınla` alanına dokunulmadı; o build tetikliyor, görünürlük sürmüyor (KARAR 515).
+
+**Ölçüm:** 21 çekildi · 20 yayında · 1 atlandı · rota 45 → 44 · `/site-rehber` dist'ten
+ve sitemap'ten düştü (49 → 48) · başlık regresyonu yok (44/44) · vitest 246/246.
+
+**Boş-site kapısı.** CC brief'te olmayan bir koruma önerdi ve onaylandı: çekilen > 0 ama
+yayında == 0 ise build durur. Gerekçe FIXME'nin doğduğu senaryonun kendisi — filtre
+yazılır, Notion'daki değerler uyuşmaz, loader boşalır. Kapı olmasa bu sefer sessizce
+canlıya giderdi. Maliyeti asimetrik: yanlış tetiklenirse build patlar ve fark edilir,
+tetiklenmezse boş site yayınlanır. KARAR 516 uyumlu — yalnız felaket hâlinde ateşliyor,
+rutin değil. Hata mesajı **teşhis taşıyor**: beklenen değer, çalışma anında görülen
+gerçek değer kümesi, ve nereye bakılacağı (Notion Durum seçenek adı, `YAYIN_DURUMU`
+sabiti). *Bir guard'ın değeri yakaladığı hatada değil, yakaladığında ne söylediğindedir.*
+
+**Sıralama şartı korunuyor:** bu filtre `robots.txt` açılmadan önce gerekiyordu, artık
+yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
+
+## B107 — üç sapma, üçü de küçük
+
+**Sahip:** Kaan · **Tetikleyici:** 19 Ağustos ölçümleri.
+
+1. **`robots.txt` hâlâ `Disallow: /`.** Dosyadaki not "21 Haziran sabahı çevrilecek"
+   diyor; bugün 19 Ağustos. Site iki aydır aramaya kapalı. Önkoşulu (B106 filtresi)
+   artık kapandı — açma kararı Kaan'da.
+   ⚠ **İkinci önkoşul var:** `03-sira.md:24-30` iade cümlesini (`teslimat-iade.astro:57-58`
+   + `mesafeli-satis.astro:123-124`, hâlâ *"kart üzerinden iade"* diyor) `robots` Allow'un
+   önüne koyuyor — lansman tanımı KARAR 149. B106 filtresi tek önkoşul değildi.
+2. **İki sayfa aynı başlığı paylaşıyor** — kakao seremonisi online + yüzyüze, ikisi de
+   `Kakao Seremonisi · OCAK`. Ayrı sayfalarsa başlıkları da ayrışmalı.
+3. **`#1A1614` sapması.** Zemin kanonu `#1A1210` (`tokens.css` `--coal`, marka dosyaları).
+   `#1A1614` yalnız `VisualZ.md` ve ilk 30 gün sosyal planında yaşıyor. O dosyalar korpusa
+   girdiğinde çevrilecek. Kronolojideki tarihli mockup kaydına **dokunulmaz** (KARAR 61).

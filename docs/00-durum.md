@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 19 Ağustos 2026 · **WABA display name turu** · KARAR 519–521 · B103–B104 açıldı · KARAR 410 →519 SUPERSEDE · sıfır kod commit'i
+**Son güncelleme:** 19 Ağustos 2026 · **Marka işareti mühürlendi ve yerleşti** — KARAR 522 · 523; yeni borçlar B105 · B107 (B106 aynı gün kapandı)
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
@@ -62,6 +62,14 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   `61/88` → `61` (88 KIRPMA'nın kardeşi değil, patch modunun halefi). Sahip tablosu
   gövdelerden yeniden türetildi, beş bayat kalem çıktı. Ledger düzeltildi, kronoloji
   **şerh** aldı — iki dosya bilerek aynı işlemi görmedi. **KARAR 483** mühürlendi.
+- **Marka işareti ✅ (18–19 Ağu)** — OCAK'ın ilk logosu doğdu, mühürlendi (**KARAR 522**)
+  ve siteye yerleşti. Cormorant Garamond Light "O", iç boşlukta radyal kor; harfler
+  outline (font bağımlılığı yok), dosyalarda **SVG filtresi yok**, dolgu kuralı
+  `nonzero`. Kor yarıçapı iç boşluğun %70'i. `public/` beş varlık, `Layout.astro`
+  üç icon link, `Nav.astro` düz wordmark → `<img>`; nav yüksekliği değişmedi.
+  Aynı turda **başlık kanonu** düzeldi (**KARAR 523**): sekiz rotada çift "OCAK"
+  vardı, marka tek sahibe indi. Instagram · WhatsApp · e-posta anteti hâlâ eski →
+  **B105**.
 
 **Otorite:** master dosyaların gerçek kopyası **repodadır** (`docs/`). Project files
 kopyaları 6 Ağustos'tan sonra bayattır ve güncellenmez — `10-marka.md` tek istisna
@@ -79,7 +87,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`ae321a3`** (19 Ağu, WA buton turunun doküman commit'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). ⚠ WABA turu **sıfır kod** ürettiği için dönemin son kod commit'i `354fb14` olarak kalır. Dönem zinciri `7fffd92 → … → a758994 → c035011 → 9821d3d → 70e1492 → 392ad33 → fd5c44a → f7e4d73 → 7d8d301 → b926294 → 354fb14 → ae321a3` |
+| `main` dönem HEAD | **`c45332e`** (19 Ağu, Sayfalar loader Durum filtresi) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Bu tur **dört kod commit'i** ekledi: `fd5c44a` işaret yerleşimi · `f7e4d73` kare varlık düzeltmesi · `cbac605` başlık markası · `c45332e` Durum filtresi. Dönem zinciri `7fffd92 → … → a758994 → c035011 → 9821d3d → 70e1492 → 392ad33 → fd5c44a → f7e4d73 → 7d8d301 → b926294 → 354fb14 → ae321a3 → 3676628 → cbac605 → c45332e` |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **246/246** yeşil — 13 dosya. 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
@@ -137,8 +145,6 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
-- **17–19 Ağustos (üç format birden):** Etkinlik üretimi dört formata yayıldı — Açık Kapı (altı gövde, bekçi mühürlü) · Çember (bekçi + dört gövde) · Seremoni (iki gövde, bekçi yok) ·
-  Atölye (bir gövde, bekçi yok). **Üç yeni gövde canlıda.** → `90-kronoloji/2026-08.md`
 - **19 Ağustos (B turu — sosyal medya + AÇILIŞ):** Sosyal v2 planı taze site dumpına karşı
   ölçüldü — **27 aynen · 3 cümle düzeltmesi · 0 yeniden yazım · 5 yeni malzeme**; baştan yazım
   düştü, v2.1 patch'lendi ve `30-sosyal.md` olarak repoya alındı. **AÇILIŞ 24–27 Eylül 2026**
@@ -152,18 +158,7 @@ girmez; o kuyruk başka yerde yaşar.
   `A.Ş.` satır kırılması CSS'ti, düzeldi. Geçersiz alan kaydırması bir kez kör
   uygulanıp canlıda kapanmadı, `nav-kaydir.ts` ortak yardımcısıyla düzeldi
   (KARAR 491 bu hatadan doğdu). → `90-kronoloji/2026-08.md`
-- **18–19 Ağustos (içerik + altyapı):** Çember bekçisi kuruldu — `ocak-etkinlik` artık
-  **iki bekçili**: `ornekler.md` (Açık Kapı, altı sayfa, 3.019–3.247 kr) +
-  `ornekler-cember.md` (Çember, dört sayfa, 3.824–4.113 kr). Seremoni bekçisi **yok**;
-  iki sayfa ölçüldü (4.254–5.197 kr) ama iki nokta eğri vermiyor — **B66**.
-  Etkinlik sayfaları: Açık Kapı 6 canlı · Çember 4 canlı (`elin-neyle-dolu` ·
-  `neyi-bekliyorsun` · `ekmeden-once` · `hangi-tohumu-ekeceksin`) · Seremoni 2 taslak
-  (kakao · `hasat-ve-sukran` 22 Eylül). MailerLite on ikinci alana çıktı; **Y1** kapandı
-  (`92e580e`) — boş alan artık tele çıkıyor. **Promote kazası** teşhis edildi (KARAR 485),
-  **403 yanlış alarmı** kayda geçti (KARAR 487). → `90-kronoloji/2026-08.md`
-- **11 Ağustos:** **B47 ✅ + B58 ✅** — doküman haritası (`05-harita.md`) yazıldı,
-  KARAR 482 mühürlendi. B47 gövdesinin "harita hiçbir dosyada yok" iddiası ölçümle
-  yanlışlandı: iki kısmi harita vardı, eksik olan **otorite kuralıydı**.
+- **Daha eski dönemler** (11 Ağu · 17–19 Ağu üç format · 18–19 Ağu içerik+altyapı) → `90-kronoloji/2026-08.md` (19 Ağu tahliyesi, KARAR 457/61)
 
 ---
 
