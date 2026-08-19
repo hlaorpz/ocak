@@ -26,24 +26,34 @@
 // da kayıtlı). Tarayıcı odaklanan alanı viewport'un TEPESİNE hizalıyor; nav o
 // tepeyi zaten örtüyor. Hata var, hata görünmüyor.
 //
-// Çözüm kaydırma ile odaklamayı AYIRIR:
-//   1. ata <details> öğelerini aç   → alan layout'a girsin
-//   2. scrollIntoView block:'center' → nav'ın altında kalmasın
-//   3. focus preventScroll:true      → tarayıcı kendi kaydırmasını ÜSTÜNE BİNMESİN
+// ── ⚠ İLK DENEME KAPANMADI — ikinci tur (19 Ağustos, ikinci yarı) ──
+// `66fa842` bu işi `scrollIntoView({block:'center'})` ile çözmeye çalıştı ve
+// CANLIDA KAPANMADI; hatalı alan hâlâ nav'ın altında kalıyordu. Sebep zaten
+// yazılıydı: KARAR 156 bu sitede tarayıcının hizalama sözleşmesine
+// güvenilemeyeceğini ÖLÇMÜŞTÜ (scroll-margin-top respect edilmiyor —
+// 38.87/44.17, beklenen 60). O ders görmezden gelindi.
 //
-// `preventScroll` şart: yoksa `focus()` kendi kaydırmasını yapar ve alan yine
-// tepeye, nav'ın altına gider — 2. adım boşa çıkar.
-//
-// `block: 'center'` seçildi, `'start'` değil: nav yüksekliğini bilmeye gerek
-// kalmıyor ve nav yüksekliği değişirse düzeltme bozulmuyor. Sabit piksel
-// ofsetine bağlanmıyoruz. (Form alanlarında `scroll-margin-top` YOK — ölçüldü,
-// `0px`. Yedek savunma olarak eklenebilir ama tek başına yeterli sayılmadı:
-// KARAR 156 native kaydırmanın `scroll-margin-top`'u tam respect etmediğini
-// ölçmüştü — Çember 38.87, Açık Kapı 44.17, beklenen 60.)
+// Artık kaydırma `nav-kaydir.ts` üzerinden yapılıyor: rAF içinde nav yüksekliği
+// RUNTIME ölçülüp `window.scrollTo` ile MUTLAK konuma gidiliyor —
+// `scrollToSuccess` ile birebir aynı mekanizma, tek yardımcı.
 //
 // ── Sıra bağlayıcı ──
-// Bölümler kaydırmadan ÖNCE açılır. Kapalı bir <details> içindeki alanın
-// layout kutusu yoktur; önce kaydırılırsa hedef yanlış yere oturur.
+//   1. ata <details> aç          → alan layout'a girsin
+//   2. requestAnimationFrame     → açılma sonrası reflow otursun; konum eski
+//                                  layout'tan hesaplanmasın
+//   3. nav'ı ölç, mutlak konumu hesapla, window.scrollTo
+//   4. focus({ preventScroll: true })
+//
+// `preventScroll` şart: yoksa `focus()` KENDİ kaydırmasını yapar, alanı
+// viewport'un tepesine — yani nav'ın altına — götürür ve 3. adım boşa çıkar.
+// 2, 3 ve 4 aynı kare içinde, bu sırayla koşar.
+
+import {
+  navAltinaKaydir,
+  varsayilanOrtam,
+  type KaydirmaOrtami,
+  type KaydirilabilirOge,
+} from './nav-kaydir';
 
 /**
  * Fonksiyonun DOM'dan istediği asgari yüzey.
@@ -53,12 +63,11 @@
  * `tagName` karşılaştırması kullanılmasının sebebi de bu — `instanceof` gerçek
  * bir DOM ortamı (jsdom) zorunlu kılardı, bu da yeni bir bağımlılık demekti.
  */
-export interface GosterilebilirOge {
+export interface GosterilebilirOge extends KaydirilabilirOge {
   tagName: string;
   parentElement: GosterilebilirOge | null;
   /** Yalnız `<details>` öğelerinde anlamlı. */
   open?: boolean;
-  scrollIntoView?(secenekler?: unknown): void;
   focus?(secenekler?: unknown): void;
 }
 
@@ -70,7 +79,10 @@ export type GosterSonuc = {
   odaklandi: boolean;
 };
 
-export function gecersizAlaniGoster(el: GosterilebilirOge | null | undefined): GosterSonuc {
+export function gecersizAlaniGoster(
+  el: GosterilebilirOge | null | undefined,
+  ortam: KaydirmaOrtami = varsayilanOrtam(),
+): GosterSonuc {
   const sonuc: GosterSonuc = { acilanBolum: 0, kaydirildi: false, odaklandi: false };
   if (!el) return sonuc;
 
@@ -82,17 +94,15 @@ export function gecersizAlaniGoster(el: GosterilebilirOge | null | undefined): G
     }
   }
 
-  // 2) Ekranın ortasına getir — nav yüksekliğine bağlanmadan.
-  if (typeof el.scrollIntoView === 'function') {
-    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  // 2-3-4) rAF içinde: nav'ı ölç → mutlak konuma kaydır → preventScroll ile odakla.
+  if (typeof el.getBoundingClientRect === 'function') {
+    navAltinaKaydir(el, 'orta', ortam, () => {
+      if (typeof el.focus === 'function') el.focus({ preventScroll: true });
+    });
     sonuc.kaydirildi = true;
   }
 
-  // 3) Odakla ama KAYDIRMA — 2. adımın işini bozmasın.
-  if (typeof el.focus === 'function') {
-    el.focus({ preventScroll: true });
-    sonuc.odaklandi = true;
-  }
-
+  // Odaklama rAF içinde gerçekleşiyor; rapor alanı "odaklanacak mı"yı söyler.
+  sonuc.odaklandi = typeof el.focus === 'function';
   return sonuc;
 }
