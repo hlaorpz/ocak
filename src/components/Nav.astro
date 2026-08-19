@@ -18,7 +18,13 @@ const isActive = (href: string) =>
 <header class="nav" role="banner">
   <div class="nav__inner">
     <a href="/" class="nav__brand" aria-label="OCAK ana sayfa">
-      OCAK
+      <img
+        class="nav__logo"
+        src="/ocak-logo-yatay.svg"
+        alt=""
+        width="136"
+        height="28"
+      />
     </a>
 
     <nav class="nav__menu" aria-label="Ana navigasyon" id="primary-nav">
@@ -105,6 +111,24 @@ const isActive = (href: string) =>
 
   .nav__brand:hover {
     color: var(--ember);
+  }
+
+  /* B63 · KARAR 484 — düz wordmark yerine işaret dosyası.
+     display:block: inline img baseline'a otururdu, descender payı brand
+     kutusunu 28px'ten büyütüp nav yüksekliğini kaydırırdı.
+     height ölçülmüş wordmark satır kutusuna eşit (line-height:1 → 28px);
+     width:auto en-boy oranını (3388/699) dosyadan alsın, attribute'lardaki
+     136×28 yalnız yükleme öncesi CLS rezervasyonu.
+     Renk artık dosyadan geliyor — :hover'ın color'ı işlemez, opacity taşır. */
+  .nav__logo {
+    display: block;
+    height: 28px;
+    width: auto;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .nav__brand:hover .nav__logo {
+    opacity: 0.82;
   }
 
   .nav__list {
