@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · gölge satır + B102 turu · **B101–B102 açıldı · B102 aynı turda kapandı**
+**Son güncelleme:** 19 Ağustos 2026 · WA yüzen buton turu · **sayaç değişmedi — borç açılmadı, kapanmadı**
 
 **Durum:** 102 madde · **70 açık iş** · 30 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
@@ -47,6 +47,13 @@ etkinlik çıktı), biri **kapanan madde diye gelip borca döndü** (B100, hız 
 **Not:** aynı turda önerilen bir borç hiç açılmadı — v1 brief'in "Ritüel Tasarımı
 superseded format" gövdesi ADIM 0 ölçümüyle çürüdü. Açılmayan madde sayaca girmez;
 kaydı `90-kronoloji/2026-08.md`'de.*
+
+*19 Ağustos, sekizinci ölçüm (WA yüzen buton turu): toplam **102**, damgalı **30**,
+iş değil **2**, açık **70** — **üçü de değişmedi.** Bu tur borç açmadı, borç kapatmadı;
+üç kod commit'i ve bir doküman commit'i ürettiyse de hiçbiri borç yüzeyine değmedi.
+`20-ref-bot.md` çelişkisi (satır 15/20 iki farklı bayat numara) borca **çevrilmedi** —
+aynı patch'te düzeltildi (KARAR 104: on beş dakikalık iş ertelenmez). Sayaç
+devralınmadı, üç grep yeniden koşuldu.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 100 · `grep -E '^## B' | grep -cE '[✅❌]'`
 → 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
@@ -1455,6 +1462,10 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   push production'a çıktı; adım atlandı.
 - **Kapanış şartı:** gerçek iPhone Safari'de `/etkinlik/[slug]` + bir kayıt sayfası
   görülür. Test yeşili ≠ göz temiz.
+- **19 Ağu, WA buton turu — B74'e KATKI YOK.** O turun telefon eyeball'ı
+  (Kaan) yüzen buton fade'ini, `≤480px` yerleşimini ve iOS Safari'yi kapsadı;
+  **`/etkinlik/[slug]` mobil ritmi bu turda da görülmedi.** B74'ün açık ayağı
+  aynen duruyor — başka bir sayfada yapılan eyeball bu borcu kapatmaz.
 - **KISMİ KAPANIŞ (19 Ağu, `9036791` üzerinde):** iki ayağın **biri** tamam.
   - ✅ **Kayıt sayfası ayağı** — hatalı zorunlu alan nav'ın altında kalmıyor
     (`Şehir` · `Telefon` · `E-posta`), success bloğu regresyonsuz, Alıcı

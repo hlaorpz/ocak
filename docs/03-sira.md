@@ -253,7 +253,7 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 
 | cephe | sahip | durum |
 |---|---|---|
-| **B19** — WhatsApp display name | Kaan | Meta iki adayı da reddetti; itiraz açık. Site WhatsApp numarası yayını buna kilitli (KARAR 396) |
+| **B19** — WhatsApp display name | Kaan | Meta iki adayı da reddetti; itiraz açık. (Numara yayını artık buna bağlı değil — KARAR 396 kapandı, hat canlı) |
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |
@@ -302,6 +302,18 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **19 Ağustos — WA yüzen buton turu ✅** (3 kod commit + bu patch)
+  Buton mobilde `© 2026` satırını kapatıyordu; footer'a duyarlı fade geldi
+  (**KARAR 517** — `IntersectionObserver`, `.gizli`, gecikmeli `visibility`).
+  Süre ayrı commit'te `--duration-slow` → `--duration-base` çekildi; hover
+  kalkışının da hızlanması bilinçle kabul edildi. Numara **Ocak hattına döndü**
+  (`905325555226`) ve **KARAR 396 kapandı** — şart hat kimliği değil bağlama
+  sırasıydı, sağlandı. Yasal beş sayfanın telefonu bilerek kalmasıyla
+  **KARAR 518** doğdu: bot hattı ve yasal telefon iki ayrı yüzeydir.
+  Brief'in üç sapması düzeltilerek uygulandı (token ezilmesi · özgüllük
+  sırası · reduced-motion daraltması). `20-ref-bot.md`'nin iki bayat numara
+  satırı düzeltildi — brief'i yanlış besleyen kaynak buydu.
+  → `90-kronoloji/2026-08.md`
 - **19 Ağustos — çok oturumlu etkinlik kalıbı ✅** (sıfır commit, claude.ai)
   Notion `date` aralığının operasyon takvimini bozduğu ölçüldü; **kayıt satırı +
   gölge satır** kalıbı kuruldu. `Yayınla`'nın görünürlük kaynağı sanılması

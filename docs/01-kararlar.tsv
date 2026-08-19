@@ -142,7 +142,7 @@ no	tarih	baslik	durum	iliski	kaynak
 386	2026-07	n8n 6-haneli cron tuzağı	KALICI		2026-07.md:22
 392	2026-07	Hash'e bağlı davranış eyeball'ı hard-reload ile	KALICI		2026-07.md:26
 393	2026-07	/bulusmalar bölüm ayracı kor gradient — Varyant B	AKTIF		2026-07.md:26
-396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	AKTIF		2026-07.md:26
+396	2026-07	Yayın bot/Meta/n8n numara bağlama sırasına kilitli	SUPERSEDE	→518 (şart sağlandı 19 Ağu: bot Meta tarafında 905325555226'ya bağlandı, site aynı hatta — `354fb14`; enum'da "karşılandı" sınıfı yok, alan 518'e devredildi)	2026-07.md:26
 397	2026-07-28	Dönem güncellemeleri referans dosyasına yerinde işlenir	AKTIF	←145; 462 ile değişecek	00-devir.md:11
 399	2026-07	Rol/portre kalıbı — alan + çemberdeki an + kadının tarifi	KALICI		20-ref-icerik-dili.md:41
 400	2026-07	Vurgu yerleştirme yöntemi — vurgu icat edilmez, gövdeden taşınır ve kaynağından silinir	KALICI		20-ref-icerik-dili.md#k400
@@ -515,3 +515,5 @@ no	tarih	baslik	durum	iliski	kaynak
 514	2026-08-19	Çok oturumlu etkinlik tek satıra aralık olarak girilmez — kayıt satırı + gölge satır; gölge başlığı `Gölge` dizesini ve oturum sırasını taşır	AKTIF	←279 · ←278	2026-08.md#k514
 515	2026-08-19	Yayın tetikleyicisi görünürlük kaynağı değildir — `Yayınla` build atar, `Sitede Göster` yayınlar	KALICI	←110 · ↔280 · ↔279	2026-08.md#k515
 516	2026-08-19	Rutin tetiklenen guard kabul edilmez — beklenen WARN, WARN'ların okunmayı bıraktığı andır	KALICI	←278 · ↔495	2026-08.md#k516
+517	2026-08-19	Yüzen WhatsApp butonu footer görünürken çekilir — IntersectionObserver + `.gizli`, süre `--duration-base`, daimî silik reddedildi	AKTIF	←212	2026-08.md#k517
+518	2026-08-19	Bot hattı ve yasal telefon iki ayrı yüzeydir, eşitlenmez — numara değişimi hedef yüzeyi adlandırmak zorunda	KALICI	←213 · ←396	2026-08.md#k518

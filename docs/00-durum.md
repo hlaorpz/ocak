@@ -79,7 +79,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`a758994`** (19 Ağu, B turu patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791 → 523606b → a758994` |
+| `main` dönem HEAD | **`354fb14`** (19 Ağu, WA yüzen buton turu) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 66fa842 → 9036791 → 523606b → a758994 → c035011 → 9821d3d → 70e1492 → 392ad33 → fd5c44a → f7e4d73 → 7d8d301 → b926294 → 354fb14` |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **246/246** yeşil — 13 dosya. 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
@@ -100,7 +100,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 
 1. **B19 — WhatsApp display name** (Kaan). Meta iki adayı da reddetti; itiraz açık.
-   Site WhatsApp numarasının yayını buna kilitli (KARAR 396).
+   Numara yayını artık buna kilitli **değil** — KARAR 396 kapandı, bot hattı `905325555226` canlı (`354fb14`). Bot hattı ≠ yasal sayfa telefonu (`+90 532 208 0888`, beş yasal sayfa) — kasıtlı iki yüzey, eşitlenmez (KARAR 518).
 2. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` ara-değiştir.
    Gün 1 yayını bunsuz başlamaz (KARAR 450).
 3. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
