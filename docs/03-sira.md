@@ -1,6 +1,7 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (üç-format turu) · KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE
+**Son güncelleme:** 19 Ağustos 2026 (gölge satır turu) · KARAR 514–516 · B101 ·
+önceki: üç-format turu (KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
 
 **Sıradaki iş:** **B64 → B69 → B68 → n8n ödeme onayı** — bu patch'ten sonra.
 
@@ -63,6 +64,15 @@ sayfalar tamamlanamaz.
   Kaan teyidi var, **Advaita teyidi yok**.
 - **Kartın anlamı** doğru anlatıldı mı (*"kişiye özel değil, hepimize birden"*).
 - ⚠ **Ritüel Tasarımı gövdesinin hiçbir bölümü Advaita'ya gösterilmedi.**
+
+### Notion veri hijyeni — küçük, ertelenmez (KARAR 104)
+
+- **Planlama takvimi view'ı** (Kaan · ~1 dk) — Etkinlikler DB'ye ikinci takvim
+  view'ı: filtre `Durum is not İptal`, Yayınla filtresi **yok**. Mevcut
+  `Sitede Göster is checked` view'ı "site aynası" olarak kalır. KARAR 515.
+- **Hafta başlangıcı** (Kaan + Advaita · ~1 dk) — Settings → Preferences →
+  Language & Time → *Start week on Monday*. **Hesap ayarı, workspace ayarı
+  değil**; ortak takvim konuşulacaksa ikisinde de açık olmalı.
 
 ### Faz 2 — dışarıdan bekleniyor, başlayamaz
 
@@ -290,6 +300,12 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **19 Ağustos — çok oturumlu etkinlik kalıbı ✅** (sıfır commit, claude.ai)
+  Notion `date` aralığının operasyon takvimini bozduğu ölçüldü; **kayıt satırı +
+  gölge satır** kalıbı kuruldu. `Yayınla`'nın görünürlük kaynağı sanılması
+  düzeltildi (view sözleşmesi yazıldı). KARAR 514 · 515 · 516 mühürlendi.
+  B101 açıldı. Brief'in ikinci borcu (Ritüel Tasarımı tarih aralığı) **yazılmadı** —
+  öncülü KARAR 509'la çelişiyor, Kaan'a soruldu. → `90-kronoloji/2026-08.md`
 - **17–19 Ağustos — ÜÇ FORMAT ✅** (tek doküman commit'i, sıfır kod)
   Açık Kapı bekçisi mühürlendi (altı gövde) · Seremoni iki gövde · Atölye bir gövde;
   **üçü de canlıda**. Bekçi mekaniği sekiz kararla yazıya geçti (**KARAR 496–503**) —

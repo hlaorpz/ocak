@@ -1751,3 +1751,14 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   görünüyordu — düzeltme build'den sonra. **Bir sonraki deploy'da altı sayfa yeniden
   ölçülecek:** hepsi temizse borç yalnız `SKILL.md`'ye daralır; **bir tanesi bile eskiyse
   Notion tarafı da açık kalır.**
+
+## B101 — Çok oturumlu etkinlikte Zoom linki sayısı kararsız
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** KARAR 514 mühürlendi
+- **Belirti:** gölge satır `Durum: Taslak` olduğu için `zoom-olustur` tetiklenmez.
+  İki oturum **tek tekrarlayan toplantı** mı, **iki ayrı link** mi — karar yok.
+- **Sonucu:** iki ayrı linkse ikincisi elle üretilip `Detay > pratik-bilgi`'ye
+  ve MailerLite akışına konmalı. Tek linkse ek iş yok.
+- **Bağ:** KARAR 514 · KARAR 486 (katılım linki ödeme kapısının arkasında).
+- **Kapanış şartı:** karar verilir ve KARAR 514'ün kalıp tarifine tek cümle
+  olarak yazılır — yoksa sonraki çok oturumlu etkinlikte aynı soru yeniden sorulur.
