@@ -1,7 +1,8 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (gölge satır turu) · KARAR 514–516 · B101 ·
-önceki: üç-format turu (KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
+**Son güncelleme:** 19 Ağustos 2026 (B102 turu) · B102 · KARAR 514 düzeltildi ·
+önceki: gölge satır turu (KARAR 514–516 · B101) · üç-format turu
+(KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
 
 **Sıradaki iş:** **B64 → B69 → B68 → n8n ödeme onayı** — bu patch'ten sonra.
 
@@ -50,8 +51,8 @@ sayfalar tamamlanamaz.
   online kayıt kapanışının **kargo süresine** bağlanması · yüz yüze **akşam mı yarım
   gün mü** (akşam varsayıldı; gün olursa **üç dize değişir** — `ne-olur` H2, üçüncü
   kayıt sorusu, `giris`) · mat/minder mekândan çıkıyor mu.
-- **Ritüel Tasarımı:** tarih (hangi **iki ardışık cumartesi**) · ücret ve model ·
-  kapasite (12–16 önerildi) · kayıt penceresi · tema alanı · **ödev sorusunun metni** ·
+- **Ritüel Tasarımı:** kapasite (12–16 önerildi) · kayıt penceresi (**B102**) ·
+  tema alanı · **ödev sorusunun metni** ·
   MailerLite ödev kampanyası metni ve gönderim zamanı (KARAR 512 — ilk oturumdan
   3–4 gün önce, welcome mailine **girmez**).
 - ⏸ **Kayıt sonrası e-posta bekçinin beşinci çıktısı olsun mu** — Kaan **askıya aldı**,
@@ -305,7 +306,10 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
   gölge satır** kalıbı kuruldu. `Yayınla`'nın görünürlük kaynağı sanılması
   düzeltildi (view sözleşmesi yazıldı). KARAR 514 · 515 · 516 mühürlendi.
   B101 açıldı. Brief'in ikinci borcu (Ritüel Tasarımı tarih aralığı) **yazılmadı** —
-  öncülü KARAR 509'la çelişiyor, Kaan'a soruldu. → `90-kronoloji/2026-08.md`
+  öncülü KARAR 509'la çelişiyordu. **Ölçümle kapandı:** satır zaten 514 kalıbındaydı
+  (3–10 Ekim, iki ardışık cumartesi). Yerine **B102** açıldı — ölçümün kendi bulduğu
+  boşluk: 25 ücretli kaydın 25'inde `Kayıt Kapanış Tarihi` ∅. KARAR 514'ün gölge
+  başlığı tarifi gerçeğe çekildi. → `90-kronoloji/2026-08.md`
 - **17–19 Ağustos — ÜÇ FORMAT ✅** (tek doküman commit'i, sıfır kod)
   Açık Kapı bekçisi mühürlendi (altı gövde) · Seremoni iki gövde · Atölye bir gövde;
   **üçü de canlıda**. Bekçi mekaniği sekiz kararla yazıya geçti (**KARAR 496–503**) —

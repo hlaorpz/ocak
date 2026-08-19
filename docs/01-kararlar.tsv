@@ -512,6 +512,6 @@ no	tarih	baslik	durum	iliski	kaynak
 511	2026-08-19	Açık Kapı'nın sabit ne-olur bloğu Atölye'de kullanılmaz	KALICI	←442	2026-08.md#k511
 512	2026-08-19	Atölye ödevi kayıt anında gitmez — ayrı MailerLite kampanyası	AKTIF	←228	2026-08.md#k512
 513	2026-08-19	Türev yüzey, kaynaktan yeniden üretilmediğinde yalan söyler — tazelik kapısı	KALICI	↔355 · ↔495	2026-08.md#k513
-514	2026-08-19	Çok oturumlu etkinlik tek satıra aralık olarak girilmez — kayıt satırı + gölge satır	AKTIF	←279 · ←278	2026-08.md#k514
+514	2026-08-19	Çok oturumlu etkinlik tek satıra aralık olarak girilmez — kayıt satırı + gölge satır; gölge başlığı `Gölge` dizesini ve oturum sırasını taşır	AKTIF	←279 · ←278	2026-08.md#k514
 515	2026-08-19	Yayın tetikleyicisi görünürlük kaynağı değildir — `Yayınla` build atar, `Sitede Göster` yayınlar	KALICI	←110 · ↔280 · ↔279	2026-08.md#k515
 516	2026-08-19	Rutin tetiklenen guard kabul edilmez — beklenen WARN, WARN'ların okunmayı bıraktığı andır	KALICI	←278 · ↔495	2026-08.md#k516

@@ -1762,3 +1762,24 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Bağ:** KARAR 514 · KARAR 486 (katılım linki ödeme kapısının arkasında).
 - **Kapanış şartı:** karar verilir ve KARAR 514'ün kalıp tarifine tek cümle
   olarak yazılır — yoksa sonraki çok oturumlu etkinlikte aynı soru yeniden sorulur.
+
+## B102 — Ücretli formatlarda kayıt penceresi ödeme temposuna göre kapatılmıyor
+
+- [ ] **Sahip:** Kaan (Notion) · ~5 dk/kayıt
+- **Ölçüm (19 Ağu, `etkinlikler-dump.mjs` + `fetchEtkinlikler`/`transformEtkinlik`
+  üzerinden sayım; ölçüt `(ucret ?? 0) > 0 && !kayitKapanis`):** 26 ham satırın
+  **25'i ücretli**, ve **25'inin tamamında** `Kayıt Kapanış Tarihi` = ∅.
+  Dolu olan **sıfır** — istisna yok. Bunların **15'i canlı**
+  (`siteGoster=true && durum ∈ {Kayıt Açık, Dolu}`). En yakını **31 Ağustos**
+  (*Bir Eşikte Duruyorsun*, 300) — on iki gün.
+- **Belirti:** `kayitKapanis` boşken `pencereIcinde` referansı `tarihBaslangic`'e
+  düşer (KARAR 383–386) — yani kayıt **etkinlik gününe kadar** açık kalır.
+  Ödeme EFT/havale ile geliyor: cuma akşamı gelen bir kayıtta para cumartesi
+  seansına yetişmez. Kadın kaydolur, `odemeGerekli` kapısı açılmaz, katılım
+  linki gitmez (KARAR 486). Kusur kodda değil — **veri eksikliği.**
+- **Kapsam:** bu tek kayıt değil, **tek istisnasız bütün ücretli kayıtlar**.
+  Ritüel Tasarımı yalnız ölçümü tetikleyen vaka; ölçüm alanın tamamına yayıldı.
+- **Kapanış şartı:** ücretli her etkinlikte `Kayıt Kapanış Tarihi` dolu ve
+  etkinlik gününden **en az iki iş günü** önce. Ölçüm: yukarıdaki ölçütle
+  sayılan kayıt sayısı **25 → 0**. Ara hedef: **canlı 15 → 0**.
+- **Bağ:** KARAR 486 · 383–386 · B101 (aynı satırın öteki açık ucu).
