@@ -23,12 +23,13 @@ const sayfalar = defineCollection({
     load: async ({ store, logger, parseData, generateDigest, renderMarkdown }) => {
       store.clear();
 
-      const pages = await fetchSayfalar(notion, NOTION_PAGES_DB);
-      logger.info(`Notion Sayfalar DB: ${pages.length} satır çekildi`);
-
-      // FIXME: Lansman öncesi Durum filtresi (sadece Onaylandı + Yayında publish) —
-      // Brief 5/6'da eklenecek. Şu an 19 sayfa "Onay Bekliyor"da; filtre eklenirse
-      // loader boş döner, o yüzden şimdilik tüm durumlar publish edilir.
+      // Durum filtresi fetchSayfalar'ın içinde — atlanan sayısını o logluyor.
+      // Eski FIXME ("filtre eklenirse loader boş döner") 19 Ağustos 2026'da
+      // ölçümle düştü ve filtre yazıldı; gerekçe fonksiyonun başlığında.
+      // `Yayınla` alanı kodda hiç okunmuyor — Notion'da build hook'unu tetiklemek
+      // için duruyor, yayın kararını `Durum` veriyor.
+      const pages = await fetchSayfalar(notion, NOTION_PAGES_DB, logger);
+      logger.info(`Notion Sayfalar DB: ${pages.length} satır işlenecek`);
 
       // İki-pass: önce tüm sayfaları transform et, page-id → slug map'i derle, sonra
       // her sayfanın fragment'larını render et + page-mention link'leri çöz

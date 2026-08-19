@@ -268,24 +268,66 @@ function filesUrl(page: PageObjectResponse, name: string): string | undefined {
   return undefined;
 }
 
+/** Siteye çıkması için `Durum` alanının taşıması gereken tek değer. */
+export const YAYIN_DURUMU = 'Yayında';
+
 /**
- * Sayfalar DB'sindeki tüm satırları paginated çeker.
- * (notion.ts queryDatabase'in inline eşdeğeri — DI client ile, import.meta.env'siz.)
+ * Sayfalar DB'sindeki satırları paginated çeker ve **yayın durumuna göre süzer**.
+ *
+ * Filtre deseni Etkinlikler loader'ından alındı (`config.ts`: `siteGoster` /
+ * `durum === 'İptal'` → `continue`). Fark: orada süzme transform'dan SONRA,
+ * burada ÖNCE yapılıyor — `transformPage` her sayfa için blok çekiyor, atlanan
+ * satırın bloklarını çekmenin anlamı yok.
+ *
+ * Tarih: `Durum` alanı `transformPage`'te okunup frontmatter'a yazılıyordu ama
+ * hiçbir yerde tüketilmiyordu; `config.ts`'teki FIXME filtreyi "19 sayfa Onay
+ * Bekliyor'da, filtre eklenirse loader boş döner" gerekçesiyle ertelemişti.
+ * O gerekçe 19 Ağustos 2026 ölçümünde bayat çıktı: 21 satırın 20'si `Yayında`,
+ * 1'i `Taslak` (`/site-rehber`) ve Taslak sayfa canlıya çıkmıştı.
  */
 export async function fetchSayfalar(
   notion: Client,
   databaseId: string,
+  logger?: { info: (msg: string) => void },
 ): Promise<PageObjectResponse[]> {
-  const results: PageObjectResponse[] = [];
+  const tumu: PageObjectResponse[] = [];
   let cursor: string | undefined;
   do {
     const res = await notion.databases.query({ database_id: databaseId, start_cursor: cursor });
     for (const row of res.results) {
-      if ('properties' in row) results.push(row as PageObjectResponse);
+      if ('properties' in row) tumu.push(row as PageObjectResponse);
     }
     cursor = res.has_more && res.next_cursor ? res.next_cursor : undefined;
   } while (cursor);
-  return results;
+
+  const yayinda = tumu.filter((page) => selectVal(page, 'Durum') === YAYIN_DURUMU);
+  const atlanan = tumu.length - yayinda.length;
+  logger?.info(
+    `Notion Sayfalar: ${yayinda.length} yayında, ${atlanan} atlandı (Durum !== '${YAYIN_DURUMU}')`,
+  );
+
+  // Sessiz fakirleşme kapısı: `Durum` Notion'da yeniden adlandırılır ya da
+  // seçenek dizesi değişirse filtre HER satırı eler ve site sessizce boşalır.
+  // FIXME'nin doğduğu döngü tam buydu — filtre yazıldı, değerler uyuşmadı,
+  // loader boşaldı, filtre kapatıldı, iki ay öyle kaldı. Kapı döngüyü kırar.
+  // KARAR 516 uyumlu: yalnız felaket hâlinde ateşler, rutin değil.
+  if (tumu.length > 0 && yayinda.length === 0) {
+    const gorulen = [...new Set(tumu.map((page) => selectVal(page, 'Durum')))]
+      .map((v) => (v === '' ? "'' (alan yok ya da boş)" : `'${v}'`))
+      .join(', ');
+    throw new Error(
+      `[notion-pages] Sayfalar DB'sinden ${tumu.length} satır çekildi, hiçbiri yayına ` +
+        `alınmadı — boş site yayınlamamak için build durduruldu.\n` +
+        `  beklenen  : Durum === '${YAYIN_DURUMU}'\n` +
+        `  görülen   : ${gorulen}\n` +
+        `  nereye bak: Notion Sayfalar DB → "Durum" alanı. Muhtemel sebep, ` +
+        `seçenek adının değişmesi (ör. "Yayında" → "Yayınlandı") ya da alanın ` +
+        `yeniden adlandırılması. Kod tarafındaki karşılığı: YAYIN_DURUMU sabiti, ` +
+        `src/lib/notion-pages.ts.`,
+    );
+  }
+
+  return yayinda;
 }
 
 /**
