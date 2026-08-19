@@ -1,13 +1,17 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · B63–B74 açıldı (docs-patch-2026-08-19)
+**Son güncelleme:** 19 Ağustos 2026 · B75–B76 açıldı (Faz 1 §1–§2 + ek brief kod turu)
 
-**Durum:** 74 madde · **45 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 76 madde · **47 açık iş** · 27 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
 `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1). İş değil: `[⏸🔵]` geçen → **2**.
-Açık = 74 − 27 − 2 = **45**. Ölçüm anı: **B74 açıldıktan sonra**, 19 Ağustos 2026.*
+Açık = 76 − 27 − 2 = **47**. Ölçüm anı: **B76 açıldıktan sonra**, 19 Ağustos 2026.*
+
+*19 Ağustos, ikinci ölçüm (Faz 1 kod turu): toplam 74 → **76**, açık 45 → **47**.
+Kapanan yok, damgalı sayısı **27**'de sabit — B75 ve B76 ikisi de yeni kayıt.
+Sayaç devralınmadı, üç grep yeniden koşuldu.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 74 · `grep '^## B' | grep -c '[✅❌]'`
 → 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
@@ -1405,3 +1409,31 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   push production'a çıktı; adım atlandı.
 - **Kapanış şartı:** gerçek iPhone Safari'de `/etkinlik/[slug]` + bir kayıt sayfası
   görülür. Test yeşili ≠ göz temiz.
+
+## B75 — Soyad + zorunlu Şehir öncesi kayıtlarda alanlar eksik
+- [ ] **Sahip:** Kaan
+- **Tetikleyici:** Faz 1 §2 + ek brief (`9fca383`, 19 Ağu) — `Soyad` alanı forma
+  eklendi, `Şehir` opsiyonelden zorunluya geçti. **Migration yok** (bilinçli).
+- **Belirti:** bu commit'ten önceki kayıtlarda Notion `Kadın` yalnız **ad** taşıyor,
+  `Şehir` boş olabilir. MailerLite tarafında `last_name` hiç yazılmamış. Fatura
+  kesilecek kadın eski bir kayıttaysa alıcı adı ve konum bilgisi eksik çıkar.
+- **Neden migration yapılmadı:** fatura kesilecek kadınlar yeni kayıtlar olacak;
+  eski satırlar için toplu doldurulacak veri yok — soyad kimsede kayıtlı değil.
+- **Kapanış şartı:** eski bir kayda fatura kesilecekse o satırın `Kadın` ve `Şehir`
+  alanları elle tamamlanır. `kadinAdiBirlestir` tek parçalı girdide de doğru
+  çalışıyor (testli), elle düzeltme yolunda çağrılabilir.
+
+## B76 — MailerLite `last_name` konumu canlı teyit edilmedi
+- [ ] **Sahip:** CC + Kaan
+- **Tetikleyici:** Faz 1 §2 (`9fca383`) — `last_name` `fields` içine, `name` ile
+  aynı seviyeye yazıldı (KARAR D5). **Bu konum repodan ölçülemiyor.**
+- **Belirti:** repo yalnız `name`'in `fields` içinde gittiğini kanıtlıyor
+  (`api/kayit.ts` fetch gövdesi: `{ email, fields, groups }`). `last_name`'in
+  kardeş ön-tanımlı alan olarak aynı yere düştüğü **MailerLite API bilgisi**,
+  ölçüm değil. Yanlışsa alan sessizce yutulur — MailerLite tanımsız alanı hata
+  vermeden düşürür, yani kayıt başarılı görünürken soyad hiç yazılmamış olur.
+- **Sınıf:** Y1'in "MailerLite'a gerçek POST atılmadı" borcuyla aynı — `dist/`
+  seviyesinde ölçüldü, canlı abonede görülmedi.
+- **Kapanış şartı:** push sonrası test aboneyle kayıt olunur, MailerLite panelinde
+  abonenin **Last name** alanı dolu görülür. Boşsa konum yanlış demektir ve
+  payload düzeltilir.
