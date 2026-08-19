@@ -417,7 +417,7 @@ no	tarih	baslik	durum	iliski	kaynak
 394	2026-07	Client-safe ↔ server-only modül sınırı	KALICI		2026-07.md:649
 395	2026-07	İki-yüzey drift kuralı — kopyayı elle eşit tutma	KALICI	←373	2026-07.md:647
 403	2026-07	Ürün-katmanı imza cümlesi tek evi `/yolculuk` hero	AKTIF		2026-07.md:1148
-410	2026-07	WhatsApp display name adayları Meta tarafından reddedildi	ACIK-BORC	B19	2026-07.md:1194
+410	2026-07	WhatsApp display name adayları Meta tarafından reddedildi	SUPERSEDE	→519 (…5226'da "Ocak Kadın Çemberi" onaylandı, 19 Ağu Kaan teyidi) · B19	2026-07.md:1194
 430	2026-07-12	Format enum "Uluslararası Yolculuğu" → yüz yüze; migrasyon yok	AKTIF		2026-07.md:1075
 431	2026-07-12	Yolculuk online — 20-24 kontenjan, Direkt kayıt, paralel takvim	AKTIF		2026-07.md:1071
 434	2026-07	Kavram katmanı Anadolu-spesifik gerçeklerden arındırıldı	AKTIF		00-devir.md:10
@@ -517,3 +517,6 @@ no	tarih	baslik	durum	iliski	kaynak
 516	2026-08-19	Rutin tetiklenen guard kabul edilmez — beklenen WARN, WARN'ların okunmayı bıraktığı andır	KALICI	←278 · ↔495	2026-08.md#k516
 517	2026-08-19	Yüzen WhatsApp butonu footer görünürken çekilir — IntersectionObserver + `.gizli`, süre `--duration-base`, daimî silik reddedildi	AKTIF	←212	2026-08.md#k517
 518	2026-08-19	Bot hattı ve yasal telefon iki ayrı yüzeydir, eşitlenmez — numara değişimi hedef yüzeyi adlandırmak zorunda	KALICI	←213 · ←396	2026-08.md#k518
+519	2026-08-19	Onaylı display name bırakılmaz — Meta onayı kıt kaynak; adın daralttığını metin katmanı telafi eder	KALICI	←410	2026-08.md#k519
+520	2026-08-19	WABA profil alan kanonu — ad ne taşırsa Hakkında tekrar etmez; URL/e-posta ayrı alanda; adres il düzeyi	KALICI	←403 · ↔57	2026-08.md#k520
+521	2026-08-19	İkinci hat (…0888) display name başvurusu "Ocak Kadın Topluluğu"; Plan B "Ocak Türkiye"	AKTIF	↔519 · ←410	2026-08.md#k521

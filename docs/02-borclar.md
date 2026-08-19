@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · WA yüzen buton turu · **sayaç değişmedi — borç açılmadı, kapanmadı**
+**Son güncelleme:** 19 Ağustos 2026 · WABA display name turu · **B103–B104 açıldı, kapanan yok**
 
-**Durum:** 102 madde · **70 açık iş** · 30 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 104 madde · **72 açık iş** · 30 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -54,6 +54,15 @@ iş değil **2**, açık **70** — **üçü de değişmedi.** Bu tur borç açm
 `20-ref-bot.md` çelişkisi (satır 15/20 iki farklı bayat numara) borca **çevrilmedi** —
 aynı patch'te düzeltildi (KARAR 104: on beş dakikalık iş ertelenmez). Sayaç
 devralınmadı, üç grep yeniden koşuldu.*
+
+*19 Ağustos, dokuzuncu ölçüm (WABA display name turu): toplam 102 → **104**, açık
+70 → **72**. Damgalı **30**'da sabit — bu turda kapanan yok. İki yeni kayıt
+**B103–B104**. **B19 kapanmadı, kapsamı daraldı:** `…5226` hattında ad onaylandı ama
+`…0888` ayağı açık; madde damgasız kaldı, yani açık sayılıyor — kapsam daraltmak borcu
+kapatmaz (yedinci ölçümdeki B57 kaydının aynısı). ⚠ **B104 açılırken belirtisi çürüdü:**
+patch `WHATSAPP_URL`'i `905322080888` sanıyordu, ölçüm `905325555226` verdi (`api.ts:26`,
+`354fb14`); madde silinmedi, hedefi yeniden yazıldı. Sayaç devralınmadı, üç grep
+yeniden koşuldu.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 100 · `grep -E '^## B' | grep -cE '[✅❌]'`
 → 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
@@ -266,7 +275,17 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 ## B19 — WhatsApp display name
 - [ ] **Sahip:** Kaan
 - **Kaynak:** KARAR 410 (`ocak-kronoloji.md:5598`)
-- **Durum:** "Ocak Kadın Çemberi" ve "Ocak.biz" adaylarının ikisi de Meta tarafından reddedildi. İtiraz süreci açık; yayın bu onaya kilitli (KARAR 396).
+- **Durum (19 Ağu 2026):** `…5226` hattında **"Ocak Kadın Çemberi" ONAYLANDI** (Kaan teyidi;
+  Manager rozeti ayrıca okunmadı). Ad tartışması bu hat için **kapandı** — KARAR 519 gereği
+  onaylı ad bırakılmaz. **Kalan iş yalnız `…0888` hattı:** ad başvurusu KARAR 521 ile
+  "Ocak Kadın Topluluğu" (Plan B "Ocak Türkiye"). Ön koşullar: `/hakkimizda`'da YAP Eğitim
+  Danışmanlık anılıyor olmalı + Business Portfolio website `https://www.ocak.biz`.
+  Yayın kilidi ayrıca kalktı — KARAR 396 kapandı (`354fb14`), numara yayını B19'a bağlı değil.
+- **Uygulandı (19 Ağu):** `…5226` profil açıklaması — *"Ateşin etrafında buluşuyoruz —
+  seremoniler, atölyeler, yolculuklar. Soruları yapay zekâ asistanı yanıtlar."* (Kaan yazdı).
+- **Tarihçe:** "Ocak Kadın Çemberi" ve "Ocak.biz" adaylarının ikisi de bir kez reddedilmişti
+  (KARAR 410, SUPERSEDE →519); itiraz metni hazırlandı, gönderildiği teyit edilmedi. Düz
+  "OCAK" hakkındaki iki beyan hâlâ çelişiyor — **B103**.
 
 ## B20 — Tanım envanterde olmayan 17 numara ✅ KAPANDI (7 Ağu, ADIM 3b)
 - [ ] **Sahip:** Claude.ai
@@ -1812,3 +1831,37 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   etkinlik gününden **en az iki iş günü** önce. Ölçüm: yukarıdaki ölçütle
   sayılan kayıt sayısı **25 → 0**. Ara hedef: **canlı 15 → 0**.
 - **Bağ:** KARAR 486 · 383–386 · B101 (aynı satırın öteki açık ucu).
+
+## B103 — İki canlı beyan "OCAK" adı hakkında çelişiyor
+
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** bir sonraki `20-ref-bot.md` turu
+- **Çelişki:** `20-ref-bot.md:13` — *"Ocak Kadın Çemberi" ve **"OCAK"** denemeleri reddedildi*.
+  KARAR 410'un kronoloji satırı (`2026-07.md:1194` zinciri) ise *"Ocak Kadın Çemberi" ve
+  "Ocak.biz" elendi, **ana aday "OCAK"*** der. Yani düz "OCAK" bir yerde denenmiş-reddedilmiş,
+  öbür yerde henüz-denenmemiş-aday.
+- ⚠ **Neden borç:** hangisinin daha yeni olduğu bilinmiyor. Yanlış olanı doğru sanmak `…0888`
+  hattında yanlış ada başvurmaya yol açar — KARAR 521'in gerekçesi bu belirsizliği **atlatmak**
+  üzerine kuruldu, ortadan kaldırmak üzerine değil.
+- **Kapanış şartı:** Meta Manager'daki ret geçmişi (ad + tarih + gerekçe metni) okunur, iki
+  beyandan yanlış olan düzeltilir. **Gerekçe metni ayrıca değerlidir:** "doesn't match brand"
+  ile "all-caps not permitted" farklı iki düzeltme demektir.
+- **Bağ:** KARAR 410 · 519 · 521 · B19.
+
+## B104 — İkinci hat (`…0888`) WABA değil; onaylı ad ve bot tek hatta sıkışık
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** KARAR 396'nın kuyruğu, 19 Ağu'da görüldü
+- **Durum (ölçüldü, 19 Ağu):** `src/lib/api.ts:26` → `WHATSAPP_URL = 'https://wa.me/905325555226'`.
+  Yani yüzen buton · footer · Kanallar kartı üçü de **bota gidiyor** — kopukluk **yok**
+  (`354fb14`, KARAR 396 bu yüzden SUPERSEDE oldu). ⚠ Bu borcu açan patch tersini varsaymıştı
+  (`…0888` gösteriliyor sanılıyordu); ADIM 0 ölçümü çürüttü, belirti hedefe çevrildi.
+- **Asıl eksik:** `…0888` hattı **WABA olarak açık değil** ve onaylı display name yok. Marka
+  bugün tek hatta bağlı — onaylı ad, bot ve site aynı numarada. İkinci hat ne yedek ne ayrı
+  yüzey; atıl duruyor. Yasal sayfalardaki telefon (`+90 532 208 0888`) bu hattır ve düz metin
+  olarak yaşar (KARAR 518) — kadın oradan yazarsa **karşısında bot yok.**
+- **Kaan'ın yönü (19 Ağu):** `…0888` için yeniden başvurulacak — hat WABA'ya açılır, ad onayı
+  alınır (KARAR 521), bot oraya bağlanır. Site kodu **değişmez**; `api.ts` bot hattını
+  göstermeye devam eder. Terk edilen alternatif: `…0888`'i rafa kaldırıp tek hatta kalmak.
+- **Kapsam:** site tarafı **sıfır dokunuş** — iş tamamen Meta/n8n tarafında.
+- **Kapanış şartı:** `…0888`'e yazılan bir mesajın bota düştüğü **canlı round-trip** ile teyit
+  edilir. Kod grep'i yeterli değildir.
+- **Bağ:** KARAR 396 · 518 · 519 · 521 · B19 · B103.

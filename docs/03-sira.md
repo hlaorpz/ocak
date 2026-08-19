@@ -1,7 +1,8 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (B102 turu) · B102 açıldı ve kapandı · KARAR 514 düzeltildi ·
-önceki: gölge satır turu (KARAR 514–516 · B101) · üç-format turu
+**Son güncelleme:** 19 Ağustos 2026 (WABA display name turu) · KARAR 519–521 · B103–B104 açıldı ·
+KARAR 410 SUPERSEDE · önceki: WA yüzen buton turu (KARAR 517–518 · KARAR 396 SUPERSEDE) ·
+B102 turu · gölge satır turu (KARAR 514–516 · B101) · üç-format turu
 (KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
 
 **Sıradaki iş:** **B64 → B69 → B68 → n8n ödeme onayı** — bu patch'ten sonra.
@@ -209,6 +210,7 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 | 7 | **ADIM 7 birinci dalga** ✅ — `mcp/` + üç araç, Railway'de canlı, claude.ai'ye bağlı | CC | Railway | — | kapandı 9 Ağu |
 | 7b | **ADIM 7 ikinci dalga A+B** ✅ — `docs_karar(no)` + B54; KARAR 480 · 481 | CC | repo + Railway | 7 ✅ | kapandı 9 Ağu |
 | 7c | **ADIM 7 kalan iki parça** — B53 (bağlantı ucu, beta bekliyor) + B51 (B53'e bağlı) | Kaan + CC | Railway + repo | **B53 beta** | `02-borclar.md` B51 · B53 — kendi hatlarında |
+| 9 | **`20-ref-bot.md` WABA profil bloğu** — KARAR 520 kanonu + iki hattın ad/numara/metin tablosu + hazır uzun açıklama (309 kr). Şu an bu bilgi yalnız kronolojide, referansta değil. Aynı turda **B103** çelişkisi de düzeltilir | Claude.ai | ayrı sohbet | B103 için Meta ret geçmişi | `90-kronoloji/2026-08.md` WABA bloğu + `02-borclar.md` B103 |
 | 8 | **B38** — ledger çapa denetimi (terminal kontrol) | Claude.ai | ayrı sohbet | ADIM 7 **+ B36-a** | `02-borclar.md` B38. Ön ölçüm ADIM 4'te yapıldı (isabet %57); B38 onu tekrarlamaz, mekanik onarımın oranı ne kadar oynattığını ölçer |
 
 **Kapı işi: B01 ✅ (10 Ağu)** — klon/remote/Vercel adı üçü de `ocak` oldu. Tek tur,
@@ -253,7 +255,9 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 
 | cephe | sahip | durum |
 |---|---|---|
-| **B19** — WhatsApp display name | Kaan | Meta iki adayı da reddetti; itiraz açık. (Numara yayını artık buna bağlı değil — KARAR 396 kapandı, hat canlı) |
+| **B19** — WhatsApp display name | Kaan | **Kuyrukta kalır, kapsamı daraldı.** `…5226`'da "Ocak Kadın Çemberi" **onaylı** (19 Ağu); kalan iş yalnız `…0888` — ad başvurusu KARAR 521. (Numara yayını buna bağlı değil — KARAR 396 kapandı, hat canlı) |
+| **B103** — "OCAK" adı iki beyanda çelişiyor | Kaan (~5 dk) | Meta Manager ret geçmişi + **gerekçe metni** okunacak; `20-ref-bot.md:13` ile KARAR 410 uyuşmuyor |
+| **B104** — `…0888` hattı WABA değil | Kaan | Hat açılır → ad onayı (KARAR 521) → bot bağlanır → **canlı round-trip** ile kapanır. Site kodu değişmez |
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |
