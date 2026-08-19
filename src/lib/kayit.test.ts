@@ -202,7 +202,7 @@ describe('katilimTipiCoz (Brief 5 KARAR 208)', () => {
 });
 
 describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
-  // Alan hijyeni: HER çağrı on alanın hepsini döndürür. Geçersiz olan boş
+  // Alan hijyeni: HER çağrı on iki alanın hepsini döndürür. Geçersiz olan boş
   // string ile yazılır — gönderilmemesi MailerLite'ta eski değeri bırakıyordu.
   const TEMEL = {
     etkinlikAdi: 'Çember — 21 Haziran 2026',
@@ -215,7 +215,7 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
     etkinlikUrl: 'https://www.ocak.biz/etkinlik/elin-neyle-dolu',
   };
 
-  it('on alanın hepsi HER çağrıda döner — hiçbiri atlanmaz', () => {
+  it('on iki alanın hepsi HER çağrıda döner — hiçbiri atlanmaz', () => {
     const f = mailerLiteCustomFields({ ...TEMEL });
     expect(Object.keys(f).sort()).toEqual([...MAILERLITE_ALANLAR].sort());
     const bos = mailerLiteCustomFields({
