@@ -1101,7 +1101,24 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__success-odeme dd {
     margin: 0;
     color: var(--cream);
-    word-break: break-all;
+    /* Ek brief §3 — buradan `word-break: break-all` KALDIRILDI.
+       IBAN taşmasın diye konmuştu ama bütün dd hücrelerine vuruyordu ve
+       Alıcı unvanını kısaltmanın ortasından bölüyordu. Canlı ölçüm
+       (275px sütun, gerçek Chrome, Range API ile satır satır):
+
+         break-all : "YAP Eğitim Danışmanlık Gıda ve Dış Ticaret A." / "Ş."
+         normal    : "YAP Eğitim Danışmanlık Gıda ve Dış Ticaret "   / "A.Ş."
+
+       Kadının gördüğü ilk şey paranın gideceği kurumun adının bozuk
+       yazılmasıydı. IBAN'a maliyeti ÖLÇÜLDÜ ve sıfır: dize dört karakterlik
+       gruplara boşlukla ayrılmış, en uzun kesintisiz parça 4 karakter —
+       iki hâlde de tek satır, `scrollWidth > clientWidth` false.
+       Bu yüzden U+2060 WORD JOINER gibi bir dize hilesine de gerek kalmadı;
+       kök neden sunumdaydı, değer zaten doğruydu (KARAR 354).
+
+       Öteki iki `break-all` kullanımına DOKUNULMADI:
+       `.kayit-formu__odeme-bilgi dd` ve `.kayit-formu__success-katilim-deger`
+       — ikincisi Zoom linki taşıyor, orada gerçekten gerekli. */
   }
   .kayit-formu__success-odemesiz[hidden],
   .kayit-formu__success-odemeli[hidden],
@@ -1579,6 +1596,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 <script>
   import { submitKayit, type KayitPayload } from '../lib/api';
   import { scrollToSuccess } from '../lib/scroll-to-success';
+  import { gecersizAlaniGoster } from '../lib/gecersiz-alan-goster';
   import {
     uygulaIndirim,
     kademeTutari,
@@ -2057,31 +2075,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     refreshOdemeBlok();
     renderNiyetSorulari([]);
 
-    // Ek brief Not 2 — <details> içindeki zorunlu alan SESSİZ submit'i durdurur.
+    // Ek brief §1 + Not 2 — geçersiz zorunlu alanı GÖRÜNÜR yap.
     //
-    // Form üç native <details> bölümden oluşuyor (Sen · Buluşma · Niyet), hepsi
-    // `open` doğuyor. Kadın bir bölümü kapatıp gönderirse, o bölümdeki geçersiz
-    // zorunlu alan FOCUSABLE olmaz: tarayıcı submit'i bloklar, uyarı balonunu
-    // gösteremez ve konsola "An invalid form control is not focusable" yazar.
-    // Ekranda hiçbir şey olmaz — kadın butona basar, form durur, sebep yok.
-    //
-    // Risk yeni değil: `email` ve `telefon` öteden beri required ve aynı
-    // bölümde. `soyad` + zorunlu `sehir` onu büyütüyordu; bu blok üçünü birden
-    // kapatıyor (Kaan, Not 2).
+    // İki bulgu, tek mekanizma; ikisinin de gerekçesi `gecersiz-alan-goster.ts`
+    // başlığında (kapalı <details> = sessiz submit · sticky nav alanı örtüyor).
+    // Mantık oraya taşındı çünkü .astro script'ine test konamıyor ve bu
+    // davranışın bir bekçisi olması gerekiyor: Niyet/Ödeme bölümlerine zorunlu
+    // bir alan eklendiği gün hata canlıya çıkar.
     //
     // `click` üzerinde duruyor çünkü native doğrulamadan ÖNCE koşması gerek —
-    // `submit` olayı zaten hiç ateşlenmiyor. Bölümler açıldıktan sonra
-    // tarayıcının kendi doğrulaması normal işini yapar.
+    // kapalı bölüm senaryosunda `submit` olayı zaten hiç ateşlenmiyor.
+    // Bölümler açıldıktan sonra tarayıcının kendi doğrulaması normal işini yapar.
     submit.addEventListener('click', () => {
       if (form.checkValidity()) return;
-      const ilkGecersiz = form.querySelector<HTMLElement>(
-        'input:invalid, select:invalid, textarea:invalid',
+      gecersizAlaniGoster(
+        form.querySelector<HTMLElement>('input:invalid, select:invalid, textarea:invalid'),
       );
-      if (!ilkGecersiz) return;
-      for (let p = ilkGecersiz.parentElement; p; p = p.parentElement) {
-        if (p instanceof HTMLDetailsElement) p.open = true;
-      }
-      ilkGecersiz.focus();
     });
 
     form.addEventListener('submit', async (e) => {
