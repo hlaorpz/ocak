@@ -375,6 +375,36 @@ export function havaleAciklamasi(referansNo: string): string {
 }
 
 /**
+ * Ad + Soyad → Notion'a yazılan tek dize ("Ayşe" + "Gülşah" → "Ayşe Gülşah").
+ *
+ * Faz 1 §2: form **iki ayrı alan** topluyor, birleşik tek alan değil.
+ * Sebep MailerLite: `name` mail açılışında kullanılıyor ("Merhaba {$name}") —
+ * birleşik olsaydı "Merhaba Ayşe Gülşah" çıkardı, marka sesi değil. Notion
+ * tarafı ise tek kişi adı istiyor, birleştirme burada yapılıyor.
+ *
+ * ÜÇ Notion yazıcısı da buradan besleniyor (Kaan kararı D4):
+ *   - `notionKayitlaraYaz`   → Kayıtlar    `Kadın` (rich_text)
+ *   - `notionSadeceAskiYaz`  → Kayıtlar    `Kadın` (rich_text)
+ *   - `notionBasvuruYaz`     → Başvurular  `Ad`    (**title**)
+ * Alan adı ve tipi farklı, **değer aynı**: iki DB aynı kişiyi aynı biçimde
+ * taşısın. Brief yalnız Kayıtlar'ı anıyordu; Başvurular ADIM 0'da bulundu.
+ *
+ * Çift boşluk üretmez: parçalar ayrı ayrı trim'lenir, boş parça atılır.
+ * Soyad bugün zorunlu — ama tek parçalı giriş de doğru sonuç verir, çünkü
+ * eski kayıtların düzeltilmesi elle yapılacak ve bu fonksiyon o yolda da
+ * çağrılabilir (migration yok, bkz. borç).
+ */
+export function kadinAdiBirlestir(
+  ad: string | undefined | null,
+  soyad?: string | null,
+): string {
+  return [ad, soyad]
+    .map((p) => (p ?? '').trim())
+    .filter(Boolean)
+    .join(' ');
+}
+
+/**
  * Brief 5 Yol C: Notion Etkinlikler DB "Mekân/Platform" select değerini
  * katılım tipine eşler. 'Online' → 'link' (Zoom URL); diğer (İzmir/İstanbul/
  * Ege/Anadolu) → 'adres'. Boş / bilinmeyen → 'link' default (lansman
@@ -502,21 +532,39 @@ export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, 
  *
  * Artık `ekFields`'in HER anahtarı payload'a girer — değeri boş olsa da.
  *
- * ── `name` bu kuraldan MUAF ──
- * İsim boşken boş gönderilirse mail "Merhaba ," diye açılır. `name` custom
- * field değil, subscriber'ın kendi adı; hijyen kuralı ona işlemez. Mevcut
- * davranış korunuyor: `name` daima yazılır ve `ekFields` onu **ezemez**.
+ * ── `name` ve `last_name` bu kuraldan MUAF ──
+ * İsim boşken boş gönderilirse mail "Merhaba ," diye açılır. İkisi de custom
+ * field değil, subscriber'ın kendi ad/soyadı; hijyen kuralı onlara işlemez.
+ * Daima yazılırlar ve `ekFields` onları **ezemez**.
+ *
+ * Faz 1 §2 (Kaan kararı D6): muafiyet `last_name`'e de uygulandı — gerekçe
+ * `name` ile birebir aynı, tek başına bırakmak aynı hatayı yanına koymak
+ * olurdu.
+ *
+ * ── `last_name` NEREYE gider ──
+ * `fields` İÇİNE, `name` ile aynı seviyeye (Kaan kararı D5). MailerLite'ın
+ * ön-tanımlı alanı; `MAILERLITE_ALANLAR` custom field envanteri olduğu için
+ * orada YOK ve olmamalı — envanter on ikide kalır.
+ *
+ * ⚠ Bu konum **repodan ölçülemiyor.** Repo yalnız `name`'in `fields` içinde
+ * gittiğini kanıtlıyor (`api/kayit.ts` fetch gövdesi: `{ email, fields,
+ * groups }`); `last_name`'in kardeş alan olarak aynı yere düştüğü MailerLite
+ * API bilgisi. **Canlı teyit borcu** — push sonrası test aboneyle panelden
+ * bakılacak. Y1'in "gerçek POST atılmadı" borcuyla aynı sınıf.
  */
+const ML_KISI_ALANLARI = ['name', 'last_name'] as const;
+
 export function mailerLiteFieldsPayload(
   ad: string,
+  soyad: string,
   ekFields?: Record<string, string>,
 ): Record<string, string> {
-  const fields: Record<string, string> = { name: ad };
+  const fields: Record<string, string> = { name: ad, last_name: soyad };
   if (!ekFields) return fields;
   for (const [k, v] of Object.entries(ekFields)) {
-    // `name` muafiyeti: ekFields'ten gelen bir `name` anahtarı subscriber adını
-    // ezmesin (bugün MAILERLITE_ALANLAR'da yok; defansif).
-    if (k === 'name') continue;
+    // `name`/`last_name` muafiyeti: ekFields'ten gelen bir anahtar subscriber'ın
+    // kendi ad/soyadını ezmesin (ikisi de MAILERLITE_ALANLAR'da yok; defansif).
+    if (ML_KISI_ALANLARI.includes(k as (typeof ML_KISI_ALANLARI)[number])) continue;
     fields[k] = v ?? '';
   }
   return fields;

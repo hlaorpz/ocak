@@ -17,6 +17,7 @@ import {
   uretBenzersizReferansNo,
   REF_KARA_LISTE,
   havaleAciklamasi,
+  kadinAdiBirlestir,
   paraBirimiGoster,
   type KayitFormat,
 } from './kayit';
@@ -386,7 +387,7 @@ describe('mailerLiteCustomFields (ödeme kapısı + alan hijyeni)', () => {
 // test burada.
 describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () => {
   it('boş string alan payload\'a GİRER — düşürülmez', () => {
-    const p = mailerLiteFieldsPayload('Kaan', {
+    const p = mailerLiteFieldsPayload('Kaan', 'Sonat', {
       etkinlik_adi: 'Açık Kapı — 4 Ocak 2027',
       etkinlik_url: '',
       zoom_link: '',
@@ -408,7 +409,7 @@ describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () 
       odemeGerekli: false,
       referansNo: 'OCAK-532897',
     });
-    const p = mailerLiteFieldsPayload('Kaan', ml);
+    const p = mailerLiteFieldsPayload('Kaan', 'Sonat', ml);
     expect(p.etkinlik_url).toBe('');
   });
 
@@ -421,7 +422,7 @@ describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () 
       odemeGerekli: true,
       referansNo: 'OCAK-532896',
     });
-    const p = mailerLiteFieldsPayload('Kaan', ml);
+    const p = mailerLiteFieldsPayload('Kaan', 'Sonat', ml);
     for (const alan of ['katilim_linki', 'zoom_link', 'zoom_sifresi'] as const) {
       expect(p).toHaveProperty(alan);
       expect(p[alan]).toBe('');
@@ -441,26 +442,28 @@ describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () 
       { ...TABAN, katilimTipi: 'adres' as const, mekan: 'İzmir', odemeGerekli: true },
     ];
     for (const s of senaryolar) {
-      const p = mailerLiteFieldsPayload('Kaan', mailerLiteCustomFields(s));
-      const customKeys = Object.keys(p).filter((k) => k !== 'name');
+      const p = mailerLiteFieldsPayload('Kaan', 'Sonat', mailerLiteCustomFields(s));
+      // `name` ve `last_name` subscriber'ın KENDİ alanları, custom field değil —
+      // envanter karşılaştırmasından ikisi de düşer (MAILERLITE_ALANLAR on iki).
+      const customKeys = Object.keys(p).filter((k) => k !== 'name' && k !== 'last_name');
       expect(customKeys.sort()).toEqual([...MAILERLITE_ALANLAR].sort());
     }
   });
 
   it('`name` MUAF — boşken de yazılır, kural ona işlemez', () => {
-    const p = mailerLiteFieldsPayload('Kaan', { etkinlik_adi: '' });
+    const p = mailerLiteFieldsPayload('Kaan', 'Sonat', { etkinlik_adi: '' });
     expect(p.name).toBe('Kaan');
     // Mevcut davranış korunuyor: name daima payload'da.
-    expect(mailerLiteFieldsPayload('', {})).toHaveProperty('name');
+    expect(mailerLiteFieldsPayload('', '', {})).toHaveProperty('name');
   });
 
   it('`name` ekFields\'ten EZİLEMEZ', () => {
-    const p = mailerLiteFieldsPayload('Kaan', { name: '', etkinlik_adi: 'X' } as Record<string, string>);
+    const p = mailerLiteFieldsPayload('Kaan', 'Sonat', { name: '', etkinlik_adi: 'X' } as Record<string, string>);
     expect(p.name).toBe('Kaan');
   });
 
   it('ekFields yoksa yalnız name döner', () => {
-    expect(mailerLiteFieldsPayload('Kaan')).toEqual({ name: 'Kaan' });
+    expect(mailerLiteFieldsPayload('Kaan', 'Sonat')).toEqual({ name: 'Kaan', last_name: 'Sonat' });
   });
 });
 
@@ -632,6 +635,76 @@ describe('uretReferansNo (Faz 1 §3 — karışmayan alfabe)', () => {
     expect(ref).not.toMatch(/\s/);
     expect(ref.length).toBe(9); // "OCAK-" (5) + 4 karakter
     // Eski format 11 karakterdi; kod KISALIYOR, uzunluk riski yok.
+  });
+});
+
+describe('kadinAdiBirlestir (Faz 1 §2 — Notion tek dize)', () => {
+  it('ad + soyad → tek boşlukla birleşir', () => {
+    expect(kadinAdiBirlestir('Ayşe', 'Gülşah')).toBe('Ayşe Gülşah');
+  });
+
+  it('ÇİFT BOŞLUK üretmez — parçalar ayrı ayrı trim\'lenir', () => {
+    // Sunucu zaten trim'liyor, ama birleştirme kendi başına da doğru olmalı:
+    // iki katman birbirine güvenmesin.
+    expect(kadinAdiBirlestir('  Ayşe  ', '  Gülşah  ')).toBe('Ayşe Gülşah');
+    expect(kadinAdiBirlestir('Ayşe ', ' Gülşah')).toBe('Ayşe Gülşah');
+    expect(kadinAdiBirlestir('Ayşe', 'Gülşah')).not.toMatch(/ {2}/);
+  });
+
+  it('soyad yoksa BAŞTA/SONDA boşluk bırakmaz — eski kayıt yolu', () => {
+    // Migration yok: soyad öncesi kayıtlar tek parçalı. Bu fonksiyon o
+    // satırların elle düzeltilmesinde de çağrılabilmeli.
+    expect(kadinAdiBirlestir('Ayşe')).toBe('Ayşe');
+    expect(kadinAdiBirlestir('Ayşe', '')).toBe('Ayşe');
+    expect(kadinAdiBirlestir('Ayşe', '   ')).toBe('Ayşe');
+    expect(kadinAdiBirlestir('Ayşe', null)).toBe('Ayşe');
+  });
+
+  it('ad yoksa da kırılmaz (defansif) — undefined/null boş string döner', () => {
+    expect(kadinAdiBirlestir(undefined, 'Gülşah')).toBe('Gülşah');
+    expect(kadinAdiBirlestir(null, null)).toBe('');
+    expect(kadinAdiBirlestir('', '')).toBe('');
+  });
+
+  it('çok parçalı ad/soyad korunur — içerideki boşluğa dokunulmaz', () => {
+    // "Ayşe Nur" tek bir ad; birleştirme onu bölmez ya da sıkıştırmaz.
+    expect(kadinAdiBirlestir('Ayşe Nur', 'Gülşah Yıldız')).toBe('Ayşe Nur Gülşah Yıldız');
+  });
+});
+
+describe('mailerLiteFieldsPayload — last_name (Faz 1 §2, karar D5+D6)', () => {
+  it('last_name `fields` İÇİNDE, name ile aynı seviyede', () => {
+    const p = mailerLiteFieldsPayload('Ayşe', 'Gülşah', {});
+    expect(p.name).toBe('Ayşe');
+    expect(p.last_name).toBe('Gülşah');
+  });
+
+  it('last_name ekFields\'ten EZİLEMEZ — muafiyet name ile aynı (D6)', () => {
+    const p = mailerLiteFieldsPayload('Ayşe', 'Gülşah', {
+      last_name: '',
+      name: 'BAŞKASI',
+      etkinlik_adi: 'X',
+    } as Record<string, string>);
+    expect(p.last_name).toBe('Gülşah');
+    expect(p.name).toBe('Ayşe');
+    expect(p.etkinlik_adi).toBe('X');
+  });
+
+  it('last_name MAILERLITE_ALANLAR\'da YOK — custom field değil, envanter on ikide kalır', () => {
+    expect(MAILERLITE_ALANLAR).toHaveLength(12);
+    expect([...MAILERLITE_ALANLAR]).not.toContain('last_name');
+    expect([...MAILERLITE_ALANLAR]).not.toContain('name');
+    // Ek brief kararı D8: şehir MailerLite'a GİTMEYECEK.
+    expect([...MAILERLITE_ALANLAR]).not.toContain('sehir');
+    expect([...MAILERLITE_ALANLAR]).not.toContain('city');
+  });
+
+  it('soyad boşsa last_name boş gider — hijyen değil, gerçeği yazar', () => {
+    // Soyad sunucuda zorunlu; buraya boş gelmesi ancak başka bir çağrı
+    // yerinden olur. O durumda alanı UYDURMUYORUZ, boş yazıyoruz.
+    const p = mailerLiteFieldsPayload('Ayşe', '', {});
+    expect(p).toHaveProperty('last_name');
+    expect(p.last_name).toBe('');
   });
 });
 

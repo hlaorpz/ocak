@@ -124,10 +124,24 @@ export type KayitResponse = {
 
 export type KayitPayload = {
   format: string;
+  /**
+   * Faz 1 §2 — `ad` ve `soyad` AYRI alanlar, birleşik tek alan değil.
+   * MailerLite `name` mail açılışında kullanılıyor ("Merhaba {$name}");
+   * birleşik olsaydı "Merhaba Ayşe Gülşah" çıkardı. Notion'a giden birleşik
+   * değeri `kadinAdiBirlestir` üretir.
+   */
   ad: string;
+  soyad: string;
   email: string;
-  telefon?: string;
-  sehir?: string;
+  /**
+   * Faz 1 §2 + ek brief — ikisi de ZORUNLU oldu.
+   * `telefon` formda öteden beri `*` ve `required` idi ama sunucuda kapısı
+   * yoktu; `sehir` ile birlikte kapatıldı (KARAR 104 — bilinen tutarsızlık
+   * ileri taşınmaz). `sehir` e-Arşiv faturası için; yapısı değişmedi, serbest
+   * metin kaldı (81 illik select ve normalizasyon bilerek ertelendi).
+   */
+  telefon: string;
+  sehir: string;
   kanal?: string;
   ekSorular?: Record<string, string>;
   etkinlikId: string;

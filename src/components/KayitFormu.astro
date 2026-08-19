@@ -132,6 +132,26 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             />
           </div>
 
+          {/* Faz 1 §2 — Soyad AYRI alan, "Ad Soyad" birleşik değil. MailerLite
+              `name` mail açılışında kullanılıyor ("Merhaba {$name}"); birleşik
+              olsaydı "Merhaba Ayşe Gülşah" çıkardı, marka sesi değil. Notion'a
+              giden birleşik değeri backend üretiyor (kadinAdiBirlestir).
+              Fatura kesmek için soyad şart; sonradan toplamak kayıtlı her
+              kadına tek tek yazmak demek. */}
+          <div class="kayit-formu__group">
+            <label for="kf-soyad">Soyad <span class="kayit-formu__required">*</span></label>
+            <input
+              id="kf-soyad"
+              type="text"
+              class="kayit-formu__input"
+              name="soyad"
+              placeholder="Soyadın"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
+            />
+          </div>
+
           <div class="kayit-formu__group">
             <label for="kf-email">E-posta <span class="kayit-formu__required">*</span></label>
             <input
@@ -161,16 +181,23 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             />
           </div>
 
+          {/* Ek brief — Şehir ZORUNLU oldu (e-Arşiv faturasında alıcının konum
+              bilgisi gerekiyor). Yapısı BİLEREK değişmedi: serbest metin kalır.
+              81 illik select, İl/İlçe ayrımı, adres satırı ve normalizasyon
+              (`istanbul` · `İstanbul` · `ist`) ertelendi — muhasebeci cevabı
+              bekleniyor ve hedef kitledeki diaspora kapalı listeye sığmıyor.
+              Türkçe İ/ı dönüşümü ayrıca locale tuzağı taşıyor. */}
           <div class="kayit-formu__group">
-            <label for="kf-sehir">
-              Şehir <span class="kayit-formu__optional">(opsiyonel)</span>
-            </label>
+            <label for="kf-sehir">Şehir <span class="kayit-formu__required">*</span></label>
             <input
               id="kf-sehir"
               type="text"
               class="kayit-formu__input"
               name="sehir"
               placeholder="Yaşadığın şehir"
+              required
+              oninvalid="this.setCustomValidity('Bu alan zorunlu')"
+              oninput="this.setCustomValidity('')"
             />
           </div>
         </div>
@@ -2030,6 +2057,33 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     refreshOdemeBlok();
     renderNiyetSorulari([]);
 
+    // Ek brief Not 2 — <details> içindeki zorunlu alan SESSİZ submit'i durdurur.
+    //
+    // Form üç native <details> bölümden oluşuyor (Sen · Buluşma · Niyet), hepsi
+    // `open` doğuyor. Kadın bir bölümü kapatıp gönderirse, o bölümdeki geçersiz
+    // zorunlu alan FOCUSABLE olmaz: tarayıcı submit'i bloklar, uyarı balonunu
+    // gösteremez ve konsola "An invalid form control is not focusable" yazar.
+    // Ekranda hiçbir şey olmaz — kadın butona basar, form durur, sebep yok.
+    //
+    // Risk yeni değil: `email` ve `telefon` öteden beri required ve aynı
+    // bölümde. `soyad` + zorunlu `sehir` onu büyütüyordu; bu blok üçünü birden
+    // kapatıyor (Kaan, Not 2).
+    //
+    // `click` üzerinde duruyor çünkü native doğrulamadan ÖNCE koşması gerek —
+    // `submit` olayı zaten hiç ateşlenmiyor. Bölümler açıldıktan sonra
+    // tarayıcının kendi doğrulaması normal işini yapar.
+    submit.addEventListener('click', () => {
+      if (form.checkValidity()) return;
+      const ilkGecersiz = form.querySelector<HTMLElement>(
+        'input:invalid, select:invalid, textarea:invalid',
+      );
+      if (!ilkGecersiz) return;
+      for (let p = ilkGecersiz.parentElement; p; p = p.parentElement) {
+        if (p instanceof HTMLDetailsElement) p.open = true;
+      }
+      ilkGecersiz.focus();
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorEl.hidden = true;
@@ -2071,6 +2125,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const payload: KayitPayload = {
         format,
         ad: (data.get('ad') ?? '').toString().trim(),
+        soyad: (data.get('soyad') ?? '').toString().trim(),
         email: (data.get('email') ?? '').toString().trim(),
         telefon: (data.get('telefon') ?? '').toString().trim(),
         sehir: (data.get('sehir') ?? '').toString().trim(),

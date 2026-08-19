@@ -33,6 +33,7 @@ import {
   mailerLiteFieldsPayload,
   etkinlikAdiFormatla,
   havaleAciklamasi,
+  kadinAdiBirlestir,
   etkinlikUrlFormatla,
   uretBenzersizReferansNo,
   type RefUniqueQuery,
@@ -59,6 +60,7 @@ export const prerender = false;
 type KayitBody = {
   format?: string;
   ad?: string;
+  soyad?: string;
   email?: string;
   telefon?: string;
   sehir?: string;
@@ -255,7 +257,9 @@ async function notionKayitlaraYaz(args: {
     'Ödeme Durumu': { select: { name: ucretliMi ? 'Beklemede' : 'Bedava' } },
   };
   if (body.ad) {
-    properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+    properties['Kadın'] = {
+      rich_text: [{ text: { content: kadinAdiBirlestir(body.ad, body.soyad) } }],
+    };
   }
   if (body.email) properties.Email = { email: body.email };
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
@@ -331,7 +335,11 @@ async function notionSadeceAskiYaz(args: {
     'Ödeme Yöntemi': { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } },
     'Askı Tutarı': { number: body.askiTutar ?? 0 },
   };
-  if (body.ad) properties['Kadın'] = { rich_text: [{ text: { content: body.ad } }] };
+  if (body.ad) {
+    properties['Kadın'] = {
+      rich_text: [{ text: { content: kadinAdiBirlestir(body.ad, body.soyad) } }],
+    };
+  }
   if (body.email) properties.Email = { email: body.email };
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
   if (body.askiNiyet) {
@@ -357,7 +365,9 @@ async function notionBasvuruYaz(args: {
   const { format, body, odemeDurumu, referansNo } = args;
   const tip = FORMAT_TIP[format];
   const properties: Record<string, any> = {
-    Ad: { title: [{ text: { content: body.ad ?? '' } }] },
+    // D4 — Başvurular `Ad` title'ı da birleşik değeri taşır. Alan adı ve
+    // tipi Kayıtlar'dan farklı (`Kadın` rich_text), DEĞER aynı.
+    Ad: { title: [{ text: { content: kadinAdiBirlestir(body.ad, body.soyad) } }] },
     Tip: { select: { name: tip } },
     'Ödeme Durumu': { select: { name: odemeDurumu } },
     // Brief 6 (KARAR 210): Referans No daima yazılır (Muaf dahil) —
@@ -390,6 +400,7 @@ async function notionBasvuruYaz(args: {
 async function mailerLiteEkle(args: {
   email: string;
   ad: string;
+  soyad: string;
   groupId: string;
   /**
    * MailerLite custom field'ları — `MAILERLITE_ALANLAR` (on iki alan) tek
@@ -407,7 +418,7 @@ async function mailerLiteEkle(args: {
   if (!MAILERLITE_API_KEY) return { ok: false, status: 0, error: 'no-api-key' };
   try {
     // Payload kurulumu lib'de (testlenebilir); `name` muafiyeti orada.
-    const fields = mailerLiteFieldsPayload(args.ad, args.ekFields);
+    const fields = mailerLiteFieldsPayload(args.ad, args.soyad, args.ekFields);
     const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
       method: 'POST',
       headers: {
@@ -445,12 +456,41 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Ortak validation (her iki dal için)
+  //
+  // Faz 1 §2 + ek brief: `soyad` ve `sehir` zorunlu oldu, `telefon` de bu
+  // turda kapatıldı. Telefon formda ÖTEDEN BERİ `*` işaretli ve `required`
+  // idi ama sunucuda kapısı yoktu — client `required`'ı tek başına yeterli
+  // değil (devtools'tan kaldırılır, elle POST atılır, JS kapalıdır).
+  // KARAR 104: bilinen tutarsızlık ileri taşınmaz. Şehri kapatıp telefonu
+  // açık bırakmak aynı hatayı yanına koymak olurdu (Kaan, Not 1).
   if (!body.ad || !body.ad.trim()) {
     return json({ status: 'error', message: 'ad zorunlu' }, 400);
+  }
+  if (!body.soyad || !body.soyad.trim()) {
+    return json({ status: 'error', message: 'soyad zorunlu' }, 400);
   }
   if (!body.email || !EMAIL_RE.test(body.email)) {
     return json({ status: 'error', message: 'email geçersiz' }, 400);
   }
+  if (!body.telefon || !body.telefon.trim()) {
+    return json({ status: 'error', message: 'telefon zorunlu' }, 400);
+  }
+  // Şehir e-Arşiv faturası için (ek brief). Yapısı DEĞİŞMİYOR: serbest metin
+  // kalıyor — 81 illik select, İl/İlçe ayrımı ve normalizasyon bilerek
+  // ertelendi (muhasebeci cevabı bekleniyor + diaspora kapalı listeye sığmaz).
+  if (!body.sehir || !body.sehir.trim()) {
+    return json({ status: 'error', message: 'şehir zorunlu' }, 400);
+  }
+
+  // Trim TEK YERDE, kapılardan hemen sonra. Client zaten trim'liyor
+  // (KayitFormu.astro payload kurulumu) ama client'a güvenilmez; aşağıdaki
+  // her tüketici (Notion üç yazıcı, MailerLite, havale açıklaması) bundan
+  // sonra temiz değer görür. Alan alan trim dağıtmak yerine burada normalize
+  // ediliyor ki yeni bir tüketici eklendiğinde unutulacak bir adım olmasın.
+  body.ad = body.ad.trim();
+  body.soyad = body.soyad.trim();
+  body.telefon = body.telefon.trim();
+  body.sehir = body.sehir.trim();
   if (!body.kvkk) {
     return json({ status: 'error', message: 'KVKK onayı zorunlu' }, 400);
   }
@@ -709,6 +749,7 @@ export const POST: APIRoute = async ({ request }) => {
     mailerlite = await mailerLiteEkle({
       email: body.email,
       ad: body.ad,
+      soyad: body.soyad,
       groupId,
       ekFields,
     });
