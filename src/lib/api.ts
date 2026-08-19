@@ -17,8 +17,13 @@
  * WhatsApp asistanı tek kaynak. wa.me uluslararası format (+90). Boş chat (text param yok).
  * Site geneli yüzen buton (WhatsappYuzen.astro), /iletisim Kanallar kartı ve Footer
  * link'i bu sabitten okur — numara değişirse tek yer dokunulur.
+ *
+ * DİKKAT: bot hattı ile yasal sayfaların telefonu KASITLI olarak ayrı (Kaan, 19 Ağu 2026).
+ * Burası bot hattı: 905325555226. Yasal/iletişim sayfalarındaki düz metin telefon
+ * (+90 532 208 0888, beş sayfa) bu değişimin DIŞINDA kaldı — eşitlemeye çalışma.
+ * 0f77218 ikisini birlikte taşımıştı; artık iki ayrı yüzeyler.
  */
-export const WHATSAPP_URL = 'https://wa.me/905322080888';
+export const WHATSAPP_URL = 'https://wa.me/905325555226';
 
 /**
  * Ödemeli kayıt formları (KayitFormu component) için TEK hedef adres
