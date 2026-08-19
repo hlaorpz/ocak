@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · Faz 1 kapanışı · B77–B79 açıldı · B74 **kısmi**
+**Son güncelleme:** 19 Ağustos 2026 · B turu · **B80–B87 açıldı · B04 ✅ kapandı**
 
-**Durum:** 79 madde · **49 açık iş** · 28 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 87 madde · **56 açık iş** · 29 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -24,8 +24,16 @@ bilerek damgasız bırakıldı, yani açık sayılıyor. Kapanış şartı daral
 daraltmak borcu kapatmaz, kaydını siler (Kaan kararı). Y1 bu sayaca girmez:
 borç numarası değil, kod turu etiketi.*
 
-*Üretilen komutlar (KARAR 470-b): `grep -c '^## B'` → 74 · `grep '^## B' | grep -c '[✅❌]'`
-→ 27 · `grep '^## B' | grep -c '[⏸🔵]'` → 2. Biçim dağılımı `grep -oE` + `sort | uniq -c`.*
+*19 Ağustos, beşinci ölçüm (B turu patch'i): toplam 79 → **87**, açık 49 → **56**.
+Damgalı 28 → **29** — tek kapanış **B04** (`/acik-kapi` "sembolik ücret" **kalıyor**,
+KARAR 432 muafiyeti teyit). Sekiz yeni kayıt B80–B87. Sayaç devralınmadı, üç grep
+yeniden koşuldu. Not: bu turun "kapananlar" listesindeki diğer iki kalem (İ22 ters
+kararı · `/hikaye` közü) **B numaralı madde değildi** — doğrudan içerik kararı,
+kayıtları `90-kronoloji/2026-08.md`'de. Sayaca girmezler.*
+
+*Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 87 · `grep -E '^## B' | grep -cE '[✅❌]'`
+→ 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
+`grep -E '^## B' | grep -cE '[⏸🔵]'` → 2. Açık = 87 − 29 − 2 = **56**.*
 
 ⚠ *19 Ağustos: tek turda **on iki** yeni kayıt açıldı (B63–B74) — açık sayısı 33'ten
 45'e çıktı, kapanan yok. Bu bir gerileme değil, **görünürlük artışı**: kayıtların
@@ -145,8 +153,12 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 - **Çelişki:** Pilot "önerilen `clip` geçişi UYGULANMADI, gerçek cihaz eyeball'ı bug'ı doğrulamadı" diyor. Yaygın kabul ise `html, body { overflow-x: clip }`ın canlı olduğu yönünde.
 - **Eylem:** `atmosfer.css` + `tokens.css` grep → hangisi doğruysa diğeri düzeltilir. İkisinden biri bayat.
 
-## B04 — `/acik-kapi` "sembolik ücret" ifadesi
-- [ ] **Sahip:** Claude.ai (metin) → Advaita/Kaan (Notion girişi)
+## B04 — `/acik-kapi` "sembolik ücret" ifadesi ✅ KAPANDI (19 Ağu, Kaan kararı)
+- [x] **Karar: ifade KALIYOR.** KARAR 432'nin ("sembolik" de "yatırım" da denmez)
+  `/acik-kapi` muafiyeti teyit edildi — yasak diğer format sayfaları için geçerli,
+  Açık Kapı'nın ücretsizliğe komşu konumu istisnayı taşıyor. Sosyal tarafta **İ19
+  caption'ı olduğu gibi geçerli**, düzeltme gerekmiyor. Tarama turu düştü.
+- [x] **Sahip:** Claude.ai (metin) → Advaita/Kaan (Notion girişi)
 - **Kaynak:** KARAR 240 notu (`20-ref-program.md:498`), KARAR 432
 - **Çelişki:** 432 "sembolik" de "yatırım" da denmez diyor; `/acik-kapi` metninde "sembolik ücret" geçiyor olabilir.
 - **Eylem:** taze Notion dump'ta site geneli tarama.
@@ -1521,3 +1533,71 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   `string`, uzunluk varsayımı taşımıyor (Faz 1'de not düşüldü).
 - **Kapanış şartı:** Faz 2 eşleştirme regex'i üç formatı da yakalıyor, testte
   üçü de örneklenmiş.
+
+## B80 — `/adimiz` "közüyle taşınır" — kamu metnindeki tek "köz"
+- [ ] **Sahip:** Kaan (Notion) · ~2 dk
+- **Tetikleyici:** 19 Ağustos dumpı (49 route, `3683ca4`). Site geneli tarandı;
+  **"köz" yalnız `/adimiz`'da geçiyor.** `/hikaye` temiz çıktı (aşağıda).
+- **İhlal:** KARAR 86 (köz site dilinde yok) + KARAR 453 (yasağın sosyal yüzeye
+  genişlemesi). Kart tarafı zaten temiz — İ10 "kor" diyor.
+- **Tuzak:** düzeltme **cümle görülerek** yapılır, kör find-replace ile değil;
+  "köz" bazı bağlamlarda renk adı olarak meşru (KARAR 453).
+- **Kapanış şartı:** Notion'da cümle düzeltilir, sonraki dumpta `/adimiz` bloğunda
+  "köz" 0 geçiş.
+
+## B81 — `/etkinlik/yolculuk-acilis` gövdesi boş
+- [ ] **Sahip:** Kaan (Notion)
+- **Ölçüm:** dumpta **3 section · 47 kelime**; canlı `<main>` düz metni 156 karakter.
+  Oran `C_dump/C_html = 1.85` — yani **araç kaybı değil**, sayfada içerik yok.
+  Diğer 14 etkinlik sayfası 488–795 kelime taşıyor.
+- **Ağırlık:** bugün karara bağlanan **AÇILIŞ 24–27 Eylül** (KARAR 492) sitede
+  içeriksiz duruyor. Sosyal v2.1'in İ11/İ20 kartları bu sayfaya bakıyor.
+- **Kapanış şartı:** Notion `detay` alanı section marker'larıyla yazılır, redeploy
+  sonrası dumpta ≥400 kelime.
+
+## B82 — `scripts/dump-fable.mjs` extractor düzeltmesi
+- [ ] **Sahip:** CC (tek commit)
+- **Belirti:** `walkTopLevelBlocks` yalnız `kids(main)`'e bakıyor — `main` altında
+  derinlik 1'deki `[data-section]` düğümleri **sessizce düşüyor.** Etkinlik
+  şablonunda dokuz section `div.ocak-container` içinde.
+- **Kanıt:** 1. tur dumpı 15 etkinlik sayfası için ≈520 kelime verdi; düzeltilmiş
+  kopya **8.554** verdi. Hata verilmedi, HTTP 200 alındı, dosya yazıldı.
+- **Hazır:** çalışan diff CC'nin 2. tur teslim raporunda (`descend()` özyinelemesi +
+  iç içe düğüm koruması). **ROUTES hunk'ı dahil edilmez** — o tarihe bağlı.
+- **Not:** `walkTopLevelBlocks` adı düzeltmeden sonra yanlış; yeniden adlandırma
+  isteğe bağlı, ayrı dokunuş.
+- **Bağ:** KARAR 495.
+
+## B83 — K2: sosyal ana sahne kararı verilmedi
+- [ ] **Sahip:** Kaan
+- **Belirti:** doktrin **(c) çift sahne** önermişti; v2 sessizce **(a)**'yı uyguladı
+  (@ocak.biz ana sahne, Advaita ayda 2-3 story amplifikatör). Karar verilmedi,
+  **mimariden türedi.**
+- **Ağırlık:** @ocak.biz sıfırdan başlıyor, Advaita'da 2.600 sıcak kişi var.
+  Eylül penceresi **37 gün** — bu borç takvimle yarışıyor.
+- **Bağ:** KARAR 493 (kohort dönüşümü feed'den geçmez, motor Halka 1).
+
+## B84 — Mekân: Ege, 24–27 Eylül, on iki–on altı kişi
+- [ ] **Sahip:** Kaan
+- **Belirti:** rezerve mi, opsiyonda mı, yok mu — bilinmiyor.
+- **Bağ:** KARAR 492. Fiyat bandı (D3) buna bakıyor.
+
+## B85 — v2.1'deki üç kayıt cümlesi için sözlü teyit
+- [ ] **Sahip:** Kaan · ~1 dk
+- **Belirti:** İ5 · İ11 · İ20 caption'larına "başvuru/kayıt sayfası açık" cümlesi
+  eklendi. Dump dayanağı net (yedi format kayıt route'u + `/anadolu/basvuru` canlı),
+  ama **Bölüm 15 madde 4 sözlü kapı istiyor.**
+- **Kapanış şartı:** Kaan onaylar ya da reddeder. İtiraz hâlinde silinecek üç cümle
+  `30-sosyal.md` değişiklik günlüğünde tek tek yazılı.
+
+## B86 — Kart derleyici: fotoğrafsız kart zemini
+- [ ] **Sahip:** Kaan + Claude (gözle)
+- **Belirti:** araç üretildi ve beklemede. Şu anki **radial zemin yedek, tasarım değil.**
+- **Gerilim:** sitenin glow'u taşınırsa iki aileli sistem doğar; o hâlde **dokulu glow**
+  olmalı — düz degrade + serif italik internetin en çok gördüğü alıntı kartıdır.
+- **Kapanış şartı:** gerçek görselle yan yana konup gözle karar verilir.
+
+## B87 — İ14: F2 karesi hatırlatması
+- [ ] **Sahip:** Claude
+- **Belirti:** söz değneği reels'i **MJ-zoom** kaldı. Gerçek değnek makrosu
+  çekildiğinde değiştirilecek.

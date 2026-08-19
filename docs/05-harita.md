@@ -100,6 +100,17 @@ Her dosya için: **ne taşır · ne taşımaz · kim yazar · nasıl bozulur.**
 - **Bozulma biçimi:** tarihli blok içeride kalır ve dosya "şu an" iddiasını taşırken
   geçmişi anlatır.
 
+### `30-sosyal.md` — sosyal medya uygulama dosyası
+- **Taşır:** ilk 30 içerik gününün kart kart uygulaması — görsel, bindirme, caption,
+  ilk yorum, story. Uygulayıcı "burada ne demek istemiş" diye düşünmez.
+- **Taşımaz:** karar. Katman mimarisi KARAR 493'te, tarih KARAR 492'de yaşar; bu dosya
+  onları **uygular**. `[KAAN]` işaretli boşluklar dosya sonunda tek listede.
+- **Yazar:** Fable (Claude.ai). Metin kaynağı canlı site dumpı — çelişkide **site kazanır**.
+- **Bozulma biçimi:** site metni tazelenip dosya tazelenmezse caption'lar sessizce
+  bayatlar. Panzehir KARAR 494: baştan yazma kararı dört-kova ölçümüyle verilir.
+- **Ayna:** `~/Desktop/Social_Media_v2.1.md` — 19 Ağustos'ta repoya alındı, otorite
+  artık repodadır (KARAR 471).
+
 ### `90-kronoloji/YYYY-AA.md` — append-only tarihçe
 - **Taşır:** ne oldu, neden oldu, hangi ölçüm neyi gösterdi. Gerekçenin tek otoritesi.
 - **Taşımaz:** düzeltme. Yanlış bile olsa değişmez; altına not düşülür.

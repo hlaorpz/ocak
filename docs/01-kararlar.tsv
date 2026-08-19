@@ -490,3 +490,7 @@ no	tarih	baslik	durum	iliski	kaynak
 489	2026-08-19	Referans kodu `OCAK-` + 4 karakter, 29 karakterlik alfabe	AKTIF	←210 · ↔490	2026-08.md#k489
 490	2026-08-19	Kod alfabesinde ölçüt: yanlış okuma geçersiz karakter üretmeli	KALICI	↔489	2026-08.md#k490
 491	2026-08-19	Bir brief maddesini yanlışlayan kanıt öteki maddelerine de uygulanır	KALICI	←156 · ↔102	2026-08.md#k491
+492	2026-08-19	AÇILIŞ 24–27 Eylül 2026 (Perş–Paz), Ege — üç gece dört gün	AKTIF	←13 · ←443	2026-08.md#k492
+493	2026-08-19	Sosyal medya katman mimarisi — taban kişisiz akar, üst opsiyonel biner	AKTIF	←453 · ←450	2026-08.md#k493
+494	2026-08-19	Yeniden yazma kararı sezgiyle değil dört-kova ölçümüyle verilir	KALICI	↔483	2026-08.md#k494
+495	2026-08-19	Dump araçları kabul testiyle koşulur — HTTP 200 içerik garantisi değildir	KALICI	↔355 · ↔408	2026-08.md#k495

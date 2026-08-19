@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 (ikinci tur) · **Faz 1 kapandı**; KARAR 488–491 · B77–B79
+**Son güncelleme:** 19 Ağustos 2026 (B turu) · sosyal/lansman hattı açıldı; KARAR 492–495 · B80–B87
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -83,6 +83,33 @@ robots Allow + duyuru; bu satır o tanımın önünde duruyor.
 *Tek turluk temizlik, sıra dışı: **B67** (`ornekler-cember.md` tek dosya) · **B70** ·
 **B71** (ikisi de Notion nokta patch'i). Kendi turlarını beklemezler, önlerine gelen
 Notion turuna binerler.*
+
+---
+
+**Sıra kararı — 19 Ağustos 2026, B turu (`docs-patch-2026-08-19b`).** Sosyal medya /
+lansman hattı. Yukarıdaki iki sırayla **paralel** yürür. **37 gün** (AÇILIŞ 24–27 Eylül,
+KARAR 492) bu hattın tamamını süreye bağlıyor.
+
+1. **Gün 0 kurucu görsel** *(Kaan)* — **tek gerçek üretim darboğazı.** Çıkmadan Gün 1
+   yok (KARAR 450). `KURUCU-URL` ara-değiştir buna bağlı.
+2. **Fiyat bandı** *(Kaan + Advaita)* — mekân (**B84**), dar hat ve İ5 metni buna bakıyor.
+3. **`/etkinlik/yolculuk-acilis` gövdesi** *(Kaan · Notion)* — **B81.** Bugün karara
+   bağlanan AÇILIŞ sayfası sitede içeriksiz duruyor.
+4. **K2 — sosyal ana sahne kararı** *(Kaan)* — **B83.** Eylül duyurusu hangi hesaptan
+   çıkacak; v2 kararı vermeden (a)'yı uyguladı.
+5. **CC turu — extractor düzeltmesi** *(CC, tek commit)* — **B82.** Çalışan diff hazır;
+   ikinci CC oturumu kapandıktan sonra, ROUTES hunk'ı hariç.
+6. **robots Allow + Gün 1** — 1–4 kapanınca. ⚠ Yukarıdaki **iade cümlesi ön koşulu**
+   bu maddenin de önünde durur; ilk sosyal post duyurudur, yani Gün 1 aynı zamanda
+   robots kararıdır (KARAR 149).
+7. **Kart derleyici sınaması** *(Kaan + Claude, gözle)* — **B86.** İlk gerçek görselle;
+   fotoğrafsız zemin kararı.
+
+*Sözlü kapı bekleyen tek kalem: **B85** (İ5 · İ11 · İ20 kayıt cümleleri, ~1 dk).
+Sıraya girmez, önüne gelen konuşmaya biner.*
+
+✅ **`Social_Media_v2.1.md` repoya alındı** — `docs/30-sosyal.md`. Desktop kopyası
+artık ayna; çelişkide repo kazanır (KARAR 471).
 
 ---
 

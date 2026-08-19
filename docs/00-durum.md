@@ -1,16 +1,17 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 19 Ağustos 2026 · **Faz 1 kapandı** (`9036791`) · KARAR 488–491 · B77–B79 açıldı
+**Son güncelleme:** 19 Ağustos 2026 · **B turu** · KARAR 492–495 · B80–B87 açıldı · B04 ✅
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 198 satır (`wc -l`, 19 Ağustos ikinci tur) — **pay 2 satır**. Bu turda dört
-> dönem bloğu tahliye edildi (12–20 Temmuz · 9 Ağu ikinci tur · 6 Ağu · 4 Ağu, 10 satır);
-> özetleri `90-kronoloji/2026-08.md` sonuna **taşındı**, silinmedi. Sonraki tahliye
-> adayı: `7–8 Ağustos`. **`ŞU AN NEREDEYİZ` bloğu aday DEĞİL** — kapanmış tur gibi
-> görünür ama içinde canlı iş var (B36-b · B53/B51 · `baglam.sh` emekli edilmedi).*
+> *Şu an: 198 satır (`wc -l`, 19 Ağustos B turu) — **pay 2 satır**. Bu turda üç dönem
+> bloğu daha tahliye edildi (7–8 Ağu · 10 Ağu · 11 Ağu ikinci tur, 11 satır); özetleri
+> `90-kronoloji/2026-08.md` sonuna **taşındı**, silinmedi ve inmeden önce kalem kalem
+> kronolojiye karşı doğrulandı. Sonraki tahliye adayı: `11 Ağustos` (B47 · B58).
+> **`ŞU AN NEREDEYİZ` bloğu aday DEĞİL** — kapanmış tur gibi görünür ama içinde canlı
+> iş var (B36-b · B53/B51 · `baglam.sh` emekli edilmedi).*
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -27,6 +28,7 @@
 | metin, vurgu, dil, teslim standartları | `20-ref-icerik-dili.md` |
 | Notion DB, schema, yazım sözleşmesi | `20-ref-notion.md` |
 | bot, n8n, WhatsApp, Meta | `20-ref-bot.md` |
+| sosyal medya ilk 30 gün — kart kart uygulama | `30-sosyal.md` |
 
 ---
 
@@ -77,12 +79,12 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`9036791`** (19 Ağu, Faz 1 §1 ikinci tur) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791` |
+| `main` dönem HEAD | **`523606b`** (19 Ağu, Faz 1 kapanış patch'i) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). Dönem zinciri `7fffd92 → … → 92e580e → 1546622 → 06bb404 → 08e2806 → 3683ca4 → 9fca383 → 66fa842 → 9036791 → 523606b` |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | **246/246** yeşil — 13 dosya. 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
-| robots.txt | `Disallow: /` — **stealth sürüyor** |
+| robots.txt | `Disallow: /` — **stealth sürüyor.** Yeni bağ: ilk sosyal post duyurudur → **Gün 1 aynı zamanda robots kararıdır** (KARAR 149) |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ⚠ `tZR9LcwJq9` → **`astro-iskelet`** (ölü dal). Yenisi `notion-content-update-main` → `main` **oluşturuldu ama çağıran yok** — **B64**. Notion webhook + gece cron hâlâ eskisini paylaşır |
 | Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu) |
@@ -102,6 +104,10 @@ Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 2. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` ara-değiştir.
    Gün 1 yayını bunsuz başlamaz (KARAR 450).
 3. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
+
+**Kapanan halka — etkinlik tarihleri.** 15 yayında etkinlik (6 Açık Kapı · 4 Çember ·
+3 Seremoni · 1 Yolculuk · 1 Atölye), tarihli/saatli/gövdeli, ilki **31 Ağustos**; yedi
+format kayıt route'u + `/anadolu/basvuru` + `/iletisim/bize-yaz` **canlı** (dumptan).
 
 ---
 
@@ -131,6 +137,11 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **19 Ağustos (B turu — sosyal medya + AÇILIŞ):** Sosyal v2 planı taze site dumpına karşı
+  ölçüldü — **27 aynen · 3 cümle düzeltmesi · 0 yeniden yazım · 5 yeni malzeme**; baştan yazım
+  düştü, v2.1 patch'lendi ve `30-sosyal.md` olarak repoya alındı. **AÇILIŞ 24–27 Eylül 2026**
+  kesinleşti (KARAR 492). Dump 2. turda kabul testinden geçti; 1. tur etkinlik gövdelerinin
+  dörtte üçünü sessizce kaybetmişti — KARAR 495 bu vakadan doğdu. → `90-kronoloji/2026-08.md`
 - **19 Ağustos (Faz 1 — ödeme yüzeyi):** Kart akışı **silinmeden** kapatıldı
   (`KART_AKISI`, KARAR 488). Referans kodu `OCAK-XXXX`'e indi — 29'luk alfabe,
   15 maddelik kara liste (KARAR 489 · 490). Havale açıklamasından **isim çıktı**,
@@ -148,20 +159,9 @@ girmez; o kuyruk başka yerde yaşar.
   (kakao · `hasat-ve-sukran` 22 Eylül). MailerLite on ikinci alana çıktı; **Y1** kapandı
   (`92e580e`) — boş alan artık tele çıkıyor. **Promote kazası** teşhis edildi (KARAR 485),
   **403 yanlış alarmı** kayda geçti (KARAR 487). → `90-kronoloji/2026-08.md`
-- **11 Ağustos (ikinci tur):** **B40 · B55 · B56 ✅** — KARAR 482'nin ilk uygulaması.
-  Üçü de "önce karar" şartını 482 sayesinde düşürdü. **KARAR 483** mühürlendi: brief'in
-  düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz — üç günde dört ölçülmüş vaka.
 - **11 Ağustos:** **B47 ✅ + B58 ✅** — doküman haritası (`05-harita.md`) yazıldı,
   KARAR 482 mühürlendi. B47 gövdesinin "harita hiçbir dosyada yok" iddiası ölçümle
   yanlışlandı: iki kısmi harita vardı, eksik olan **otorite kuralıydı**.
-- **10 Ağustos:** **B01 ✅** — kapı işi. GitHub remote · yerel klasör · Vercel proje adı
-  üçü de `ocak`. Bir commit, sıfır site kodu. CC dört sapma bildirdi, dördü de haklıydı;
-  biri brief'in `N → 0` kriterinin kendi kaydını sayması (KARAR 465'in ikinci vakası).
-  → `90-kronoloji/2026-08.md`
-- **7–8 Ağustos:** B32 (referans dağıtımı, beşli → yedili) · B33 · B37 · B34 ·
-  **ADIM 4** (CLAUDE.md + baglam.sh + tam taşıma) · **B36 açılış ölçümü**
-  (mekanik çapaların %43'ü komşusunu gösteriyor, kuyruk ~179±, üçte ikisi tek desen) ·
-  KARAR 465–472. Sıfır kod commit'i. → `90-kronoloji/2026-08.md`
 
 ---
 
@@ -193,6 +193,6 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 ---
 
 **Lansman tanımı (KARAR 149):** lansman = robots Allow + duyuru. Sitenin canlı olması değil.
-Site zaten stealth-canlı. **İlk kohort hedefi: Eylül 2026 — Anadolu Yolculuğu açılışı.**
+Site zaten stealth-canlı. **İlk kohort hedefi: 24–27 Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.**
 **Fiyatlandırma:** bu dokümanda rakam tahmini yapılmaz. **Kaan** site sayfalarında görünmez
 (KARAR 89).

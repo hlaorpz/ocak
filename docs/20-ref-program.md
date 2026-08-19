@@ -470,7 +470,7 @@ Ana yolculuğa ortadan giriş yok. AÇILIŞ'tan DÖNÜŞ'e kadar aynı kadınlar
 
 | Tarih | Evre | Lokasyon |
 |---|---|---|
-| **Eylül 2026** (~22 Eylül) | AÇILIŞ | İzmir/Ege (Urla veya Alaçatı) |
+| **24–27 Eylül 2026** (Perş–Paz) | AÇILIŞ | İzmir/Ege (Urla veya Alaçatı) — üç gece dört gün, KARAR 492 |
 | **Kasım 2026** | İNİŞ | Göbeklitepe + Harran |
 | **Şubat 2027** | UYANIŞ | Aphrodisias + Pamukkale |
 | **Nisan 2027** | DURUŞ | Tuz Gölü (Aksaray) |
