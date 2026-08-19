@@ -39,6 +39,25 @@ import { WHATSAPP_URL } from '../lib/api';
   </svg>
 </a>
 
+<script>
+  // Footer viewport'a girince buton .gizli olur; footer çıkınca geri gelir.
+  // Hedef: Footer.astro'daki tek <footer class="footer" role="contentinfo">.
+  // rootMargin alt kenardan -%10 tampon → footer'ın ilk pikseli değil anlamlı
+  // bir kısmı görününce tetiklenir, kenar titreşimi olmaz.
+  // IntersectionObserver yoksa buton mevcut davranışında kalır (fallback yok).
+  // Footer bulunamazsa sessiz geçilir; console'a hata basılmaz.
+  const waButon = document.querySelector('.wa-yuzen');
+  const waFooter = document.querySelector('footer');
+
+  if (waButon && waFooter && 'IntersectionObserver' in window) {
+    const waIo = new IntersectionObserver(
+      ([giris]) => waButon.classList.toggle('gizli', giris.isIntersecting),
+      { rootMargin: '0px 0px -10% 0px' }
+    );
+    waIo.observe(waFooter);
+  }
+</script>
+
 <style>
   .wa-yuzen {
     position: fixed;
@@ -65,7 +84,9 @@ import { WHATSAPP_URL } from '../lib/api';
     transition:
       transform var(--duration-slow) var(--ease-out),
       box-shadow var(--duration-slow) var(--ease-out),
-      background var(--duration-slow) var(--ease-out);
+      background var(--duration-slow) var(--ease-out),
+      opacity var(--duration-slow) var(--ease-out),
+      visibility 0s linear 0s;
   }
 
   .wa-yuzen:hover,
@@ -81,6 +102,25 @@ import { WHATSAPP_URL } from '../lib/api';
   .wa-yuzen:focus-visible {
     outline: 1px solid var(--ember);
     outline-offset: 3px;
+  }
+
+  /* Footer viewport'a girince buton söner. .gizli, :hover/:focus-visible ile
+   * eşit özgüllükte (0,2,0) — bu yüzden onlardan SONRA durmalı, yoksa
+   * gizliyken hover transform'u kazanır. visibility gecikmeli: fade biter,
+   * sonra element erişim ağacından ve tab sırasından çıkar (aria-hidden
+   * toggle'ına gerek yok). Tetikleyen IntersectionObserver aşağıdaki
+   * <script>'te; hedef Footer.astro'daki tek <footer>. */
+  .wa-yuzen.gizli {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      transform var(--duration-slow) var(--ease-out),
+      box-shadow var(--duration-slow) var(--ease-out),
+      background var(--duration-slow) var(--ease-out),
+      opacity var(--duration-slow) var(--ease-out),
+      visibility 0s linear var(--duration-slow);
   }
 
   .wa-yuzen__ikon {
@@ -102,7 +142,9 @@ import { WHATSAPP_URL } from '../lib/api';
 
   @media (prefers-reduced-motion: reduce) {
     .wa-yuzen {
-      transition: background var(--duration-base) var(--ease-out);
+      transition:
+        background var(--duration-base) var(--ease-out),
+        visibility 0s;
     }
     .wa-yuzen:hover,
     .wa-yuzen:focus-visible {
