@@ -35,7 +35,12 @@ export type KayitResponse = {
   message?: string;
   mailerlite?: { ok: boolean; status: number; error?: string } | null;
   /**
-   * Brief 6 (KARAR 210): "OCAK-XXXXX" — havale eşleştirmesi için.
+   * Brief 6 (KARAR 210): havale eşleştirmesi için referans. Format üç turda
+   * değişti — `OCAK-XXXXX` (5 hane rakam, Brief 6) → `OCAK-XXXXXX` (6 hane
+   * rakam, 2026-06-14) → **`OCAK-XXXX`** (4 karakter, karışmayan alfabe,
+   * Faz 1 §3). Tip aynı kaldı: serbest `string`, uzunluk varsayımı yok.
+   * Notion'da üç formatın üçü de yaşıyor (migration YOK) — okuyan taraf
+   * uzunluğa göre ayrıştırma yapmamalı.
    * Notion'a daima yazılır; success ekranında sadece ödemeli dalda
    * gösterilir (ödemesizde gereksiz).
    */
@@ -163,7 +168,7 @@ export type KayitPayload = {
    */
   odemeYontemi?: 'kart' | 'havale';
   /**
-   * brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). Davet edileninin
+   * brief-davet-sistemi: davet eden ref izi (OCAK-XXXX). Davet edileninin
    * tıkladığı linkte ?ref= var → /[format]/kayit hidden input → submit
    * payload → /api/kayit Kayıtlar DB `Davet Eden Ref` property'sine yazar.
    * n8n sonuç eşleştirmesi bu kolondan Davetler DB satırını "Geldi" yapar.

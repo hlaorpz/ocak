@@ -102,7 +102,7 @@ async function odemeyiOnayla(args: {
 function parseGirdi(url: URL, bodyParams: URLSearchParams | null) {
   const get = (k: string) =>
     bodyParams?.get(k) ?? url.searchParams.get(k) ?? '';
-  // Aşama 3b-fix tasarım: ref=OCAK-XXXXX (kullanıcıya görünür, success'e),
+  // Aşama 3b-fix tasarım: ref=OCAK-XXXX (kullanıcıya görünür, success'e),
   // pageId=Notion UUID (pages.update için). Eski mock URL'sinde pageId yok
   // → ref'i basvuruId saymıştık; backward-compat fallback.
   const refSuccess = get('ref');
@@ -177,7 +177,7 @@ async function handle(request: Request): Promise<Response> {
       `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(girdi.basvuruId)}&hata=notion`,
     );
   }
-  // Aşama 3b-fix tasarım — başarı: success sayfasına refSuccess (OCAK-XXXXX)
+  // Aşama 3b-fix tasarım — başarı: success sayfasına refSuccess (OCAK-XXXX)
   // taşınır. Notion UUID (basvuruId) sadece pages.update için kullanıldı;
   // success'te göstermiyoruz (ham UUID kullanıcıya anlamsız).
   const basariUrl = new URL(`${baseUrl}/odeme/tamam`);

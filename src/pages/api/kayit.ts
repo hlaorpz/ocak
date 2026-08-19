@@ -48,8 +48,14 @@ const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
 /**
  * Havale açıklama metni — kullanıcı bankada görür. Tasarım turu 3 (ADIM 3):
- * "Ad — OCAK-XXXXX" formatı. Önceden uzun format+tarih+saat vardı; bankada
- * Kaan'ın eşleştirmesi referans no'yu görmekle anlık. Kısa ve net.
+ * "Ad — OCAK-XXXX" formatı. Önceden uzun format+tarih+saat vardı; bankada
+ * Kaan'ın eşleştirmesi referans kodunu görmekle anlık. Kısa ve net.
+ *
+ * Faz 1 §3 — kod 11 karakterden 9'a KISALDI (`OCAK-532897` → `OCAK-7K3F`);
+ * bu alanda uzunluk riski yok, aksine banka açıklamasında daha rahat duruyor.
+ * Kod artık harf+rakam karışık: salt rakamsal bir kod, açıklamanın içindeki
+ * tutar/tarih/telefon kalabalığından ayırt edilemiyordu — Faz 2'nin otomatik
+ * eşleştirmesi bu ayırt edilebilirliğin üstüne kurulacak.
  */
 function havaleAciklamasi(args: { ad: string; referansNo: string }): string {
   return `${args.ad} — ${args.referansNo}`;
@@ -84,7 +90,7 @@ type KayitBody = {
   kademe?: Kademe;
   // Aşama 3b — ödeme yöntemi (kart | havale). Kart → checkoutBaslat → redirect.
   odemeYontemi?: 'kart' | 'havale';
-  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). Boş gelirse
+  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXX). Boş gelirse
   // Kayıtlar DB'ye yazılmaz (property atlanır).
   ref?: string;
 };
@@ -229,7 +235,7 @@ function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): st
  * not exist" döner.
  *
  * Kullanıcıya dönen response değişmez; satırın hangi DB'ye düştüğü
- * kullanıcıdan saklı (havale yönergesi + OCAK-XXXXX aynı görünür).
+ * kullanıcıdan saklı (havale yönergesi + OCAK-XXXX aynı görünür).
  */
 async function notionKayitlaraYaz(args: {
   body: KayitBody;
@@ -297,7 +303,7 @@ async function notionKayitlaraYaz(args: {
   if (kullanilanKod) {
     properties['Kullanılan Kod'] = { rich_text: [{ text: { content: kullanilanKod } }] };
   }
-  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXXX). n8n bu kolondan
+  // brief-davet-sistemi: davet eden ref izi (OCAK-XXXX). n8n bu kolondan
   // Davetler DB satırını "Geldi" yapar. Boş gelirse property atlanır.
   if (body.ref) {
     properties['Davet Eden Ref'] = { rich_text: [{ text: { content: body.ref } }] };
@@ -497,7 +503,7 @@ export const POST: APIRoute = async ({ request }) => {
         500,
       );
     }
-    // Tasarım turu 3 (ADIM 3) — havale açıklama: "Ad — OCAK-XXXXX". Kaan
+    // Tasarım turu 3 (ADIM 3) — havale açıklama: "Ad — OCAK-XXXX". Kaan
     // bankada eşleştirmeyi referans no üzerinden yapar (kısa, net).
     const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
 
@@ -720,7 +726,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Aşama 3b eyeball Bulgu 2 + 3b-fix tasarım: havale açıklama insan-okur
   // sade. "Kaan — Mini Retreat · 21 Haziran 2026 · 20:00".
-  // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXXX". Format+tarih
+  // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXX". Format+tarih
   // gerekmez (referans no banka açıklamasında eşleştirme için yeterli).
   const aciklamaSablonu = havaleAciklamasi({ ad: body.ad, referansNo });
   // ADIM 1 — havale vade metni (Direkt+havale success'inde gösterilecek):

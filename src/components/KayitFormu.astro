@@ -39,7 +39,7 @@ interface Props {
 
 const { format, etkinlikler, havaleIban, havaleAd } = Astro.props;
 const bosForm = etkinlikler.length === 0;
-// brief-davet-sistemi: davet edileninin geldiği URL'de ?ref=OCAK-XXXXX
+// brief-davet-sistemi: davet edileninin geldiği URL'de ?ref=OCAK-XXXX
 // varsa hidden input'a bas → submit handler payload'a ekler → /api/kayit
 // Kayıtlar DB "Davet Eden Ref" property'sine yazar. n8n sonuç eşleştirmesi
 // bu kolon üzerinden Davetler DB satırını "Geldi" yapar. Boşsa görünmez.
@@ -98,7 +98,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         <input type="text" name="website" id="kf-website" tabindex="-1" autocomplete="off" />
       </div>
 
-      {/* brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXXX) → hidden
+      {/* brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXX) → hidden
           input → submit handler payload.ref → /api/kayit → Kayıtlar DB. */}
       {davetEdenRef && <input type="hidden" name="ref" value={davetEdenRef} />}
 
@@ -535,7 +535,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           paylaşacağız.
         </p>
         {/* ADIM 5 — Referans no inline dipnot (sade, smoke text). Tüm
-            başarılı kayıtlarda gösterilir; ham UUID yok, OCAK-XXXXX. */}
+            başarılı kayıtlarda gösterilir; ham UUID yok, OCAK-XXXX. */}
         <p
           class="kayit-formu__success-referans-dipnot"
           data-kf-success-ref-dipnot
@@ -2081,7 +2081,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         kvkk: data.get('kvkk') === 'on',
         // KARAR 194 honeypot — bot doldurursa endpoint sessiz success döner.
         website: (data.get('website') ?? '').toString(),
-        // brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXXX).
+        // brief-davet-sistemi: davet eden ref izi (?ref=OCAK-XXXX).
         // Boşsa endpoint Kayıtlar DB'ye yazmaz; n8n eşleştirmesi bu kolona
         // bakar. Form-level hidden input'tan geliyor.
         ...((() => {
@@ -2150,7 +2150,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           //    kısa sürede sana döneceğiz." (buluşma detayı YOK — başvuru
           //    onaylanmadı), ref no dipnot olarak parantez içinde
           //  - Direkt + ödemeli (havale): title "Kaydın bize ulaştı", metin
-          //    "Kaydını aldık (OCAK-XXXXX). Aşağıdaki hesaba iletebilirsin..."
+          //    "Kaydını aldık (OCAK-XXXX). Aşağıdaki hesaba iletebilirsin..."
           //    ref no metin içinde
           //  - Direkt + ödemesiz (ücretsiz/tam burs): title "Kaydın bize ulaştı",
           //    fallback metin + ref dipnot
@@ -2297,7 +2297,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             if (sifreEl) sifreEl.hidden = true;
           }
           // brief-davet-sistemi: DavetKutusu'yu success reveal'dan önce
-          // doldur. refKodu = result.referansNo (OCAK-XXXXX); etkinlikId =
+          // doldur. refKodu = result.referansNo (OCAK-XXXX); etkinlikId =
           // payload.etkinlikId (form submit'inde alındı). Boş gelirse kutu
           // davet linkinde param'ları atlar — yine de WhatsApp paylaşımı
           // çalışır ama davet izlenebilir olmaz; pratikte ikisi de dolu.

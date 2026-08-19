@@ -166,32 +166,145 @@ export function parseRichTextLines(raw: string | undefined | null): string[] {
 export const parseKayitSorulari = parseRichTextLines;
 
 /**
- * Brief 6 (KARAR 210) + Son tur (2026-06-14): Kayıt için benzersiz referans
- * no üretir.
+ * Referans kodu alfabesi — 29 karakter, karışan hiçbiri yok (Faz 1 §3,
+ * [KAAN] kararıyla kesinleşti).
  *
- * Format: `OCAK-XXXXXX` (6 haneli rakam, 100000–999999, 900K ihtimal). Önceki
- * 5 hane (90K uzay) doğum günü paradoksu ile ~300 kayıtta %50 çakışma — yetersiz.
- * 6 hane ~1000 kayıtta %50 — 10K seviyesinde rahat. Mevcut 5 haneli kayıtlar
- * Notion'da olduğu gibi kalır (rich_text alanı, uzunluk esnek).
+ * DIŞARIDA: `0 O` · `1 I` · `B` (8'le karışır) · `S` (5) · `Z` (2) · Türkçe
+ * karakterlerin tamamı (Ç Ğ İ Ö Ş Ü — banka açıklaması alanları çoğu kez
+ * ASCII'ye düşürür, "Ç" gidip "C" gelir).
  *
- * Çakışma garantisi `uretBenzersizReferansNo(client, dbIds)` ile (Notion query
- * + retry + timestamp fallback). Bu pure helper kullanan testler için.
+ * ── `Z` çıktı, `L` KALDI — kural asimetrik, sebebi asimetri ──
+ * Ölçüt "karışıyor mu" değil, **yanlış okuma GEÇERLİ bir kod üretiyor mu**:
+ * - `Z` → `2` okunursa ortaya alfabeye ait, var olabilecek bir kod çıkar.
+ *   Kadın yanlış kodu bankaya yazar, kayıt sessizce başka birine eşleşebilir.
+ *   Bu SESSİZ bir hata — tehlikeli olan da bu.
+ * - `L` → `1` okunursa `1` alfabede YOK. Kod geçersiz olur, eşleşme bulunamaz,
+ *   hata gürültülü çıkar ve elle düzeltilir. Zararsız.
+ * Aynı gerekçe `B`(→8) ve `S`(→5) için de geçerliydi; ikisi de zaten dışarıda.
+ *
+ * Faz 1 §3 brief'i kendi içinde çelişiyordu (dışlama listesi L ve Z'yi sayıyor,
+ * verdiği alfabe dizesi ikisini de içeriyordu; "30 karakter"/"30^4" rakamları
+ * dizeyi doğruluyordu). Çelişki Kaan'a raporlandı, karar yukarıdaki kuralla
+ * geldi: Z düşer, L kalır, uzunluk 4'te kalır.
+ *
+ * Gerekçe iki katlı:
+ * (a) Kadın bunu banka açıklamasına ELLE yazacak; karışan karakter
+ *     eşleştirmeyi bozar ve parayı bulmak elde kalır.
+ * (b) Banka açıklaması zaten rakamla dolu (tutar, tarih, telefon, IBAN
+ *     parçası). Salt rakamsal bir kod metnin içinde ayırt edilemez —
+ *     Faz 2'nin otomatik eşleştirmesi böyle bir kodun üstüne kurulamaz.
+ */
+const REF_ALFABE = '23456789ACDEFGHJKLMNPQRTUVWXY';
+
+/** Referans kodundaki rastgele karakter sayısı. Uzay = 29^4 = 707.281. */
+const REF_UZUNLUK = 4;
+
+/**
+ * Talihsiz kelime kara listesi (Faz 1 §3, [KAAN]).
+ *
+ * Dört karakterlik bir rastgele kod pekâlâ okunabilir bir küfür ya da hakaret
+ * çıkarabilir. Kod kadına success ekranında gösteriliyor, maile giriyor ve
+ * BANKA AÇIKLAMASINA elle yazılıyor — üç yüzeyin üçü de kamuya bakıyor.
+ * Olasılık düşük ama sonucu onarılamaz: kadın kendi kaydında bir küfür görür.
+ *
+ * Liste alfabenin kısıtına göre seçildi — `B S Z I O 0 1` ve Türkçe harfler
+ * alfabede olmadığı için ancak bunlarsız yazılabilen kelimeler üretilebilir
+ * ("puşt", "pezevenk", "sik" gibi olasılıklar zaten imkânsız). Türkçe kısaltma
+ * biçimleri (AMCK, YRRK) dahil, çünkü kod zaten kısaltma gibi okunuyor.
+ *
+ * Eşleşme ALT DİZE olarak aranır, eşitlik olarak değil: dört karakterlik kodda
+ * ikisi aynı şeydir, ama beş karakterlik son çare kodunda (`OCAK-FUCK7`)
+ * yalnız alt dize kontrolü yakalar.
+ *
+ * Uzaya etkisi ölçülü: dört karakterlik uzaydan 15 kod düşer,
+ * 707.281 → 707.266. Doğum günü eşiği değişmez (~990).
+ *
+ * Dışa açık, çünkü tek kaynak testtir: liste alfabe dışı bir karakter içeren
+ * bir kelime kazanırsa (ör. "PUŞT", "SIKT") o madde ÖLÜ olur — hiç
+ * üretilemeyecek bir kodu eler ve listeyi güvenli sanmamıza yol açar.
+ * `kayit.test.ts` bunu listenin kendisine karşı sınıyor.
+ */
+export const REF_KARA_LISTE = [
+  'AMCK',
+  'YRRK',
+  'YRAK',
+  'GTVR',
+  'KAHP',
+  'GAVT',
+  'APTL',
+  'FUCK',
+  'CUNT',
+  'TWAT',
+  'WANK',
+  'CRAP',
+  'TURD',
+  'RAPE',
+  'KKKK',
+] as const;
+
+/**
+ * Kod gövdesini üretir — rastgele çekiliş + kara liste elemesi tek yerde.
+ *
+ * Hem normal kod (4) hem son çare kodu (5) buradan geçer; kara listeyi iki
+ * ayrı döngüye kopyalasaydık biri güncellenip öteki unutulurdu.
+ *
+ * `maxDeneme` teorik bir emniyet freni: 15 elemeli listeyle ilk çekilişin
+ * elenme ihtimali ~%0,002, ikinci turda bitmemesi pratikte imkânsız. Fren,
+ * liste ileride uzaya yakın büyüklükte büyürse sonsuz döngü olmasın diye
+ * duruyor — dolduğunda son adayı döndürür, çünkü talihsiz bir kod, kodsuz
+ * kalmaktan iyidir (ref'siz kayıt havaleyle eşleşemez).
+ */
+function refKodUret(uzunluk: number, maxDeneme = 20): string {
+  let kod = '';
+  for (let deneme = 0; deneme < maxDeneme; deneme++) {
+    kod = '';
+    for (let i = 0; i < uzunluk; i++) {
+      kod += REF_ALFABE[Math.floor(Math.random() * REF_ALFABE.length)];
+    }
+    if (!REF_KARA_LISTE.some((kelime) => kod.includes(kelime))) return kod;
+  }
+  return kod;
+}
+
+/**
+ * Brief 6 (KARAR 210) + Son tur (2026-06-14) + Faz 1 §3 (2026-08-19):
+ * Kayıt için referans KODU üretir.
+ *
+ * Format: `OCAK-XXXX` — 4 karakter, `REF_ALFABE`'den, `REF_KARA_LISTE`'den
+ * geçmiş. Uzay 29^4 = 707.281 (kara liste 15 kodu eler → 707.266).
+ *
+ * ── Uzay KÜÇÜLDÜ, bu bir kazanç değil ──
+ * Önceki format 6 haneli rakamdı (900.000). Yeni uzay 707.281, yani çakışma
+ * ihtimali ARTIYOR: doğum günü paradoksunda %50 eşiği ~1117 kayıttan
+ * ~990 kayda iniyor. Pratikte önemsiz — lansman hacmi bunun çok altında ve
+ * `uretBenzersizReferansNo` Notion sorgusuyla zaten koruyor.
+ * Takas bilinçli: ~193.000 ihtimal karşılığında elle yazılabilir, telefonda
+ * okunabilir, banka açıklamasında ayırt edilebilir bir kod.
+ *
+ * ── Eski kodlar ──
+ * Notion'da 5 ve 6 haneli rakamsal kodlar var. MIGRATION YOK — eski kayıtlar
+ * olduğu gibi kalır, yeni kayıtlar yeni format alır. Elle takipte ikisi de
+ * aranabilir. Faz 2'nin eşleştirme regex'i İKİ FORMATI DA tanımak zorunda.
+ *
+ * Çakışma garantisi `uretBenzersizReferansNo(query, dbIds)` ile.
  */
 export function uretReferansNo(): string {
-  // 100000–999999 inclusive — Math.random() [0,1) * 900000 → [0, 899999] + 100000.
-  const sayi = Math.floor(Math.random() * 900000) + 100000;
-  return `OCAK-${sayi}`;
+  return `OCAK-${refKodUret(REF_UZUNLUK)}`;
 }
 
 /**
  * Son tur (2026-06-14) — çakışma garantili ref üretimi. Notion Kayıtlar +
  * Başvurular DB'lerinde "Referans No" rich_text alanını query'leyip aday
  * ref'i kontrol eder; varsa yeniden üretir (max `maxDeneme` deneme).
- * Başarısızsa timestamp tabanlı fallback (`OCAK-${Date.now().slice(-8)}` —
- * 100M uzay, çakışma neredeyse imkânsız).
+ * Başarısızsa son çare fallback — Faz 1 §3'e kadar timestamp tabanlıydı
+ * (`OCAK-${Date.now().slice(-8)}`), yani RAKAMSAL. Yeni alfabeye çevrilmezse
+ * iki format yan yana yaşardı ve tam da kaçınılan duruma düşülürdü: banka
+ * açıklamasında ayırt edilemeyen bir kod. Fallback artık aynı alfabeden
+ * üretiyor; benzersizliği zaten yukarıdaki Notion sorgusu sağlıyor, kodun
+ * timestamp olması hiç şart değildi.
  *
  * KARAR 76 — Kayıtlar tek otorite; ama Başvurular'a da Kapı 2 akışında ref
- * yazılıyor. İki DB ortak OCAK-XXXXXX uzayı paylaşır.
+ * yazılıyor. İki DB ortak `OCAK-XXXX` uzayını paylaşır.
  *
  * Race condition: iki eşzamanlı kayıt aynı anda aynı ref üretirse, ikisi de
  * query'de "yok" görür → ikisi de yazar (Notion atomic transaction yok).
@@ -220,8 +333,12 @@ export async function uretBenzersizReferansNo(
     }
     if (!cakisma) return aday;
   }
-  // Son çare: timestamp suffix (100M uzay) — çakışma neredeyse imkânsız.
-  return `OCAK-${Date.now().toString().slice(-8)}`;
+  // Son çare (Faz 1 §3): timestamp DEĞİL, aynı alfabeden daha uzun bir kod.
+  // Rakamsal fallback iki formatı yan yana yaşatırdı. Uzunluk bir artırıldı
+  // (29^5 = 20.5M) — sorgu üç kez çakışma gördüyse uzayı genişletmek doğru
+  // refleks; benzersizliği zaten sorgu sağlıyordu, bu yalnız son çare.
+  // Kara liste burada da geçerli: `refKodUret` tek kapı.
+  return `OCAK-${refKodUret(REF_UZUNLUK + 1)}`;
 }
 
 /**
@@ -276,7 +393,7 @@ export type MailerLiteFieldGirdi = {
   mekanAdres?: string | null;
   /** Ödeme kapısı anahtarı — true ise katılım alanları boş gönderilir. */
   odemeGerekli: boolean;
-  /** `OCAK-XXXXX` — havale açıklamasının eşleştirme anahtarı, daima yazılır. */
+  /** `OCAK-XXXX` — havale açıklamasının eşleştirme anahtarı, daima yazılır. */
   referansNo: string;
   /**
    * Notion `Başlık` — buluşmanın KENDİ adı ("Elin Neyle Dolu?").

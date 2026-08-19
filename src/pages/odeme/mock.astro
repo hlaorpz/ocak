@@ -25,7 +25,7 @@ import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
 
 const url = Astro.url;
-// Aşama 3b-fix tasarım: ref=OCAK-XXXXX (kullanıcı görür), pageId=Notion UUID
+// Aşama 3b-fix tasarım: ref=OCAK-XXXX (kullanıcı görür), pageId=Notion UUID
 // (callback Notion update için). İkisi ayrı taşınır.
 const ref = url.searchParams.get('ref') ?? '';
 const pageId = url.searchParams.get('pageId') ?? '';

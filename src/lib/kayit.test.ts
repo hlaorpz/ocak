@@ -15,6 +15,7 @@ import {
   tarihTrFormat,
   uretReferansNo,
   uretBenzersizReferansNo,
+  REF_KARA_LISTE,
   paraBirimiGoster,
   type KayitFormat,
 } from './kayit';
@@ -563,41 +564,132 @@ describe('etkinlikAdiFormatla (Brief 5 — MailerLite etkinlik_adi şablonu)', (
   });
 });
 
-// Brief 6 KARAR 210 — Referans no üretimi.
-// OCAK-XXXXX, 5 haneli rakam (10000-99999); çakışma kontrolü yok (düşük
-// hacim, Kaan kararı). Notion'a daima yazılır + success ödemeli dalında
-// gösterilir (ödemesizde gizli, ödemeli havale eşleştirmesi için).
+// Brief 6 KARAR 210 → Son tur 2026-06-14 → Faz 1 §3 (2026-08-19).
+// Format üç turda değişti: OCAK-XXXXX (5 hane rakam) → OCAK-XXXXXX (6 hane
+// rakam) → OCAK-XXXX (4 karakter, karışmayan alfabe).
+//
+// Alfabe değişiminin sebebi rastgelelik değil OKUNABİLİRLİK: kod banka
+// açıklamasına ELLE yazılıyor. Testler bu yüzden yalnız "rastgele mi"yi
+// değil, "karışan karakter sızdı mı"yı da çiviliyor.
+const REF_ALFABE_TEST = '23456789ACDEFGHJKLMNPQRTUVWXY';
+const REF_RE = /^OCAK-[23456789ACDEFGHJKLMNPQRTUVWXY]{4}$/;
 
-describe('uretReferansNo (Brief 6 KARAR 210 + Son tur 2026-06-14)', () => {
-  it('"OCAK-" prefix + tam 6 haneli rakam (100000-999999)', () => {
-    const re = /^OCAK-\d{6}$/;
+describe('uretReferansNo (Faz 1 §3 — karışmayan alfabe)', () => {
+  it('"OCAK-" prefix + alfabeden tam 4 karakter', () => {
     for (let i = 0; i < 200; i++) {
-      const ref = uretReferansNo();
-      expect(ref).toMatch(re);
-      const sayi = Number(ref.slice(5));
-      expect(sayi).toBeGreaterThanOrEqual(100000);
-      expect(sayi).toBeLessThanOrEqual(999999);
+      expect(uretReferansNo()).toMatch(REF_RE);
     }
   });
 
-  it('arka arkaya iki çağrı genellikle farklı (rastgelelik kanıtı)', () => {
-    // 6 hane → 900K uzay → 50 çağrıda kollizyon olasılığı ihmal edilebilir.
+  it('YASAKLI karakter hiç üretilmez — 0 O 1 I B S Z ve Türkçe', () => {
+    // Bu testin işi regex'i tekrarlamak değil, YASAK LİSTESİNİ ayrıca
+    // saymak: alfabe sabitine yanlışlıkla bir karakter eklenirse regex
+    // güncellenip bu liste unutulabilir. İki taraftan çiviliyoruz.
+    //
+    // `Z` listede, `L` DEĞİL — kural [KAAN] tarafından şöyle kesinleşti:
+    // yanlış okuma GEÇERSİZ karakter üretmeli. Z→2 alfabede var, yani
+    // yanlış okunmuş kod geçerli görünür ve hata SESSİZ olur. L→1 alfabede
+    // yok, kod geçersiz olur, hata gürültülü çıkar. Sessiz olan atıldı.
+    const yasak = '0O1IBSZçÇğĞıİöÖşŞüÜ';
+    const hepsi = Array.from({ length: 500 }, () => uretReferansNo()).join('');
+    const govde = hepsi.replace(/OCAK-/g, '');
+    for (const k of yasak) {
+      expect(govde).not.toContain(k);
+    }
+  });
+
+  it('yalnız BÜYÜK harf üretir — refQuery `equals` case-sensitive', () => {
+    // `api/kayit.ts` refQuery Notion'a `equals` ile soruyor. Küçük harf
+    // sızarsa benzersizlik sorgusu yanlış "yok" der ve çakışma SESSİZCE
+    // geçer. Bu yüzden ayrı test.
+    for (let i = 0; i < 100; i++) {
+      const ref = uretReferansNo();
+      expect(ref).toBe(ref.toUpperCase());
+    }
+  });
+
+  it('arka arkaya çağrılar farklı (rastgelelik kanıtı)', () => {
+    // 29^4 = 707.281 uzay → 50 çağrıda çakışma olasılığı ihmal edilebilir.
     const set = new Set<string>();
     for (let i = 0; i < 50; i++) set.add(uretReferansNo());
     expect(set.size).toBeGreaterThanOrEqual(49);
   });
 
-  it('format havale açıklaması için doğrudan kullanılabilir (boşluk yok)', () => {
+  it('alfabenin her karakteri ulaşılabilir — ölü karakter yok', () => {
+    // Off-by-one bir indeksleme hatası son karakteri hiç üretmezdi ve
+    // uzay sessizce küçülürdü. 20.000 çekiliş 29 karakteri kapsar.
+    const govde = Array.from({ length: 5000 }, () => uretReferansNo())
+      .join('')
+      .replace(/OCAK-/g, '');
+    for (const k of REF_ALFABE_TEST) {
+      expect(govde).toContain(k);
+    }
+  });
+
+  it('havale açıklamasına doğrudan girer — boşluk yok, 9 karakter', () => {
     const ref = uretReferansNo();
     expect(ref).not.toMatch(/\s/);
-    expect(ref.length).toBe(11); // "OCAK-" (5) + 6 hane
+    expect(ref.length).toBe(9); // "OCAK-" (5) + 4 karakter
+    // Eski format 11 karakterdi; kod KISALIYOR, uzunluk riski yok.
+  });
+});
+
+describe('REF_KARA_LISTE (Faz 1 §3 — talihsiz kelime elemesi)', () => {
+  it('kara listedeki her madde alfabeden ÜRETİLEBİLİR — ölü madde yok', () => {
+    // Listenin en sinsi bozulma biçimi bu: birisi "PUŞT" ya da "SIKT" ekler,
+    // liste dolu görünür, ama o kod alfabede olmayan karakter içerdiği için
+    // zaten hiç üretilemezdi. Ölü madde koruma sanılır — korumaz.
+    for (const kelime of REF_KARA_LISTE) {
+      for (const k of kelime) {
+        expect(
+          REF_ALFABE_TEST.includes(k),
+          `"${kelime}" alfabe dışı "${k}" içeriyor — bu madde ölü`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it('kara liste on beş maddedir ve maddeler dört karakter (Kaan kararı)', () => {
+    expect(REF_KARA_LISTE).toHaveLength(15);
+    for (const kelime of REF_KARA_LISTE) expect(kelime).toHaveLength(4);
+  });
+
+  it('talihsiz kod çekilirse YENİDEN üretilir — deterministik kanıt', () => {
+    // Olasılık 15/707.281; rastgele çekilişle beklemek test değil, kumar
+    // olurdu. Math.random sabitlenip önce "FUCK" indeksleri, sonra dört kez
+    // alfabenin ilk karakteri ("2222") veriliyor. Eleme çalışıyorsa sonuç
+    // OCAK-2222, çalışmıyorsa OCAK-FUCK.
+    const idx = (k: string) => (REF_ALFABE_TEST.indexOf(k) + 0.5) / REF_ALFABE_TEST.length;
+    const sira = [idx('F'), idx('U'), idx('C'), idx('K'), idx('2'), idx('2'), idx('2'), idx('2')];
+    let n = 0;
+    vi.spyOn(Math, 'random').mockImplementation(() => sira[n++] ?? 0);
+
+    const ref = uretReferansNo();
+    expect(ref).toBe('OCAK-2222');
+    expect(ref).not.toBe('OCAK-FUCK');
+    expect(n).toBe(8); // sekiz çekiliş: dördü elendi, dördü kabul edildi
+  });
+
+  it('son çare kodu da elenir — kelime ALT DİZE olarak aranır', async () => {
+    // Beş karakterlik fallback'te "FUCK7" eşitlik kontrolünden kaçardı.
+    // `refKodUret` alt dize arıyor; bu test onun bekçisi.
+    const idx = (k: string) => (REF_ALFABE_TEST.indexOf(k) + 0.5) / REF_ALFABE_TEST.length;
+    const sira = [
+      idx('F'), idx('U'), idx('C'), idx('K'), idx('7'), // FUCK7 — elenmeli
+      idx('3'), idx('3'), idx('3'), idx('3'), idx('3'), // 33333 — kabul
+    ];
+    let n = 0;
+    vi.spyOn(Math, 'random').mockImplementation(() => sira[n++] ?? 0);
+
+    const ref = await uretBenzersizReferansNo(async () => true, ['db1'], 0);
+    expect(ref).toBe('OCAK-33333');
   });
 });
 
 describe('uretBenzersizReferansNo (Son tur 2026-06-14 — çakışma garanti)', () => {
   it('hiç çakışma yoksa ilk üretilen ref döner', async () => {
     const ref = await uretBenzersizReferansNo(async () => false, ['db1', 'db2']);
-    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(ref).toMatch(REF_RE);
   });
 
   it('aktif DB yoksa (boş liste) tek çağrıda ref döner — test/dev defansif', async () => {
@@ -607,7 +699,7 @@ describe('uretBenzersizReferansNo (Son tur 2026-06-14 — çakışma garanti)', 
       return false;
     };
     const ref = await uretBenzersizReferansNo(query, []);
-    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(ref).toMatch(REF_RE);
     expect(calls).toBe(0);
   });
 
@@ -618,14 +710,19 @@ describe('uretBenzersizReferansNo (Son tur 2026-06-14 — çakışma garanti)', 
       return cagri === 1; // sadece ilk çağrıda çakışma
     };
     const ref = await uretBenzersizReferansNo(query, ['db1'], 3);
-    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(ref).toMatch(REF_RE);
     expect(cagri).toBeGreaterThanOrEqual(2);
   });
 
-  it('tüm denemeler çakışırsa timestamp fallback (8 hane)', async () => {
+  it('tüm denemeler çakışırsa fallback — AYNI alfabe, bir uzun (5 karakter)', async () => {
+    // Faz 1 §3: fallback eskiden `Date.now().slice(-8)` idi, yani RAKAMSAL.
+    // İki format yan yana yaşasaydı banka açıklamasında ayırt edilemeyen
+    // kodlar geri gelirdi — kaçınılan durumun ta kendisi. Bu test o
+    // gerilemenin bekçisi: fallback rakama düşerse burası kırılır.
     const query = async () => true; // her zaman çakışma
     const ref = await uretBenzersizReferansNo(query, ['db1'], 3);
-    expect(ref).toMatch(/^OCAK-\d{8}$/);
+    expect(ref).toMatch(/^OCAK-[23456789ACDEFGHJKLMNPQRTUVWXY]{5}$/);
+    expect(ref).not.toMatch(/\d{6,}/); // timestamp izi yok
   });
 
   it('Kayıtlar + Başvurular ortak uzay — biri çakışırsa retry', async () => {
@@ -636,6 +733,6 @@ describe('uretBenzersizReferansNo (Son tur 2026-06-14 — çakışma garanti)', 
       return dbId === 'db2' && cagri <= 2;
     };
     const ref = await uretBenzersizReferansNo(query, ['db1', 'db2'], 5);
-    expect(ref).toMatch(/^OCAK-\d{6}$/);
+    expect(ref).toMatch(REF_RE);
   });
 });
