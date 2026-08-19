@@ -13,7 +13,11 @@ import { havaleVadeMetni } from './havale-vade.ts';
  * İkincisinde naïve UTC hesabı bir gün geriye düşer; TR sabitlemesi düşmez.
  */
 
-const UZUN = 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
+// Faz 1 §4.2 — "en geç 3 gün" → "üç gün" (sayım yazıyla, vade ihtarı dili
+// düştü). Bu dosya metnin KENDİ kopyasını tutuyor: testin işi dal seçimini
+// (UZUN/KISA sınırı) çivilemek, kaynaktan string import etmek o sınırı
+// tautolojiye çevirirdi. Metin değişince bu satır da elle güncellenir.
+const UZUN = 'Katılım payını üç gün içinde aşağıdaki hesaba iletebilirsin.';
 const KISA = 'Katılım payını ilettiğinde biz kontrol edip sana döneceğiz.';
 
 describe('havaleVadeMetni — TR gün sabitlemesi (B23)', () => {

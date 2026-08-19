@@ -6,7 +6,11 @@
 // build'i düşürür. Saf mantık lib'de yaşar, test lib'de koşar (repo deseni).
 import { bugunTR } from './format-etkinlik.ts';
 
-const UZUN = 'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
+// Faz 1 §4.2 — "3" → "üç". Sayım metnin içinde yazıyla yürür; rakam bankacılık
+// diline kayıyor ve cümleyi bir vade ihtarına benzetiyordu. "en geç" de düştü:
+// eşik değil aralık — süreyi konuşulabilir kılan cümle success ekranında ayrıca
+// duruyor ("üç gün dar geliyorsa haber ver").
+const UZUN = 'Katılım payını üç gün içinde aşağıdaki hesaba iletebilirsin.';
 const KISA = 'Katılım payını ilettiğinde biz kontrol edip sana döneceğiz.';
 
 /**

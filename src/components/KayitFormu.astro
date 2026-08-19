@@ -18,6 +18,11 @@ import { parseKayitSorulari, parseRichTextLines, type KayitFormat } from '../lib
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
 import { BOS_STATE_KAPI_HTML } from '../lib/etkinlik-kategori';
 import DavetKutusu from './DavetKutusu.astro';
+// KARAR 488 — kart akışı kapalıyken yöntem radyosu SSR'da hiç render EDİLMEZ.
+// `hidden` + JS değil: DOM'da duran bir radyo devtools'tan geri açılabilir ve
+// backend'e `kart` gönderir. Mevcut `syncAskiBolumGorunum()` deseni (tam bursta
+// yöntem gizleme) DOM seviyesinde çalışır — burada örnek alınmadı, bilinçli.
+import { KART_AKISI_ACIK } from '../lib/kart-akisi';
 
 interface Props {
   format: KayitFormat;
@@ -361,7 +366,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                 <span>Katılım payı</span>
                 <span>
                   <span data-kf-katmanA>—</span>
-                  <span data-kf-para>TRY</span>
+                  {/* Faz 1 §4.2 — SSR placeholder da "TL". JS etkinlik
+                      seçilince `paraBirimiGoster` ile zaten TL yazıyordu;
+                      ilk boyamada "TRY" görünüp sonra değişiyordu. Alt
+                      satırlar (İndirim · Bir kor) zaten "TL" diyordu. */}
+                  <span data-kf-para>TL</span>
                 </span>
               </li>
               <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--indirim" data-kf-indirim-slot hidden>
@@ -376,7 +385,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                 <span>Toplam</span>
                 <span class="kayit-formu__tutar-toplam">
                   <span data-kf-toplam>—</span>
-                  <span data-kf-para-toplam>TRY</span>
+                  <span data-kf-para-toplam>TL</span>
                 </span>
               </li>
             </ul>
@@ -403,7 +412,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             {/* Ödeme yöntemi — kart default. Tam burs → tutar 0 → blok hidden.
                 Tasarım turu 3 (ADIM 2) — havale IBAN bloğu form'dan KALDIRILDI;
                 sadece success'te dl olarak gösterilir (kalabalık temizliği).
-                Havale seçilince küçük not: hesap bilgileri kayıt sonrası. */}
+                Havale seçilince küçük not: hesap bilgileri kayıt sonrası.
+
+                KARAR 488 — kart akışı kapalıyken bu blok SSR'da hiç basılmaz.
+                Yöntem seçeneği yoksa backend varsayılanı `havale` olur ve
+                submit metni havale diline döner (`syncSubmitMetni`). Blok
+                silinmedi; anahtar açılınca aynen geri gelir. */}
+            {KART_AKISI_ACIK && (
             <div class="kayit-formu__odeme-yontem" data-kf-yontem-grup>
               <span class="kayit-formu__label-as-legend">Ödeme yöntemi</span>
               <div class="kayit-formu__yontem-radios">
@@ -426,6 +441,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                 Hesap bilgileri kaydını gönderdikten sonra ekranda görünecek.
               </p>
             </div>
+            )}
 
           </div>
         </div>
@@ -530,23 +546,35 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       </div>
 
       {/* Ödemeli dal — Direkt + havale akışı (odeme.gerekli=true). Üst metin
-          JS'te referans no'yu cümle içine alır (ADIM 5 — ref göze batmasın). */}
+          JS'te referans no'yu cümle içine alır (ADIM 5 — ref göze batmasın).
+
+          Faz 1 §4.2 — "Hesap adı" → "Alıcı": maildeki etiket bu, iki kanal aynı
+          dili konuşsun. Kadın ekranla mail arasında göz gezdirirken aynı kelimeyi
+          arıyor. */}
       <div class="kayit-formu__success-odemeli" data-kf-success-odemeli hidden>
         <p class="kayit-formu__success-text" data-kf-success-odemeli-metin>
-          {/* JS doldurur: "Kaydını aldık (OCAK-XXXXX). Yerini sabitlemek için
-              katılım payını aşağıdaki hesaba iletebilirsin; ulaştığında
-              buluşmanın detaylarıyla sana dönüyoruz." */}
+          {/* JS doldurur: "Referans kodun OCAK-XXXX. Katılım payını üç gün
+              içinde aşağıdaki hesaba iletebilirsin." */}
         </p>
         <dl class="kayit-formu__success-odeme">
           <dt>Tutar</dt>
-          <dd><span data-kf-success-tutar>—</span> <span data-kf-success-para>TRY</span></dd>
+          <dd><span data-kf-success-tutar>—</span> <span data-kf-success-para>TL</span></dd>
           <dt>IBAN</dt>
           <dd data-kf-success-iban></dd>
-          <dt>Hesap adı</dt>
+          <dt>Alıcı</dt>
           <dd data-kf-success-ad></dd>
           <dt>Açıklama</dt>
           <dd data-kf-success-aciklama></dd>
         </dl>
+        {/* Faz 1 §4.2 — tablodan sonra iki satır. Birincisi işlevsel (kod
+            açıklamaya yazılmazsa eşleştirme elde kalır), ikincisi ahlaki:
+            üç gün bir eşik değil, konuşulabilir bir aralık. */}
+        <p class="kayit-formu__success-odeme-not">
+          Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz.
+        </p>
+        <p class="kayit-formu__success-odeme-not">
+          Payın ulaştığında sana yazarız. Üç gün dar geliyorsa haber ver, yerini tutarız.
+        </p>
       </div>
 
       {/* Brief 6 KARAR 210 — katilim (link/adres) bloğu, onaylı.
@@ -1524,7 +1552,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 <script>
   import { submitKayit, type KayitPayload } from '../lib/api';
   import { scrollToSuccess } from '../lib/scroll-to-success';
-  import { uygulaIndirim, kademeTutari, formatTutarTr, type Kademe } from '../lib/kayit';
+  import {
+    uygulaIndirim,
+    kademeTutari,
+    formatTutarTr,
+    paraBirimiGoster,
+    type Kademe,
+  } from '../lib/kayit';
   import type { KodSonuc } from '../lib/kodlar';
 
   const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
@@ -1576,7 +1610,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const ucret = direktAktif() ? kademeTutari(baseUcret, seciliKademe()) : baseUcret;
       return {
         ucret,
-        para: opt?.dataset.paraBirimi ?? 'TRY',
+        // Faz 1 §4.2 — bu alan yalnız gösterime gidiyor ([data-kf-para],
+        // [data-kf-para-toplam]); payload'a `paraBirimi` etkinlik verisinden
+        // ayrıca taşınıyor. Çeviri burada güvenli (KARAR 354).
+        para: paraBirimiGoster(opt?.dataset.paraBirimi ?? 'TRY'),
         tarih: opt?.dataset.tarih ?? '',
       };
     }
@@ -1588,7 +1625,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       if (!direktAktif()) return;
       const opt = select.options[select.selectedIndex];
       const base = Number(opt?.dataset.ucret ?? '0') || 0;
-      const para = opt?.dataset.paraBirimi ?? 'TRY';
+      // Faz 1 §4.2 — sunumda "TL". Brief bu değişikliği success ekranı için
+      // yazmıştı; kademe radyoları AYNI SAYFADA, aynı kadına görünüyor —
+      // biri "1.000 TRY" öteki "1.000 TL" deseydi tutarsızlık göze batardı.
+      // Veri yine `TRY` (KARAR 354), çeviri yalnız gösterimde.
+      const para = paraBirimiGoster(opt?.dataset.paraBirimi ?? 'TRY');
       (['ust', 'orta', 'alt'] as Kademe[]).forEach((k) => {
         const el = form!.querySelector<HTMLElement>(`[data-kf-kademe-tutar="${k}"]`);
         if (!el) return;
@@ -1932,6 +1973,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const yontemRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-yontem]');
     const havaleNotEl = form!.querySelector<HTMLElement>('[data-kf-yontem-havale-not]');
     function seciliYontem(): 'kart' | 'havale' {
+      // KARAR 488 — grup SSR'da hiç basılmadıysa yöntem havaledir. Eski hâli
+      // seçili radyo YOKKEN de 'kart' dönüyordu; grup kalkınca CTA "Karta
+      // Yönlen" yazıp yalan söylerdi. Anahtar client'a taşınmıyor (bundle'a
+      // düşmesin — `PUBLIC_` öneki bilinçli yok); ayrım DOM'un kendisinden
+      // okunuyor: radyo yoksa seçenek de yok.
+      if (yontemRadios.length === 0) return 'havale';
       const sec = form!.querySelector<HTMLInputElement>('[data-kf-yontem]:checked');
       return sec?.value === 'havale' ? 'havale' : 'kart';
     }
@@ -2015,7 +2062,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const kademeOk = kademeRaw === 'ust' || kademeRaw === 'orta' || kademeRaw === 'alt';
       // Ödeme yöntemi (Direkt only).
       const yontemRaw = (data.get('odeme_yontemi') ?? '').toString();
-      const yontem: 'kart' | 'havale' = yontemRaw === 'havale' ? 'havale' : 'kart';
+      // KARAR 488 — yöntem grubu SSR'da basılmadığında `odeme_yontemi` anahtarı
+      // FormData'da HİÇ bulunmaz. Eski hâli bu boşluğu 'kart'a düşürüyordu;
+      // backend kartı 400'lediği için ücretli her kayıt hata alırdı. Varsayılan
+      // çevrildi: yalnız açıkça 'kart' geldiğinde kart, aksi hâlde havale.
+      const yontem: 'kart' | 'havale' = yontemRaw === 'kart' ? 'kart' : 'havale';
 
       const payload: KayitPayload = {
         format,
@@ -2123,16 +2174,21 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           const odemeliDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemeli]')!;
           if (!isBasvuru && result.odeme?.gerekli) {
             // Tasarım turu 3 (ADIM 1) — havale success: tek cümle yapısı
-            // "OCAK-XXXXX referans numarasıyla kaydını aldık. {vadeMetni}"
-            // (vadeMetni backend'den, tarihe göre dinamik).
+            // "{refCumle} {vadeMetni}" (vadeMetni backend'den, tarihe göre dinamik).
+            //
+            // Faz 1 §4.2 — "referans numarası" → "referans kodu". Kod artık
+            // rakamsal değil (KARAR 488 turu, OCAK-XXXX harf+rakam alfabesi);
+            // "numara" demek kadını rakam aramaya yollar. Cümle de öne alındı:
+            // ref artık parantez içi bir dipnot değil, cümlenin öznesi — kadın
+            // onu bankaya elle yazacak.
             odemesizDiv.hidden = true;
             odemeliDiv.hidden = false;
             const refCumle = result.referansNo
-              ? `${result.referansNo} referans numarasıyla kaydını aldık.`
+              ? `Referans kodun ${result.referansNo}.`
               : 'Kaydını aldık.';
             const vade =
               result.odeme.vadeMetni ??
-              'Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin.';
+              'Katılım payını üç gün içinde aşağıdaki hesaba iletebilirsin.';
             const odemeliMetinEl = successEl.querySelector<HTMLElement>(
               '[data-kf-success-odemeli-metin]',
             );
@@ -2142,8 +2198,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             successEl.querySelector('[data-kf-success-tutar]')!.textContent = formatTutarTr(
               result.odeme.tutar ?? 0,
             );
-            successEl.querySelector('[data-kf-success-para]')!.textContent =
-              result.odeme.paraBirimi;
+            successEl.querySelector('[data-kf-success-para]')!.textContent = paraBirimiGoster(
+              result.odeme.paraBirimi,
+            );
             successEl.querySelector('[data-kf-success-iban]')!.textContent = result.odeme.iban;
             successEl.querySelector('[data-kf-success-ad]')!.textContent = result.odeme.ad;
             successEl.querySelector('[data-kf-success-aciklama]')!.textContent =

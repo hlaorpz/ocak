@@ -80,11 +80,18 @@ import Layout from '../layouts/Layout.astro';
 
     <h2>3. Hizmetin Niteliği, Bedeli ve Ödeme</h2>
 
+    {/* KARAR 488 — kart akışı kapalı. Kart cümlesi SİLİNMEDİ, yorumda duruyor;
+        sağlayıcı anlaşması gelip anahtar açılınca aynen geri konur:
+
+        "Ödeme, lisanslı ödeme kuruluşu altyapısı üzerinden kredi veya banka
+         kartı ile yapılır. ALICI'nın kart bilgileri SATICI tarafından
+         görülmez ve saklanmaz."                                              */}
     <p>
       Satın alınan hizmetin türü, süresi, kapsamı ve bedeli sipariş ekranında ALICI'ya
       açıkça gösterilir. Tüm bedeller Türk Lirası cinsindendir ve vergiler dahildir.
-      Ödeme, lisanslı ödeme kuruluşu altyapısı üzerinden kredi veya banka kartı ile
-      yapılır. ALICI'nın kart bilgileri SATICI tarafından görülmez ve saklanmaz.
+      Ödeme, SATICI'nın kayıt sonrası ALICI'ya bildirdiği banka hesabına havale veya
+      EFT yoluyla yapılır. Kayıt ekranında ve kayıt e-postasında yer alan referans
+      kodu, ödemenin açıklama alanına yazılır.
     </p>
 
     <p>
@@ -117,6 +124,16 @@ import Layout from '../layouts/Layout.astro';
       erer.
     </p>
 
+    {/* ⚠ [KAAN] — İADE CÜMLESİ, ONAY BEKLİYOR. YAYINLANMADI.
+
+        "aynı ödeme yöntemiyle" ifadesi KARAR 488 sonrası pratikte havale
+        demek, ama cümle bunu söylemiyor ve iade hesabının nasıl belirleneceği
+        belirsiz kalıyor. DEĞİŞTİRİLMEDİ — muhasebeci/hukuk onayı olmadan
+        canlıya çıkmaz (Faz 1 §4.3). İkiz madde: `teslimat-iade.astro`.
+
+        TASLAK (onaylanırsa aşağıdaki son cümle ile değiştirilecek):
+        "Cayma kabul edildiğinde, ödenen bedel ALICI'nın bildireceği banka
+         hesabına on dört (14) gün içinde iade edilir."                        */}
     <p>
       Cayma hakkının geçerli olduğu durumlarda talepler
       <a href="mailto:iletisim@ocak.biz">iletisim@ocak.biz</a> adresine iletilir. Cayma kabul

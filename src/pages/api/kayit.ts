@@ -41,6 +41,8 @@ import {
   type KayitTipi,
   type Kademe,
 } from '../../lib/kayit.ts';
+// KARAR 488 — kart akışı env anahtarıyla kapalı; kart isteyen gövde 400 alır.
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
@@ -89,6 +91,30 @@ type KayitBody = {
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
 const HAVALE_AD = import.meta.env.PUBLIC_HAVALE_AD ?? '';
+
+/**
+ * Havale env'lerinin boşluk denetimi (Faz 1 §4.1).
+ *
+ * Kart akışı kapandıktan sonra (KARAR 488) havale TEK ödeme ucu — bu iki env
+ * boşsa success ekranı boş IBAN satırı gösterir ve kadın nereye ödeyeceğini
+ * bilemez. `?? ''` sessizce boşa düşürüyordu; artık build/boot anında log'a
+ * düşüyor. Kapı DEĞİL, alarm: eksik IBAN yüzünden kaydı reddetmek kadını
+ * cezalandırmak olurdu — kayıt alınır, Kaan log'dan görür ve elle döner.
+ *
+ * `import.meta.env` build zamanında sabitlendiği için bu uyarı Vercel build
+ * log'unda ya da fonksiyonun ilk çağrısında görünür.
+ */
+for (const [ad, deger] of [
+  ['PUBLIC_HAVALE_IBAN', HAVALE_IBAN],
+  ['PUBLIC_HAVALE_AD', HAVALE_AD],
+] as const) {
+  if (!deger.trim()) {
+    console.error(
+      `[kayit] ${ad} BOŞ — havale success ekranı ve mail eksik bilgi gösterecek. ` +
+        `Kart akışı KARAR 488 ile kapalı, havale tek ödeme ucu; Vercel'de üç ortamda da tanımlanmalı.`,
+    );
+  }
+}
 const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY ?? '';
 
 /**
@@ -431,6 +457,18 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!body.kvkk) {
     return json({ status: 'error', message: 'KVKK onayı zorunlu' }, 400);
+  }
+
+  // KARAR 488 — kart akışı kapalı. Yüzey zaten yöntem radyosunu SSR'da hiç
+  // render etmiyor, yani normal akışta buraya `kart` gelmez; bu kapı elle
+  // atılan gövdeye ve bayat açık sekmeye karşı. İki `yontem` türetiminden de
+  // (sadece-askı ve ana dal) ÖNCE duruyor — tek nokta, sessiz `havale`'ye
+  // düşürme yok: kadın kartla ödediğini sanıp havale beklemesin.
+  if (!KART_AKISI_ACIK && body.odemeYontemi === 'kart') {
+    return json(
+      { status: 'error', message: 'Kart ödemesi şu an kapalı; havale/EFT ile devam edebilirsin.' },
+      400,
+    );
   }
 
   // ───────────────────────────────────────────────────────────────────────

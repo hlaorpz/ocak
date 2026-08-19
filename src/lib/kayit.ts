@@ -81,6 +81,24 @@ export function formatTutarTr(tutar: number): string {
   });
 }
 
+/**
+ * Para birimi kodu → ekranda görünen etiket (Faz 1 §4.2).
+ *
+ * KARAR 354 içerik-sunum sınırı: `paraBirimi` VERİ — Notion'da `TRY` yazar,
+ * `/api/kayit` onu aynen taşır, MailerLite ve Notion o kodla konuşur.
+ * Kadının ekranda gördüğü ise SUNUM: "1.000 TRY" bir muhasebe satırı gibi
+ * okunuyor, "1.000 TL" para gibi. Çeviri yalnız burada yapılır; veriye
+ * dokunulmaz, Notion'a "TL" yazılmaz.
+ *
+ * Tanınmayan kod aynen geçer — bir gün EUR gelirse "EUR" göstermek, sessizce
+ * yanlış bir etiket uydurmaktan iyidir.
+ */
+export function paraBirimiGoster(kod: string | undefined | null): string {
+  const ham = (kod ?? '').trim().toUpperCase();
+  if (ham === 'TRY') return 'TL';
+  return ham;
+}
+
 // Kapı 1 — direkt kayıt formatları (değerlendirme yok). /api/kayit bunların
 // kaydını YALNIZ Kayıtlar DB'ye yazar (Aşama 1.5, brief-odeme-asama15).
 // Kapı 2 — başvuru/onay (cember + ayrı pipeline'daki anadolu): mevcut akış,

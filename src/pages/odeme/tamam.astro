@@ -17,6 +17,17 @@ import { katilimTipiCoz } from '../../lib/kayit.ts';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori.ts';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
+// KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi.
+//
+// Not: aşağıdaki Notion sorgusu bugün ZATEN KIRIK — `Referans No` diye bir
+// property Kayıtlar DB'sinde yok, referans `Kayıt ID` title alanında yaşıyor
+// (bkz. `api/kayit.ts` refQuery, DB'ye göre dallanıyor). Düzeltme bilinçli
+// olarak anahtarın arkasına alındı: kart geri geldiğinde doğru property ile
+// yeniden yazılacak. Kırık sorgu silinmedi, çünkü doğru sorgunun ne olması
+// gerektiğini gösteren tek kayıt bu.
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+
+if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
 
 const ref = Astro.url.searchParams.get('ref') ?? '';
 const mockMu = Astro.url.searchParams.get('mock') === '1';

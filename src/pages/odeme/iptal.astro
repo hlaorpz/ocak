@@ -5,6 +5,11 @@
 export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
+// KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi; anahtar
+// açılınca aynen geri gelir.
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+
+if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
 
 const ref = Astro.url.searchParams.get('ref') ?? '';
 const hata = Astro.url.searchParams.get('hata') ?? '';

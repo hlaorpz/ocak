@@ -15,6 +15,7 @@ import {
   tarihTrFormat,
   uretReferansNo,
   uretBenzersizReferansNo,
+  paraBirimiGoster,
   type KayitFormat,
 } from './kayit';
 
@@ -458,6 +459,35 @@ describe('mailerLiteFieldsPayload (taşıma katmanı — boş alan GİDER)', () 
 
   it('ekFields yoksa yalnız name döner', () => {
     expect(mailerLiteFieldsPayload('Kaan')).toEqual({ name: 'Kaan' });
+  });
+});
+
+// Faz 1 §4.2 — içerik/sunum sınırı (KARAR 354). Veri `TRY` kalır, ekran "TL"
+// gösterir. Testin işi sınırın tek yönlü olduğunu çivilemek: çeviri gösterimde
+// yapılır, veriye geri yazılmaz.
+describe('paraBirimiGoster (Faz 1 §4.2 — veri TRY, sunum TL)', () => {
+  it('TRY → TL', () => {
+    expect(paraBirimiGoster('TRY')).toBe('TL');
+  });
+
+  it('küçük harf ve boşluk toleranslı', () => {
+    expect(paraBirimiGoster('try')).toBe('TL');
+    expect(paraBirimiGoster('  Try  ')).toBe('TL');
+  });
+
+  it('tanınmayan kod AYNEN geçer — uydurma etiket yok', () => {
+    expect(paraBirimiGoster('EUR')).toBe('EUR');
+    expect(paraBirimiGoster('USD')).toBe('USD');
+  });
+
+  it('boş / null / undefined → ""', () => {
+    expect(paraBirimiGoster('')).toBe('');
+    expect(paraBirimiGoster(null)).toBe('');
+    expect(paraBirimiGoster(undefined)).toBe('');
+  });
+
+  it('"TL" girdisi TL kalır — idempotent, çift çeviri bozmaz', () => {
+    expect(paraBirimiGoster('TL')).toBe('TL');
   });
 });
 

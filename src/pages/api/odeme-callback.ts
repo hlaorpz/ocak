@@ -22,6 +22,8 @@ import type { APIRoute } from 'astro';
 import { notion } from '../../lib/notion.ts';
 import { kodKullanimArtir } from '../../lib/kodlar.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
+// KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 
 export const prerender = false;
 
@@ -116,6 +118,15 @@ function parseGirdi(url: URL, bodyParams: URLSearchParams | null) {
 }
 
 async function handle(request: Request): Promise<Response> {
+  // KARAR 488 — kart akışı kapalı. 410 Gone: endpoint vardı, artık yok; 404
+  // "hiç olmadı" der ve bir sağlayıcı webhook'unu yanlış yönlendirir.
+  // Gövde HİÇ okunmaz, Notion'a TEK yazım yapılmaz, `kodKullanimArtir`
+  // çağrılmaz — kapalı akıştan gelen bir callback sayaç artıramaz.
+  if (!KART_AKISI_ACIK) {
+    console.warn('[odeme-callback] KARAR 488 — kart akışı kapalı, callback reddedildi (410)');
+    return new Response('Kart ödeme akışı kapalı.', { status: 410 });
+  }
+
   const url = new URL(request.url);
   let bodyParams: URLSearchParams | null = null;
   if (request.method === 'POST') {
