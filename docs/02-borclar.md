@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · üç-format turu · **B88–B100 açıldı · kapanan yok**
+**Son güncelleme:** 19 Ağustos 2026 · gölge satır + B102 turu · **B101–B102 açıldı · B102 aynı turda kapandı**
 
-**Durum:** 100 madde · **69 açık iş** · 29 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 102 madde · **70 açık iş** · 30 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -38,6 +38,15 @@ onu kapsıyor, doktrin borcu kapatmaz — kapatan tazelik kapısıdır ve kurulm
 damgasız kaldı, yani açık sayılıyor. Brief'in tablosu 15 satırdı: üçü **yanlış öncülle
 düştü** (üç gövde Notion'a girdi · `/atolye` SSR, eksik değil · smoke kalıntısı gerçek
 etkinlik çıktı), biri **kapanan madde diye gelip borca döndü** (B100, hız sözü) → 13.*
+
+*19 Ağustos, yedinci ölçüm (gölge satır + B102 turu): toplam 100 → **102**, açık
+69 → **70**. Damgalı 29 → **30** — tek kapanış **B102**, açıldığı turda kapandı
+(`Kayıt Kapanış Tarihi` opsiyonel, fallback kabul; Kaan kararı). İki yeni kayıt
+**B101–B102**. Sayaç devralınmadı, üç grep yeniden koşuldu; damga kırılımı
+`✅ KAPANDI` ×26 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1.
+**Not:** aynı turda önerilen bir borç hiç açılmadı — v1 brief'in "Ritüel Tasarımı
+superseded format" gövdesi ADIM 0 ölçümüyle çürüdü. Açılmayan madde sayaca girmez;
+kaydı `90-kronoloji/2026-08.md`'de.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 100 · `grep -E '^## B' | grep -cE '[✅❌]'`
 → 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
@@ -1763,9 +1772,18 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış şartı:** karar verilir ve KARAR 514'ün kalıp tarifine tek cümle
   olarak yazılır — yoksa sonraki çok oturumlu etkinlikte aynı soru yeniden sorulur.
 
-## B102 — Ücretli formatlarda kayıt penceresi ödeme temposuna göre kapatılmıyor
+## B102 — Ücretli formatlarda kayıt penceresi ödeme temposuna göre kapatılmıyor ✅ KAPANDI (19 Ağu, Kaan kararı)
 
-- [ ] **Sahip:** Kaan (Notion) · ~5 dk/kayıt
+- [x] **Kapanış:** `Kayıt Kapanış Tarihi` **opsiyonel alandır** ve boş bırakıldığında
+  `pencereIcinde`'nin `tarihBaslangic`'e düşmesi **kabul edilen davranıştır** —
+  kusur değil, tasarım. 25/25'lik ölçüm bir eksiklik değil, alanın fiilî
+  kullanılmama hâlini gösteriyor. Kod değişmiyor, veri girişi kalıbı
+  dayatılmıyor. ⚠ **Kapanışın taşıdığı risk açıkça kabul edildi:** kayıt
+  etkinlik gününe kadar açık kaldığı için son gün gelen EFT/havale seansa
+  yetişmeyebilir; o vakada katılım linki gitmez (KARAR 486). Bu, kapatılan
+  borcun bedeli olarak **bilinerek** üstlenildi — sonraki turlarda "bulunmuş
+  yeni hata" diye yeniden açılmaz.
+- [x] **Sahip:** Kaan (Notion) · ~5 dk/kayıt
 - **Ölçüm (19 Ağu, `etkinlikler-dump.mjs` + `fetchEtkinlikler`/`transformEtkinlik`
   üzerinden sayım; ölçüt `(ucret ?? 0) > 0 && !kayitKapanis`):** 26 ham satırın
   **25'i ücretli**, ve **25'inin tamamında** `Kayıt Kapanış Tarihi` = ∅.
