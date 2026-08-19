@@ -1,7 +1,10 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 19 Ağustos 2026 · **Marka işareti ✅ · başlık kanonu ✅** — KARAR 522 · 523; yeni borçlar B105 · B107 (B106 aynı gün kapandı)
-KARAR 410 SUPERSEDE · önceki: WA yüzen buton turu (KARAR 517–518 · KARAR 396 SUPERSEDE) ·
+**Son güncelleme:** 20 Ağustos 2026 · **fikir kuyruğu korpusa alındı** — B108–B120 açıldı,
+karar mühürlenmedi (ledger 523'te sabit) · önceki: **Marka işareti ✅ · başlık kanonu ✅** —
+KARAR 522 · 523; borçlar B105 · B107 (B106 aynı gün kapandı) ·
+WABA display name turu (KARAR 519–521 · B103–B104 · KARAR 410 SUPERSEDE) ·
+önceki: WA yüzen buton turu (KARAR 517–518 · KARAR 396 SUPERSEDE) ·
 B102 turu · gölge satır turu (KARAR 514–516 · B101) · üç-format turu
 (KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
 
@@ -205,6 +208,20 @@ sohbet bugün dosyaların birbirine göre rolünü bilmeden başlıyor.
 
 **B36-b beklemede.** Cinsi değişti (kayıt yazma, çapa düzeltme değil) ve büyüdü
 (71 kayıtsız karar). Tek turluk iş değil; kendi planı yapılmadan açılmaz.
+
+**Fikir kuyruğu kayda alındı — 19–20 Ağustos (`docs-patch-2026-08-19c.md`).** **B108–B120**
+açıldı (patch B103–B115 önermişti; iki tur araya girdi, +5 kaydırıldı). Hiçbiri mevcut üç
+hattın (ürün · doküman · sosyal) önüne geçmez. İçlerinden yalnız ikisi tarih baskılı:
+**B118 + B119** (banner ile atomik) ve **B114** (Gün 0 kurucu görselin önkoşulu).
+Kalanlar sahibine göre kendi hattında erir. Açık iş sayacı `02-borclar.md` başlığında yaşar.
+
+⚠ **Patch'in yazılmayan iki bölümü Kaan'da:** beş **karar adayı** (A-1 "Retreat"→"İnziva" ·
+A-2 manifesto cümlesi · A-3 Açık Kapı çekim mekaniği · A-4 alt yönlendirme kutuları ·
+A-5 arşiv şifre modeli — bu sonuncusu B120'nin içinde) ve beş **fikir** (F-1 İçerik Üstadı ·
+F-2 Yazı Dili Üstadı · F-3 Social Media Agent · F-4 Yoga dersleri · F-5 ortak operasyonel
+takvim). Kaynak `docs-patch-2026-08-19c.md` Bölüm 4–5; nereye yazılacakları karar bekliyor.
+*F-1 · F-2 · F-3 ve **B117** aynı aileden — OCAK sesini taşıyan yüzeyler; tek çatı altında
+düşünülmeleri önerildi, karar değil gözlem.*
 
 ---
 

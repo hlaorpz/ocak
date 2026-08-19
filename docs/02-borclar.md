@@ -1,8 +1,8 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 19 Ağustos 2026 · WABA display name turu · **B103–B104 açıldı, kapanan yok**
+**Son güncelleme:** 20 Ağustos 2026 · fikir kuyruğunun korpusa alınması · **B108–B120 açıldı, kapanan yok**
 
-**Durum:** 104 madde · **72 açık iş** · 30 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
+**Durum:** 120 madde · **87 açık iş** · 31 kapandı/çözüldü/geri çekildi · 2 iş değil (B26 ⏸ ertelendi · B30 🔵 planlı+kilit)
 
 *Sayım yöntemi: gövdedeki `^## B` başlık satırları → **74**. Kapanış ölçütü başlıktaki
 **damga**, kelimenin kendisi değil: `[✅❌]` geçen → **27** (`✅ KAPANDI` ×23 · `✅ ÇÖZÜLDÜ` ×2 ·
@@ -63,6 +63,22 @@ kapatmaz (yedinci ölçümdeki B57 kaydının aynısı). ⚠ **B104 açılırken
 patch `WHATSAPP_URL`'i `905322080888` sanıyordu, ölçüm `905325555226` verdi (`api.ts:26`,
 `354fb14`); madde silinmedi, hedefi yeniden yazıldı. Sayaç devralınmadı, üç grep
 yeniden koşuldu.*
+
+*20 Ağustos, onuncu ölçüm (fikir kuyruğu turu): toplam 104 → **120**, açık 72 → **87**.
+Damgalı 30 → **31**, iş değil **2**'de sabit. ⚠ **Sayaç iki tur bayat kalmıştı:** marka
+işareti turu (`b99773e`) **B105 · B106 · B107**'yi açtı, B106'yı aynı gün kapattı, ama
+başlıktaki rakamları güncellemedi — bu ölçüm o üçünü de topluyor. Yani 16 maddelik
+artışın **13'ü** bu turun (**B108–B120**), **3'ü** devralınan sayım borcudur.
+Bu tur **kapanan yok**; damgalı artışı B106'nın (`✅ —`, kelimesiz damga) geç sayılmasıdır.
+⚠ **Numara iki kez kaydı:** patch B103–B115 önerdi, ölçüm anında B103–B104 (WABA turu) ve
+B105–B107 (marka turu) doluydu; **+5 kaydırıldı**, tek numara üzerine yazılmadı.
+Sayaç devralınmadı, üç grep yeniden koşuldu.*
+
+*Üretilen komutlar (KARAR 470-b, onuncu ölçüm): `grep -cE '^## B'` → **120** ·
+`grep -E '^## B' | grep -cE '[✅❌]'` → **31** (`✅ KAPANDI` ×26 · `✅ —` ×1 (B106) ·
+`✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
+`grep -E '^## B' | grep -cE '[⏸🔵]'` → **2**. Açık = 120 − 31 − 2 = **87**.
+Mükerrer başlık denetimi: `grep -oE '^## B[0-9]+' | sort | uniq -d` → **0**.*
 
 *Üretilen komutlar (KARAR 470-b): `grep -cE '^## B'` → 100 · `grep -E '^## B' | grep -cE '[✅❌]'`
 → 29 (`✅ KAPANDI` ×25 · `✅ ÇÖZÜLDÜ` ×2 · `✅ TEŞHİSLE KAPANDI` ×1 · `❌ GERİ ÇEKİLDİ` ×1) ·
@@ -1937,3 +1953,129 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 3. **`#1A1614` sapması.** Zemin kanonu `#1A1210` (`tokens.css` `--coal`, marka dosyaları).
    `#1A1614` yalnız `VisualZ.md` ve ilk 30 gün sosyal planında yaşıyor. O dosyalar korpusa
    girdiğinde çevrilecek. Kronolojideki tarihli mockup kaydına **dokunulmaz** (KARAR 61).
+
+## B108 — Başvuru→kabul→ödeme köprüsünün mekaniği tasarlanmadı
+
+- [ ] **Sahip:** Kaan (akış kararı) → CC (uygulama)
+- **Kaynak:** claude.ai 19 Ağu sohbeti; Kaan'ın kendi vurgusu.
+- **İçerik:** Başvuru ve ücretli kayıt **ayrı kapılar, birlikte kullanılmıyor**. Cevapsız üç soru:
+  (a) başvuru **kabul** hangi aksiyonla, nerede işaretlenir; (b) **red** akışı nedir, başvurana ne gider;
+  (c) kabul edilince **ödeme köprüsü** nasıl kurulur (havale bilgisi + referans kodu hangi tetikle çıkar).
+- **Durum:** Faz 1 kart akışını kapattı (KARAR 488), ödeme havaleye indi — köprü tarifi bu yeni gerçeğe göre hiç yazılmadı.
+- **Bağ:** `03-sira.md` "n8n ödeme onayı akışı" maddesi bu köprünün **ödeme ayağı**; kabul/red ayağı orada yok.
+
+## B109 — Kayıt ekranı tarih listesinde program adı görünmüyor
+
+- [ ] **Sahip:** CC
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Kayıt formundaki tarih seçimi yalnız tarih basıyor. Aynı güne birden çok etkinlik düştüğünde
+  kaydolan hangi programa yazıldığını göremiyor. Beklenen: `program adı — tarih`.
+- **Ölçüm gerekli:** çok oturumlu etkinlik kalıbı (KARAR 514, kayıt satırı + gölge satır) sonrası
+  listenin ne bastığı **yeniden ölçülmeli**; borç bu ölçümden sonra kesinleşir.
+
+## B110 — "Sonraki buluşma" boş durumu tanımsız
+
+- [ ] **Sahip:** Claude.ai (metin) → Notion/CC (yerleştirme)
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** İleri tarihli yayınlı etkinlik kalmadığında kartın/bölümün ne göstereceği yazılı değil.
+- **Sınır:** metin davet dilinde olacak; **aciliyet dili ve "köz" yasak** (KARAR 86 · lint kanonu).
+- **Bağ:** "En Yakın X" başlık kanonu KARAR 377; boş durum o kanonun tanımsız ucu.
+
+## B111 — Success ekranlarının bütünü hiç denetlenmedi
+
+- [ ] **Sahip:** Kaan (eyeball) + CC (düzeltme)
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Formların gönderim sonrası ekranları tek tek doğrulanmadı: doğru mesaj · doğru görsel ·
+  sonraki adım yönlendirmesi. Bugün yalnız **B10** var, o da tek bir öğeyi (ember glyph) soruyor.
+- **Bağ:** B10 bu denetimin içinde cevaplanabilir; kapanışta ikisi birlikte değerlendirilir.
+- **Not:** `03-sira.md` Faz 1 sırasındaki "Success ekranına kopyalama tuşları" maddesi bu denetimin
+  **kapsamına girer**, onun yerine geçmez.
+
+## B112 — Site geneli tutarlılık taraması yapılmadı
+
+- [ ] **Sahip:** Claude.ai (tarama) → Kaan/Advaita (Notion)
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Sayfalar arası çelişki iddiaları toplandı ama **hiçbiri ölçülmedi**: süre/sıklık
+  (çember akış süresi ↔ "90 dakika online"), "fiziksel" → "yüz yüze" dönüşümünün tamamlanıp
+  tamamlanmadığı, kakao geçişlerinin normalizasyonu, her kavramın tek sahip sayfası.
+- ⚠ **Ön koşul:** taze `site-icerik` dump'ı. Bayat dump üstünde koşulan tarama taşınamaz bulgu üretir
+  (KARAR 513 · B44'ün ilk denemesinin düştüğü yer).
+- **Bağ:** B08 (Uluslararası sweep) · B94 (lint çelişkisi) · B95 (format sayımı bayat) bu taramanın alt kümeleri.
+
+## B113 — Vurgu denetimi: kamu metinlerinde bold/italik dağılımı hiç bakılmadı
+
+- [ ] **Sahip:** Claude.ai → Kaan
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Vurgunun doğru cümlede olup olmadığı ölçülmedi. Ölçüt: yapıyı taşıyan cümle ile
+  kırılganlık doruğu vurgulanır; süs vurgu ayıklanır.
+- **Not:** `manifesto-vurgu` section'ı ayrı iştir (kanonik section), bu madde onun yerine geçmez.
+
+## B114 — Görsel stil kodu kilitlenmedi; üretim tek tek yürüyor
+
+- [ ] **Sahip:** Kaan
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Atmosferik görsellerin stil kodu sabitlenmediği için her görsel kendi denemesiyle çıkıyor;
+  yüzeyler arası tutarlılık üretim anına bırakılmış. İstenen: sabit stil kodu + format seti
+  (hero · dikey post · story · kare).
+- ⚠ **Sınır:** insan yüzü/figürü üretilmez — insan ve seremoni anları gerçek fotoğraftır (marka etiği).
+- **Bağ:** `03-sira.md` B-turu 1. maddesi (Gün 0 kurucu görsel) bu kilidin **ilk müşterisi**;
+  B86 (kart derleyici fotoğrafsız zemin) ikinci. ⚠ *Patch dışı ek (uygulama anında ölçüldü):*
+  **B105**'in açık dördüncü ayağı (OG kartı 1200×630, hero cümlesini taşıyacak) üçüncü müşteridir —
+  B105 aynı gün açıldı, patch onu görmeden yazılmıştı.
+
+## B115 — Kişiye özel ödeme daveti üretilemiyor
+
+- [ ] **Sahip:** Kaan
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Standart kayıt akışı dışında, tekil kişiye özel tutarlı ödeme daveti (tutar + referans +
+  bilgi maili) üretecek bir yol yok. Bugün elle yazılıyor.
+- **Bağ:** B108'in kabul-sonrası ayağı bu mekanizmaya dayanabilir; referans kodu üretimi KARAR 489/490'a tabidir.
+
+## B116 — WhatsApp'ın yayın/üyelik kanalı olarak tanımı yok
+
+- [ ] **Sahip:** Kaan
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** Hat canlı (KARAR 396 **SUPERSEDE** →518; şart 19 Ağu'da sağlandı) ama kanalın
+  **ne taşıyacağı** yazılı değil: mektup ritmi, üyelik kurgusu, hangi içerik hangi sıklıkta.
+- ⚠ **Sınır:** rıza olmadan gönderim yok; "davet ≠ satış" (KORUNACAK İFADE #7). Ateş Mektupları'nın
+  "ritim dinleme" kanal kimliği emsaldir, kopyası değil.
+- **Bağ:** B19 (display name) hattı ayrı; bu madde ona bağlı değil.
+
+## B117 — Bot muhtevası eğitilmedi: ne bildiği ve nereye kadar konuştuğu yazılı değil
+
+- [ ] **Sahip:** Kaan
+- **Kaynak:** claude.ai 19 Ağu sohbeti.
+- **İçerik:** B07 **modeli** seçer; bu madde **muhtevayı** sorar: bilgi kapsamı, ton, sınırlar,
+  insana devir eşiği, hangi soruya cevap vermeyeceği.
+- **Sınır:** marka sesi kanonu (`10-marka.md` · `20-ref-icerik-dili.md`) bağlayıcıdır —
+  reçete vermez, kürsü kurmaz.
+
+## B118 — Çerez rızası: metin ile fiili davranış çelişiyor
+
+- [ ] **Sahip:** Kaan (karar) + CC (uygulama)
+- **Kaynak:** claude.ai reklam/KVKK sohbeti (özet, 19 Ağu).
+- **İçerik:** Gizlilik metni analitik/pazarlama çerezlerini rızaya bağlıyor; rızayı toplayan banner yok,
+  dolayısıyla ölçüm etiketleri onaydan önce çalışıyor.
+- ⚠ **Atomik:** banner kurulmadan metin sıkılaştırılmaz; ikisi **aynı commit'te** gider.
+  Metin önce düzeltilirse site yazdığını yapmıyor durumuna geçer.
+- **Bağ:** B16 (ilk hafta paketi) içindeki Consent Mode v2 ayağı budur; bu madde onu daraltır ve sahiplendirir.
+
+## B119 — Bülten bölümü e-posta ölçümünü söylemiyor
+
+- [ ] **Sahip:** Kaan
+- **Kaynak:** claude.ai reklam/KVKK sohbeti (özet, 19 Ağu).
+- **İçerik:** Açılma/tıklama ölçümü açık; aydınlatma metninin bülten bölümü bunu belirtmiyor.
+  Bir cümle yeterli: etkileşim verisinin işlendiği + amacı.
+- **Bağ:** B118 ile aynı turda gider (tek metin dokunuşu, iki eksik).
+
+## B120 — Seans arşivinin ilk dönem yolu kararsız
+
+- [ ] **Sahip:** Kaan (karar) → CC (kurulum)
+- **Kaynak:** claude.ai seans arşivi sohbeti (özet, 19 Ağu).
+- **İçerik:** Tam mimari (barındırma + otomasyon + portal) hacim yokken kurulmayacak; ilk kayıtlar
+  elle yürüyecek. Kurulmamış olan: şifreli `/arsiv` yüzeyi + Notion arşiv koleksiyonu.
+- ⚠ **Açık karar (Kaan):** arşiv **tek şifre** mi, **dönem bazlı şifre** mi. Dönem bazlı kohort ayrımını
+  kaba da olsa korur; tek şifre her şeyi herkese açar.
+- ⚠ **Etik duvar — değişmez (KARAR 57):** fiziksel çember ve paylaşım turu **kaydedilmez**.
+  Bu akış yalnız tam-kayıt kategorisindeki formatlar içindir; kayıt bildirimi zorunludur.
+- **Sabit ayrım:** video hiçbir varyantta Notion'da veya sitede durmaz — barınakta durur, yüzey yalnız işaret tutar.
