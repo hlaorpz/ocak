@@ -1,9 +1,18 @@
 // /api/davet — Davet Sistemi v1 endpoint (brief-davet-sistemi).
 //
-// Akış (POST): body {refKodu, davetEdilenEmail, kanal, etkinlikId}
+// ⚠ 22 Ağustos 2026 — AÇIK RÖLE OLARAK KÖTÜYE KULLANILDI, MUSLUK KAPATILDI.
+// Aşağıdaki "honeypot YOK / bot riski düşük" gerekçesi YANLIŞ ÇIKTI; tarihsel
+// kayıt olarak duruyor, geçerli değil. Ölçüm: 20 Ağustos 09:13 UTC'den beri
+// saat başı, toplanmış bir spam listesine, OCAK'ın gerçek şablonuyla mail.
+// Bugünkü kapı: `DAVET_AKISI` musluğu + Origin + zaman damgası + honeypot.
+// Ayrıntı `davet-akisi.ts` ve `davet-kapi.ts` başlıklarında.
+//
+// Akış (POST): body {refKodu, davetEdilenEmail, kanal, etkinlikId, website, ts}
+//   0. musluk: `DAVET_AKISI` kapalıysa sessiz dönüş, Resend ÇAĞRILMAZ
+//   0b. sessiz ret kapısı: Origin → honeypot → zaman damgası (`davet-kapi.ts`)
 //   1. validation (kanal=mail bekleniyor; whatsapp/copy backend'siz)
-//   2. honeypot YOK (form değil, JSON; bot riski düşük; rate-limit
-//      idempotans üzerinden yapılır)
+//   2. [TARİHSEL — artık geçersiz] honeypot YOK (form değil, JSON; bot riski
+//      düşük; rate-limit idempotans üzerinden yapılır)
 //   3. idempotans: Davetler DB'de aynı `davetEdilenEmail` + son 24 saat
 //      içinde varsa → sessiz skip (status: 'skip'), Resend ÇAĞRILMAZ,
 //      ikinci satır AÇILMAZ (KARAR 242 çift-sayım koruması ruhu)
@@ -27,6 +36,13 @@ import { Resend } from 'resend';
 import { notion, NOTION_DAVETLER_DB } from '../../lib/notion.ts';
 import { EMAIL_RE, json } from '../../lib/forms-backend.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
+import { DAVET_AKISI_ACIK } from '../../lib/davet-akisi.ts';
+import {
+  honeypotYakalandi,
+  originSebebi,
+  zamanDamgasiSebebi,
+  type SessizRetSebebi,
+} from '../../lib/davet-kapi.ts';
 
 export const prerender = false;
 
@@ -35,11 +51,32 @@ type DavetBody = {
   davetEdilenEmail?: string;
   kanal?: string;
   etkinlikId?: string;
+  /** Honeypot — gizli alan; doluysa bot (KARAR 152/194 deseni). */
+  website?: string;
+  /** Form GÖRÜNÜR olduğu andaki `Date.now()` — DavetKutusu doldurur. */
+  ts?: number | string;
 };
 
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY ?? '';
 const DAVET_FROM = 'OCAK <davet@mail.ocak.biz>';
 const IDEMPOTANS_PENCERESI_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Sessiz ret — bot başarılı olduğunu sansın, varyasyon denemesin.
+ *
+ * ⚠ Gövde gerçek başarının AYNISI: `{status:'success'}`, ayırt edici hiçbir
+ * alan yok. `api/form.ts` ve `api/kayit.ts` bu noktada `honeypot: true`
+ * markerı döner; burada BİLİNÇLİ olarak sapıyoruz. Orada marker'ın bedeli
+ * yok (lead formu), burada var: bu uç aktif olarak taranıyor ve marker
+ * saldırgana "hangi varyasyon geçiyor" sinyalini bedavaya verir.
+ *
+ * Sebep yalnız sunucu log'una düşer — sayaç için, içerik için değil (KVKK:
+ * e-posta, origin değeri, gövde ASLA loglanmaz).
+ */
+function sessizRet(sebep: SessizRetSebebi): Response {
+  console.warn(`[davet] sessiz ret: ${sebep}`);
+  return json({ status: 'success' });
+}
 
 /**
  * Davetler DB'de aynı email için son 24s içinde satır var mı?
@@ -169,12 +206,32 @@ async function resendIle(args: {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // ── 0. MUSLUK ── En ucuz kapı, en başta: gövde bile okunmaz, Notion'a ve
+  // Resend'e hiç dokunulmaz. Kapalıyken yüzey de render edilmiyor, yani buraya
+  // ulaşan her istek tanım gereği bizim arayüzümüzden gelmiyor.
+  if (!DAVET_AKISI_ACIK) return sessizRet('akis-kapali');
+
   let body: DavetBody;
   try {
     body = (await request.json()) as DavetBody;
   } catch {
     return json({ status: 'error', message: 'Geçersiz body' }, 400);
   }
+
+  // ── 0b. SESSİZ RET KAPISI ── Origin → honeypot → zaman damgası.
+  // Sıra ucuzdan pahalıya değil, ayırt ediciden ayırt edici olmayana: Origin
+  // doğrudan POST'u eler, honeypot form-dolduran botu, damga ikisinin de
+  // kaçırdığı "hızlı" denemeyi. Üçü de saf fonksiyon (`davet-kapi.ts`), I/O yok.
+  const originRet = originSebebi(
+    request.headers.get('origin'),
+    publicOrigin(request),
+  );
+  if (originRet) return sessizRet(originRet);
+
+  if (honeypotYakalandi(body.website)) return sessizRet('honeypot');
+
+  const tsRet = zamanDamgasiSebebi(body.ts, Date.now());
+  if (tsRet) return sessizRet(tsRet);
 
   const refKodu = (body.refKodu ?? '').trim();
   const davetEdilenEmail = (body.davetEdilenEmail ?? '').trim().toLowerCase();
