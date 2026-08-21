@@ -22,6 +22,14 @@
 // Eyeball #4 Fix 2: davet metni format-agnostik ("Açık Kapı" sabiti kalktı),
 // link format-özel (`/cember`, `/seremoni`, vb. `landingPath` prop'undan).
 // Metin şablonu component script'te; değişkenler data-attribute'lardan okur.
+//
+// ⚠ 22 Ağustos 2026 — `DAVET_AKISI` musluğu (bkz. `davet-akisi.ts`).
+// Kapalıyken kutu HİÇ render edilmez: sert hata yok, "şu an kullanılamıyor"
+// satırı da yok — kapalı bir yolun adını anmak, açıkken orada bir şey
+// olduğunu duyurmaktan başka işe yaramaz. Gate component'in İÇİNDE, mount
+// noktalarında değil: iki mount (`KayitFormu.astro` success div'i +
+// `odeme/tamam.astro`) tek yerden kapanır, üçüncüsü eklense o da kapanır.
+import { DAVET_AKISI_ACIK } from '../lib/davet-akisi.ts';
 
 export interface Props {
   /** OCAK-XXXX referans no (davet edenin izi). Boş ise JS submit handler doldurur. */
@@ -50,6 +58,7 @@ const {
 } = Astro.props;
 ---
 
+{DAVET_AKISI_ACIK && (
 <aside
   class="davet-kutusu"
   data-davet-kutusu
@@ -82,6 +91,20 @@ const {
     </button>
 
     <form class="davet-kutusu__mail" data-davet-mail novalidate>
+      {/* KARAR 152/194 honeypot — bot doldurur, endpoint sessiz success.
+          `.hp-field` (global.css) offscreen'dir, `display:none` DEĞİL: bazı
+          botlar görünürlük check eder. Gerçek kullanıcı + screen reader
+          aria-hidden + tabindex -1 ile zaten kapı dışında. */}
+      <div class="hp-field" aria-hidden="true">
+        <label for="davet-website">Website</label>
+        <input type="text" name="website" id="davet-website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      {/* Zaman damgası — kutu GÖRÜNÜR olduğu anda dolar (mount değil; success
+          ekranı geç açılıyorsa yanlış ölçüm olmasın). Boş kalırsa sunucu
+          sessizce reddeder: eksik damga da rettir (KARAR 1). */}
+      <input type="hidden" name="davet-ts" value="" data-davet-ts />
+
       <label class="davet-kutusu__sr-only" for="davet-email">
         Arkadaşının e-postasını gir
       </label>
@@ -119,6 +142,7 @@ const {
     eklemeyiz, biz aramayız. Gelmek tamamen ona kalmış.
   </p>
 </aside>
+)}
 
 <style>
   /* Eyeball #4 tur-2 Fix 2: kutu ölçülü öne çıkar — soluk gri çerçeve
@@ -399,6 +423,45 @@ const {
       const mailInput = kutu.querySelector<HTMLInputElement>('[data-davet-mail-input]');
       const mailBtn = kutu.querySelector<HTMLButtonElement>('[data-davet-mail-btn]');
       const mailHata = kutu.querySelector<HTMLElement>('[data-davet-mail-hata]');
+      const tsInput = kutu.querySelector<HTMLInputElement>('[data-davet-ts]');
+      const hpInput = kutu.querySelector<HTMLInputElement>('[name="website"]');
+
+      /**
+       * Zaman damgası — kutu GÖRÜNÜR olduğu anda, bir kez.
+       *
+       * Neden mount değil: iki mount bağlamı da damgayı bayatlatırdı.
+       * KayitFormu'nda kutu success div'inin içinde `hidden` doğar ve ancak
+       * kayıt tamamlanınca açılır; /odeme/tamam'da sayfa açık unutulabilir.
+       * Mount anını damgalamak, kadın daveti gönderdiğinde 6 saatlik yaş
+       * sınırına takılmasına yol açardı (`davet-kapi.ts` AZAMI_FORM_YASI_MS).
+       *
+       * IntersectionObserver `hidden` ata altında tetiklenmez — istediğimiz
+       * bu. Arka plan sekmesinde de ilerlemez; sekme öne gelince damga o an
+       * düşer, insan yine 3 saniyeyi harcar, kayıp yok.
+       *
+       * Ağ: IO desteklenmiyorsa (çok eski tarayıcı) input focus'unda damgala.
+       * Gerçek gönderim zaten input'a yazmayı gerektirir; bot focus üretmez.
+       */
+      let tsDamgalandi = false;
+      function tsDamgala(): void {
+        if (tsDamgalandi || !tsInput) return;
+        tsInput.value = String(Date.now());
+        tsDamgalandi = true;
+      }
+
+      if (typeof IntersectionObserver === 'function') {
+        const gozlemci = new IntersectionObserver((girisler) => {
+          for (const giris of girisler) {
+            if (giris.isIntersecting) {
+              tsDamgala();
+              gozlemci.disconnect();
+              break;
+            }
+          }
+        });
+        gozlemci.observe(kutu);
+      }
+      mailInput?.addEventListener('focus', tsDamgala);
 
       function teyitGoster(metin: string): void {
         if (!teyit) return;
@@ -476,6 +539,11 @@ const {
               davetEdilenEmail,
               kanal: 'mail',
               etkinlikId: etkinlik,
+              // Bot kapısı — sunucu tarafı `davet-kapi.ts`. Honeypot doluysa
+              // ya da damga yok/erken/bayatsa sunucu sessiz `success` döner;
+              // kullanıcı arayüzü ayrımı GÖREMEZ, bilerek.
+              website: hpInput?.value ?? '',
+              ts: tsInput?.value ?? '',
             }),
           });
           const data = (await res.json().catch(() => ({}))) as {
