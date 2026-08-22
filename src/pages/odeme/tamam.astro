@@ -14,6 +14,7 @@ export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
 import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { katilimTipiCoz } from '../../lib/kayit.ts';
+import { ilkAd } from '../../lib/davet-baglam.ts';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori.ts';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
@@ -45,6 +46,12 @@ type KayitOkumaSonuc = {
   etkinlikAdi: string;
   etkinlikTarihi: string;
   landingPath: string;
+  /**
+   * brief-davet-mail İŞ 1: davet edenin adı. Kayıtlar `Kadın` alanından
+   * ilk kelime — o alan ad+soyad birleşik tutar (`kadinAdiBirlestir`).
+   * Ek sorgu YOK: Kayıtlar sayfası zaten aşağıda çekiliyor.
+   */
+  davetEdenAd: string;
 };
 
 // ref → Kayıtlar query → Etkinlikler relation → katilim + etkinlikId + davet
@@ -57,6 +64,7 @@ async function kayitOku(referansNo: string): Promise<KayitOkumaSonuc> {
     etkinlikAdi: '',
     etkinlikTarihi: '',
     landingPath: '',
+    davetEdenAd: '',
   };
   if (!referansNo || !NOTION_KAYITLAR_DB) return bos;
   try {
@@ -71,11 +79,22 @@ async function kayitOku(referansNo: string): Promise<KayitOkumaSonuc> {
     const kayit = sorgu.results[0];
     if (!kayit || !('properties' in kayit)) return bos;
     const props = kayit.properties as Record<string, any>;
+
+    // brief-davet-mail İŞ 1: davet edenin adı — Kayıtlar `Kadın` rich_text
+    // (`api/kayit.ts:259-263`). Etkinlik çözülemese bile ad taşınır: adsız
+    // mail, yanlış etkinlikli mailden daha kötü değil ve zincirin bu
+    // parçasının çalıştığını görmek teşhisi kolaylaştırır.
+    const davetEdenAd = ilkAd(
+      (props['Kadın']?.rich_text ?? [])
+        .map((t: any) => t.plain_text ?? '')
+        .join(''),
+    );
+
     const etkRel: string = props['Etkinlikler']?.relation?.[0]?.id ?? '';
-    if (!etkRel) return bos;
+    if (!etkRel) return { ...bos, davetEdenAd };
 
     const etk = await notion.pages.retrieve({ page_id: etkRel });
-    if (!('properties' in etk)) return { ...bos, etkinlikId: etkRel };
+    if (!('properties' in etk)) return { ...bos, etkinlikId: etkRel, davetEdenAd };
     const etkProps = etk.properties as Record<string, any>;
 
     const rich = (name: string): string =>
@@ -107,7 +126,7 @@ async function kayitOku(referansNo: string): Promise<KayitOkumaSonuc> {
     const kategori = FORMAT_KATEGORI[formatSelect];
     const landingPath = kategori ? `/${kategori}` : '';
 
-    const meta = { etkinlikId: etkRel, etkinlikAdi, etkinlikTarihi, landingPath };
+    const meta = { etkinlikId: etkRel, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd };
 
     const tipi = katilimTipiCoz(mekan);
     if (tipi === 'link') {
@@ -132,7 +151,7 @@ async function kayitOku(referansNo: string): Promise<KayitOkumaSonuc> {
   }
 }
 
-const { katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath } =
+const { katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd } =
   await kayitOku(ref);
 ---
 <Layout title="Ödemen alındı · OCAK" description="Ödemen alındı, yerin ayrıldı." oda="OCAK" noindex>
@@ -178,6 +197,7 @@ const { katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath } =
           path'le yine WhatsApp paylaşımını kurar. */}
       <DavetKutusu
         refKodu={ref}
+        davetEdenAd={davetEdenAd}
         etkinlikId={etkinlikId}
         etkinlikAdi={etkinlikAdi}
         etkinlikTarihi={etkinlikTarihi}

@@ -34,6 +34,13 @@ import { DAVET_AKISI_ACIK } from '../lib/davet-akisi.ts';
 export interface Props {
   /** OCAK-XXXX referans no (davet edenin izi). Boş ise JS submit handler doldurur. */
   refKodu?: string;
+  /**
+   * Davet EDEN kadının adı — mail şablonunda konu ve ilk satırda geçer
+   * ("Ayşe seni de istedi"). Kullanıcıdan yeni girdi İSTENMEZ; kayıt
+   * akışında zaten var. Boşsa JS submit handler doldurur; hiç dolmazsa
+   * mail adsız yedeğe düşer ve endpoint `console.warn` basar.
+   */
+  davetEdenAd?: string;
   /** Notion etkinlik page id (davet linkine gömülür). Boş ise JS submit handler doldurur. */
   etkinlikId?: string;
   /** Etkinlik adı, Notion Etkinlikler Başlık (davet metnine gömülür). Boşsa JS doldurur. */
@@ -51,6 +58,7 @@ export interface Props {
 
 const {
   refKodu = '',
+  davetEdenAd = '',
   etkinlikId = '',
   etkinlikAdi = '',
   etkinlikTarihi = '',
@@ -63,6 +71,7 @@ const {
   class="davet-kutusu"
   data-davet-kutusu
   data-davet-ref={refKodu}
+  data-davet-eden-ad={davetEdenAd}
   data-davet-etkinlik={etkinlikId}
   data-davet-ad={etkinlikAdi}
   data-davet-tarih={etkinlikTarihi}
@@ -472,17 +481,26 @@ const {
       function getDavet(): {
         ref: string;
         etkinlik: string;
+        edenAd: string;
+        ad: string;
+        tarih: string;
+        path: string;
         url: string;
         metin: string;
       } {
         const ref = kutu.dataset.davetRef ?? '';
         const etkinlik = kutu.dataset.davetEtkinlik ?? '';
+        const edenAd = kutu.dataset.davetEdenAd ?? '';
         const ad = kutu.dataset.davetAd ?? '';
         const tarih = kutu.dataset.davetTarih ?? '';
         const path = kutu.dataset.davetPath ?? '';
         return {
           ref,
           etkinlik,
+          edenAd,
+          ad,
+          tarih,
+          path,
           url: davetUrl(ref, etkinlik, path),
           metin: davetMetni(ad, tarih),
         };
@@ -525,7 +543,30 @@ const {
           return;
         }
 
-        const { ref, etkinlik } = getDavet();
+        const { ref, etkinlik, edenAd, ad, tarih, path } = getDavet();
+
+        /**
+         * Prop zinciri sağlaması — burada, gönderimden ÖNCE.
+         *
+         * Sunucu tarafı da yedeğe düştüğünde warn basar, ama oradaki warn
+         * "alan gövdede yoktu" der; hangi mount noktasının doldurmadığını
+         * söyleyemez. Buradaki warn tarayıcı konsolunda, kadının o an
+         * baktığı sayfada düşer — kırık halkayı gösteren tek yer.
+         *
+         * Yedeklerin ÇALIŞMAMASI beklenir (brief İŞ 2). Bu satır düşüyorsa
+         * zincir kopmuştur, mailin adsız gitmesi semptomdur.
+         */
+        const eksik: string[] = [];
+        if (!edenAd) eksik.push('davetEdenAd');
+        if (!ad) eksik.push('etkinlikAd');
+        if (!tarih) eksik.push('etkinlikTarih');
+        if (!path) eksik.push('landingPath');
+        if (eksik.length) {
+          console.warn(
+            `[davet] prop zinciri eksik: ${eksik.join(', ')} — mail yedek metne düşecek`,
+          );
+        }
+
         mailBtn.disabled = true;
         const oncekiMetin = mailBtn.textContent;
         mailBtn.textContent = 'Gönderiliyor…';
@@ -539,6 +580,17 @@ const {
               davetEdilenEmail,
               kanal: 'mail',
               etkinlikId: etkinlik,
+              // Bağlam — mail şablonu + Davetler DB için. Üçü de kayıt
+              // akışında zaten var, kullanıcıdan yeni girdi istenmez.
+              //
+              // ⚠ Hepsi GÖVDEDE taşınır, query'de değil (KARAR 270). O karar
+              // davet EDİLENİN e-postası için yazıldı; aynı disiplini yeni
+              // alanlara da uyguluyoruz — davet edenin adı da kişisel veri,
+              // URL'e girmesi için bir sebep yok.
+              davetEdenAd: edenAd,
+              etkinlikAd: ad,
+              etkinlikTarih: tarih,
+              landingPath: path,
               // Bot kapısı — sunucu tarafı `davet-kapi.ts`. Honeypot doluysa
               // ya da damga yok/erken/bayatsa sunucu sessiz `success` döner;
               // kullanıcı arayüzü ayrımı GÖREMEZ, bilerek.

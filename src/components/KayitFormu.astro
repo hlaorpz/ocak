@@ -2375,6 +2375,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           if (davetKutusu) {
             if (result.referansNo) davetKutusu.dataset.davetRef = result.referansNo;
             if (payload.etkinlikId) davetKutusu.dataset.davetEtkinlik = payload.etkinlikId;
+            // brief-davet-mail İŞ 1: davet edenin adı mail şablonuna gider.
+            // `payload.ad` zaten yalın ad (soyad ayrı alan) — `/odeme/tamam`
+            // dalı birleşik addan ilk kelimeyi alır, iki dal aynı şeyi üretir.
+            if (payload.ad) davetKutusu.dataset.davetEdenAd = payload.ad;
             const seciliOpt = select.options[select.selectedIndex];
             const secAd = seciliOpt?.dataset.baslik ?? '';
             const secTarih = seciliOpt?.dataset.tarih ?? '';
