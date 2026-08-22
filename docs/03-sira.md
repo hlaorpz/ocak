@@ -32,6 +32,10 @@ yorumda bırakıldı, muhasebeci/hukuk onayı bekliyor.
 ⚠ **`robots` `Allow` bu cümle düzelmeden açılmaz.** Lansman tanımı (KARAR 149) =
 robots Allow + duyuru; bu satır o tanımın önünde duruyor.
 
+⛔ **Bu bölümün dışında iki lansman engeli daha var** (22 Ağu bot turu, aşağıdaki
+🤖 BOT HATTI bölümü): **B121** davet akışı kapalı 🔴 · **B122** Zoom kaydı süreci yok.
+İkisi de "sitenin canlı olması" ile ölçülmez, **vaadin karşılanmasıyla** ölçülür.
+
 ✅ **Marka işareti mühürlendi ve yerleşti (18–19 Ağu, KARAR 522 · 523).** Doküman
 hattının dışından gelen ilk iş — ürün tarafına dönüşün başlangıcı.
 
@@ -44,7 +48,39 @@ Sırada iki hat (B106 aynı gün kapandı — `c45332e`):
    (90–110), otuz günlük seri için moodboard (`--p`) tek `--sref`'ten daha uygun.
 
 
-### Faz 1'i tamamlayan sıra
+### 🤖 BOT HATTI — 21–22 Ağustos turundan
+
+*Sıra Kaan'ındır (22 Ağu). İlk üç madde lansmana bakar; kalanı bot borç kuyruğudur.
+Tam gerekçe ve ölçümler `20-ref-bot.md`'de, tur anlatısı `90-kronoloji/2026-08.md`'de.*
+
+1. 🔴 **Davet akışını aç — LANSMAN ENGELİ (B121, KARAR 535).** Önce üç şart: Cloudflare
+   Turnstile + IP başına hız sınırı + davet edenin kendi adresini doğrulaması. Sonra
+   `DAVET_AKISI=acik` **ve redeploy** (değer build zamanında sabitleniyor, env değiştirmek
+   tek başına yetmez — KARAR 488 deseni).
+   ⚠ **Kuyruğun unutulmaya en açık maddesi.** Kapalı bir yüzey hata vermez, log'a düşmez,
+   kimse şikâyet etmez — yalnız sessizce yok olur. Davet kayıt akışının parçasıdır; kapalı
+   kaldığı sürece **lansman tam değildir.** Musluk kapalıyken Resend maili **ve** Notion
+   Davetler DB kaydı birden susuyor (KARAR 271).
+2. **Sohbet paneli (B123).** n8n workflow: webhook → Postgres → HTML. **Sıfır commit.**
+   Bugün 61 turluk konuşma panelde 5 görünüyor; tek gerçek kayıt Postgres.
+3. **Zoom kaydı süreci (B122) — LANSMAN ENGELİ.** Site vaat ediyor, süreç yok.
+   **31 Ağustos'ta ilk Açık Kapı var.** Etik duvar KARAR 57 — kayıt bildirimi zorunlu.
+4. **Postgres yedeği (B124).** 122+ konuşma + `ocak_gizli` secret'ları, tek volume.
+   Railway'de günlük yedek açılabiliyor.
+5. **Bot dili turu (B129).** Prompt sayfasının toplu elden geçirilmesi — iç mekanizma
+   sızıntısı (*"Sistem bana göstermiyor"*). Ders: modele "şunu yazma" demek yetmiyor,
+   kalıcı çözüm koda alınır.
+6. **Kriz WA şablonu (B125).** Utility kategorisinde Meta onayı gerekiyor, **onay birkaç
+   gün sürüyor — erken başlat.** KARAR 532 bu şablon olmadan yarım çalışıyor.
+7. **Token maliyeti ölçümü (B127).** `ortak` blok ~20.500 karakter; Yetenek Evreni'ndeki
+   3.740 token ölçümü bayat. Cache disiplininin (KARAR 527) işe yarayıp yaramadığı
+   ölçülmeden bilinemez.
+8. **Operasyon el kitabı.** BOTZ komutları, arıza akışları, rotate prosedürü.
+9. **GELaiL hijyeni + n8n/Railway envanteri.** Router Notion bağımlılığı, credential
+   rotate, sahipsiz değişkenler, `IG Bot` `max_tokens` 1024 (WhatsApp'ta 600'e çekilmişti,
+   IG'de kalmış), `DB_POSTGRESDB_HOST` public/private, Advaita'nın kill switch yetkisi.
+
+
 
 1. **Notion `Kayıtlar` alanları** (Kaan, elle) — `Beklenen Tutar` (number) +
    `Mail Gitti` (checkbox). 2. maddenin ön koşulu.
@@ -283,7 +319,7 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 | cephe | sahip | durum |
 |---|---|---|
 | **B19** — WhatsApp display name | Kaan | **Kuyrukta kalır, kapsamı daraldı.** `…5226`'da "Ocak Kadın Çemberi" **onaylı** (19 Ağu); kalan iş yalnız `…0888` — ad başvurusu KARAR 521. (Numara yayını buna bağlı değil — KARAR 396 kapandı, hat canlı) |
-| **B103** — "OCAK" adı iki beyanda çelişiyor | Kaan (~5 dk) | Meta Manager ret geçmişi + **gerekçe metni** okunacak; `20-ref-bot.md:13` ile KARAR 410 uyuşmuyor |
+| **B103** — "OCAK" adı iki beyanda çelişiyor | Kaan (~5 dk) | Meta Manager ret geçmişi + **gerekçe metni** okunacak; `_arsiv/20-ref-bot-2026-08-06.md:41` (eski `20-ref-bot.md:13`, 22 Ağu'da arşive taşındı) ile KARAR 410 uyuşmuyor |
 | **B104** — `…0888` hattı WABA değil | Kaan | Hat açılır → ad onayı (KARAR 521) → bot bağlanır → **canlı round-trip** ile kapanır. Site kodu değişmez |
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |

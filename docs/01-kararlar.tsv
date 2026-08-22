@@ -522,3 +522,15 @@ no	tarih	baslik	durum	iliski	kaynak
 521	2026-08-19	İkinci hat (…0888) display name başvurusu "Ocak Kadın Topluluğu"; Plan B "Ocak Türkiye"	AKTIF	↔519 · ←410	2026-08.md#k521
 522	2026-08-19	Marka işareti — Cormorant "O" + iç kor; outline harf, filtresiz gradyan, `nonzero` dolgu	KALICI	←35 · ↔513	2026-08.md#k522
 523	2026-08-19	Başlığı kim üretiyorsa markayı da o koyar — Sayfalar Notion'dan, Etkinlikler ve sabit sayfalar çağrı yerinden	KALICI	←354 · ↔515	2026-08.md#k523
+524	2026-08-22	Secret tek kaynağı Railway env — workflow Secrets node'ları boş, her tüketiciye kendi Notion token'ı	KALICI	←469 · ↔534	2026-08.md#k524
+525	2026-08-22	Sessiz kırılma yasağı — eksik bağlam `throw` eder, kısmi yazım yapılmaz	KALICI	←102 · ↔524	2026-08.md#k525
+526	2026-08-22	Oturum sınırı — `Geçmiş Oku` yalnız altı saatlik pencere; sıfırlama komutu eklenmez	AKTIF	←254 · ↔527	2026-08.md#k526
+527	2026-08-22	Cache disiplini — kalıcı kural `ortak` bloğa; `ortak` iki kanalda birebir aynı	KALICI	↔530	2026-08.md#k527
+528	2026-08-22	`ocak_etkinlik_detay` budaması yazımın ardına bağlanır — yazım başarısızsa budama da olmaz	AKTIF	↔525	2026-08.md#k528
+529	2026-08-22	Telefon eşleşmesi formattan bağımsız — Notion'a filtre gitmez, son on hane JS'te karşılaştırılır	KALICI	←255	2026-08.md#k529
+530	2026-08-22	Kanal beyanı zorunlu — her kanalın `kisisel` bloğu hangi kanal olduğunu yazar, çıkarım bırakılmaz	KALICI	↔527	2026-08.md#k530
+531	2026-08-22	Yeterlilik kuralı — katılım detayı eksikse yarım cevap değil devir; geçmişe gerçek durum yazılır	KALICI	←254 · ↔532	2026-08.md#k531
+532	2026-08-22	Kriz hattı — WhatsApp ve mail birlikte, bağımsız try/catch; bot kriz anında süre söylemez	KALICI	←57 · ↔531	2026-08.md#k532
+533	2026-08-22	Devir kutusu Kaan'da — `devir@ocak.biz` grubu kurulmaz, Gmail yönlendirme kullanılır	AKTIF	↔532	2026-08.md#k533
+534	2026-08-22	Sistem maili gönderen adresi `sistem@mail.ocak.biz` — `onboarding@resend.dev` terk edildi	AKTIF	↔524	2026-08.md#k534
+535	2026-08-22	Davet akışı geçici olarak kapalı — `DAVET_AKISI` varsayılan kapalı, lansmandan önce açılmalı	AKTIF	←488 · ↔271	2026-08.md#k535

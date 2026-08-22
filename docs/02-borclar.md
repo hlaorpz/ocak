@@ -1851,7 +1851,10 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 ## B103 — İki canlı beyan "OCAK" adı hakkında çelişiyor
 
 - [ ] **Sahip:** Claude.ai · **Tetikleyici:** bir sonraki `20-ref-bot.md` turu
-- **Çelişki:** `20-ref-bot.md:13` — *"Ocak Kadın Çemberi" ve **"OCAK"** denemeleri reddedildi*.
+- **Çelişki:** `_arsiv/20-ref-bot-2026-08-06.md:41` — *"Ocak Kadın Çemberi" ve **"OCAK"** denemeleri reddedildi*.
+  *(Atıf 22 Ağustos 2026'da çevrildi: canlı `20-ref-bot.md` o gün baştan yazıldı, eski gövde
+  arşive alındı. Eski satır numarası `20-ref-bot.md:13`; arşiv dosyasında şerh başlığı
+  yüzünden 41. satıra kaydı. Canlı dosyanın 13. satırı artık başka bir şey söylüyor.)*
   KARAR 410'un kronoloji satırı (`2026-07.md:1194` zinciri) ise *"Ocak Kadın Çemberi" ve
   "Ocak.biz" elendi, **ana aday "OCAK"*** der. Yani düz "OCAK" bir yerde denenmiş-reddedilmiş,
   öbür yerde henüz-denenmemiş-aday.
@@ -2079,3 +2082,107 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - ⚠ **Etik duvar — değişmez (KARAR 57):** fiziksel çember ve paylaşım turu **kaydedilmez**.
   Bu akış yalnız tam-kayıt kategorisindeki formatlar içindir; kayıt bildirimi zorunludur.
 - **Sabit ayrım:** video hiçbir varyantta Notion'da veya sitede durmaz — barınakta durur, yüzey yalnız işaret tutar.
+
+## B121 — 🔴 Davet akışı açılmalı — LANSMAN ENGELİ
+
+- [ ] **Sahip:** CC (kod) → Kaan (env + redeploy)
+- **Kaynak:** `brief-davet-honeypot` + merge turu (22 Ağu, `58ed14c` · `a5ade5a`), KARAR 535.
+- **Durum:** `DAVET_AKISI` production env'de **tanımlı değil → varsayılan kapalı**. Davet kutusu
+  yedi kayıt sayfasının hiçbirinde render edilmiyor; `/api/davet` erken dönüyor.
+- ⚠ **Neden borç:** kapatma **bot saldırısı nedeniyle alınmış geçici bir önlemdir, kalıcı karar
+  değildir.** Davet, kayıt akışının bir parçası — kadın kayıt olduktan sonra bir kız kardeşini
+  çağırır. Kapalı kaldığı sürece o halka eksik ve **lansman tam değil.**
+- **İki uç birden susuyor:** Resend maili **ve** Notion Davetler DB kaydı
+  (`383b61ebfa87801db7b7d47493e41aca`, KARAR 271). Yani davet kapalıyken `Sonuç` eşleştirmesi ve
+  A→B hatırlatma zincirinin girdisi de üretilmiyor.
+- **Açma şartı — üçü de bitmeden açılmaz:**
+  1. Cloudflare Turnstile (ya da eşdeğeri)
+  2. IP başına hız sınırı
+  3. Davet edenin kendi adresini doğrulaması
+- **Açma yordamı:** `DAVET_AKISI=acik` **ve redeploy** — değer build zamanında sabitleniyor
+  (`kart-akisi.ts` deseni, KARAR 488); env değiştirmek tek başına yetmez.
+- ⚠ **Unutulmaya en açık borç.** Kapalı bir yüzey hata vermez, log'a düşmez, kimse şikâyet etmez —
+  yalnız sessizce yok olur. Öncelik işareti (🔴) korunacak.
+
+## B122 — Zoom kaydı süreci yok — LANSMAN ENGELİ
+
+- [ ] **Sahip:** Kaan
+- **Çelişki:** site *"Açık Kapı kaydedilir, kayıt katılımcılarla paylaşılır"* diye vaat ediyor;
+  süreç kurulmadı (Vimeo yok).
+- ⚠ **31 Ağustos'ta ilk Açık Kapı var.** Vaat edilip yerine getirilmeyen ilk şey olur.
+- **Bağ:** KARAR 57 etik duvarı — kayıt bildirimi zorunlu, çember/ritüel kaydedilmez. Bu akış
+  yalnız tam-kayıt kategorisindeki formatlar için. B120 (arşiv yolu) ile aynı aileden.
+
+## B123 — Sohbet paneli yok — botun geçmişi denetlenemiyor
+
+- [ ] **Sahip:** CC (n8n)
+- **Ölçüm:** n8n execution budaması nedeniyle 61 turluk bir konuşma panelde **5** görünüyor.
+- **Tek gerçek kayıt Postgres.** Denetim yapılamıyor, arıza sonrası ne konuşulduğu okunamıyor.
+- **Çözüm:** n8n workflow, webhook → Postgres → HTML. **Sıfır commit** — site kodu değişmez.
+
+## B124 — Postgres yedeği yok
+
+- [ ] **Sahip:** Kaan (Railway)
+- **Risk:** 122+ konuşma, `ocak_gizli` secret'ları, **tek volume**. Kaybı geri alınamaz.
+- **Çözüm:** Railway'de günlük yedek açılabiliyor — açılmadı.
+
+## B125 — Kriz WhatsApp şablonu onaylı değil
+
+- [ ] **Sahip:** Kaan (Meta)
+- **Sorun:** Meta 24 saat penceresi kapalıyken mesaj gitmiyor. Kriz devri tam da pencere kapalıyken
+  gerekebilir.
+- **Çözüm:** Utility kategorisinde onaylı şablon. **Onay birkaç gün sürüyor — erken başlat.**
+- **Bağ:** KARAR 532 (kriz hattı) bu şablon olmadan yarım çalışıyor; mail ayağı duruyor, WA ayağı düşüyor.
+
+## B126 — Kriz WA hatası sessiz
+
+- [ ] **Sahip:** CC (n8n)
+- **Sorun:** kriz WhatsApp gönderimi patlarsa yalnız n8n log'una yazıyor. Kimse bakmıyor.
+- **Bağ:** KARAR 525 (sessiz kırılma yasağı) bu noktada uygulanmamış — tam da o kararın yasakladığı şey.
+
+## B127 — Token maliyeti ölçülmedi
+
+- [ ] **Sahip:** CC
+- **Ölçüm:** `ortak` blok ~20.500 karakter (~7-8 bin token). Yetenek Evreni'ndeki **3.740 token**
+  ölçümü bayat — o ölçüm bugünkü bloğu görmedi.
+- **Neden önemli:** `ortak` cache'li, `kisisel` cache'siz (KARAR 527). Maliyet ölçülmeden cache
+  disiplininin işe yarayıp yaramadığı bilinemez.
+
+## B128 — İdempotans yok — Meta retry'da çift cevap, çift ücret
+
+- [ ] **Sahip:** CC (n8n)
+- **Sorun:** Meta webhook'u retry ederse bot ikinci kez cevap veriyor; kadın iki mesaj alıyor, ücret iki kez çıkıyor.
+- **Çözüm:** `wamid` bazlı idempotans.
+- **Kardeş borç:** `/api/davet` idempotansı da işlevsiz (aynı e-posta tekrarında tetiklenmiyor,
+  Notion hatasında `false` dönüyor) — **B130**.
+
+## B129 — Bot dili: iç mekanizma sızıntısı
+
+- [ ] **Sahip:** Kaan/Advaita (prompt sayfası) → CC (kod tarafı)
+- **Sorun:** *"Sistem bana göstermiyor"* gibi cümleler kadına gidiyor. Bot kendi iç mekanizmasını anlatıyor.
+- **Bağ:** KARAR 57 Bot Davranış Kuralları — bot kendini gizlemez ama iç mekanizmasını da anlatmaz;
+  ikisi ayrı şey. Marka dili turu ile birlikte yürütülür.
+- **Ders (KARAR 525 turundan):** modele "şunu yazma" demek yetmiyor — model başka bir şey uyduruyor.
+  Kalıcı çözüm koda alınır, prompt'a bırakılmaz.
+
+## B130 — `/api/davet` idempotansı işlevsiz
+
+- [ ] **Sahip:** CC
+- **Ölçüm (22 Ağu, `api/davet.ts:50-69`):** aynı e-posta + son 24 saat sorgusu **hiç tetiklenmiyor** —
+  saldırı her turda farklı alıcıya gittiği için pencere hiç dolmadı. Ayrıca Notion sorgusu hata
+  verirse fonksiyon `false` dönüyor (bilinçli fail-open) → idempotans o durumda hiç yok.
+- **Neden bugün kapatılmadı:** `brief-davet-honeypot` kapsamı dışıydı, bilinçli ertelendi.
+- **Bağ:** KARAR 242 (çift-sayım ruhu) bu uçta fiilen uygulanmıyor. B128'in kardeşi.
+
+## B131 — `00-durum.md` tavanı dolu — bot bölümü yazılamadı
+
+- [ ] **Sahip:** CC
+- **Ölçüm (22 Ağu):** `00-durum.md` **195/200 satır** (tavan KARAR 457). Bu turun bot paragrafı
+  ~10 satırdı; yazılsa tavan aşılacaktı.
+- **Ek sorun:** dosyada **bot için ayrılmış blok yok** — bot bilgisi sekiz ayrı satıra dağılmış
+  (30, 71, 95, 102, 110-111, 141, 171, 192), üçü farklı `##` başlığının altında. "Bot bölümünü
+  güncelle" diye bir işlem tanımlı değil.
+- **Karar (Kaan, 22 Ağu):** brief §4 **iptal**, yerine bu borç açıldı. Bot gerçeği
+  `20-ref-bot.md`'de tam hâliyle duruyor; `00-durum.md` ona referansla bırakıldı.
+- **Çözüm iki adımlı:** (a) tahliye — en eski dönem bloğu kronolojiye **iner**, silinmez
+  (KARAR 61); (b) boşalan yerde bot için tek blok açılır.
