@@ -7,7 +7,8 @@
 // Bugünkü kapı: `DAVET_AKISI` musluğu + Origin + zaman damgası + honeypot.
 // Ayrıntı `davet-akisi.ts` ve `davet-kapi.ts` başlıklarında.
 //
-// Akış (POST): body {refKodu, davetEdilenEmail, kanal, etkinlikId, website, ts}
+// Akış (POST): body {refKodu, davetEdilenEmail, kanal, etkinlikId, website, ts,
+//   davetEdenAd, etkinlikAd, etkinlikTarih, landingPath}
 //   0. musluk: `DAVET_AKISI` kapalıysa sessiz dönüş, Resend ÇAĞRILMAZ
 //   0b. sessiz ret kapısı: Origin → honeypot → zaman damgası (`davet-kapi.ts`)
 //   1. validation (kanal=mail bekleniyor; whatsapp/copy backend'siz)
@@ -16,11 +17,14 @@
 //   3. idempotans: Davetler DB'de aynı `davetEdilenEmail` + son 24 saat
 //      içinde varsa → sessiz skip (status: 'skip'), Resend ÇAĞRILMAZ,
 //      ikinci satır AÇILMAZ (KARAR 242 çift-sayım koruması ruhu)
+//   3b. mail bağlamı normalize (`davet-baglam.ts`): ad ilk kelimeye,
+//      metinler sınıra, `landingPath` beyaz listeye. Eksik → yedek + warn.
 //   4. Resend transactional → from `davet@mail.ocak.biz`, B'ye TEK mail
 //      (Resend API key env'den). HTML template inline; Kaan dilerse Resend
 //      dashboard'da template oluşturup template_id ile genişletir.
 //   5. Notion Davetler DB satır: Davet Eden Ref / Davet Edilen / Kanal /
-//      Tarih / Sonuç=Beklemede. n8n sonuç eşleştirmesi için n8n tarafı.
+//      Tarih / Sonuç=Beklemede / Davet Eden / Davet Edilen Etkinlik.
+//      n8n sonuç eşleştirmesi için n8n tarafı.
 //
 // KVKK:
 //   - davet edilen email URL/query'ye ASLA girmez (sadece POST body)
@@ -38,6 +42,13 @@ import { EMAIL_RE, json } from '../../lib/forms-backend.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 import { DAVET_AKISI_ACIK } from '../../lib/davet-akisi.ts';
 import {
+  gecerliLandingYolu,
+  htmlKacir,
+  ilkAd,
+  metinKirp,
+  AZAMI_ETKINLIK_UZUNLUGU,
+} from '../../lib/davet-baglam.ts';
+import {
   honeypotYakalandi,
   originSebebi,
   zamanDamgasiSebebi,
@@ -51,6 +62,18 @@ type DavetBody = {
   davetEdilenEmail?: string;
   kanal?: string;
   etkinlikId?: string;
+  /**
+   * brief-davet-mail İŞ 1 — mail bağlamı. Üçü de kayıt akışında zaten var,
+   * kullanıcıdan yeni girdi istenmez; DavetKutusu prop zincirinden geçirir.
+   * Hepsi GÖVDEDE taşınır, query'de değil (KARAR 270 disiplini).
+   *
+   * ⚠ Dördü de client kaynaklı → `davet-baglam.ts`ten geçmeden ne maile ne
+   * Notion'a yazılır. HTML kaçırma ve yol beyaz listesi orada.
+   */
+  davetEdenAd?: string;
+  etkinlikAd?: string;
+  etkinlikTarih?: string;
+  landingPath?: string;
   /** Honeypot — gizli alan; doluysa bot (KARAR 152/194 deseni). */
   website?: string;
   /** Form GÖRÜNÜR olduğu andaki `Date.now()` — DavetKutusu doldurur. */
@@ -106,83 +129,341 @@ async function dahaOnceDavetEdildi(email: string): Promise<boolean> {
 }
 
 /**
- * Davetler DB'ye yeni satır. Property adları brief birebir:
+ * Davetler DB'ye yeni satır. Sekiz property, adları canlı şemadan doğrulandı
+ * (22 Ağustos 2026, data source `383b61eb-fa87-809f-9654-000bd1fc7ca6`):
  *   Davet Eden Ref (title) / Davet Edilen (email) / Kanal (select) /
- *   Tarih (date) / Sonuç (select=Beklemede) / Hatırlatma Atıldı (checkbox=false)
- * Property tipi yanlışsa Notion sessizce yutar — exact-match şart
- * (Inventory > spec, brief uyarısı).
+ *   Tarih (date) / Sonuç (select=Beklemede) / Hatırlatma Atıldı (checkbox) /
+ *   Davet Eden (text) / Davet Edilen Etkinlik (text)
+ * Property tipi ya da adı yanlışsa Notion sessizce yutar — exact-match şart
+ * (Inventory > spec, brief uyarısı). Notion API'de `text` = `rich_text`.
+ *
+ * ── `Davet Eden` `Davet Eden Ref`in yerini ALMAZ, yanına gelir ──
+ * Ref (OCAK-XXXX) n8n'in A→B eşleştirme anahtarı; ad insan gözü için.
+ * İkisi ayrı işe bakıyor, biri diğerini geçersizleştirmiyor.
+ *
+ * ── Boş alan YAZILMAZ ──
+ * Bağlam eksikse hücre hiç açılmaz, boş dize basılmaz. Böylece Notion'daki
+ * boş hücre "o gönderimde prop zinciri kırıktı" demenin kaydı olur; boş
+ * dizeyle doldurulsaydı bu ayrım kaybolurdu.
  */
 async function davetlerDbYaz(args: {
   refKodu: string;
   davetEdilenEmail: string;
   kanal: 'Mail' | 'WhatsApp';
+  davetEdenAd: string;
+  etkinlikAd: string;
 }): Promise<void> {
   if (!NOTION_DAVETLER_DB) return;
+  const properties: Record<string, unknown> = {
+    'Davet Eden Ref': {
+      title: [{ text: { content: args.refKodu || '(boş)' } }],
+    },
+    'Davet Edilen': { email: args.davetEdilenEmail },
+    Kanal: { select: { name: args.kanal } },
+    Tarih: { date: { start: new Date().toISOString() } },
+    Sonuç: { select: { name: 'Beklemede' } },
+    'Hatırlatma Atıldı': { checkbox: false },
+  };
+  if (args.davetEdenAd) {
+    properties['Davet Eden'] = {
+      rich_text: [{ text: { content: args.davetEdenAd } }],
+    };
+  }
+  if (args.etkinlikAd) {
+    properties['Davet Edilen Etkinlik'] = {
+      rich_text: [{ text: { content: args.etkinlikAd } }],
+    };
+  }
   await notion.pages.create({
     parent: { database_id: NOTION_DAVETLER_DB },
-    properties: {
-      'Davet Eden Ref': {
-        title: [{ text: { content: args.refKodu || '(boş)' } }],
-      },
-      'Davet Edilen': { email: args.davetEdilenEmail },
-      Kanal: { select: { name: args.kanal } },
-      Tarih: { date: { start: new Date().toISOString() } },
-      Sonuç: { select: { name: 'Beklemede' } },
-      'Hatırlatma Atıldı': { checkbox: false },
-    } as never,
+    properties: properties as never,
   });
 }
 
 /**
  * Davet linkini server'da üret — origin Vercel proxy header'larından
  * (x-forwarded-host). publicOrigin helper'ı zaten tek yer (KARAR Aşama 3b).
- * Etkinlik geçmiş/dolu ise /acik-kapi sayfası nazikçe yönlendirir
- * (geçmiş-etkinlik güvenlik ağı, KARAR 219 deseni — ayrı tasarım).
+ *
+ * ── 22 Ağustos 2026: yol artık sabit değil ──
+ * Önceki hâli `/acik-kapi`yi SABİT yazıyordu. `landingPath` prop'u vardı,
+ * DavetKutusu'nda tanımlıydı, WhatsApp paylaşımında kullanılıyordu — ama
+ * gövdeye hiç konmadığı için mail dalına ulaşmıyordu. Sonuç: çemberden davet
+ * edilen kadın da Açık Kapı sayfasına düşüyordu. Kırık olan şey buradaki
+ * fallback değil, zincirin bir halkasının hiç takılmamış olmasıydı.
+ *
+ * Yol `gecerliLandingYolu` beyaz listesinden geçer. Liste dışı ya da eksik
+ * değer ana sayfaya düşer — `/acik-kapi`ye DEĞİL: yanlış bir formatın
+ * sayfasına götürmek, ana sayfaya götürmekten daha çok yanıltır.
+ *
+ * ⚠ Ana sayfada geçmiş-etkinlik güvenlik ağı YOK (o ağ format sayfalarında
+ * yaşar). Fallback'in bedeli bu; çağıran taraf bu yüzden warn basar.
  */
-function davetLinki(origin: string, etkinlikId: string, refKodu: string): string {
-  const u = new URL('/acik-kapi', origin);
+function davetLinki(
+  origin: string,
+  landingYolu: string | null,
+  etkinlikId: string,
+  refKodu: string,
+): string {
+  const u = new URL(landingYolu ?? '/', origin);
   if (etkinlikId) u.searchParams.set('etkinlik', etkinlikId);
   if (refKodu) u.searchParams.set('ref', refKodu);
   return u.toString();
 }
 
+// ── OCAK paleti, mail kopyası ──
+// Site token'ları (`tokens.css`) build'e giriyor, mail HTML'i girmiyor —
+// değerler burada elle durur. ⚠ `ALT_NOT` bilinçli olarak `--smoke`
+// (#5C5350) DEĞİL: marka paletinin "Sıcak Gri"si (10-marka.md). Koyu zeminde
+// 12px'lik bir satır için #5C5350 mail istemcilerinde okunmuyor.
+const RENK = {
+  ZEMIN: '#1A1210', // kömür
+  YAZI: '#F2EAE2', // krem
+  KOZ: '#C44B2F', // köz — buton zemini, vurgu
+  ALT_NOT: '#8A7E78', // sıcak gri
+} as const;
+
+// Başlık serif, gövde sans. Web font GÖMÜLMEZ (brief): Cormorant Garamond
+// adı önce yazılır, yüklemeyen istemci sistem serif'ine düşer — mail
+// istemcilerinin çoğu zaten @font-face'i sıyırır, gömmek boşuna ağırlık.
+const YAZI_BASLIK = "'Cormorant Garamond', Georgia, 'Times New Roman', serif";
+const YAZI_GOVDE =
+  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
 /**
- * Resend HTML — minimal inline template. OCAK paleti hint'leri (köz/krem)
- * mail client uyumluluğu için inline. Kaan dilerse Resend dashboard'da
- * zengin template oluşturup `template_id` ile genişletir; o sürümde bu
- * `html` parametresi kaldırılır.
+ * Mail gövdesinin metni — bağlam varsa dolu, yoksa yedek.
+ *
+ * ⚠ YEDEKLERİN ÇALIŞMAMASI BEKLENİR (brief İŞ 2). Üç alan da kayıt akışında
+ * mevcut; yedek devreye giriyorsa prop zinciri kırıktır. Çağıran taraf bunu
+ * `console.warn` ile işaretler — burası sessizce güzel bir cümle üretip
+ * arızayı gizlemez, yalnızca maili boş göndermez.
+ *
+ * ── Neden tarih cümlenin İÇİNDE değil ──
+ * `formatEtkinlikTarihi` "31 Ağustos 2026 · 20:00" üretir. Bu dize cümleye
+ * gömüldüğünde ek çekimi kırılır ("20:00'te"? "· 20:00'de"?). Tarih kendi
+ * satırına alınınca sorun tamamen ortadan kalkar — KARAR 272'nin iki-nokta
+ * çözümüyle aynı mantık: değişkeni cümlenin gramerinden çıkar.
+ *
+ * ⚠ "kız kardeşin" YAZILMAZ. Davet edilen kadın henüz dışarıda; içeriden bir
+ * kelimeyle karşılanmaz (brief).
+ *
+ * ── Neden "buluşma", neden "çember" değil ──
+ * Yedi format bu tek şablonu besliyor. Açılış "çembere oturuyor" derken
+ * detay bloğu "Kök Atölyesi" yazdığında mail kendi içinde çelişiyordu.
+ * `buluşma` KARAR 272'nin format-agnostik şemsiye kelimesi; şemsiye üstte,
+ * özel ad altta. Yeni bir format eklendiğinde bu satır yine doğru kalır.
  */
-function resendHtml(link: string): string {
+/**
+ * Gövde paragrafları — HTML ve düz metnin ORTAK kaynağı.
+ *
+ * Brief kuralı: "HTML ve düz metin aynı bilgiyi taşır, biri diğerinden fazla
+ * söylemez." İki şablonda iki kopya tutmak bu kuralı ilk dil turunda bozardı
+ * — biri güncellenir, diğeri unutulur. Cümleler burada bir kez yaşar; HTML
+ * onları `<tr>`lere sarar, düz metin boş satırla ayırır.
+ *
+ * `alt`: HTML'de o paragrafın altındaki boşluk (px). Düz metin bu alanı
+ * yok sayar — orada ritmi boş satır kurar.
+ */
+const GOVDE_PARAGRAFLARI: ReadonlyArray<{ metin: string; alt: number }> = [
+  { metin: 'Seni de yanında istedi.', alt: 28 },
+  {
+    metin:
+      "Bu buluşmalar OCAK'ın en sade hâli. Bir ateş yanıyor, kadınlar bir araya " +
+      'geliyor, herkes kendi sözünü söylüyor. Öğretilen bir şey yok, konuşmak ' +
+      'zorunda da değilsin.',
+    alt: 24,
+  },
+  {
+    metin:
+      'Kadınlar binlerce yıl böyle oturdu — guru yoktu, reçete yoktu. Sadece ' +
+      'birbirlerinin tanıklığı. Biz o halkayı yeniden kuruyoruz.',
+    alt: 32,
+  },
+];
+
+/** Buton / düz metin çağrısı — tek yerde, iki şablon da buradan okur. */
+const CAGRI_METNI = 'Neye çağrıldığına bak';
+
+/** Alt not — KVKK güven jesti, iki şablonda da birebir aynı. */
+const ALT_NOT_METNI = 'Bu tek bir davet. Listeye eklenmedin, seni aramayacağız.';
+
+function mailMetni(baglam: {
+  davetEdenAd: string;
+  etkinlikAd: string;
+  etkinlikTarih: string;
+}): { konu: string; acilis: string } {
+  const { davetEdenAd } = baglam;
+  return {
+    konu: davetEdenAd ? `${davetEdenAd} seni de istedi` : 'Seni de istediler',
+    acilis: davetEdenAd
+      ? `${davetEdenAd} bir buluşmaya geliyor.`
+      : 'Biri bir buluşmaya geliyor.',
+  };
+}
+
+/**
+ * Resend HTML.
+ *
+ * ── Neden tablo sarmalayıcı, neden `<body>` stili yetmiyor ──
+ * Gmail (ve Outlook.com) gelen HTML'i sanitize ederken `<body>` etiketini
+ * kendi kabıyla değiştirir; üzerindeki inline `background` ile birlikte.
+ * Şablon kömür zemini `<body style="background:#1A1210">` üzerinde
+ * taşıyordu — koda bakınca doğru, istemcide krem. Brief'in "marka tersine
+ * dönmüş" gözlemi buydu: değer yanlış değildi, YERİ yanlıştı.
+ *
+ * Doğru yer, sıyrılmayan bir eleman: `bgcolor` attribute'u + inline
+ * `background-color` taşıyan tam genişlikte bir `<table>`. `<body>` stili de
+ * KORUNUR — biri sıyrılırsa diğeri tutar, ikisi birden zarar vermez.
+ *
+ * ── Kaçırma ──
+ * `davetEdenAd` ve `etkinlikAd` client gövdesinden gelir. `htmlKacir`
+ * olmadan `davetEdenAd` alanına etiket yazan biri, OCAK'ın doğrulanmış alan
+ * adından kimlik avı linki yollardı.
+ *
+ * `link` de kaçırılır — güvenlik için değil (onu sunucu `publicOrigin` +
+ * beyaz listeden geçmiş yoldan kendisi üretir), doğruluk için: `URL`
+ * `?etkinlik=…&ref=…` üretir ve HTML attribute'unda çıplak `&` entity
+ * olmalıdır. Tarayıcılar affeder, katı sanitize eden istemciler etmez.
+ */
+function resendHtml(args: {
+  link: string;
+  davetEdenAd: string;
+  etkinlikAd: string;
+  etkinlikTarih: string;
+}): string {
+  const { konu, acilis } = mailMetni(args);
+  // Ad ayrıca kaçırılmaz: `acilis` onu zaten içeriyor ve bütün olarak
+  // kaçırılıyor. İki kez kaçırmak `&amp;amp;` üretirdi.
+  const etkAd = htmlKacir(args.etkinlikAd);
+  const etkTarih = htmlKacir(args.etkinlikTarih);
+
+  // Etkinlik adı + tarih: cümlenin dışında, kendi bloğunda. Alan boşsa satır
+  // tamamen düşer — boş bir ayraç ya da sarkan nokta bırakmaz.
+  const detaySatirlari = [
+    etkAd
+      ? `<div style="font-family:${YAZI_BASLIK};font-size:19px;font-style:italic;color:${RENK.KOZ};line-height:1.35;">${etkAd}</div>`
+      : '',
+    etkTarih
+      ? `<div style="font-family:${YAZI_GOVDE};font-size:14px;color:${RENK.ALT_NOT};line-height:1.5;padding-top:4px;">${etkTarih}</div>`
+      : '',
+  ]
+    .filter(Boolean)
+    .join('\n            ');
+  const detayBlogu = detaySatirlari
+    ? `<tr><td style="padding:0 0 28px;">
+            ${detaySatirlari}
+          </td></tr>`
+    : '';
+
+  const govdeStil = `font-family:${YAZI_GOVDE};font-size:15px;line-height:1.65;color:${RENK.YAZI};`;
+
+  // Paragraflar ortak kaynaktan. Kaçırma burada uygulanır: cümleler sabit,
+  // bugün kaçırma gerektirmiyorlar — ama sabit kalacaklarının garantisi yok
+  // ve şablona giren her dizenin aynı kapıdan geçmesi ucuz bir disiplin.
+  const paragraflar = GOVDE_PARAGRAFLARI.map(
+    ({ metin, alt }) => `<tr>
+              <td style="${govdeStil}padding:0 0 ${alt}px;">
+                ${htmlKacir(metin)}
+              </td>
+            </tr>`,
+  ).join('\n            ');
+
   return `<!doctype html>
 <html lang="tr">
-  <body style="margin:0;padding:0;background:#1A1210;font-family:Georgia,serif;color:#F2EAE2;">
-    <div style="max-width:520px;margin:0 auto;padding:40px 24px;">
-      <p style="font-size:18px;font-style:italic;color:#F2EAE2;line-height:1.4;margin:0 0 24px;">
-        <strong style="font-weight:normal;color:#C44B2F;">Bir arkadaşın seni OCAK'ın yanına çağırdı.</strong>
-      </p>
-      <p style="font-size:15px;line-height:1.6;color:#F2EAE2;margin:0 0 28px;">
-        Şimdi gelmek istersen kapı açık:
-      </p>
-      <p style="margin:0 0 32px;">
-        <a href="${link}" style="display:inline-block;background:#C44B2F;color:#F2EAE2;padding:14px 24px;text-decoration:none;border-radius:3px;font-size:15px;">
-          Ateşin yanına gel →
-        </a>
-      </p>
-      <p style="font-size:15px;line-height:1.6;color:#F2EAE2;margin:0 0 32px;">
-        Hazır değilsen, ateş sönmüyor — istediğin an buradayız.
-      </p>
-      <p style="font-size:12px;line-height:1.55;color:#5C5350;margin:0;font-style:italic;">
-        Bu tek bir davet. Seni bir listeye eklemedik, seni biz aramayacağız.
-        Gelmek sana kalmış.
-      </p>
-    </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>${htmlKacir(konu)}</title>
+  </head>
+  <body style="margin:0;padding:0;background:${RENK.ZEMIN};background-color:${RENK.ZEMIN};color:${RENK.YAZI};">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${RENK.ZEMIN}" style="background-color:${RENK.ZEMIN};margin:0;padding:0;width:100%;">
+      <tr>
+        <td align="center" style="padding:40px 16px;">
+          <table role="presentation" width="520" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:520px;">
+            <tr>
+              <td style="font-family:${YAZI_BASLIK};font-size:24px;font-style:italic;line-height:1.35;color:${RENK.YAZI};padding:0 0 16px;">
+                ${htmlKacir(acilis)}
+              </td>
+            </tr>
+            ${detayBlogu}
+            ${paragraflar}
+            <tr>
+              <td style="padding:0 0 36px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td bgcolor="${RENK.KOZ}" style="background-color:${RENK.KOZ};border-radius:3px;">
+                      <a href="${htmlKacir(args.link)}" style="display:inline-block;font-family:${YAZI_GOVDE};font-size:15px;line-height:1.2;color:${RENK.YAZI};text-decoration:none;padding:15px 26px;">${htmlKacir(CAGRI_METNI)} →</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-family:${YAZI_GOVDE};font-size:12px;line-height:1.6;color:${RENK.ALT_NOT};">
+                ${htmlKacir(ALT_NOT_METNI)}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>`;
+}
+
+/**
+ * Düz metin alternatifi (`text/plain`).
+ *
+ * ── Neden var ──
+ * `mail.ocak.biz` 20–21 Ağustos'ta röle olarak kötüye kullanıldı; alan adının
+ * itibarı şu an konfor meselesi değil. `text/plain` alternatifi olmayan mail
+ * spam skorunda ceza alır. Devir mailinde (n8n `Devir Mail` node'u) `text`
+ * zaten dolu; davette olmaması tutarsızlıktı.
+ *
+ * ── HTML ile ilişkisi ──
+ * Aynı bilgi, biri diğerinden fazla söylemez. Cümleler ortak kaynaktan
+ * (`GOVDE_PARAGRAFLARI`, `CAGRI_METNI`, `ALT_NOT_METNI`); açılış ve detay
+ * satırları aynı yedek kurallarına uyar — ad boşsa "Biri…", tarih boşsa
+ * satır tamamen düşer.
+ *
+ * ── Kaçırma YOK, bilerek ──
+ * `htmlKacir` HTML'e özeldir. Düz metinde `&amp;` uygulamak metni bozardı:
+ * alıcı ham entity görür. `davet-baglam.ts`in uzunluk sınırı ve `landingPath`
+ * beyaz listesi ise burada da geçerli — onlar taşıyıcıdan bağımsız.
+ *
+ * Buton yerine tam URL açık yazılır; `?ref=` korunur (izleme zinciri düz
+ * metin okuyucularda da çalışsın).
+ */
+function resendMetin(args: {
+  link: string;
+  davetEdenAd: string;
+  etkinlikAd: string;
+  etkinlikTarih: string;
+}): string {
+  const { acilis } = mailMetni(args);
+
+  // Açılış + detay tek blok: aralarında boş satır yok, HTML'deki gibi
+  // birbirine yaslı dursunlar. Boş alan satırı hiç açmaz.
+  const bas = [acilis, args.etkinlikAd, args.etkinlikTarih]
+    .filter(Boolean)
+    .join('\n');
+
+  const bloklar = [
+    bas,
+    ...GOVDE_PARAGRAFLARI.map((p) => p.metin),
+    `${CAGRI_METNI}:\n${args.link}`,
+    ALT_NOT_METNI,
+  ];
+
+  return bloklar.join('\n\n') + '\n';
 }
 
 async function resendIle(args: {
   to: string;
   link: string;
+  davetEdenAd: string;
+  etkinlikAd: string;
+  etkinlikTarih: string;
 }): Promise<{ ok: boolean; error?: string }> {
   if (!RESEND_API_KEY) return { ok: false, error: 'no-api-key' };
   try {
@@ -190,8 +471,12 @@ async function resendIle(args: {
     const result = await resend.emails.send({
       from: DAVET_FROM,
       to: args.to,
-      subject: 'Seni OCAK\'a çağırdılar',
-      html: resendHtml(args.link),
+      // Konu ve gövde aynı yerden — ad boşsa ikisi birden yedeğe düşer,
+      // "Ayşe seni de istedi" konusuyla adsız gövde eşleşmezliği olmaz.
+      subject: mailMetni(args).konu,
+      html: resendHtml(args),
+      // Düz metin alternatifi — spam skoru + metin-only istemciler.
+      text: resendMetin(args),
     });
     if ((result as { error?: unknown }).error) {
       return {
@@ -238,6 +523,26 @@ export const POST: APIRoute = async ({ request }) => {
   const etkinlikId = (body.etkinlikId ?? '').trim();
   const kanal = (body.kanal ?? '').trim().toLowerCase();
 
+  // ── MAIL BAĞLAMI ── Client gövdesinden gelir, `davet-baglam.ts` normalize
+  // eder. Eksik alan HATA DEĞİL: mail yedeğe düşer, gönderim sürer — davet
+  // bir jest, eksik bir alan yüzünden iptal edilmez. Ama sessiz de kalmaz.
+  const davetEdenAd = ilkAd(body.davetEdenAd);
+  const etkinlikAd = metinKirp(body.etkinlikAd, AZAMI_ETKINLIK_UZUNLUGU);
+  const etkinlikTarih = metinKirp(body.etkinlikTarih, AZAMI_ETKINLIK_UZUNLUGU);
+  const landingYolu = gecerliLandingYolu(body.landingPath);
+
+  const eksikAlanlar: string[] = [];
+  if (!davetEdenAd) eksikAlanlar.push('davetEdenAd');
+  if (!etkinlikAd) eksikAlanlar.push('etkinlikAd');
+  if (!etkinlikTarih) eksikAlanlar.push('etkinlikTarih');
+  if (!landingYolu) eksikAlanlar.push('landingPath');
+  if (eksikAlanlar.length) {
+    // KVKK: yalnız ALAN ADLARI loglanır, değerleri asla. `landingPath`
+    // listede yoksa da buraya düşer — eksik ile reddedilmiş aynı sepette,
+    // ikisinin de sonucu yedek davranış.
+    console.warn(`[davet] bağlam eksik → yedek: ${eksikAlanlar.join(', ')}`);
+  }
+
   // v1: WhatsApp/kopyala backend'siz; sadece mail kanalı endpoint'e vurur.
   // Defansif: kanal verilmemişse mail kabul (eski client uyumu).
   if (kanal && kanal !== 'mail') {
@@ -256,9 +561,15 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const origin = publicOrigin(request);
-  const link = davetLinki(origin, etkinlikId, refKodu);
+  const link = davetLinki(origin, landingYolu, etkinlikId, refKodu);
 
-  const mail = await resendIle({ to: davetEdilenEmail, link });
+  const mail = await resendIle({
+    to: davetEdilenEmail,
+    link,
+    davetEdenAd,
+    etkinlikAd,
+    etkinlikTarih,
+  });
   if (!mail.ok) {
     console.error('[davet] Resend fail:', mail.error);
     return json(
@@ -271,7 +582,13 @@ export const POST: APIRoute = async ({ request }) => {
   // görür (B'ye mail zaten gitti), n8n eşleştirmesi etkilenir ama mail
   // niyeti yerine geldi. Hata stdout'a düşer.
   try {
-    await davetlerDbYaz({ refKodu, davetEdilenEmail, kanal: 'Mail' });
+    await davetlerDbYaz({
+      refKodu,
+      davetEdilenEmail,
+      kanal: 'Mail',
+      davetEdenAd,
+      etkinlikAd,
+    });
   } catch (err) {
     console.error(
       '[davet] Davetler DB yazma hatası (mail gönderildi):',
