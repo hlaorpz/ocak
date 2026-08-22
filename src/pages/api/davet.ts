@@ -23,7 +23,8 @@
 //      (Resend API key env'den). HTML template inline; Kaan dilerse Resend
 //      dashboard'da template oluşturup template_id ile genişletir.
 //   5. Notion Davetler DB satır: Davet Eden Ref / Davet Edilen / Kanal /
-//      Tarih / Sonuç=Beklemede. n8n sonuç eşleştirmesi için n8n tarafı.
+//      Tarih / Sonuç=Beklemede / Davet Eden / Davet Edilen Etkinlik.
+//      n8n sonuç eşleştirmesi için n8n tarafı.
 //
 // KVKK:
 //   - davet edilen email URL/query'ye ASLA girmez (sadece POST body)
@@ -128,30 +129,54 @@ async function dahaOnceDavetEdildi(email: string): Promise<boolean> {
 }
 
 /**
- * Davetler DB'ye yeni satır. Property adları brief birebir:
+ * Davetler DB'ye yeni satır. Sekiz property, adları canlı şemadan doğrulandı
+ * (22 Ağustos 2026, data source `383b61eb-fa87-809f-9654-000bd1fc7ca6`):
  *   Davet Eden Ref (title) / Davet Edilen (email) / Kanal (select) /
- *   Tarih (date) / Sonuç (select=Beklemede) / Hatırlatma Atıldı (checkbox=false)
- * Property tipi yanlışsa Notion sessizce yutar — exact-match şart
- * (Inventory > spec, brief uyarısı).
+ *   Tarih (date) / Sonuç (select=Beklemede) / Hatırlatma Atıldı (checkbox) /
+ *   Davet Eden (text) / Davet Edilen Etkinlik (text)
+ * Property tipi ya da adı yanlışsa Notion sessizce yutar — exact-match şart
+ * (Inventory > spec, brief uyarısı). Notion API'de `text` = `rich_text`.
+ *
+ * ── `Davet Eden` `Davet Eden Ref`in yerini ALMAZ, yanına gelir ──
+ * Ref (OCAK-XXXX) n8n'in A→B eşleştirme anahtarı; ad insan gözü için.
+ * İkisi ayrı işe bakıyor, biri diğerini geçersizleştirmiyor.
+ *
+ * ── Boş alan YAZILMAZ ──
+ * Bağlam eksikse hücre hiç açılmaz, boş dize basılmaz. Böylece Notion'daki
+ * boş hücre "o gönderimde prop zinciri kırıktı" demenin kaydı olur; boş
+ * dizeyle doldurulsaydı bu ayrım kaybolurdu.
  */
 async function davetlerDbYaz(args: {
   refKodu: string;
   davetEdilenEmail: string;
   kanal: 'Mail' | 'WhatsApp';
+  davetEdenAd: string;
+  etkinlikAd: string;
 }): Promise<void> {
   if (!NOTION_DAVETLER_DB) return;
+  const properties: Record<string, unknown> = {
+    'Davet Eden Ref': {
+      title: [{ text: { content: args.refKodu || '(boş)' } }],
+    },
+    'Davet Edilen': { email: args.davetEdilenEmail },
+    Kanal: { select: { name: args.kanal } },
+    Tarih: { date: { start: new Date().toISOString() } },
+    Sonuç: { select: { name: 'Beklemede' } },
+    'Hatırlatma Atıldı': { checkbox: false },
+  };
+  if (args.davetEdenAd) {
+    properties['Davet Eden'] = {
+      rich_text: [{ text: { content: args.davetEdenAd } }],
+    };
+  }
+  if (args.etkinlikAd) {
+    properties['Davet Edilen Etkinlik'] = {
+      rich_text: [{ text: { content: args.etkinlikAd } }],
+    };
+  }
   await notion.pages.create({
     parent: { database_id: NOTION_DAVETLER_DB },
-    properties: {
-      'Davet Eden Ref': {
-        title: [{ text: { content: args.refKodu || '(boş)' } }],
-      },
-      'Davet Edilen': { email: args.davetEdilenEmail },
-      Kanal: { select: { name: args.kanal } },
-      Tarih: { date: { start: new Date().toISOString() } },
-      Sonuç: { select: { name: 'Beklemede' } },
-      'Hatırlatma Atıldı': { checkbox: false },
-    } as never,
+    properties: properties as never,
   });
 }
 
@@ -474,7 +499,13 @@ export const POST: APIRoute = async ({ request }) => {
   // görür (B'ye mail zaten gitti), n8n eşleştirmesi etkilenir ama mail
   // niyeti yerine geldi. Hata stdout'a düşer.
   try {
-    await davetlerDbYaz({ refKodu, davetEdilenEmail, kanal: 'Mail' });
+    await davetlerDbYaz({
+      refKodu,
+      davetEdilenEmail,
+      kanal: 'Mail',
+      davetEdenAd,
+      etkinlikAd,
+    });
   } catch (err) {
     console.error(
       '[davet] Davetler DB yazma hatası (mail gönderildi):',
