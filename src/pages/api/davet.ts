@@ -245,7 +245,47 @@ const YAZI_GOVDE =
  *
  * ⚠ "kız kardeşin" YAZILMAZ. Davet edilen kadın henüz dışarıda; içeriden bir
  * kelimeyle karşılanmaz (brief).
+ *
+ * ── Neden "buluşma", neden "çember" değil ──
+ * Yedi format bu tek şablonu besliyor. Açılış "çembere oturuyor" derken
+ * detay bloğu "Kök Atölyesi" yazdığında mail kendi içinde çelişiyordu.
+ * `buluşma` KARAR 272'nin format-agnostik şemsiye kelimesi; şemsiye üstte,
+ * özel ad altta. Yeni bir format eklendiğinde bu satır yine doğru kalır.
  */
+/**
+ * Gövde paragrafları — HTML ve düz metnin ORTAK kaynağı.
+ *
+ * Brief kuralı: "HTML ve düz metin aynı bilgiyi taşır, biri diğerinden fazla
+ * söylemez." İki şablonda iki kopya tutmak bu kuralı ilk dil turunda bozardı
+ * — biri güncellenir, diğeri unutulur. Cümleler burada bir kez yaşar; HTML
+ * onları `<tr>`lere sarar, düz metin boş satırla ayırır.
+ *
+ * `alt`: HTML'de o paragrafın altındaki boşluk (px). Düz metin bu alanı
+ * yok sayar — orada ritmi boş satır kurar.
+ */
+const GOVDE_PARAGRAFLARI: ReadonlyArray<{ metin: string; alt: number }> = [
+  { metin: 'Seni de yanında istedi.', alt: 28 },
+  {
+    metin:
+      "Çember, OCAK'ın en sade buluşması. Bir ateş yanıyor, kadınlar bir araya " +
+      'geliyor, herkes kendi sözünü söylüyor. Öğretilen bir şey yok, konuşmak ' +
+      'zorunda da değilsin.',
+    alt: 24,
+  },
+  {
+    metin:
+      'Kadınlar binlerce yıl böyle oturdu — guru yoktu, reçete yoktu. Sadece ' +
+      "birbirlerinin tanıklığı. Biz o çemberi yeniden kuruyoruz.",
+    alt: 32,
+  },
+];
+
+/** Buton / düz metin çağrısı — tek yerde, iki şablon da buradan okur. */
+const CAGRI_METNI = 'Neye çağrıldığına bak';
+
+/** Alt not — KVKK güven jesti, iki şablonda da birebir aynı. */
+const ALT_NOT_METNI = 'Bu tek bir davet. Listeye eklenmedin, seni aramayacağız.';
+
 function mailMetni(baglam: {
   davetEdenAd: string;
   etkinlikAd: string;
@@ -255,8 +295,8 @@ function mailMetni(baglam: {
   return {
     konu: davetEdenAd ? `${davetEdenAd} seni de istedi` : 'Seni de istediler',
     acilis: davetEdenAd
-      ? `${davetEdenAd} bir çembere oturuyor.`
-      : 'Biri bir çembere oturuyor.',
+      ? `${davetEdenAd} bir buluşmaya geliyor.`
+      : 'Biri bir buluşmaya geliyor.',
   };
 }
 
@@ -316,6 +356,17 @@ function resendHtml(args: {
 
   const govdeStil = `font-family:${YAZI_GOVDE};font-size:15px;line-height:1.65;color:${RENK.YAZI};`;
 
+  // Paragraflar ortak kaynaktan. Kaçırma burada uygulanır: cümleler sabit,
+  // bugün kaçırma gerektirmiyorlar — ama sabit kalacaklarının garantisi yok
+  // ve şablona giren her dizenin aynı kapıdan geçmesi ucuz bir disiplin.
+  const paragraflar = GOVDE_PARAGRAFLARI.map(
+    ({ metin, alt }) => `<tr>
+              <td style="${govdeStil}padding:0 0 ${alt}px;">
+                ${htmlKacir(metin)}
+              </td>
+            </tr>`,
+  ).join('\n            ');
+
   return `<!doctype html>
 <html lang="tr">
   <head>
@@ -335,30 +386,13 @@ function resendHtml(args: {
               </td>
             </tr>
             ${detayBlogu}
-            <tr>
-              <td style="${govdeStil}padding:0 0 28px;">
-                Seni de yanında istedi.
-              </td>
-            </tr>
-            <tr>
-              <td style="${govdeStil}padding:0 0 24px;">
-                Çember, OCAK'ın en sade buluşması. Bir ateş yanıyor, kadınlar
-                bir araya geliyor, herkes kendi sözünü söylüyor. Öğretilen bir
-                şey yok, konuşmak zorunda da değilsin.
-              </td>
-            </tr>
-            <tr>
-              <td style="${govdeStil}padding:0 0 32px;">
-                Kadınlar binlerce yıl böyle oturdu — guru yoktu, reçete yoktu.
-                Sadece birbirlerinin tanıklığı. Biz o çemberi yeniden kuruyoruz.
-              </td>
-            </tr>
+            ${paragraflar}
             <tr>
               <td style="padding:0 0 36px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td bgcolor="${RENK.KOZ}" style="background-color:${RENK.KOZ};border-radius:3px;">
-                      <a href="${htmlKacir(args.link)}" style="display:inline-block;font-family:${YAZI_GOVDE};font-size:15px;line-height:1.2;color:${RENK.YAZI};text-decoration:none;padding:15px 26px;">Neye çağrıldığına bak →</a>
+                      <a href="${htmlKacir(args.link)}" style="display:inline-block;font-family:${YAZI_GOVDE};font-size:15px;line-height:1.2;color:${RENK.YAZI};text-decoration:none;padding:15px 26px;">${htmlKacir(CAGRI_METNI)} →</a>
                     </td>
                   </tr>
                 </table>
@@ -366,7 +400,7 @@ function resendHtml(args: {
             </tr>
             <tr>
               <td style="font-family:${YAZI_GOVDE};font-size:12px;line-height:1.6;color:${RENK.ALT_NOT};">
-                Bu tek bir davet. Listeye eklenmedin, seni aramayacağız.
+                ${htmlKacir(ALT_NOT_METNI)}
               </td>
             </tr>
           </table>
@@ -375,6 +409,53 @@ function resendHtml(args: {
     </table>
   </body>
 </html>`;
+}
+
+/**
+ * Düz metin alternatifi (`text/plain`).
+ *
+ * ── Neden var ──
+ * `mail.ocak.biz` 20–21 Ağustos'ta röle olarak kötüye kullanıldı; alan adının
+ * itibarı şu an konfor meselesi değil. `text/plain` alternatifi olmayan mail
+ * spam skorunda ceza alır. Devir mailinde (n8n `Devir Mail` node'u) `text`
+ * zaten dolu; davette olmaması tutarsızlıktı.
+ *
+ * ── HTML ile ilişkisi ──
+ * Aynı bilgi, biri diğerinden fazla söylemez. Cümleler ortak kaynaktan
+ * (`GOVDE_PARAGRAFLARI`, `CAGRI_METNI`, `ALT_NOT_METNI`); açılış ve detay
+ * satırları aynı yedek kurallarına uyar — ad boşsa "Biri…", tarih boşsa
+ * satır tamamen düşer.
+ *
+ * ── Kaçırma YOK, bilerek ──
+ * `htmlKacir` HTML'e özeldir. Düz metinde `&amp;` uygulamak metni bozardı:
+ * alıcı ham entity görür. `davet-baglam.ts`in uzunluk sınırı ve `landingPath`
+ * beyaz listesi ise burada da geçerli — onlar taşıyıcıdan bağımsız.
+ *
+ * Buton yerine tam URL açık yazılır; `?ref=` korunur (izleme zinciri düz
+ * metin okuyucularda da çalışsın).
+ */
+function resendMetin(args: {
+  link: string;
+  davetEdenAd: string;
+  etkinlikAd: string;
+  etkinlikTarih: string;
+}): string {
+  const { acilis } = mailMetni(args);
+
+  // Açılış + detay tek blok: aralarında boş satır yok, HTML'deki gibi
+  // birbirine yaslı dursunlar. Boş alan satırı hiç açmaz.
+  const bas = [acilis, args.etkinlikAd, args.etkinlikTarih]
+    .filter(Boolean)
+    .join('\n');
+
+  const bloklar = [
+    bas,
+    ...GOVDE_PARAGRAFLARI.map((p) => p.metin),
+    `${CAGRI_METNI}:\n${args.link}`,
+    ALT_NOT_METNI,
+  ];
+
+  return bloklar.join('\n\n') + '\n';
 }
 
 async function resendIle(args: {
@@ -394,6 +475,8 @@ async function resendIle(args: {
       // "Ayşe seni de istedi" konusuyla adsız gövde eşleşmezliği olmaz.
       subject: mailMetni(args).konu,
       html: resendHtml(args),
+      // Düz metin alternatifi — spam skoru + metin-only istemciler.
+      text: resendMetin(args),
     });
     if ((result as { error?: unknown }).error) {
       return {
