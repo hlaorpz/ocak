@@ -267,7 +267,7 @@ const GOVDE_PARAGRAFLARI: ReadonlyArray<{ metin: string; alt: number }> = [
   { metin: 'Seni de yanında istedi.', alt: 28 },
   {
     metin:
-      "Çember, OCAK'ın en sade buluşması. Bir ateş yanıyor, kadınlar bir araya " +
+      "Bu buluşmalar OCAK'ın en sade hâli. Bir ateş yanıyor, kadınlar bir araya " +
       'geliyor, herkes kendi sözünü söylüyor. Öğretilen bir şey yok, konuşmak ' +
       'zorunda da değilsin.',
     alt: 24,
@@ -275,7 +275,7 @@ const GOVDE_PARAGRAFLARI: ReadonlyArray<{ metin: string; alt: number }> = [
   {
     metin:
       'Kadınlar binlerce yıl böyle oturdu — guru yoktu, reçete yoktu. Sadece ' +
-      "birbirlerinin tanıklığı. Biz o çemberi yeniden kuruyoruz.",
+      'birbirlerinin tanıklığı. Biz o halkayı yeniden kuruyoruz.',
     alt: 32,
   },
 ];
