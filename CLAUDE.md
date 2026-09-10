@@ -12,6 +12,10 @@ statik CSS analizi tek başına yetmez (KARAR 419).
 
 "Kod var" ≠ "output var". Sessiz fakirleşme en tehlikeli hata tipidir.
 
+**Tersi de doğru: "test var" ≠ "build var".** `src/pages/` altındaki her dosya bir
+Astro route'udur — test dosyası oraya konursa derlenir ve build'i düşürür, `vitest`
+yeşil kalırken. Test `src/lib/` ya da `src/components/` altında yaşar.
+
 ## 2. Gerçeklik spec'i ezer (KARAR 102)
 
 Brief, doküman ve ledger yanılabilir. Ham kanıt üstündür.
