@@ -21,6 +21,9 @@ import Layout from '../../layouts/Layout.astro';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi; anahtar
 // açılınca aynen geri gelir.
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+// İŞ 2 — paylaşılan sır. Tek okuyucu `payment-provider.ts`; sayfa kendi
+// `import.meta.env` okumasını YAPMAZ (iki okuma = iki yazım hatası ihtimali).
+import { callbackSirri, CALLBACK_SIR_ALANI } from '../../lib/payment-provider.ts';
 
 if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
 
@@ -34,6 +37,18 @@ const tutar = Number(tutarRaw) || 0;
 const para = url.searchParams.get('para') ?? 'TRY';
 const ad = url.searchParams.get('ad') ?? '';
 const kodId = url.searchParams.get('kodId') ?? '';
+
+// İŞ 2 — callback'in beklediği sır. Boşsa forma alan konmaz ve callback
+// 401 döner; bu DOĞRU davranış (fail-closed), sessizce geçmesinden iyidir.
+// Teşhis buradan: İŞ 4 uçtan uca koşusunda 401 görülüyorsa ilk bakılacak
+// yer Vercel'de `ODEME_CALLBACK_SIR` + redeploy.
+const sir = callbackSirri();
+if (!sir) {
+  console.warn(
+    '[odeme/mock] ODEME_CALLBACK_SIR tanımsız — form sır taşımayacak, ' +
+      'callback 401 dönecek. Vercel Preview env + REDEPLOY gerekiyor.',
+  );
+}
 ---
 <Layout title="Ödeme Simülasyonu · OCAK" description="MOCK ödeme — gerçek para yok." oda="OCAK" noindex>
   <article class="ocak-yasal">
@@ -81,6 +96,10 @@ const kodId = url.searchParams.get('kodId') ?? '';
       <input type="hidden" name="sonuc" value="basari" />
       <input type="hidden" name="mock" value="1" />
       {kodId && <input type="hidden" name="kodId" value={kodId} />}
+      {/* İŞ 2 — paylaşılan sır. Sır tanımsızsa alan HİÇ konmaz; callback
+          401 döner. Ters kurgu (boş değer göndermek) doğrulamayı
+          "boş == boş" ile geçirebilirdi. */}
+      {sir && <input type="hidden" name={CALLBACK_SIR_ALANI} value={sir} />}
       <button type="submit" class="ocak-mock-buton ocak-mock-buton--basari">
         Ödemeyi Simüle Et (Başarılı)
       </button>

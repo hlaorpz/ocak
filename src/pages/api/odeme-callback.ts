@@ -24,6 +24,8 @@ import { kodKullanimArtir } from '../../lib/kodlar.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+// İŞ 2 — callback doğrulaması sağlayıcı arayüzünde yaşar (KARAR 395).
+import { getPaymentProvider, type CallbackDogrulama } from '../../lib/payment-provider.ts';
 
 export const prerender = false;
 
@@ -147,6 +149,30 @@ async function handle(request: Request): Promise<Response> {
       }
     }
   }
+  // İŞ 2 (10 Eyl 2026) — KİMLİK DOĞRULAMASI. Buraya kadar gövde yalnız
+  // AYRIŞTIRILDI; hiçbir Notion çağrısı yapılmadı, `kodKullanimArtir`
+  // çağrılmadı. Doğrulama geçmezse 401 ile burada biter.
+  //
+  // KARAR 395 — route sağlayıcı ADI sormaz, `if (provider === 'nkolay')`
+  // yazmaz. Yalnız "geçerli mi" diye sorar; cevabı sağlayıcı bilir.
+  // N-Kolay onayı gelince bu blok DEĞİŞMEZ.
+  let dogrulama: CallbackDogrulama;
+  try {
+    dogrulama = getPaymentProvider().dogrulaCallback(request, bodyParams);
+  } catch (err) {
+    // `getPaymentProvider()` bilinmeyen/yazılmamış sağlayıcıda throw eder.
+    // Yanlış yapılandırılmış bir ödeme yüzeyi 500 değil 401 vermeli:
+    // doğrulanamayan istek geçemez. 500 hem gürültü hem yarı-açık bir hâl.
+    console.error('[odeme-callback] sağlayıcı çözülemedi:', String(err).slice(0, 200));
+    dogrulama = { gecerli: false, sebep: 'saglayici-cozulemedi' };
+  }
+  if (!dogrulama.gecerli) {
+    // `sebep` YALNIZ log'a. 401 gövdesine yazmak, deneyen birine hangi
+    // yönde ilerleyeceğini söylemek olurdu.
+    console.warn(`[odeme-callback] callback doğrulanamadı (401) — sebep=${dogrulama.sebep}`);
+    return new Response('Callback doğrulanamadı.', { status: 401 });
+  }
+
   const girdi = parseGirdi(url, bodyParams);
   // Aşama 3b eyeball Bulgu 4 — redirect base URL Vercel x-forwarded-*
   // header'larından (request.url Vercel'de internal/localhost). Bulgu 1
