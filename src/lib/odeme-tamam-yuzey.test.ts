@@ -61,16 +61,61 @@ describe('tamam.astro — başlık duruma bağlı (commit 6)', () => {
     expect(dallar[0]).not.toBe(dallar[1]);
   });
 
-  it('KARAR 395 — h1 ve gövde TEK koşulu paylaşır, ikinci koşul yok', () => {
-    // `durum` yalnız bir kez karşılaştırılır: `kayitBulundu`nun tanımında.
-    // İkinci bir `durum === …` başlık için ayrı bir yol açardı ve iki yol
-    // zamanla ayrışırdı.
+  it('KARAR 395 — h1, gövde ve sayfa başlığı TEK koşulu paylaşır', () => {
+    // ⚠ KOŞUL DÜZEYİ ÖLÇÜM (KARAR adayı: muhafızın varlığı değil koşulu
+    // ölçülür). `durum` dosyada TAM BİR KEZ karşılaştırılır —
+    // `kayitBulundu`nun tanımında. Dördüncü bir yüzey eklenip kendi
+    // `durum === …`ini yazarsa bu sayı 2 olur ve burası kırmızı yanar.
+    // Sayı kilidi, "her yüzey ayrı koşul yazsın" sızmasının tek kapısı.
     const karsilastirma = KOD.match(/durum\s*===/g) ?? [];
     expect(karsilastirma).toHaveLength(1);
     expect(KOD).toMatch(/const kayitBulundu = durum === 'bulundu';/);
-    // Gövde de aynı değişkeni kullanıyor — başlıkla ortak kaynak.
+    // Dört tüketicinin dördü de aynı değişkeni okur.
     expect(KOD).toMatch(/\{kayitBulundu && \(/);
     expect(KOD).toMatch(/\{!kayitBulundu && \(/);
+    expect(KOD).toMatch(/<h1>\{kayitBulundu \?/);
+    expect(KOD).toMatch(/const sayfaBasligi = kayitBulundu \?/);
+    expect(KOD).toMatch(/const sayfaAciklamasi = kayitBulundu \?/);
+  });
+
+  it('sayfa başlığı ve açıklaması SABİT DEĞİL — duruma bağlı', () => {
+    // Kusur: h1 duruma bağlanmıştı ama `<Layout title="…">` koşulsuzdu.
+    // Sekme başlığı, tarayıcı geçmişi ve paylaşım kartı hâlâ "Ödemen
+    // alındı" diyordu; `noindex` bu üç yüzeyin hiçbirini kapatmıyor.
+    const layout = KOD.match(/<Layout[^>]*>/)![0];
+    expect(layout).toMatch(/title=\{sayfaBasligi\}/);
+    expect(layout).toMatch(/description=\{sayfaAciklamasi\}/);
+    // Sabit dizeye geri dönüş regresyon kilidi.
+    expect(layout).not.toMatch(/title="/);
+    expect(layout).not.toMatch(/description="/);
+  });
+
+  it('başlık ve açıklama iki durumda İKİ FARKLI değer alır', () => {
+    for (const ad of ['sayfaBasligi', 'sayfaAciklamasi']) {
+      const satir = KOD.match(new RegExp(`const ${ad} = kayitBulundu \\?[^;]+;`))![0];
+      const dallar = satir.match(/'([^']*)'/g) ?? [];
+      expect(dallar).toHaveLength(2);
+      // Aynı dizeyi iki dala koymak testi geçerdi ama kusuru düzeltmezdi.
+      expect(dallar[0]).not.toBe(dallar[1]);
+    }
+  });
+
+  it('gövde h1\'i TEKRARLAMAZ — "Kaydını bulamadık" tek yerde', () => {
+    // Commit 6'da h1 duruma bağlanınca aynı cümle üst üste iki kez çıktı:
+    // başlıkta ve gövdenin ilk cümlesinde. Metin bir yerde söylenir.
+    //
+    // ⚠ İlk yazımda ölçüt "toplam 1 geçiş" idi ve YANLIŞTI: cümle artık
+    // MEŞRU olarak iki yerde geçiyor — sekme başlığı (`sayfaBasligi`) ve
+    // h1. Sayı kilidi doğru şeyi değil, kolay ölçüleni ölçüyordu. Kural
+    // "bir kez geçsin" değil, "GÖVDEDE geçmesin".
+    expect(KOD).toMatch(/<h1>[^<]*Kaydını bulamadık/);
+    const govdeler = KOD.match(
+      /<p class="ocak-odeme-tamam__gövde">[\s\S]*?<\/p>/g,
+    ) ?? [];
+    expect(govdeler.length).toBeGreaterThan(0);
+    for (const g of govdeler) expect(g).not.toMatch(/Kaydını bulamadık/);
+    // Bulunamadı gövdesi doğru cümleyle başlar.
+    expect(govdeler.some((g) => /Ödemen alındıysa birkaç dakika/.test(g))).toBe(true);
   });
 
   it('ödeme yapılmamış hâlde "Ödemen alındı" KOŞULSUZ geçmez', () => {

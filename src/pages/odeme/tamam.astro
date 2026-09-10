@@ -46,8 +46,16 @@ const mockMu = Astro.url.searchParams.get('mock') === '1';
 const { durum, katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd } =
   await kayitOku(notion, NOTION_KAYITLAR_DB, ref);
 const kayitBulundu = durum === 'bulundu';
+
+// Sekme başlığı ve meta açıklama da AYNI `kayitBulundu` koşuluna bağlı —
+// üçüncü bir koşul yazılmadı (KARAR 395). h1 duruma bağlanmış olsa bile
+// sabit bir `title` sekmede, paylaşım kartında ve tarayıcı geçmişinde
+// "Ödemen alındı" demeye devam ederdi; sayfa `noindex` ama bu üç yüzeyin
+// hiçbirini `noindex` kapatmıyor.
+const sayfaBasligi = kayitBulundu ? 'Ödemen alındı · OCAK' : 'Kaydını bulamadık · OCAK';
+const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'Kaydını arıyoruz.';
 ---
-<Layout title="Ödemen alındı · OCAK" description="Ödemen alındı, yerin ayrıldı." oda="OCAK" noindex>
+<Layout title={sayfaBasligi} description={sayfaAciklamasi} oda="OCAK" noindex>
   <article class="ocak-yasal">
     <div class="ocak-odeme-tamam">
       <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
@@ -76,9 +84,12 @@ const kayitBulundu = durum === 'bulundu';
           uydurulmadı. */}
       {!kayitBulundu && (
         <>
+          {/* "Kaydını bulamadık." h1'de duruyor — gövde onu TEKRARLAMAZ.
+              Aynı cümlenin üst üste iki kez çıkması commit 6'da h1 duruma
+              bağlanınca oluştu; metin bir yerde söylenir. */}
           <p class="ocak-odeme-tamam__gövde">
-            Kaydını bulamadık. Ödemen alındıysa birkaç dakika içinde
-            görünecektir. Görünmezse bize yaz — birlikte bakarız.
+            Ödemen alındıysa birkaç dakika içinde görünecektir. Görünmezse
+            bize yaz — birlikte bakarız.
           </p>
           <p class="ocak-odeme-tamam__yardim">
             <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
