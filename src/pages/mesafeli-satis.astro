@@ -80,18 +80,14 @@ import Layout from '../layouts/Layout.astro';
 
     <h2>3. Hizmetin Niteliği, Bedeli ve Ödeme</h2>
 
-    {/* KARAR 488 — kart akışı kapalı. Kart cümlesi SİLİNMEDİ, yorumda duruyor;
-        sağlayıcı anlaşması gelip anahtar açılınca aynen geri konur:
-
-        "Ödeme, lisanslı ödeme kuruluşu altyapısı üzerinden kredi veya banka
-         kartı ile yapılır. ALICI'nın kart bilgileri SATICI tarafından
-         görülmez ve saklanmaz."                                              */}
     <p>
       Satın alınan hizmetin türü, süresi, kapsamı ve bedeli sipariş ekranında ALICI'ya
       açıkça gösterilir. Tüm bedeller Türk Lirası cinsindendir ve vergiler dahildir.
-      Ödeme, SATICI'nın kayıt sonrası ALICI'ya bildirdiği banka hesabına havale veya
-      EFT yoluyla yapılır. Kayıt ekranında ve kayıt e-postasında yer alan referans
-      kodu, ödemenin açıklama alanına yazılır.
+      Ödeme, kredi/banka kartı ile veya SATICI'nın bildirdiği banka hesabına
+      havale/EFT yoluyla yapılır. Kart ile ödeme, lisanslı ödeme kuruluşunun kendi
+      güvenli sayfasında tamamlanır; kart bilgileri SATICI tarafından görülmez ve
+      saklanmaz. Havale/EFT ile ödemede, kayıt ekranında ve kayıt e-postasında yer
+      alan referans kodu, ödemenin açıklama alanına yazılır.
     </p>
 
     <p>
@@ -124,21 +120,18 @@ import Layout from '../layouts/Layout.astro';
       erer.
     </p>
 
-    {/* ⚠ [KAAN] — İADE CÜMLESİ, ONAY BEKLİYOR. YAYINLANMADI.
-
-        "aynı ödeme yöntemiyle" ifadesi KARAR 488 sonrası pratikte havale
-        demek, ama cümle bunu söylemiyor ve iade hesabının nasıl belirleneceği
-        belirsiz kalıyor. DEĞİŞTİRİLMEDİ — muhasebeci/hukuk onayı olmadan
-        canlıya çıkmaz (Faz 1 §4.3). İkiz madde: `teslimat-iade.astro`.
-
-        TASLAK (onaylanırsa aşağıdaki son cümle ile değiştirilecek):
-        "Cayma kabul edildiğinde, ödenen bedel ALICI'nın bildireceği banka
-         hesabına on dört (14) gün içinde iade edilir."                        */}
+    {/* ⚠ İADE METNİ — `teslimat-iade.astro` ile BİREBİR AYNI DİZE.
+        Ortak bileşene çıkarılmadı (ayrı iş, borç olarak önerildi). Biri
+        güncellenip öteki unutulursa iki yasal sayfa çelişir; değişiklik
+        daima ikisinde birden yapılır. */}
     <p>
       Cayma hakkının geçerli olduğu durumlarda talepler
-      <a href="mailto:iletisim@ocak.biz">iletisim@ocak.biz</a> adresine iletilir. Cayma kabul
-      edildiğinde, ödenen bedel aynı ödeme yöntemiyle on dört (14) gün içinde ALICI'ya
-      iade edilir.
+      <a href="mailto:iletisim@ocak.biz">iletisim@ocak.biz</a> adresine iletilir.
+      İade, ödemenin yapıldığı yöntem üzerinden gerçekleştirilir. Kredi veya banka
+      kartı ile yapılan ödemeler ilgili karta, havale/EFT ile yapılan ödemeler
+      ödemeyi yapan kişi adına kayıtlı banka hesabına on dört (14) gün içinde iade
+      edilir. Üçüncü bir kişinin hesabına iade yapılmaz. Kart iadesinin hesabınıza
+      yansıma süresi bankanızın işleyişine bağlıdır.
     </p>
 
     <h2>6. Uyuşmazlıkların Çözümü</h2>
