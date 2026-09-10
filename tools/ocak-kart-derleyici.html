@@ -225,7 +225,7 @@
         <canvas id="tuval" width="1080" height="1350"></canvas>
       </div>
       <div class="sahne-alt">
-        <span class="olcu">ÖLÇÜ <b id="olcuMetin">1080 × 1350</b> · KELİME <b id="kelimeSayac">0</b><b id="kenarOlcu"></b><b id="merkezOlcu"></b></span>
+        <span class="olcu">ÖLÇÜ <b id="olcuMetin">1080 × 1350</b> · KELİME <b id="kelimeSayac">0</b><b id="kaynakOlcu"></b><b id="kenarOlcu"></b><b id="merkezOlcu"></b></span>
         <span class="olcu" id="kelimeUyari"></span>
       </div>
       <p class="not hata" id="fontUyari">
@@ -298,7 +298,8 @@
           </label>
           <div class="serit" id="serit"></div>
           <button class="eylem ikincil" id="dagit">Crop'ları dağıt</button>
-          <p class="not">Tek üretimden crop alınır — kart kart ayrı görsel yüklenmez.</p>
+          <label class="anahtar" style="margin-top:10px"><span>Kart 1 kapak olsun</span><input type="checkbox" id="kapakIstisna"></label>
+          <p class="not">Tek üretimden crop alınır — kart kart ayrı görsel yüklenmez. Dağıtım crop'ları karenin <b>üst bölgesinde</b> tutar; yalnız son kart aşağı sarkıp kor bandından pay alır. Metin her kartta karanlığa oturur.<br><b>Kart 1 kapak olsun</b> açıkken birinci kart <b>F2 karusel · kapak</b> tipografisiyle çizilir (üst konum, punto 95, işaret açık); kalan kartlar seçili ön ayarda kalır. Kadraj ayarları etkilenmez.</p>
         </div>
       </details>
 
@@ -491,7 +492,7 @@
     kara:0, kenar:0.63, perde:0.35, grain:0.065,
     altOran:0.62, blokAra:0.60, metinKaydir:0, zeminGlow:0.55, glowKaydir:0,
     imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85, kilavuz:false, kilavuzUcte:false,
-    kartSayi:6, aktif:0,
+    kartSayi:6, aktif:0, kapakIstisna:false,
     kartlar:[]
   };
 
@@ -594,7 +595,25 @@
   }
 
   /* ---------- çizim ---------- */
+  /* Kapak istisnası — karuselde 1. kart kapak tipografisiyle çizilir.
+     Yalnız kapak ile iç kartı ayıran alanlar geçici olarak değiştirilir;
+     kadraj (zoom/ox/oy) zaten kart bazlı olduğu için dokunulmaz. */
+  var KAPAK_ALAN = {
+    konum:"ust", punto:95, ara:1.28, altOran:0.62, blokAra:0.60,
+    zeminGlow:0.55, kenar:0.63, perde:0.35, imza:"isaret", imzaDikey:"ust"
+  };
+  function kapakKarti(){
+    return S.mod === "karusel" && S.kapakIstisna && S.aktif === 0;
+  }
   function ciz(){
+    if (!kapakKarti()) { cizHam(); return; }
+    var yedek = {};
+    Object.keys(KAPAK_ALAN).forEach(function(a){ yedek[a] = S[a]; S[a] = KAPAK_ALAN[a]; });
+    try { cizHam(); }
+    finally { Object.keys(yedek).forEach(function(a){ S[a] = yedek[a]; }); }
+  }
+
+  function cizHam(){
     var o = olcu();
     if (tuval.width !== o.w || tuval.height !== o.h){
       tuval.width = o.w; tuval.height = o.h;
@@ -796,6 +815,19 @@
       u.textContent = "SINIRDA";
       u.style.color = RENKLER.altin;
     } else { u.textContent = ""; }
+
+    var ko = document.getElementById("kaynakOlcu");
+    if (ko){
+      if (gorsel && gorsel.width){
+        var k0 = aktifKart();
+        var oranK = Math.max(o.w/gorsel.width, o.h/gorsel.height) * k0.zoom;
+        var tavan = Math.max(o.w/gorsel.width, o.h/gorsel.height);
+        var zTavan = tavan > 0 ? (1/tavan) : 0;
+        ko.textContent = " · KAYNAK " + gorsel.width + " × " + gorsel.height +
+          (oranK > 1 ? "  BÜYÜTÜYOR (zoom tavanı " + zTavan.toFixed(2) + ")" : "");
+        ko.style.color = oranK > 1 ? RENKLER.koz : "";
+      } else { ko.textContent = ""; }
+    }
 
     var kn = document.getElementById("kenarOlcu");
     if (kn){
@@ -1109,6 +1141,10 @@
     kadrajYansit();
     seritCiz();
   }
+  document.getElementById("kapakIstisna").addEventListener("change", function(e){
+    S.kapakIstisna = e.target.checked;
+    seritCiz(); ciz();
+  });
   document.getElementById("kartSayi").addEventListener("input", function(e){
     S.kartSayi = parseInt(e.target.value,10);
     document.getElementById("kartSayiDeger").textContent = S.kartSayi;
@@ -1146,9 +1182,15 @@
     var n = S.kartSayi;
     for (var i=0;i<n;i++){
       var t = n === 1 ? 0.5 : i/(n-1);
-      S.kartlar[i].zoom = 1.18 + (i%2)*0.12;
+      // oy pozitif = kaynağın ÜST bölgesi görünür (bkz. çizimdeki y hesabı).
+      // Metin üst negatif alana oturduğu için crop'lar üstte tutulur; yalnız
+      // son kart aşağı sarkıp kor bandından pay alır — seride ritim olsun diye.
+      // Kaynak 4:5 ve tuvalle aynı oranda olduğu için gezinme payı yalnız
+      // zoom'dan doğar. 1968px genişlikte kaynakta büyütme eşiği zoom 1.82;
+      // 1.62–1.76 bandı payı açar, büyütmeye girmez.
+      S.kartlar[i].zoom = 1.62 + (i%2)*0.14;
       S.kartlar[i].ox = (t*2-1) * 0.75;
-      S.kartlar[i].oy = ((i%3)-1) * 0.55;
+      S.kartlar[i].oy = 0.80 - 0.60 * Math.pow(t, 2.2);
     }
     kadrajYansit(); ciz();
   });
