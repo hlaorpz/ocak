@@ -51,7 +51,16 @@ const kayitBulundu = durum === 'bulundu';
   <article class="ocak-yasal">
     <div class="ocak-odeme-tamam">
       <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
-      <h1>Ödemen alındı, yerin ayrıldı.</h1>
+      {/* h1 gövdeyle AYNI koşulu paylaşır — `kayitBulundu`. İkinci bir
+          koşul yazılmadı (KARAR 395): iki kod yolunu elle eşit tutmak
+          sonsuz döngü, biri güncellenip öteki unutulur ve başlık gövdeyi
+          yalanlar. Tek değişken, tek gerçek.
+
+          Neden gerekli: sayfa doğrudan URL ile, referanssız açılabilir
+          (`/odeme/tamam` — `ref` zorunlu değil). O hâlde sabit bir
+          "Ödemen alındı" başlığı, hiç ödeme yapmamış birine ödeme
+          yapmış olduğunu söylerdi. */}
+      <h1>{kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'Kaydını bulamadık.'}</h1>
       {kayitBulundu && (
         <p class="ocak-odeme-tamam__gövde">
           Buluşma detaylarını yakında e-postayla paylaşacağız. İstersen
@@ -120,7 +129,7 @@ const kayitBulundu = durum === 'bulundu';
       {mockMu && (
         <p class="ocak-mock-uyari">
           <strong>MOCK</strong> — Bu ödeme simülasyondu. Gerçek tahsilat
-          yapılmadı. Aşama 6'da banka sanal POS altyapısı devreye girer.
+          yapılmadı.
         </p>
       )}
     </div>
