@@ -40,22 +40,42 @@ const mockMu = Astro.url.searchParams.get('mock') === '1';
 // `KayitDurumu`, `KayitOkumaSonuc`). `durum` üç hâli ayırır — 'bulundu' /
 // 'bulunamadi' / 'hata'. Eski kod üçünü tek boş nesneye katlıyordu.
 //
-// ⚠ Bu commit `durum`u YÜZEYE BAĞLAMAZ — ekran bugünkü hâliyle aynı kalır.
-// 'bulunamadi' ve 'hata' hâllerinde kadına ne yazılacağı ayrı commit'in işi;
-// metin Kaan'ın (kullanıcı-görünür marka dili CC'ye yazdırılmaz).
+// Yüzey bağlantısı: 'bulundu' → jenerik metin (kayıt var, detay henüz yok)
+// · 'bulunamadi'/'hata' → arama metni. İki hâl KARIŞTIRILMAZ; "kaydını
+// bulamadık" ile "detayları yakında paylaşacağız" aynı ekranda duramaz.
 const { durum, katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd } =
   await kayitOku(notion, NOTION_KAYITLAR_DB, ref);
-void durum;
+const kayitBulundu = durum === 'bulundu';
 ---
 <Layout title="Ödemen alındı · OCAK" description="Ödemen alındı, yerin ayrıldı." oda="OCAK" noindex>
   <article class="ocak-yasal">
     <div class="ocak-odeme-tamam">
       <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
       <h1>Ödemen alındı, yerin ayrıldı.</h1>
-      <p class="ocak-odeme-tamam__gövde">
-        Buluşma detaylarını yakında e-postayla paylaşacağız. İstersen
-        WhatsApp'tan da bize yazıp öğrenebilirsin. Hoş geldin.
-      </p>
+      {kayitBulundu && (
+        <p class="ocak-odeme-tamam__gövde">
+          Buluşma detaylarını yakında e-postayla paylaşacağız. İstersen
+          WhatsApp'tan da bize yazıp öğrenebilirsin. Hoş geldin.
+        </p>
+      )}
+
+      {/* 'bulunamadi' ve 'hata' — kadın artık boş ekran görmüyor. İki durum
+          tek metinle karşılanıyor: kadın açısından fark yok (kaydı görünmüyor),
+          ayrım teşhis içindir ve Vercel log'unda `[odeme/tamam]` satırında
+          yaşar. Adres `/odeme/iptal.astro:32` ile aynı — ödeme akışının
+          kardeş sayfası zaten `selam@ocak.biz` kullanıyor, yeni adres
+          uydurulmadı. */}
+      {!kayitBulundu && (
+        <>
+          <p class="ocak-odeme-tamam__gövde">
+            Kaydını bulamadık. Ödemen alındıysa birkaç dakika içinde
+            görünecektir. Görünmezse bize yaz — birlikte bakarız.
+          </p>
+          <p class="ocak-odeme-tamam__yardim">
+            <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
+          </p>
+        </>
+      )}
 
       {katilim && katilim.tipi === 'link' && (
         <div class="ocak-odeme-tamam__katilim">
@@ -131,6 +151,15 @@ void durum;
     max-width: 42ch;
     margin: 0 auto var(--space-5);
   }
+  /* Kardeş sayfa `/odeme/iptal`'in `__yardim` stiliyle birebir aynı —
+   * iki ekran aynı akışta, aynı ağırlıkta durmalı. */
+  .ocak-odeme-tamam__yardim {
+    margin: calc(var(--space-5) * -1) auto var(--space-5);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+  }
+  .ocak-odeme-tamam__yardim a { color: var(--ember); }
   .ocak-odeme-tamam__katilim {
     margin: 0 auto var(--space-5);
     max-width: 42ch;
