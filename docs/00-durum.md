@@ -1,16 +1,15 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 24 Ağustos 2026 · **MJ görsel turu — V03 kapanışı** — KARAR 568–572; B172 ✅; B182–B184 açıldı. Aynı gün üç tur daha: Sayfalar metin turu (558–567; B80 ✅ · B164 ✅; B174–B181 açıldı) · karusel/zemin turu (552–557) · Advaita turu (547–551).
+**Son güncelleme:** 10 Eylül 2026 · **N-Kolay turu — kart yüzeyi mock'la geri açıldı** — KARAR 573–577; on commit, dokuzu kod; B180 koruma ayağı ✅; B185–B193 açıldı. Önceki: 24 Ağustos (MJ görsel turu — V03 kapanışı, KARAR 568–572).
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 24 Ağustos ölçümü — **B131 açık.** Bu turda `11 Ağustos` bloğu (B47 · B40/B55/B56)
-> kronolojiye **indi**, yerine tek satırlık işaretçi kaldı; 6 satır açıldı, 24 Ağustos
-> gerçekleri yazıldı. Tahliye tavanı açar, **kapağı kaldırmaz.** Sonraki aday:
-> `ŞU AN NEREDEYİZ`in ADIM 7 dalgaları — ⚠ **ama içinde canlı iş var** (B36-b · B53/B51 ·
-> `baglam.sh` emekli edilmedi), inmeden önce kalem kalem ayrılır.*
+> *Şu an: 10 Eylül ölçümü — **B131 açık.** Bu turda iki blok indi: `ŞU AN NEREDEYİZ`in
+> ADIM 7 dalgaları (canlı ayaklar B36-b · B53/B51 · `baglam.sh` satırda adıyla korundu) ve
+> `Kapanan halka` etkinlik bloğu (B81 adıyla korundu). Tahliye tavanı açar, **kapağı
+> kaldırmaz.***
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
@@ -38,18 +37,10 @@ repo kökünde, `baglam.sh` beş profille çalışıyor, project files boşaltı
 Railway'de canlı. **Faz kapanmadı** — `docs_karar(no)` ve bağlantının kalıcı ucu ikinci dalgada.
 Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı ve EK'ini okumadan brief yazma** (gövde dokuz yerinden bayat; ilk altısı 7 Ağu kaydında, üçü 8 Ağu ekinde).
 
-- **ADIM 1–6 ✅ (6–8 Ağu)** — ledger · Pilot bölünmesi · KARAR arkeolojisi · `CLAUDE.md`
-  + `baglam.sh` · altı skill kadrosu. Tam kayıt **11 Ağustos tahliyesiyle**
-  `90-kronoloji/2026-08.md`'ye indi (KARAR 457). Açık kalan tek ayak: **B36-b** (Claude.ai).
-- **ADIM 7 birinci dalga ✅** — `mcp/` doğdu, Railway'de canlı, claude.ai'ye bağlı.
-  Korpus **git deposundan** servis edilir (KARAR 479) — 105 dosya · 63 canlı · 42 arşiv
-  (`docs_envanter`, `1d6726d`). Auth zorunlu; token URL yolunda — **ödün, B53'te görünür**.
-- **ADIM 7 ikinci dalga — A+B ✅** — `docs_karar(no)` doğdu, dört araç oldu.
-  Çapa sözleşmesi iki eksenli (KARAR 480); sığ çapa kendini bayrakla ilan ediyor
-  (KARAR 481). `docs_envanter` artık kapsamını ve dağıtım ödününü söylüyor — **B54 ✅**.
-  ⏸ **Kalan:** C parçası (B53, bağlantının başlığa geçmesi) claude.ai'de `Request headers`
-  bölümü olmadığı için **düşürüldü**; D parçası (B51) ona bağlı olduğu için koşulmadı.
-  İkisi de kendi hatlarında bekler. `baglam.sh` **emekli edilmedi**.
+- **ADIM 1–7 (6–8 Ağu)** — doküman mimarisi geçişi, MCP dört araçlı. Tam kayıt
+  `90-kronoloji/2026-08.md`'de (10 Eylül tahliyesi, KARAR 457/61). **Açık kalan
+  canlı ayaklar:** B36-b (Claude.ai) · B53 bağlantı ucu düşürüldü, B51 ona bağlı ·
+  `baglam.sh` **emekli edilmedi.**
 - **B01 ✅ (10 Ağu)** — klon · remote · proje adı üçü de `ocak`; tek commit `50294e6`. Blok 24 Ağustos'ta kronolojiye **indi** (B58 · B59 · B60 orada).
 - **11 Ağustos ✅ (B47 · B40/B55/B56 · B58)** — `05-harita.md` + KARAR 482 · 483. Blok 24 Ağustos'ta kronolojiye **indi** (KARAR 457/61).
 - **Marka işareti ✅ (18–19 Ağu)** — logo + başlık kanonu (**KARAR 522 · 523**). Blok 24 Ağustos'ta kronolojiye **indi**; canlı ayağı **B105** (Instagram · WhatsApp · e-posta anteti hâlâ eski).
@@ -76,19 +67,20 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`465591a`** (24 Ağu, MJ görsel turu patch'i; bir önceki dönem `6790cb1`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). ⚠ **MJ turu da sıfır kod commit'i içerdi ve deploy almadı** — üretim MJ'de, yazım `docs/`'ta. ⚠ **Bu dönem sıfır kod commit'i içerdi** — 19 Ağu'dan bu yana `main`'e giden her şey `docs/`. Production'a çıkan **içerik** değişti, kod değişmedi: 24 Ağu deploy'u `1b4b998` → **`9acbabb`** (10 commit, hepsi `docs/`), `dpl_Dvoo9UkkF9HVZSXQqT4BJZ8bcpTJ` · READY · sekiz canlı kontrolün sekizi tuttu. Önceki dönemin zinciri: `7fffd92 → … → fd5c44a → f7e4d73 → 7d8d301 → b926294 → 354fb14 → ae321a3 → 3676628 → cbac605 → c45332e` |
+| `main` dönem HEAD | **`b1ee821`** (10 Eyl, N-Kolay turu patch'i; bir önceki dönem `7062846`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). ⚠ **Bu dönem on commit içerdi ve dokuzu KOD** — 19 Ağu'dan bu yana ilk kod turu. Zincir: `7062846 → bcc0196 → e03364d → 20fff25 → dd59c5d → 5a4c5bc → 0b173ac → 213ea0b → 4eb549b → fd946f3 → b1ee821`. ⚠ **Production 26 Ağu'dan 10 Eyl'e kadar `7062846` üstündeydi** — 15 gün, `9acbabb` değil; önceki dönem satırı dönem HEAD'ini deploy sanıyordu (KARAR 577'nin doğuş vakalarından). 10 Eyl'de beş production deploy'u alındı: `e03364d · 213ea0b · 4eb549b · b1ee821 · b1ee821` (sonuncusu redeploy) |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
-| Test | **294/294** yeşil — **16 dosya** (`npx vitest run`, 24 Ağu, push öncesi KARAR 388 gereği). ⚠ Dosya 19 Ağustos'tan beri *246/13* diyordu; 246→294 farkı davet hattının beş turudur (`davet-akisi` · `davet-baglam` · `davet-kapi` + mail bağlamı). 193→246 farkı: Faz 1 (referans kodu + kara liste, havale açıklaması, soyad/`last_name`, `kadinAdiBirlestir`) + `nav-kaydir` · `gecersiz-alan-goster` |
+| Test | **325/325** yeşil — **19 dosya** (`npx vitest run`, 10 Eyl). 294→325 farkı bu turun beş ayağı: `/odeme/tamam` yüzeyi · callback doğrulaması · sayfa başlığı · gövde tekrarı · e-posta. ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
 | Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
 | robots.txt | `Disallow: /` — **stealth sürüyor.** Yeni bağ: ilk sosyal post duyurudur → **Gün 1 aynı zamanda robots kararıdır** (KARAR 149) |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ⚠ `tZR9LcwJq9` → **`astro-iskelet`** (ölü dal). Yenisi `notion-content-update-main` → `main` **oluşturuldu ama çağıran yok** — **B64**. Notion webhook + gece cron hâlâ eskisini paylaşır. ⚠ **24 Ağu deploy'u git push'la alındı** — hook'a dokunulmadı; yani **otomatik içerik deploy'u çalışmıyor ve çalışmadığı fark edilmiyor** |
 | Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** — 24 Ağu canlı teyit (`project.name`) · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ⚠ `.vercel/project.json` **yok**; elde kalan `.vercel/repo.json` 27 Mayıs'tan ve projeye *"ocak-site"* diyor → **B179**. Bu yüzden `vercel --prod` yolu kullanılmıyor |
-| Ödeme | **Kart akışı `KART_AKISI` env anahtarıyla KAPALI** (KARAR 488) — kod silinmedi, altı tüketici anahtarın arkasında. Tek yol **banka havalesi/EFT**, takip elle. Varsayılan kapalı: açmak için `KART_AKISI=acik` gerekir |
+| Ödeme | **İki yöntem yan yana — karar alındı, anahtar henüz çevrilmedi.** N-Kolay sanal POS ile anlaşıldı (10 Eyl): kart geri geliyor, havale/EFT kalıyor. **KARAR 575** — denetim **Production'da** mock sağlayıcıyla koşar (`KART_AKISI=acik` · `PAYMENT_PROVIDER=mock`); Preview (`nkolay-test`) aynı yapılandırmada, **iki ortamın `ODEME_CALLBACK_SIR`'ı ayrıdır.** ⚠ **Ölçüm (11 Eyl): Production hâlâ KAPALI** — `www.ocak.biz/cember/kayit` HTTP 200, yöntem grubu markup'ı yok; env yazılmadı ya da redeploy alınmadı. **Karar ≠ uygulama** (KARAR 577). Canlı mock ekranın kapatma borcu **B193**. Sağlayıcı implementasyonu onay bekliyor: `payment-provider.ts`'te `mock` çalışıyor, `iyzico` throw ediyor. ⚠ Anahtar kapalıyken yöntem radio grubu SSR'da **hiç basılmaz** — tek yöntem varken seçenek sunulmaz, KARAR 488'in tasarımıdır, arıza değil |
 | Referans kodu | **`OCAK-` + 4 karakter**, 29'luk alfabe (`Z` yok — yanlış okunursa geçerli kod üretir; `L` var — `1` alfabede yok, hata gürültülü çıkar). Uzay 29⁴ = 707.281. Notion'da 5 ve 6 haneli eski rakamsal kodlar da yaşıyor, **migration yok** |
-| ⚠ Ödeme onayı | **Kapı doğru, açan mekanizma YOK.** `odeme_durumu` üçüncü değeri `alindi` hiçbir kod tarafından yazılmıyor → ödemesi gelen kadına Zoom/adres bilgisi **elle** gidiyor. n8n akışı kurulana kadar böyle (`03-sira.md` madde 2, sıranın en kritik maddesi) |
+| ⚠ Ödeme onayı | **Kapı doğru, açan mekanizma YOK.** `odeme_durumu` üçüncü değeri `alindi` hiçbir kod tarafından yazılmıyor → ödemesi gelen kadına Zoom/adres bilgisi **elle** gidiyor. n8n akışı kurulana kadar böyle (`03-sira.md` madde 2, sıranın en kritik maddesi) ✅ **Notion iki alan açıldı** (10 Eyl, Kaan): `Beklenen Tutar` (number) · `Mail Gitti` (checkbox). n8n akışının ön koşulu doldu; **akış hâlâ kurulmadı.** Tetikleyici Notion `Ödeme Durumu = Ödendi` — değeri kart callback'i mi Kaan mı yazdı, önemsiz |
 | MailerLite | **On iki custom field** (envanter `20-ref-bot.md`). Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
+| Callback güvenliği | `odeme-callback` 19 Ağu'dan 10 Eyl'e kadar **kimlik doğrulamasızdı**; adresi ve bir Notion sayfa UUID'sini bilen herkes bir kaydı Ödendi yapabilir, promo sayacını şişirebilirdi. `KART_AKISI` kapalı olduğu için sömürülemedi. Artık `dogrulaCallback()` **provider arayüzünde** (KARAR 395 uygulaması, `5a4c5bc`), **fail-closed** — sır tanımsızsa `401`, gövde Notion'a hiç taşınmadan |
 
 ---
 
@@ -98,14 +90,15 @@ Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 
 1. **B19 — WhatsApp display name** (Kaan). `…5226` hattında **"Ocak Kadın Çemberi" ONAYLI** (19 Ağu). Kalan iş yalnız `…0888` hattı: ad başvurusu (KARAR 521) + bot bağlama — **B104**.
    Numara yayını buna kilitli **değil** — KARAR 396 kapandı, bot hattı `905325555226` canlı (`354fb14`). Bot hattı ≠ yasal sayfa telefonu (`+90 532 208 0888`, beş yasal sayfa) — kasıtlı iki yüzey, eşitlenmez (KARAR 518).
-2. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel **✅ mühürlendi** (23 Ağu, KARAR 542);
+2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`).** `teslimat-iade.astro` ve
+   `mesafeli-satis.astro` canlı cümleleri iki yöntemi de kapsıyor, beş yorum bloğu kapandı.
+   ⚠ **`robots Allow` hâlâ açılmadı** — engel kalktı, **karar verilmedi**; `Allow` = duyuru (KARAR 149), kararı Gün 1 verir.
+   Hukukçuya kalan iki soru metne **girmedi**: cayma hakkı istisnası (6502 md.15) · e-ticaret fatura serisi.
+3. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel **✅ mühürlendi** (23 Ağu, KARAR 542);
    `KURUCU-URL` ara-değiştir **✅ KAPANDI** (24 Ağu, **B139** · **B184**) — dokuz promptun dokuzunda gerçek `--sref`, `--v 8.1`, `--chaos 5`; `--sref KURUCU-URL` → **0**. ⚠ **Bu madde artık Gün 1'i kilitlemiyor**; kalan kilit V05–V09'un üretimde hiç sınanmamış olması (ilk parti kanarya).
-3. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
+4. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
 
-**Kapanan halka — etkinlik tarihleri.** 15 yayında etkinlik (6 Açık Kapı · 4 Çember ·
-3 Seremoni · 1 Yolculuk · 1 Atölye), tarihli/saatli, ilki **31 Ağustos**; yedi
-format kayıt route'u + `/anadolu/basvuru` + `/iletisim/bize-yaz` **canlı** (dumptan).
-⚠ **"gövdeli" iddiası düzeltildi (24 Ağu):** on dördü gövdeli, biri değil — `yolculuk-acilis` `Detay` **NULL**, `Yayınla` ✓ (**B81**).
+**Kapanan halka — etkinlik tarihleri.** Tam kayıt `90-kronoloji/2026-09.md`'de (10 Eylül tahliyesi, KARAR 457/61): 15 yayında etkinlik, yedi format kayıt route'u canlı; on dördü gövdeli, `yolculuk-acilis` `Detay` **NULL** — **B81** açık.
 
 ---
 
@@ -126,6 +119,11 @@ Hepsi "site bozulmaz, özellik sessizce düşer" sınıfı. Metinleri işaret ed
   kaydırır. Test tarafı artık `TZ:'UTC'` ile korunuyor. → KARAR 385 + **464** (`vitest.config.ts:12` teyitli)
 - **"Kod var" ≠ "output var"** — durum component dosyasından değil `dist/` grep'inden
   okunur. → `20-ref-protokoller.md` (KARAR 355 / 408)
+- **Türetilmiş yüzey kaynağın yerine geçmez** — üç vaka, aynı sınıf: hoisted script `dist/`
+  grep'ini yanıltır (`odeme_yontemi` çıktıda var ama markup değil, render ölçümü `data-*` ile) ·
+  Türkçe metin bundle'da Unicode kaçışlı yaşar (`"\xD6demen alındı"`, kaçış çözülmeden grep
+  **yokluk raporlar**) · `PUBLIC_HAVALE_IBAN` yerelde tanımsız, yerel `dist/`ten IBAN teşhisi
+  kurulmaz. → KARAR 577 (10 Eyl)
 - **`prerender = false` ≠ taze içerik** — yedi SSR sayfası (`/cember` · `/acik-kapi` ·
   `/seremoni` · `/atolye` · `/mini-retreat` · `/sehir-aksami` · `/yolculuk`) içeriği build-time
   collection'dan okur, ISR yok → her metin değişikliği deploy ister, **doğrulama canlıda.**

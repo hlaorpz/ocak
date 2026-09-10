@@ -1,6 +1,10 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 24 Ağustos 2026 (**Sayfalar metin turu + C listesi + DEPLOY**) ·
+**Son güncelleme:** 10 Eylül 2026 (**N-Kolay turu — kart yüzeyi mock'la geri açıldı**) ·
+**KARAR 573–577** mühürlendi · on commit, **dokuzu kod** (19 Ağu'dan bu yana ilk kod turu) ·
+test **325/325 · 19 dosya** · **B180 koruma ayağı ✅**, **B185–B193** açıldı · İŞ 4 uçtan uca
+koşuldu (Kaan) ·
+önceki: 24 Ağustos (**Sayfalar metin turu + C listesi + DEPLOY**) ·
 **KARAR 558–567** mühürlendi · **DEPLOY ALINDI** — `1b4b998` → **`9acbabb`**, sekiz canlı
 kontrolün sekizi tuttu · **B80 ✅ · B164 ✅**, **B174–B181** açıldı ·
 önceki: 24 Ağustos (**sıfır dolgu turu**) · **KARAR 555–557** — jetonlar
@@ -48,13 +52,19 @@ Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 
 ### ⛔ LANSMAN ÖN KOŞULU — ertelenemez
 
-**İade cümlesi.** `teslimat-iade.astro:57-58` + `mesafeli-satis.astro:123-124` hâlâ
-*"ödemenin yapıldığı kart üzerinden iade"* diyor. Kart akışı KARAR 488 ile kapandı →
-cümle **yanıltıcı** ve tüketicinin itirazda fiilen dayanacağı madde. Faz 1'de taslak
-yorumda bırakıldı, muhasebeci/hukuk onayı bekliyor.
+✅ **İade cümlesi ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`).** İki dosyanın canlı cümleleri
+iki yöntemi de kapsıyor, beş yorum bloğu kapandı. İade metni iki dosyada birebir aynı
+dize — ortak bileşene çıkarılmadı, **B185**.
 
-⚠ **`robots` `Allow` bu cümle düzelmeden açılmaz.** Lansman tanımı (KARAR 149) =
-robots Allow + duyuru; bu satır o tanımın önünde duruyor.
+*Kapanan hâli (KARAR 61 — silinmez):* `teslimat-iade.astro:57-58` +
+`mesafeli-satis.astro:123-124` *"ödemenin yapıldığı kart üzerinden iade"* diyordu; kart
+akışı KARAR 488 ile kapanınca cümle yanıltıcı olmuştu ve tüketicinin itirazda fiilen
+dayanacağı maddeydi. Faz 1'de taslak yorumda bırakılmıştı.
+
+⚠ **`robots` `Allow` hâlâ açılmadı** — engel kalktı, **karar verilmedi.** Lansman tanımı
+(KARAR 149) = robots Allow + duyuru; kararı **Gün 1** ile birlikte verir.
+⚠ Hukukçuya kalan iki soru metne **girmedi**: cayma hakkı istisnası (6502 md.15) ·
+"internetten satış" e-ticaret fatura serisi.
 
 ⛔ **Bu bölümün dışında iki lansman engeli daha var** (22 Ağu bot turu, aşağıdaki
 🤖 BOT HATTI bölümü): **B121** davet akışı kapalı 🔴 · **B122** Zoom kaydı süreci yok.
@@ -90,6 +100,31 @@ Sırada iki hat (B106 aynı gün kapandı — `c45332e`):
 ⚠ **B163 (deploy borcu) bu turla kapanmadı ama şekil değiştirdi:** o borç *"Notion'da yeni,
 sitede eski"* tutarsızlığıydı; şu an **fark yok.** Bir sonraki metin turu farkı yeniden
 açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
+
+---
+
+### 🎯 N-KOLAY HATTI — 10 Eylül turundan
+
+0. ✅ **Kod tarafı hazır.** On commit, İŞ 4 uçtan uca koşuldu (Kaan), Preview ayakta
+   (`nkolay-test`, `f8409c4`).
+1. ⏳ **Production anahtarı çevrilecek** (Kaan) — `KART_AKISI=acik` · `PAYMENT_PROVIDER=mock` ·
+   `ODEME_CALLBACK_SIR` (Preview'dakinden **farklı**), sonra **redeploy** (değer build
+   zamanında sabitlenir). ⚠ 11 Eyl ölçümünde **henüz çevrilmemişti.** Çevrilince **B193**
+   canlı borç olur — AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.
+2. ⏳ **N-Kolay'dan dört girdi bekleniyor** (Kaan → `nkolayPos@nkolay.com.tr`): logo seti
+   (Visa/MC + kendi rozeti) · **callback imza şeması** · **site denetim kriter listesi** ·
+   test kartları. ⚠ Kriter listesi gelmeden neyi karşıladığımızı **ölçemiyoruz** — hattın
+   gerçek darboğazı bu.
+3. ⏳ **Muhasebeci/hukuk iki soru:** cayma hakkı istisnası (6502 md.15, belirli tarihte
+   yapılan hizmet) · "internetten satış" e-ticaret fatura serisi (kart geldiğine göre
+   **büyük ihtimalle evet**).
+4. **Güven şeridi** — KARAR 297 iyzico şeridini kaldırmıştı; `public/odeme/` yok, çizen
+   komponent yok, ölü kod kalmamış. Logo seti gelmeden kurulamaz.
+5. **N-Kolay provider** — `payment-provider.ts`'e implementasyon + gerçek
+   `dogrulaCallback()`. İmza şemasına kilitli. Aynı turda **B186** temizlenir.
+6. **`nkolay-test` dalı silinecek** — iş bitince `git push origin --delete nkolay-test`.
+7. **Muhafız turu** — **B188** (KARAR 488'in dört ölçüsüz tüketicisi) **birinci**, sonra
+   **B189**'un kalanı. Kendi brief'iyle gelir.
 
 ---
 
@@ -332,8 +367,9 @@ başlığını etkiler.
 
 
 
-1. **Notion `Kayıtlar` alanları** (Kaan, elle) — `Beklenen Tutar` (number) +
-   `Mail Gitti` (checkbox). 2. maddenin ön koşulu.
+1. ✅ **Notion `Kayıtlar` alanları AÇILDI** (10 Eyl, Kaan) — `Beklenen Tutar` (number) +
+   `Mail Gitti` (checkbox). 2. maddenin ön koşulu **doldu**. ⚠ Şema referansı
+   `20-ref-notion.md` bu iki alanı da saymıyor — **B187**.
 2. **n8n ödeme onayı akışı** (Kaan) — `Ödendi` + `Mail Gitti` boş → MailerLite
    `odeme_durumu=alindi` → detay maili → `Mail Gitti` ✓. **Sıranın en kritik
    maddesi:** bu kurulana kadar detay mailleri **elle** gidiyor. `odeme_durumu`'nun

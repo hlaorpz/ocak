@@ -3177,11 +3177,12 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   **HEAD ile birebir aynıydı** (`diff -q git show HEAD:… ↔ kopya` → fark yok, 53.825 bayt).
   Yani kopya bilgi taşımıyordu — commit'li sürümün macOS indirme dubleti. **Silindi.**
   Geri gerekirse: `git show HEAD:tools/ocak-kart-derleyici.html > "tools/ocak-kart-derleyici 2.html"`.
-- [ ] ⏳ **Kalan tek soru: commit'lenecek mi.** Bu turda **commit'lenmedi** — MJ patch'i
-  doküman işidir, `tools/` kod dosyasıdır; ayrı konu = ayrı commit (CLAUDE.md §6). Değişiklik
-  çalışma ağacında bekliyor (`47 ekleme, 5 silme`). ⚠ **Sahipsiz kod hâlâ sahipsiz:** commit
-  edilene kadar `git` onu korumuyor. Commit turu **B169**'u (`kartAdi()` şema hizası) ve
-  **B143**'ü (font gömme) aynı anda kapatabilir — üçü aynı dosya, tek doğrulama.
+- [x] ✅ **Commit'lendi (10 Eyl, `bcc0196`).** Koruma ayağı kapandı: `47 ekleme, 5 silme`
+  artık git'in koruması altında. 24 Ağu ölçümü 16 gün sonra birebir tuttu — dosya o günden
+  beri değişmemiş.
+- [ ] ⏳ **BORÇ TAM KAPANMADI — kapsamı daraldı.** Kalan tek ayak **doğrulama**: üç düzeltme
+  (`dagit` crop dağıtımı · "Kart 1 kapak olsun" · `kaynakOlcu` göstergesi) **tarayıcıda hâlâ
+  test edilmedi**. `node --check` temiz, eyeball yok. Sahip: Kaan.
 - **Bağ:** **B143** (aynı dosyanın font bağımlılığı) · **B169** (aynı dosya, şema hizası) ·
   **B181** (aynı gün paralel yüzeyler)
 
@@ -3277,3 +3278,79 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   **ölçülen kuyrukla dosyadaki kuyruk eşitlenir.** Sonra Bölüm 16'daki `⚠ TEYITSIZ` notu
   kalkar.
 - **Bağ:** **B139** (`--no` ayağı) · KARAR 542 · KARAR 470 · `00-durum.md` YAYINI KİLİTLEYENLER 2
+
+## B185 — `IadeMetni` ortak bileşen yok
+- [ ] **Sahip:** CC · **Küçük** · **Tetikleyici:** bir sonraki yasal metin turu
+- İade cümlesi `teslimat-iade.astro` ve `mesafeli-satis.astro`'da **birebir aynı 350
+  karakterlik dize** olarak iki yerde yaşıyor (`0b173ac`, 10 Eyl). Boşluk normalize
+  edilerek karşılaştırıldı, eşit.
+- KARAR 395'in tam uyardığı durum: iki kod yolunu elle eşit tutmak. Bu turda **bilerek**
+  ertelendi, kapsamı büyütmemek için; her iki dosyaya da bunu söyleyen yorum kondu.
+- **Çözüm:** `src/components/yasal/IadeMetni.astro`. **Bağ:** KARAR 395 · KARAR 576
+
+## B186 — kalan PayTR/iyzico geçişleri
+- [ ] **Sahip:** CC · **Küçük** · **Tetikleyici:** N-Kolay provider implementasyonu
+- 19 satır: JSX/frontmatter yorumu, sunucu tarafı hata dizesi, `getPaymentProvider()`
+  throw metinleri. **Kullanıcıya çıkmıyor** — `dist/` ve `.vercel/output/static/` temiz;
+  `_functions/pages/api/kayit.astro.mjs` içinde dört `iyzico` throw dizesi var.
+- Kaan kararı (10 Eyl): dursun, ayrı borç. N-Kolay implementasyonu gelince aynı turda temizlenir.
+- **Bağ:** KARAR 576 · `e03364d` (kullanıcı-görünür olan zaten kaldırıldı)
+
+## B187 — `20-ref-notion.md` Kayıtlar şeması bayat
+- [ ] **Sahip:** Claude.ai → CC · **Tetikleyici:** Notion şemasına dayanan bir sonraki iş
+- Dosya **12 alan** sayıyor; kodda `Kullanılan Kod` · `Askı Tutarı` · `Askı Katkısı` ·
+  `Davet Eden Ref` · `Etkinlikler` var, listede **yok**. Bugün `Beklenen Tutar` ve
+  `Mail Gitti` de eklendi (10 Eyl, Kaan).
+- ⚠ Şema referansı **güvenilmez**: kod ile çeliştiğinde hangisinin doğru olduğu ölçülemiyor.
+  Bu turda `/odeme/tamam` teşhisi şemayı **doğrulayıcı** olarak kullandı — o sefer tuttu,
+  garanti değil. **Bağ:** KARAR 482 (çelişkide hangi yüzey kazanır)
+
+## B188 — KARAR 488'in dört tüketicisi ölçüsüz
+- [ ] **Sahip:** CC · **Tetikleyici:** muhafız turu — **birinci madde**
+- Altı tüketiciden yalnız ikisi (`oda-map`, sabit route listesi) test altında.
+  **Ölçüsüz dördü:** `KayitFormu.astro:448` · `api/kayit.ts:503` ·
+  `odeme-callback.ts:125` · `astro.config.mjs` sitemap filtresi.
+- ⚠ `KayitFormu:448`'i `{false && …}` yapmak suite'i **yeşil bırakır** — KARAR 573'ün
+  canlı ödeme yüzeyindeki vakası. `kart-akisi.test.ts` bayrağın *değerini* ölçüyor,
+  gate'in *koşulunu* değil. **Bağ:** KARAR 573 · KARAR 488 · B189
+
+## B189 — muhafız envanteri
+- [ ] **Sahip:** CC · **Tetikleyici:** B188'den sonra, kendi brief'iyle
+- `.claude/notes.md`'de sekiz aday listelendi, **hiçbiri ölçülmedi.**
+- **Sıra:** B188'in dördü **önce**; sonra KVKK/Mesafeli validasyonu (`KayitFormu.test.ts`
+  — açıkça varlık ölçümü, KARAR 262'nin tekrar eden bug'ı) ve `odeme-callback` 410 gate'i
+  (401 muhafızıyla **aynı dosya, aynı desen**). **Bağ:** KARAR 573 · B188
+
+## B190 — `genuine-prosperity` projesi kırık
+- [ ] **Sahip:** Kaan · **Tetikleyici:** N-Kolay denetimi öncesi
+- `hlaorpz/ocak` reposuna bağlı **ikinci** bir Vercel projesi var; production deploy'u
+  kırmızı ✗. `ocak/production` yeşil.
+- **Ölçülmedi:** ne olduğu · neden bağlı olduğu · kırıklığın bir şeyi etkileyip etkilemediği.
+- **Bağ:** B179 (`.vercel/repo.json` bayat, projeye "ocak-site" diyor)
+
+## B191 — Vercel webhook dal push'unu kaçırdı
+- [ ] **Sahip:** Kaan · **Tetikleyici:** bir sonraki dal açılışı
+- `nkolay-test` GitHub'a push edildi (`b1ee821`), Preview ayarı **"All unassigned git
+  branches"**, deploy yine tetiklenmedi. Boş commit (`f8409c4`) ile tetiklendi.
+- **Ölçülmedi:** tek vaka mı, desen mi.
+- ⚠ **B64'ün akrabası** — ikisi de deploy tetikleme hattında. **Bağ:** B64
+
+## B192 — Notion'da mock test satırı
+- [ ] **Sahip:** Kaan · **Tetikleyici:** ilk gerçek kayıt penceresinden önce
+- İŞ 4 uçtan uca koşuldu (10 Eyl, **Kaan'ın raporu** — CC bağımsız doğrulamadı).
+  Kayıtlar DB'de `Notlar` alanı `MOCK ödeme — <ISO>` diyen satır duruyor.
+- İlk gerçek kayıttan önce silinir ya da işaretlenir.
+- ⚠ **B72 ile sırası önemli** — erken temizlik kapı doğrulamalarının zeminini siler.
+
+## B193 — Production'da mock ödeme ekranı canlı
+- [ ] **Sahip:** Kaan · **BÜYÜK** · **Tetikleyici:** ilk gerçek kayıt penceresi açılmadan önce
+- **Kaan kararı (10 Eyl):** N-Kolay denetimi `www.ocak.biz` üzerinden yapılacak, mock ekran
+  gösterilecek → `KART_AKISI=acik` · `PAYMENT_PROVIDER=mock` **Production kapsamına** yazılır.
+  `ODEME_CALLBACK_SIR` Preview'dakinden **farklı** olur.
+- ⚠ **Ölçüm (11 Eyl, CC): anahtar henüz çevrilmemiş.** `www.ocak.biz/cember/kayit` HTTP 200,
+  yöntem grubu markup'ı yok. Env yazılmadı ya da redeploy alınmadı — **değer build zamanında
+  sabitlenir, env yazmak tek başına yetmez.** Karar alındı, uygulanmadı; ikisi ayrı (KARAR 577).
+- **Risk:** anahtar açıldığında kadın "Kartla öde" derse **sahte ekran "ödendi" der.**
+  Bugün zararsız — kayıt kadınlara açık değil, "parasız Ödendi" riski yok.
+- **İki çıkış:** gerçek N-Kolay provider devreye girer · ya da `KART_AKISI` Production'da kapanır.
+- ⚠ **AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.** **Bağ:** KARAR 575 · KARAR 488 · B192
