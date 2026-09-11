@@ -18,12 +18,21 @@
  * Site geneli yüzen buton (WhatsappYuzen.astro), /iletisim Kanallar kartı ve Footer
  * link'i bu sabitten okur — numara değişirse tek yer dokunulur.
  *
- * DİKKAT: bot hattı ile yasal sayfaların telefonu KASITLI olarak ayrı (Kaan, 19 Ağu 2026).
- * Burası bot hattı: 905325555226. Yasal/iletişim sayfalarındaki düz metin telefon
- * (+90 532 208 0888, beş sayfa) bu değişimin DIŞINDA kaldı — eşitlemeye çalışma.
- * 0f77218 ikisini birlikte taşımıştı; artık iki ayrı yüzeyler.
+ * İKİ YÜZEY BİRLEŞTİ (11 Eyl 2026 — KARAR 518 revize). Bot hattı ile yasal sayfaların
+ * telefonu artık AYNI numara: 905322080888. Yasal/iletişim sayfalarındaki düz metin
+ * telefon (+90 532 208 0888 — hakkimizda, iletisim, mesafeli-satis, teslimat-iade,
+ * gizlilik; beş sayfa) bu sabitin ta kendisidir. Eşitlenecek bir şey yok, ayrı tutulacak
+ * bir şey de yok; o sayfalar kendiliğinden hizalı.
+ *
+ * Tarihçe — sonraki turu yanıltmasın diye: 19 Ağu 2026'da ikisi KASITLI ayrılmıştı
+ * (bot …5226, yasal …0888) ve bu yorum "eşitlemeye çalışma" diyordu. Eski bot
+ * numarasının tam hâli git geçmişinde — 6949f13 öncesi bu dosyada duruyor.
+ * O ayrım sona erdi. Bot artık …0888 hattında canlı (WABA 1052764880644336, phone
+ * number ID 1137117629495255, Connected · CLOUD_API · VERIFIED); …5226 aynı WABA'da
+ * çalışmaya devam ediyor ama site onu artık göstermiyor. KARAR 396'nın sıralama
+ * kilidi — bot/Meta/n8n önce, site sonra — bu değişimden önce sağlandı.
  */
-export const WHATSAPP_URL = 'https://wa.me/905325555226';
+export const WHATSAPP_URL = 'https://wa.me/905322080888';
 
 /**
  * Ödemeli kayıt formları (KayitFormu component) için TEK hedef adres
