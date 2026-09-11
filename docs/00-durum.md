@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu (ikinci geçiş)** · dönem HEAD `094fd0f`
+**Son güncelleme:** 11 Eylül 2026 · **WA ikinci hat turu — numara birleşmesi** · dönem HEAD `b5ff542`
 
 ---
 
@@ -45,7 +45,7 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
   `baglam.sh` **emekli edilmedi.**
 - **B01 ✅ (10 Ağu)** — klon · remote · proje adı üçü de `ocak`; tek commit `50294e6`. Blok 24 Ağustos'ta kronolojiye **indi** (B58 · B59 · B60 orada).
 - **11 Ağustos ✅ (B47 · B40/B55/B56 · B58)** — `05-harita.md` + KARAR 482 · 483. Blok 24 Ağustos'ta kronolojiye **indi** (KARAR 457/61).
-- **Marka işareti ✅ (18–19 Ağu)** — logo + başlık kanonu (**KARAR 522 · 523**). Blok 24 Ağustos'ta kronolojiye **indi**; canlı ayağı **B105** (Instagram · WhatsApp · e-posta anteti hâlâ eski).
+- **Marka işareti ✅ (18–19 Ağu)** — logo + başlık kanonu (**KARAR 522 · 523**). Blok 24 Ağustos'ta kronolojiye **indi**; canlı ayağı **B105**: Instagram ✅ (avatar yüklendi, 11 Eyl) · WhatsApp ayağı **B197**'ye devredildi (Kanal düştü, KARAR 589) · **e-posta anteti hâlâ eski**.
 
 - **Sayfalar metin turu ✅ (24 Ağu)** — on dört yüzeyde yirmi bir yazım, C listesinin beşi
   kapandı, **deploy aynı gün alındı.** Doktrin **558** (Seremoni + Çember'de kayıt yoktur,
@@ -69,7 +69,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`094fd0f`** (11 Eyl, dal temizliği + üç kapanış turu, ikinci geçiş; bir önceki dönem `d8732c4`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem de SIFIR kod içerdi** — yalnız doküman ve `scripts/durum-uret.mjs`'in bir çıktı satırı; `src/` ve `public/` açılmadı. ⚠ **Deploy ayrımı:** bu repoda doküman commit'i de production'a deploy olur — *"deploy alınmadı"* ifadesi **promote/eyeball turunu** kasteder, push'u değil. 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
+| `main` dönem HEAD | **`b5ff542`** (11 Eyl, WA ikinci hat turu — numara birleşmesi; bir önceki dönem `094fd0f`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem KOD içerdi** — kendinden önceki sıfır-kod dönemler dizisini kırdı: `src/lib/api.ts` + üç component yorumu (`b5ff542`, WhatsApp numarası birleşmesi). Production READY, `dpl_E8vgJh7q…`; canlı ölçüm `/` → 2 link · `/iletisim` → 3 · eski numara **0**. ⚠ **Deploy ayrımı:** bu repoda doküman commit'i de production'a deploy olur — *"deploy alınmadı"* ifadesi **promote/eyeball turunu** kasteder, push'u değil. 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -90,8 +90,14 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 
-1. **B19 — WhatsApp display name** (Kaan). `…5226` hattında **"Ocak Kadın Çemberi" ONAYLI** (19 Ağu). Kalan iş yalnız `…0888` hattı: ad başvurusu (KARAR 521) + bot bağlama — **B104**.
-   Numara yayını buna kilitli **değil** — KARAR 396 kapandı, bot hattı `905325555226` canlı (`354fb14`). Bot hattı ≠ yasal sayfa telefonu (`+90 532 208 0888`, beş yasal sayfa) — kasıtlı iki yüzey, eşitlenmez (KARAR 518).
+1. **B19 ✅ KAPANDI (11 Eyl) — WhatsApp display name.** `…5226` → **"Ocak Kadın Çemberi"**
+   (19 Ağu) · `…0888` → **"Ocak Kadın Topluluğu"** (11 Eyl, onaylı). İki hat da aynı WABA'da
+   (`1052764880644336` · *Ocak · Dijital Asistan*), ikisi de **Connected · CLOUD_API · GREEN**.
+   **B104 ✅ KAPANDI** aynı gün: `…0888` register edildi (`pnid 1137117629495255`), webhook
+   açıldı, canlı round-trip teyit edildi (Kaan, `wa.me/905322080888` → bot yanıtladı).
+   ⚠ **KARAR 518 SUPERSEDE → 585:** bot hattı ile yasal sayfa telefonu artık **ayrı değil** —
+   ikisi de `905322080888`. Site sabiti `b5ff542` ile taşındı, beş yasal sayfa zaten bu numarayı
+   taşıyordu ve dokunulmadı. Eşitlemeye çalışan tur değil, **ayırmaya** çalışan tur yanılır.
 2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`).** `teslimat-iade.astro` ve
    `mesafeli-satis.astro` canlı cümleleri iki yöntemi de kapsıyor, beş yorum bloğu kapandı.
    ⚠ **`robots Allow` hâlâ açılmadı** — engel kalktı, **karar verilmedi**; `Allow` = duyuru (KARAR 149), kararı Gün 1 verir.
@@ -148,19 +154,7 @@ girmez; o kuyruk başka yerde yaşar.
   Üç bekçi bandı kaydı: Seremoni `3.571–3.686` · Açık Kapı `3.044–3.330` · Çember `3.472–3.771`.
   Slug konvansiyonu (**559**) + dört ad (**560**); Kayıtlar DB'de iki test satırı olduğu
   için **slug değişimi bedelsizdi.** → `90-kronoloji/2026-08.md`
-- **19 Ağustos (B turu — sosyal medya + AÇILIŞ):** Sosyal v2 planı taze site dumpına karşı
-  ölçüldü — **27 aynen · 3 cümle düzeltmesi · 0 yeniden yazım · 5 yeni malzeme**; baştan yazım
-  düştü, v2.1 patch'lendi ve `30-sosyal.md` olarak repoya alındı. **AÇILIŞ 24–27 Eylül 2026**
-  kesinleşti (KARAR 492). Dump 2. turda kabul testinden geçti; 1. tur etkinlik gövdelerinin
-  dörtte üçünü sessizce kaybetmişti — KARAR 495 bu vakadan doğdu. → `90-kronoloji/2026-08.md`
-- **19 Ağustos (Faz 1 — ödeme yüzeyi):** Kart akışı **silinmeden** kapatıldı
-  (`KART_AKISI`, KARAR 488). Referans kodu `OCAK-XXXX`'e indi — 29'luk alfabe,
-  15 maddelik kara liste (KARAR 489 · 490). Havale açıklamasından **isim çıktı**,
-  satır saf ASCII oldu. Forma **Soyad** eklendi, **Şehir** ve **Telefon** sunucuda
-  zorunlulaştı; `last_name` MailerLite'a canlı aboneden teyitli (**B76 ✅**).
-  `A.Ş.` satır kırılması CSS'ti, düzeldi. Geçersiz alan kaydırması bir kez kör
-  uygulanıp canlıda kapanmadı, `nav-kaydir.ts` ortak yardımcısıyla düzeldi
-  (KARAR 491 bu hatadan doğdu). → `90-kronoloji/2026-08.md`
+- **19 Ağustos (B turu — sosyal medya + AÇILIŞ · Faz 1 — ödeme yüzeyi):** iki blok da 11 Eylül'de kronolojiye **indi** (KARAR 457/61) → `90-kronoloji/2026-09.md`. Canlı ayaklar adıyla duruyor: **AÇILIŞ 24–27 Eylül** (KARAR 492) · `KART_AKISI` (488) · `OCAK-XXXX` (489 · 490) · **B76 ✅**.
 - **Daha eski dönemler** (11 Ağu · 17–19 Ağu üç format · 18–19 Ağu içerik+altyapı) → `90-kronoloji/2026-08.md` (19 Ağu tahliyesi, KARAR 457/61)
 
 ---

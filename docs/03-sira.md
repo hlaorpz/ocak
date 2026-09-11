@@ -648,9 +648,13 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 
 | cephe | sahip | durum |
 |---|---|---|
-| **B19** — WhatsApp display name | Kaan | **Kuyrukta kalır, kapsamı daraldı.** `…5226`'da "Ocak Kadın Çemberi" **onaylı** (19 Ağu); kalan iş yalnız `…0888` — ad başvurusu KARAR 521. (Numara yayını buna bağlı değil — KARAR 396 kapandı, hat canlı) |
+| **B19** ✅ — WhatsApp display name | Kaan | **KAPANDI 11 Eyl.** `…5226` "Ocak Kadın Çemberi" (19 Ağu) · `…0888` "Ocak Kadın Topluluğu" (11 Eyl). İki hattın da onaylı adı var; **`YAYINI KİLİTLEYENLER` zincirinden düştü.** Ad çelişkisi ayağı **B103**'te devam ediyor |
 | **B103** — "OCAK" adı iki beyanda çelişiyor | Kaan (~5 dk) | Meta Manager ret geçmişi + **gerekçe metni** okunacak; `_arsiv/20-ref-bot-2026-08-06.md:41` (eski `20-ref-bot.md:13`, 22 Ağu'da arşive taşındı) ile KARAR 410 uyuşmuyor |
-| **B104** — `…0888` hattı WABA değil | Kaan | Hat açılır → ad onayı (KARAR 521) → bot bağlanır → **canlı round-trip** ile kapanır. Site kodu değişmez |
+| **B104** ✅ — `…0888` hattı WABA değil | Kaan | **KAPANDI 11 Eyl.** Register (`pnid 1137117629495255`) → webhook → **canlı round-trip** teyit edildi. ⚠ *"Site kodu değişmez"* varsayımı düştü: site bot hattını `…0888`'e çevirdi (KARAR 585, `b5ff542`). Borç **şartından** kapandı, varsayımından değil |
+| **B198** — `…0888` iki WABA'da görünüyor, profil kilitli | Kaan | ⚠ **Sıranın üstünde** — `…0888` artık kadınların göreceği hat ve profili boş. Kabuk kayıt kaldırılır → profil yazılabilirliği görülür (KARAR 588) |
+| **B197** — WhatsApp Kanalı düştü | Kaan | Kanal + `ocak.biz` WA kullanıcı adı register'la gitti (KARAR 589). Üç seçenek açık; `30-sosyal.md` Kanal tanımı gerçekle ayrıştı |
+| **B199** — eski numara / bayat gerekçe kalıntıları | Kaan (dış) · CC (`gizlilik.astro:6`) | Site ve Notion **temiz ölçüldü**; taranmamışlar: MailerLite · Instagram · Notion operasyonel · bot prompt. Kod ayağı bir sonraki dokunuşa iliştirilecek, ayrı brief yok |
+| **B196** — yasal sayfa telefonu aranamıyor | Kaan | **Lansman sonrası.** `/sss`'e dürüstlük cümlesi girdi (11 Eyl) ama kalıcı değil; yol yönlendirmeli sanal numara (KARAR 590) |
 | **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel + `KURUCU-URL` | Kaan | Gün 1 yayını bunsuz başlamaz (KARAR 450) |
 | **Yolculuk fiyat bandı → ilk Yolculuk etkinliği** | Kaan + Advaita | Eylül kohortu duyurusunun önkoşulu |
 | **Ödeme** — banka sanal POS | Kaan | entegratör belirsiz, `payment-provider.ts` stub |

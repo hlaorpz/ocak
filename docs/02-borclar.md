@@ -194,8 +194,14 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 - [ ] **Sahip:** Kaan
 - **Kaynak:** KARAR 274 (`ocak-kronoloji.md:4043`) — PARK. Yeni Resend template + trigger gerektiriyor.
 
-## B19 — WhatsApp display name
-- [ ] **Sahip:** Kaan
+## B19 ✅ KAPANDI (11 Eyl) — WhatsApp display name
+- [x] **Sahip:** Kaan
+- **Kapanış (11 Eyl 2026):** `…0888` hattında **"Ocak Kadın Topluluğu" onaylandı.** İki hattın
+  da onaylı adı var — kapanış şartı sağlandı. ⚠ **B103** (düz "OCAK" adı hakkındaki çelişki)
+  **kapanmadı** — bu turda yeni kanıt doğdu: OCAK WABA'sındaki (`1646708623791063`) kabuk
+  kaydın `verified_name` değeri "OCAK" ve durumu **In review**. Yani düz "OCAK" en azından
+  bir kez reddedilmemiş, incelemeye girmiş. Bu B103'ün kapanış şartını (ret geçmişinin
+  gerekçe metniyle okunması) karşılamaz, ama çelişkinin bir ucunu zayıflatır.
 - **Kaynak:** KARAR 410 (`ocak-kronoloji.md:5598`)
 - **Durum (19 Ağu 2026):** `…5226` hattında **"Ocak Kadın Çemberi" ONAYLANDI** (Kaan teyidi;
   Manager rozeti ayrıca okunmadı). Ad tartışması bu hat için **kapandı** — KARAR 519 gereği
@@ -1890,9 +1896,15 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   ile "all-caps not permitted" farklı iki düzeltme demektir.
 - **Bağ:** KARAR 410 · 519 · 521 · B19.
 
-## B104 — İkinci hat (`…0888`) WABA değil; onaylı ad ve bot tek hatta sıkışık
+## B104 ✅ KAPANDI (11 Eyl) — İkinci hat (`…0888`) WABA değil; onaylı ad ve bot tek hatta sıkışık
 
-- [ ] **Sahip:** Kaan · **Tetikleyici:** KARAR 396'nın kuyruğu, 19 Ağu'da görüldü
+- [x] **Sahip:** Kaan · **Tetikleyici:** KARAR 396'nın kuyruğu, 19 Ağu'da görüldü
+- **Kapanış (11 Eyl 2026):** `…0888` WABA'ya alındı, Graph `POST /1137117629495255/register`
+  ile kayıt tamamlandı, webhook aboneliği açıldı. **Canlı round-trip teyit edildi** (Kaan,
+  `wa.me/905322080888` → bot yanıtladı) — kod grep'i değil, borcun şart koştuğu ölçüm.
+  ⚠ Borcun *"site kodu değişmez"* varsayımı **yanlış çıktı**: Kaan yönü değiştirdi, site bot
+  hattını `…0888`'e çevirdi (KARAR 585, `b5ff542`). Borç kapandı ama varsayımıyla değil,
+  **tersiyle.** Aşağıdaki gövde o günün kaydıdır, düzeltilmedi (KARAR 61).
 - **Durum (ölçüldü, 19 Ağu):** `src/lib/api.ts:26` → `WHATSAPP_URL = 'https://wa.me/905325555226'`.
   Yani yüzen buton · footer · Kanallar kartı üçü de **bota gidiyor** — kopukluk **yok**
   (`354fb14`, KARAR 396 bu yüzden SUPERSEDE oldu). ⚠ Bu borcu açan patch tersini varsaymıştı
@@ -1918,8 +1930,10 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 değişmedi. vitest 246/246 sabit.
 
 **Açık — hepsi Kaan'ın elinde, kod işi değil:**
-1. Instagram @ocak.biz profil görseli
-2. WhatsApp Kanalı görseli
+1. ~~Instagram @ocak.biz profil görseli~~ **✅ (11 Eyl)** — avatar yüklendi.
+2. ~~WhatsApp Kanalı görseli~~ — **B197'ye devredildi (11 Eyl):** kanalın kendisi düştü
+   (`…0888` Cloud API'ye register edilince tüketici hesabı silindi, KARAR 589). Görsel işi
+   kanal kararı verilene kadar konusuz.
 3. Resend e-posta şablonlarının antedi
 4. **OG kartı** — 1200×630. Geçici bir kart üretildi ama logodan ibaret; iyi bir OG
    kartı hero cümlesini de taşır (*İçindeki ateş sönmedi*). Ayrı tasarım işi.
@@ -3371,3 +3385,64 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   koşuyor — ek bir hatırlama yükü getirmeden.
 - **Bağ:** KARAR 581 · KARAR 583 · KARAR 355 (ADIM 0) · B50 (skill senkron denetiminin
   aynı körlüğü — orada hâlâ açık)
+
+---
+
+## B196 — Yasal sayfadaki telefon aranamıyor
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** lansman sonrası iletişim kanalları turu
+- **Durum:** `+90 532 208 0888` beş yasal sayfada iletişim numarası olarak duruyor ve artık
+  Cloud API'de yaşıyor — **ses hattı yok, arayan kimseyi bulamaz.**
+- **Yapılan:** `/sss` → *"Telefonla aranabilir miyim?"* cevabına açıklık cümlesi eklendi
+  (11 Eyl, Kaan, Notion). Dürüst ama kalıcı çözüm değil.
+- **Değerlendirilen yol:** yönlendirmeli sanal numara (bulut santral) — yasal sayfalarda o
+  yazar, çağrı operasyonel cebe düşer, kişisel numara yayınlanmaz, devri kolay.
+- ⚠ **Reddedilen:** Kaan'ın kendi cebini yasal sayfaya yazması — geri dönüşü zor bir açılma,
+  ve OCAK'ın dışa konuşan yüzü Advaita olduğu için devirde numara değişmek zorunda kalır
+  (KARAR 590).
+- **Bağ:** KARAR 518 · 585 · 590.
+
+## B197 — WhatsApp Kanalı ve `ocak.biz` WA kullanıcı adı düştü
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** sosyal yüzey turu
+- **Ne oldu:** Kanal `…0888` üzerinde kuruldu (10 Eyl), ertesi gün aynı numara Cloud API'ye
+  register edilince tüketici uygulamasındaki hesap silindi — **Kanal, `ocak.biz` WhatsApp
+  kullanıcı adı ve sohbet geçmişi birlikte gitti** (KARAR 589). Kaan kararı bilerek verdi
+  (*"Kanal işi sonra baştan düşüneceğiz"*).
+- ⚠ **Neden borç:** Kanal `30-sosyal.md`'de duyuruların ilk düştüğü yer olarak **tanımlı** ve
+  Instagram bio'sunun ikinci linki ona ayrılmış durumda. Ekosistem tanımı ile gerçek ayrıştı.
+- **Seçenekler (karar verilmedi):** (a) üçüncü bir numarada yeniden kurmak, (b) Kanal'dan
+  tamamen vazgeçip duyuruları bülten + Instagram'a yıkmak, (c) ertelemek.
+- **Bağ:** KARAR 589 · B105 madde 2 · `30-sosyal.md` §Kanal.
+
+## B198 — `…0888` iki WABA'da birden görünüyor; profil güncellenemiyor
+
+- [ ] **Sahip:** Kaan · **Tetikleyici:** `…0888` profil görseli/metni yazılacağında
+- **Ölçüm (11 Eyl, Graph v22):**
+  - `OCAK` (`1646708623791063`) → `…0888`, `verified_name: "OCAK"`, **pnid `1248598625011917`**,
+    `platform_type: NOT_APPLICABLE`, `quality_rating: UNKNOWN`, durum **In review** — kabuk kayıt.
+  - `Ocak · Dijital Asistan` (`1052764880644336`) → `…5226` (`1213774115148936`) + `…0888`
+    (`1137117629495255`), ikisi de **CLOUD_API · GREEN · VERIFIED** — canlı hatlar.
+- **Belirti:** aynı numara iki kayıtta göründüğü için WhatsApp Manager profil alanları
+  (avatar, açıklama) kilitli geliyor.
+- **Kapanış şartı:** kabuk kaydın kaldırılması, ardından profilin fiilen yazılabildiğinin
+  görülmesi. ⚠ Canlı hat **farklı pnid'de** — kabuk kaydı silmek botu etkilemez, ama silme
+  geri alınamaz olduğu için ölçüm tekrarlanmadan yapılmaz (KARAR 588).
+- **Hazır metin (yazılacak profil açıklaması):** *"Kadınların kadim ateşi. Çemberler,
+  seremoniler, atölyeler, yolculuklar. Buradan yazdığında yapay zekâ asistanımız yanıtlıyor;
+  gerektiğinde bir kız kardeşe devrediyor."*
+- **Bağ:** KARAR 588 · 585 · B105.
+
+## B199 — Eski numarayı ve bayat gerekçeyi taşıyan kalıntılar
+
+- [ ] **Sahip:** Kaan (dış yüzeyler) · CC (`gizlilik.astro:6`)
+- **Site ve Notion temiz** (11 Eyl ölçümü): `dist` → `wa.me/905325555226` **0**, `555 52 26`
+  **0**; Notion Sayfalar DB dump'ı → `5555226` · `555 52 26` · `wa.me` üçü de **0** (karşı-desen
+  `whatsapp` eşleşiyor, yani grep gerçekten aranabilir bir dump'ta koştu).
+- **Taranmamış dış yüzeyler:** MailerLite şablonları · Instagram · Notion operasyonel sayfaları ·
+  bot system prompt'u. Dördü de CC'ye kapalı.
+- **Kod ayağı — `src/pages/gizlilik.astro:6`:** yorum, telefonun düz beyaz metin kalması ve
+  `<a>` yapılmaması kuralını taşıyor ama **gerekçesi bayat** — o numaranın artık bot hattı
+  olduğunu bilmiyor. Gerekçesiz kural *"bot hattıysa neden linklenmiyor"* diye kırılır.
+  CC bunu `.claude/notes.md`'ye yazdı, bir sonraki dokunuşa iliştirilecek — ayrı brief yok.
+- **Bağ:** KARAR 585 · 587.

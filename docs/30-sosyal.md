@@ -93,6 +93,34 @@ Link 1: `ocak.biz` · Link 2: WhatsApp Kanalı daveti — `[KAAN: kanal davet li
 
 ---
 
+## 2b · PROFİL KANONU
+
+**Instagram** — `@ocak.biz` · ad `OCAK · Kadın Topluluğu` · kategori Eğitim · bio §2'deki
+mühürlü iki satır + `↓ Ateşin yanında yer var` (U+2193, emoji değil) · linkler:
+`https://www.ocak.biz` (başlık `ocak.biz`) + Kanal ⚠ **B197** · aksiyon butonu **boş** (menüde
+yalnız işlem/rezervasyon seçenekleri var, Davet ≠ Satış) · iletişim numarası **kaldırıldı**
+(Instagram onu arama/SMS butonuna çevirir, bot hattı aranamaz) · e-posta `selam@ocak.biz` ·
+Not balonu **boş** (yalnız karşılıklı takipleşilen kişiler görür; 24 saatte buharlaşan bir
+yüzey OCAK'ın "biz" sesini taşımaz) · highlight **yok** (lansmanda sessizlik markanın parçası).
+
+**Facebook Sayfası** · ad `OCAK` · kullanıcı adı `ocak.biz` ⚠ **beklemede** — yeni sayfalarda
+alan uygunluk kazanana kadar kilitli; avatar + kapak + hakkında + ilk gönderi yüklendikten
+sonra açılıyor. Kısa adres gelene kadar `profile.php?id=…` **hiçbir yere yazılmaz.** ·
+kategori Eğitim (+ Topluluk) · intro = bio'nun ilk cümle çifti, ok yok (altında link butonu
+durmuyor) · Hakkında: Ana Metin'in kısaltılmış üç paragrafı + manifesto + bot şeffaflığı
+cümlesi · eylem butonu `Learn more` → `ocak.biz` (Book/Shop/Sign up kullanılmaz).
+
+**WhatsApp Kanalı** · ad `OCAK · Kadın Topluluğu` · ⚠ **kanal şu an yok (B197).** Kanal
+gönderisi Güncellemeler sekmesine düşer, varsayılan sessizdir, 30 günde silinir, takipçi yalnız
+emoji tepkisi verebilir — yani arşiv değil akış; duyuru sitede yaşar, kanal ona işaret eder.
+
+**WABA profili (`…0888`)** · açıklama metni **B198**'de. ⚠ `…0888` artık **bot hattıdır** —
+metin "buraya yazdığını bir insan okur" diyemez.
+
+**Ayraç** · OCAK'ın ayracı `·` (U+00B7). `•` ve `-` kullanılmaz.
+
+---
+
 ## 3 · SERT KURALLAR (pazarlığa kapalı — kısaltılmış, tam liste v1'de)
 
 1. **Davet ≠ Satış.** Aciliyet manipülasyonu yok: "son 3 yer", "kaçırma", geri sayım, FOMO — hiçbiri. Kontenjan gerçeği yalnız bilgi cümlesi olarak: "Kohort yirmi dört kadınla kapanıyor" (nokta).
