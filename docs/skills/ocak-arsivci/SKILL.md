@@ -53,6 +53,15 @@ ve oraya betik yazar. Patch'ten devralınan rakam ölçülmüş sayılmaz (KARAR
 tek mi, satır sayısı patch'in varsaydığı gibi mi. Kronoloji append-only olduğu için
 orada çakışma yoktur — ADIM 0 oraya uygulanmaz.
 
+**Başlık denetimi ADIM 0'ın parçasıdır** (KARAR 583):
+
+```bash
+node scripts/baslik-denetim.mjs   # çıkış kodu 0 değilse DUR
+```
+
+Sıfır dönmüyorsa **yazma, durdur, raporla.** Başlık zaten şişmişse patch onu daha da
+şişirir; temizliği yazımdan önce yapmak, sonra ayıklamaktan ucuzdur.
+
 ## Çapa disiplini (KARAR 465, 472)
 
 - Çapa **tek satırdan** alınır ve dosyada **benzersiz** olmalıdır.
@@ -134,4 +143,5 @@ yazılır.
 7. Kapanış sonrası `git log -2 --format='%h' | tail -1` HEAD satırıyla tutmuyor (KARAR 474)
 8. Patch canlı dosyaya **elle rakam** yazmanı istiyor (KARAR 578/579) — dönem HEAD ve
    kaynağı yazılı dış ölçümler dışında
-9. `node scripts/baslik-denetim.mjs` sıfır dönmüyor (KARAR 581)
+9. `node scripts/baslik-denetim.mjs` sıfır dönmüyor — **ADIM 0'da**, yazımdan önce
+   (KARAR 581 · 583)

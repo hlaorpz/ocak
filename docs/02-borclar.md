@@ -1310,6 +1310,8 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - [ ] **Sahip:** Kaan
 - **Tetikleyici:** KARAR 485. Eski hook `tZR9LcwJq9` (`notion-content-update`)
   `astro-iskelet` dalına bakıyor — ölü dal, `main`'den 85 commit geride.
+  *(Bu rakam yazıldığı gün doğruydu; 11 Eyl ölçümü **163** verdi — aşağıdaki ölçüm
+  bloğuna bak. Satır silinmedi, borcun ne zaman ne kadar büyüdüğü bilgisi işe yarıyor.)*
 - **Belirti:** Her Notion güncellemesi ve gecelik cron (`0 0 0 * * *`) oradan build
   alıyor; üretilen build preview olarak doğuyor, içerik siteye düşmüyor. İçerik
   yayınlamak için her seferinde elle boş commit atmak gerekiyor (`cf38cc4` örneği).
@@ -1318,6 +1320,30 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış şartı:** yeni URL çağıran her yere yazılır · Notion'da bir düzenlemeyle
   tetiklenir · üretilen build'in `githubCommitRef: main` **ve** `target: production`
   olduğu doğrulanır · eski hook Revoke edilir.
+- 📐 **ÖLÇÜM (11 Eylül 2026) — kaynak: Claude.ai Vercel MCP.** Belirti tahminden
+  ölçüme geçti; **madde KAPANMADI**, teşhis netleşti:
+
+  | alan | değer |
+  |---|---|
+  | hook adı | `notion-content-update` (id `tZR9LcwJq9`) |
+  | `ref` | `astro-iskelet` |
+  | üretilen commit | `7bf265b` — **sekiz ardışık koşumda hiç değişmedi** |
+  | `target` | `null` → **preview**, production **değil** |
+  | ritim | günlük, ~24 saat arayla · son koşum **11 Eylül** |
+  | sapma | `astro-iskelet`, `main`'in **163 commit** gerisinde |
+
+  **Okuma:** hook ölü değil — *çalışıyor.* Gece Notion tazeleme her gün koşuyor, ama
+  ölü dalı **preview** olarak yeniden inşa ediyor ve production'a hiç değmiyor. Sekiz
+  koşumda commit'in sabit kalması bunun kanıtı: dal ilerlemiyor, build her gece aynı
+  ağacı yeniden derliyor. Her içerik değişikliği elle `main` push'u bekliyor.
+  ⚠ Bu, *"hook çağrılmıyor"* teşhisinden **farklı** bir arızadır: çağrılıyor, yanlış
+  yere basıyor. Çalışmayan bir hook gürültü çıkarırdı; bu sessiz.
+- ⚠ **Kaynak yüzeyi CC'ye kapalıdır** (`05-harita.md` §3) — bu blok Claude.ai'den veri
+  olarak alındı, CC doğrulamadı ve `vercel` CLI çağırmadı. **Yerel teyit tek noktada
+  var ve tutuyor:** `git branch -v` yerel `astro-iskelet`'i `7bf265b`'de gösteriyor,
+  ölçümün verdiği commit ile aynı. Geri kalan alanlar (`target` · ritim · koşum sayısı)
+  yalnız panelden görünür, **teyitsizdir.**
+- ⚠ Ölçüm KARAR açmadı — **bu bir ölçümdür, karar değil.** Çözüm ayrı tur.
 
 ## B65 — `ocak-etkinlik.zip` yeniden yüklemesi
 - [ ] **Sahip:** Kaan
@@ -3241,7 +3267,7 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   dokümandan tamamen çıkar, yerine envantere işaretçi kalır.
 - **Bağ:** KARAR 578 · KARAR 579 · B165 (şablon envanteri)
 
-## B195 — `baslik-denetim.mjs`'i koşan bir mekanizma yok
+## B195 — `baslik-denetim.mjs`'i koşan bir mekanizma yok ✅ KAPANDI (11 Eyl, açıldığı gün)
 
 - [ ] **Sahip:** CC · **küçük**
 - **Ölçüm (11 Eyl):** betik doğdu (`18a0289`) ve bu turda elle koşuldu, 0 döndü.
@@ -3257,4 +3283,15 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   denetler, bu yapısal denetimdir; ikisini karıştırmak lint'in kapsamını bulandırır.
 - **Kapanış şartı:** betiği koşan bir mekanizma kurulur — `npm run denetim` girdisi,
   pre-commit hook ya da sohbet sonu patch'inin zorunlu adımı. Hangisi olacağı ayrı karar.
-- **Bağ:** KARAR 581 · B50 (skill senkron denetiminin aynı körlüğü)
+- ✅ **KAPANDI (11 Eyl, KARAR 583):** denetçi `ocak-arsivci`'nin **ADIM 0**'ına girdi —
+  `node scripts/baslik-denetim.mjs`, çıkış kodu 0 değilse DUR. Aynı skill'in DUR
+  listesinde 9. madde olarak da duruyor.
+  **Diğer iki yol reddedildi, gerekçeleriyle:** pre-commit hook her *kod* commit'inde
+  boşuna ateşler — denetlediği yüzeye hiç dokunmayan commit'lerde de koşar, gürültü
+  kuralı aşındırır. `npm run denetim` girdisi **hatırlamak gerektirir**, yani borcun
+  kendisini (koşulmama riskini) çözmez, adını değiştirir.
+  **Neden ADIM 0 doğru kapı:** başlık şişmesi yalnız **patch yazımında** doğar, kod
+  commit'inde değil. Denetçi böylece riskin doğduğu anda, zaten zorunlu olan tek kapıda
+  koşuyor — ek bir hatırlama yükü getirmeden.
+- **Bağ:** KARAR 581 · KARAR 583 · KARAR 355 (ADIM 0) · B50 (skill senkron denetiminin
+  aynı körlüğü — orada hâlâ açık)

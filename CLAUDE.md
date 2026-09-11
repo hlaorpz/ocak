@@ -54,6 +54,8 @@ doğuyorsa **DUR** — istisna yalnız dönem HEAD'dir (KARAR 474/580).
 
 `node scripts/baslik-denetim.mjs` → üç canlı dosyanın başlık bölgesini denetler
 (KARAR 581): `önceki:` zinciri · ölçüm paragrafı · dört dolu satır tavanı. Sıfır dönmeli.
+**Yeri `ocak-arsivci`'nin ADIM 0'ıdır** (KARAR 583) — doküman yazımından *önce*, çünkü
+başlık şişmesi yalnız patch yazımında doğar.
 
 *Vakalar: B32'de "~37 sığ satır" rakamının kaynağı bulunamadı; B39'da aynı ölçüm
 iki kez yapıldı, 231/232 ve 226/237 verdi — fark karakter-vs-bayt sayımındandı;
