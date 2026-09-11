@@ -247,8 +247,15 @@ async function notionKayitlaraYaz(args: {
    * yapar (notion update ile). Çift yazımı önler.
    */
   kullanilanKod?: string;
+  /**
+   * Ödenecek TOPLAM (Katman A − indirim + Katman B). Ödeme ÖNCESİ tek
+   * doğru kaynak: `/odeme/nkolay` sağlayıcıya gönderilecek tutarı buradan
+   * okur — query'den değil, çünkü query adres çubuğunda değiştirilebilir.
+   * `Ödenen Tutar` ödeme SONRASI callback'in yazdığı ayrı alandır.
+   */
+  beklenenTutar?: number;
 }): Promise<string> {
-  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod } = args;
+  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod, beklenenTutar } = args;
   const KADEME_AD: Record<Kademe, string> = { ust: 'Üst', orta: 'Orta', alt: 'Alt' };
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
@@ -289,6 +296,11 @@ async function notionKayitlaraYaz(args: {
   // niyet opsiyonel. Bu, kayıt + askı verdi anlamına gelir.
   if (askiTutar && askiTutar > 0) {
     properties['Askı Tutarı'] = { number: askiTutar };
+  }
+  // Ölçüldü (11 Eyl, Notion gidiş-dönüş): `number` kuruşu KORUYOR — 937.5 ·
+  // 1234.56 · 0.01 birebir döndü. KARAR 240'ın kuruş koruması burada hayatta.
+  if (beklenenTutar && beklenenTutar > 0) {
+    properties['Beklenen Tutar'] = { number: beklenenTutar };
   }
   if (askiNiyet) {
     properties['Askı Katkısı'] = { rich_text: [{ text: { content: askiNiyet } }] };
@@ -682,6 +694,8 @@ export const POST: APIRoute = async ({ request }) => {
           askiTutar: katmanB > 0 ? katmanB : undefined,
           askiNiyet: body.askiNiyet,
           kullanilanKod: kullanilanKodAdi,
+          // `/odeme/nkolay` sağlayıcıya gidecek tutarı BURADAN okur.
+          beklenenTutar: odemeGerekli ? hesap.toplam : undefined,
         })
       : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {

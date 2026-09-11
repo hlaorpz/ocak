@@ -75,6 +75,22 @@ export type KayitOkumaSonuc = {
    * Ek sorgu YOK: Kayıtlar sayfası zaten çekiliyor.
    */
   davetEdenAd: string;
+  /**
+   * Kayıtlar satırının Notion page id'si (UUID). `/odeme/nkolay` bunu
+   * successUrl'e `pageId` olarak koyar — callback `pages.update`'i onunla
+   * yapıyor; OCAK-XXXX ile güncelleme denemesi Notion'da hata verir.
+   */
+  pageId: string;
+  /**
+   * Ödenecek toplam — Kayıtlar `Beklenen Tutar` (number, kuruş korunur).
+   * Kayıt bulunamadıysa / alan boşsa `0`.
+   *
+   * ⚠ Ödeme öncesi tutarın TEK doğru kaynağı budur. `/odeme/nkolay` tutarı
+   * buradan alır, query'den ASLA: query adres çubuğunda değiştirilebilir ve
+   * kadın kendi ödeyeceği tutarı yazabilirdi. `Ödenen Tutar` ise ödeme
+   * SONRASI callback'in yazdığı ayrı alandır — ikisi karıştırılmamalı.
+   */
+  tutar: number;
 };
 
 /**
@@ -96,6 +112,11 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     etkinlikTarihi: '',
     landingPath: '',
     davetEdenAd: '',
+    pageId: '',
+    // Bulunamayan/hatalı kayıtta tutar `0` — `/odeme/nkolay` sıfır tutarda
+    // form basmaz (sağlayıcı FAIL-CLOSED `tutar geçersiz` döner). Boş yerine
+    // `0` seçildi ki tip sayı kalsın ve karşılaştırma dallanması gerekmesin.
+    tutar: 0,
   };
 }
 
@@ -146,7 +167,13 @@ export async function kayitOku(
         .join(''),
     );
 
-    const bulundu = { ...bosSonuc('bulundu'), davetEdenAd };
+    // `/odeme/nkolay` bu ikisini ister: UUID (callback'in `pages.update`'i
+    // için) ve ödeme öncesi tutar. İkinci bir Notion sorgusu açmamak için
+    // aynı sayfadan okunur — satır zaten elimizde.
+    const pageId: string = (kayit as { id?: string }).id ?? '';
+    const tutar: number = props['Beklenen Tutar']?.number ?? 0;
+
+    const bulundu = { ...bosSonuc('bulundu'), davetEdenAd, pageId, tutar };
 
     const etkRel: string = props['Etkinlikler']?.relation?.[0]?.id ?? '';
     if (!etkRel) return bulundu;
