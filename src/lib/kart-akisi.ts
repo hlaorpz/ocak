@@ -41,9 +41,9 @@
  *  1. `api/kayit.ts`         — `odemeYontemi === 'kart'` → 400
  *  2. `api/odeme-callback.ts`— 410, hiçbir Notion yazımı yok
  *  3. `KayitFormu.astro`     — yöntem radio grubu SSR'da render edilmez
- *  4. `/odeme/{mock,tamam,iptal}` — 404
- *  5. `oda-map.ts`           — üç entry listeden düşer
- *  6. `astro.config.mjs`     — sitemap filtresi üç route'u eler
+ *  4. `/odeme/{mock,nkolay,tamam,iptal}` — 404
+ *  5. `oda-map.ts`           — dört entry listeden düşer
+ *  6. `astro.config.mjs`     — sitemap filtresi dört route'u eler
  *
  * Sıra önemli: 1 ve 2 (backend) önce, sonra 3 (yüzey). Yüzeyi önce kaldırmak
  * backend dalını açıkta bırakır.
@@ -64,5 +64,10 @@ export function kartAkisiAcikMi(ham: string | undefined | null): boolean {
 /** `src/` tarafının okuduğu tek değer. Config tarafı `kartAkisiAcikMi`'yi kendi okur. */
 export const KART_AKISI_ACIK = kartAkisiAcikMi(import.meta.env.KART_AKISI);
 
-/** Kapalıyken elenen üç ödeme route'u — sitemap filtresi ve `oda-map` ortak kaynağı. */
-export const KART_ROUTELARI = ['/odeme/mock', '/odeme/tamam', '/odeme/iptal'] as const;
+/** Kapalıyken elenen dört ödeme route'u — sitemap filtresi ve `oda-map` ortak kaynağı. */
+export const KART_ROUTELARI = [
+  '/odeme/mock',
+  '/odeme/nkolay',
+  '/odeme/tamam',
+  '/odeme/iptal',
+] as const;

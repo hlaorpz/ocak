@@ -72,6 +72,48 @@ export type OdemeLinkiGirdi = {
 export type OdemeLinkiSonuc = { linkUrl: string } | { hata: string };
 
 /**
+ * Ortak Ödeme Sayfası form girdisi (N-Kolay, 11 Eyl 2026).
+ *
+ * ── Neden ayrı bir metot, neden `checkoutBaslat` yetmedi ──
+ * `CheckoutBaslatSonuc` bir **redirect URL** taşır; N-Kolay ise on alanlı bir
+ * **form POST** bekler. İmzayı (`hashDataV2`) URL'e yazmak onu tarayıcı
+ * geçmişine, Referer'a ve log'lara düşürürdü. Sözleşme korundu: `checkoutBaslat`
+ * yine `{ redirectUrl }` döner — ama site-içi bir ara sayfaya (`/odeme/nkolay`)
+ * ve formu o sayfa `odemeFormu()`'ndan alıp basar.
+ *
+ * `tutar` bu yapıya **Notion'dan** gelir, query'den değil: query'den okumak
+ * kadının adres çubuğunda tutarı değiştirebilmesi demekti.
+ */
+export type OdemeFormuGirdi = {
+  /** Kullanıcıya görünen referans (OCAK-XXXX). Sonek BURADA yok. */
+  referansNo: string;
+  /** Ödenecek toplam — Notion `Beklenen Tutar`. Kuruş korunur. */
+  tutar: number;
+  /** Sağlayıcının başarı dönüşünü POST edeceği URL (callback'in beklediği query ile). */
+  basariUrl: string;
+  /** Hata/iptal dönüşü. */
+  hataUrl: string;
+  /** `cardHolderIP` — zorunlu alan, boş geçilemez (`istemci-ip.ts`). */
+  istemciIp: string;
+  /**
+   * `rnd` ve deneme soneki bu andan türetilir. Parametre olarak geçilir ki
+   * (a) testte sabitlenebilsin, (b) **build zamanında donmasın** — modül
+   * seviyesinde `new Date()` çağırmak KARAR 385/464'ün vakasıdır: değer
+   * derleme anında sabitlenir ve her ödeme aynı `rnd`'yi taşır.
+   */
+  simdi: Date;
+};
+
+export type OdemeFormu =
+  | {
+      /** Formun POST edileceği sağlayıcı adresi. */
+      actionUrl: string;
+      /** Gönderilecek alanlar — sırası önemsiz, adları birebir. */
+      alanlar: Record<string, string>;
+    }
+  | { hata: string };
+
+/**
  * Callback doğrulama sonucu. `sebep` YALNIZ log/teşhis içindir — 401
  * gövdesine yazılmaz. Çağırana "sır yanlış mı, hiç yok mu" demek, deneyen
  * birine hangi yönde ilerleyeceğini söylemek olurdu.
@@ -93,6 +135,16 @@ export interface PaymentProvider {
    * beklediği şekle kendisi daraltır.
    */
   dogrulaCallback(req: Request, govde: unknown): CallbackDogrulama;
+  /**
+   * Ortak Ödeme Sayfası'na POST edilecek formu üretir. **Opsiyonel**: yalnız
+   * form-POST akışı olan sağlayıcılar yazar (`nkolay`). `mock` yazmaz —
+   * yazması gerekmiyor diye arayüze zorunlu koymak, mock'a anlamsız bir
+   * gövde uydurtmak olurdu.
+   *
+   * Senkron ve I/O'suz, `dogrulaCallback` ile aynı gerekçe: tutar çağırana
+   * (sayfaya) Notion'dan gelir, sağlayıcı yalnız imzalar.
+   */
+  odemeFormu?(p: OdemeFormuGirdi): OdemeFormu;
 }
 
 /**
@@ -193,6 +245,289 @@ export const mockPaymentProvider: PaymentProvider = {
   },
 };
 
+// ───────────────────────────── N-KOLAY ─────────────────────────────────────
+//
+// Ortak Ödeme Sayfası. Biz form POST ederiz → N-Kolay kart sayfasını gösterir
+// → sonuç bizim successUrl/failUrl'imize POST edilir. Server-to-server webhook
+// YOK; yani ödemenin tek kanıtı dönüş POST'unun imzasıdır.
+
+/** Sağlayıcı env yüzeyi. Hepsi `PUBLIC_` ÖNEKSİZ — sır ve kimlik tarayıcıya düşmez. */
+function nkolayEnv() {
+  return {
+    sx: (import.meta.env.NKOLAY_SX ?? '').trim(),
+    merchantSecret: (import.meta.env.NKOLAY_MERCHANT_SECRET ?? '').trim(),
+    baseUrl: (import.meta.env.NKOLAY_BASE_URL ?? '').trim().replace(/\/+$/, ''),
+  };
+}
+
+/**
+ * `rnd` — `DD-MM-YYYY HH:mm:ss`.
+ *
+ * ⚠ **Hash'e giren dize ile gövdede giden dize BİREBİR aynı olmalı.** Bu yüzden
+ * tek kaynaktan üretilip iki yere verilir; ikinci kez `uretRnd()` çağırmak
+ * saniye sınırına denk geldiğinde imzayı sessizce bozar ve hata "bazen" görünür.
+ *
+ * Saat dilimi **Europe/Istanbul**: değer sağlayıcının panelinde insan gözüyle
+ * okunuyor, sunucunun UTC'si orada yanlış saat gibi durur. `rnd`'nin işlevi
+ * nonce olmak — dilim kozmetiktir, ama tutarlı olsun diye sabitlendi.
+ * `Intl` ile üretilir; `toLocaleString` biçim sırası platforma göre değişir.
+ */
+export function uretRnd(simdi: Date): string {
+  const p = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Istanbul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(simdi);
+  const al = (t: string) => p.find((x) => x.type === t)?.value ?? '';
+  // `en-GB` 24 saatte gece yarısını '24' verebilir; '00'a çevrilir.
+  const saat = al('hour') === '24' ? '00' : al('hour');
+  return `${al('day')}-${al('month')}-${al('year')} ${saat}:${al('minute')}:${al('second')}`;
+}
+
+/**
+ * `clientRefCode` — `OCAK-XXXX-<epoch son 5>`.
+ *
+ * ── Sonek neden var ──
+ * Aynı referans ikinci kez ödemeye girerse (ilk deneme başarısız, kadın tekrar
+ * dener) sağlayıcının doğrulama/mutabakat servisi iki işlemi ayırt edemez.
+ * Sonek her denemede değişir ve işlemleri ayırır.
+ *
+ * ── Sonek NEREYE SIZMAZ ──
+ * Yalnız giden `clientRefCode` alanında yaşar. Notion başlığına (`Kayıt ID`)
+ * ve `/odeme/tamam?ref=` değerine **girmez** — ikisi de ref'i `equals` ile
+ * arıyor (`api/kayit.ts` refQuery · `odeme-kayit-oku.ts` sorgusu), sonek
+ * sızarsa eşleşme kırılır ve ödemesi alınmış kadın "bulunamadı" ekranı görür.
+ *
+ * Kaynak zaman damgası (KARAR — Kaan, 11 Eyl): Notion'a sayaç kolonu açılmadı.
+ * "Kaçıncı deneme" bilgisi bugün gerekmiyor; gerekirse N-Kolay PaymentList'ten
+ * okunur. Epoch'un son 5 hanesi ~27 saatte bir tekrar eder — aynı referansın
+ * aynı saniyesine denk gelme ihtimali pratikte yok.
+ */
+export function uretClientRefCode(referansNo: string, simdi: Date): string {
+  const sonek = String(simdi.getTime()).slice(-5);
+  return `${referansNo}-${sonek}`;
+}
+
+/**
+ * Tutarı sağlayıcının beklediği biçime çevirir: **nokta ayıraç, iki hane**.
+ *
+ * Ölçüldü (11 Eyl, Notion gidiş-dönüş): `number` property kuruşu KORUYOR —
+ * 937.5 · 1234.56 · 0.01 üçü de birebir döndü. Yani KARAR 240'ın kuruş
+ * koruması Notion'da hayatta kalıyor ve buraya bozulmadan geliyor.
+ * `toFixed(2)` yerel ayraç kullanmaz (her zaman nokta), `toLocaleString`
+ * kullansaydık `tr-TR` virgül basardı ve imza tutmazdı.
+ */
+export function nkolayTutar(tutar: number): string {
+  return tutar.toFixed(2);
+}
+
+/** SHA-512 → base64. İki hash de aynı ilkel. */
+function sha512Base64(veri: string): string {
+  return createHash('sha512').update(veri, 'utf8').digest('base64');
+}
+
+/**
+ * **Hash 1 — istek.**
+ * `sx|clientRefCode|amount|successUrl|failUrl|rnd|customerKey|merchantSecretKey`
+ *
+ * `customerKey` bu turda gönderilmiyor ama **ayıracı yerinde durur** — boş
+ * alanı atlamak diziyi kaydırır ve imza sessizce tutmaz.
+ */
+export function nkolayIstekHashDizesi(a: {
+  sx: string;
+  clientRefCode: string;
+  amount: string;
+  successUrl: string;
+  failUrl: string;
+  rnd: string;
+  customerKey: string;
+  merchantSecretKey: string;
+}): string {
+  return [
+    a.sx,
+    a.clientRefCode,
+    a.amount,
+    a.successUrl,
+    a.failUrl,
+    a.rnd,
+    a.customerKey,
+    a.merchantSecretKey,
+  ].join('|');
+}
+
+/**
+ * **Hash 2 — yanıt.**
+ * `MERCHANT_NO|REFERENCE_CODE|AUTH_CODE|RESPONSE_CODE|USE_3D|RND|INSTALLMENT|
+ *  AUTHORIZATION_AMOUNT|CURRENCY_CODE|merchantSecretKey`
+ *
+ * ⚠ `RND` **gövdeden** alınır; istekte gönderdiğimizden FARKLIDIR.
+ * ⚠ `CURRENCY_CODE` bazı dönüşlerde hiç gelmiyor → kural: POST'ta ne geldiyse
+ * o, gelmediyse **boş dize** (ayıraç yine yerinde durur).
+ */
+export const NKOLAY_YANIT_ALANLARI = [
+  'MERCHANT_NO',
+  'REFERENCE_CODE',
+  'AUTH_CODE',
+  'RESPONSE_CODE',
+  'USE_3D',
+  'RND',
+  'INSTALLMENT',
+  'AUTHORIZATION_AMOUNT',
+  'CURRENCY_CODE',
+] as const;
+
+export function nkolayYanitHashDizesi(
+  oku: (alan: string) => string,
+  merchantSecretKey: string,
+): string {
+  return [...NKOLAY_YANIT_ALANLARI.map((a) => oku(a)), merchantSecretKey].join('|');
+}
+
+/**
+ * Sırrı log'dan maskeler. Hash tutmadığında ham dizeyi görmek teşhisin
+ * tamamıdır (hangi alan farklı, hangi ayıraç kaymış) — ama sır asla log'a
+ * düşmez (CLAUDE.md §8).
+ */
+export function sirriMaskele(dize: string, sir: string): string {
+  if (!sir) return dize;
+  return dize.split(sir).join('[SECRET]');
+}
+
+/** `AUTH_CODE` bu üç değerden biriyse işlem yetkilendirilmemiştir. */
+const GECERSIZ_AUTH_KODLARI = new Set(['', '0', '00']);
+
+/** Başarılı işlemin `RESPONSE_CODE`'u. */
+const BASARILI_RESPONSE_CODE = '2';
+
+/**
+ * N-Kolay sağlayıcısı.
+ *
+ * `checkoutBaslat` **sözleşmeyi korur** — `{ redirectUrl }` döner, `api/kayit.ts`
+ * ve `KayitFormu.astro` hiç değişmez (`api.ts:116` `checkoutUrl` aynı). Redirect
+ * site-içi ara sayfaya gider; on alanlı formu o sayfa `odemeFormu()`'ndan alır.
+ */
+export const nkolayPaymentProvider: PaymentProvider = {
+  ad: 'nkolay',
+
+  async checkoutBaslat({ referansNo, kodId }) {
+    // ⚠ `kodId` redirect URL'ine taşınır. Taşınmazsa `/api/odeme-callback`
+    // onu hiç görmez ve `kodKullanimArtir` — promo sayacının İLK ve TEK çağrı
+    // noktası — hiç çalışmaz. Mock akışında da aynı sebeple taşınıyordu.
+    const q = new URLSearchParams({ ref: referansNo });
+    if (kodId) q.set('kodId', kodId);
+    return { redirectUrl: `/odeme/nkolay?${q.toString()}` };
+  },
+
+  async odemeLinkiUret({ kayitId }) {
+    // Kapı 2 (link ile ödeme) N-Kolay tarafında ayrı bir ürün; bu turda YOK.
+    // Sessiz bir stub yerine açık hata: yanlış kapıdan geçen çağrı erken patlasın.
+    return { hata: `N-Kolay link akışı yazılmadı (kayitId=${kayitId}).` };
+  },
+
+  odemeFormu({ referansNo, tutar, basariUrl, hataUrl, istemciIp, simdi }) {
+    const { sx, merchantSecret, baseUrl } = nkolayEnv();
+    // FAIL-CLOSED: eksik yapılandırmayla imzasız/yanlış bir form basmaktansa
+    // hiç basmamak doğrudur. Sayfa bu hatayı gösterir, ödeme başlamaz.
+    if (!sx) return { hata: 'NKOLAY_SX tanımsız' };
+    if (!merchantSecret) return { hata: 'NKOLAY_MERCHANT_SECRET tanımsız' };
+    if (!baseUrl) return { hata: 'NKOLAY_BASE_URL tanımsız' };
+    if (!(tutar > 0)) return { hata: 'tutar geçersiz' };
+
+    // ⚠ Üçü de TEK kaynaktan üretilir ve hem imzaya hem gövdeye AYNI dize
+    // olarak verilir. İkinci kez üretmek imzayı sessizce bozar.
+    const rnd = uretRnd(simdi);
+    const clientRefCode = uretClientRefCode(referansNo, simdi);
+    const amount = nkolayTutar(tutar);
+
+    const hashDataV2 = sha512Base64(
+      nkolayIstekHashDizesi({
+        sx,
+        clientRefCode,
+        amount,
+        successUrl: basariUrl,
+        failUrl: hataUrl,
+        rnd,
+        // Gönderilmiyor ama ayıracı yerinde: boş alanı atlamak diziyi kaydırır.
+        customerKey: '',
+        merchantSecretKey: merchantSecret,
+      }),
+    );
+
+    return {
+      actionUrl: baseUrl,
+      alanlar: {
+        sx,
+        amount,
+        clientRefCode,
+        successUrl: basariUrl,
+        failUrl: hataUrl,
+        rnd,
+        use3D: 'true',
+        transactionType: 'SALES',
+        cardHolderIP: istemciIp,
+        hashDataV2,
+      },
+    };
+  },
+
+  /**
+   * Dönüş POST'unun doğrulaması. Server-to-server webhook olmadığı için
+   * ödemenin tek kanıtı budur.
+   *
+   * Üç kapı, hepsi geçilmeli:
+   *   1. `hashDataV2` tutar (sabit zamanlı karşılaştırma)
+   *   2. `RESPONSE_CODE` === "2"
+   *   3. `AUTH_CODE` ∉ { "", "0", "00" }
+   *
+   * ⚠ **Tutar ve replay karşılaştırması BU TURDA YOK** (Kaan, 11 Eyl):
+   * `AUTHORIZATION_AMOUNT >= gönderdiğimiz tutar` kıyası route tarafının işi,
+   * sonraki tur. Yani bugün imzalı ama düşük tutarlı bir dönüş bu üç kapıdan
+   * geçer. Bilinen ve kabul edilmiş sınır — sessiz değil.
+   *
+   * successUrl'e düşmüş olmak başarı DEĞİLDİR; karar bu metodundur.
+   */
+  dogrulaCallback(req, govde) {
+    const { merchantSecret } = nkolayEnv();
+    if (!merchantSecret) return { gecerli: false, sebep: 'nkolay-secret-tanimsiz' };
+
+    // Gövde route'un ayrıştırdığı hâliyle gelir (`URLSearchParams`). Dönüş
+    // POST'u form-urlencoded; JSON yolu da aynı yapıya çevriliyor.
+    // ⚠ `CURRENCY_CODE` gelmeyebilir → okunamayan alan BOŞ DİZE olur, ayıraç
+    // yerinde durur.
+    const p = govde instanceof URLSearchParams ? govde : null;
+    if (!p) return { gecerli: false, sebep: 'govde-yok' };
+    const oku = (alan: string) => (p.get(alan) ?? '').trim();
+
+    const gelenHash = oku('hashDataV2');
+    if (!gelenHash) return { gecerli: false, sebep: 'hash-istekte-yok' };
+
+    const hamDize = nkolayYanitHashDizesi(oku, merchantSecret);
+    const beklenen = sha512Base64(hamDize);
+    if (!sabitZamanliEsit(gelenHash, beklenen)) {
+      // ⚠ İlk test işleminde farkı tek bakışta görebilmek için ham dize
+      // log'a basılır — SIR MASKELİ (CLAUDE.md §8). Bu satır teşhisin
+      // tamamıdır: hangi alan farklı, hangi ayıraç kaymış.
+      console.warn(
+        `[nkolay] hashDataV2 tutmadı — hesaplanan ham dize: ${sirriMaskele(hamDize, merchantSecret)}`,
+      );
+      return { gecerli: false, sebep: 'hash-yanlis' };
+    }
+
+    if (oku('RESPONSE_CODE') !== BASARILI_RESPONSE_CODE) {
+      return { gecerli: false, sebep: 'response-code-basarisiz' };
+    }
+    if (GECERSIZ_AUTH_KODLARI.has(oku('AUTH_CODE'))) {
+      return { gecerli: false, sebep: 'auth-code-gecersiz' };
+    }
+    return { gecerli: true };
+  },
+};
+
 /**
  * Sağlayıcı seçimi env'den. `PAYMENT_PROVIDER` boş/undefined → mock default.
  * `iyzico` Aşama 6'da yazılacak — şu an çağrılırsa hata fırlatır (sessiz
@@ -201,10 +536,11 @@ export const mockPaymentProvider: PaymentProvider = {
 export function getPaymentProvider(): PaymentProvider {
   const which = (import.meta.env.PAYMENT_PROVIDER ?? 'mock').toLowerCase();
   if (which === 'mock') return mockPaymentProvider;
+  if (which === 'nkolay') return nkolayPaymentProvider;
   if (which === 'iyzico') {
     throw new Error(
       'PAYMENT_PROVIDER=iyzico — Aşama 6\'da yazılacak (iyzicoPaymentProvider). Şimdilik PAYMENT_PROVIDER=mock kullan.',
     );
   }
-  throw new Error(`PAYMENT_PROVIDER bilinmiyor: "${which}". Geçerli: mock | iyzico.`);
+  throw new Error(`PAYMENT_PROVIDER bilinmiyor: "${which}". Geçerli: mock | nkolay | iyzico.`);
 }

@@ -27,10 +27,11 @@ const ODA_MAP_HAM: Record<string, Oda> = {
   '/gizlilik': 'OCAK',
   '/mesafeli-satis': 'OCAK',
   '/teslimat-iade': 'OCAK',
-  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; PayTR Aşama 6)
-  // KARAR 488 — kart akışı kapalıyken üç entry aşağıda listeden DÜŞER.
+  // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; N-Kolay 11 Eyl)
+  // KARAR 488 — kart akışı kapalıyken dört entry aşağıda listeden DÜŞER.
   // Girdiler burada duruyor (silinmedi); eleme `ODA_MAP`'in kurulumunda.
   '/odeme/mock': 'OCAK',
+  '/odeme/nkolay': 'OCAK',
   '/odeme/tamam': 'OCAK',
   '/odeme/iptal': 'OCAK',
   // Yol
@@ -57,7 +58,7 @@ const ODA_MAP_HAM: Record<string, Oda> = {
 };
 
 /**
- * Slug → Oda, yürürlükteki hâl. KARAR 488 — kart akışı kapalıyken üç ödeme
+ * Slug → Oda, yürürlükteki hâl. KARAR 488 — kart akışı kapalıyken dört ödeme
  * route'u listeden düşer; `getOda()` onlar için fırlatır, ki kapalı bir akışın
  * sayfası sessizce oda kazanmasın. Anahtar açılınca üçü kendiliğinden döner.
  */

@@ -1,0 +1,158 @@
+---
+// /odeme/nkolay — N-Kolay Ortak Ödeme Sayfası'na geçiş formu (11 Eyl 2026).
+//
+// ── Bu sayfa neden var ──
+// N-Kolay on alanlı bir form POST bekler; `checkoutBaslat` sözleşmesi ise bir
+// redirect URL taşır (`api.ts:116` `checkoutUrl` — `KayitFormu.astro:2206`
+// oraya `window.location` atar). Sözleşmeyi değiştirmek yerine araya site-içi
+// bu sayfa kondu: redirect buraya gelir, form burada basılır ve auto-submit
+// edilir. İmza (`hashDataV2`) hiçbir zaman URL'e, tarayıcı geçmişine ya da
+// Referer'a düşmez.
+//
+// ── Tutar query'den ASLA okunmaz ──
+// URL yalnız `ref` (+ varsa `kodId`) taşır. Ödenecek tutar Notion `Beklenen
+// Tutar` alanından okunur (`odeme-kayit-oku.ts`). Query'den okumak, kadının
+// adres çubuğunda kendi ödeyeceği tutarı yazabilmesi demekti.
+//
+// ── Akış ──
+//   /api/kayit → checkoutBaslat → redirect /odeme/nkolay?ref=OCAK-XXXX
+//   → Notion oku (tutar + pageId) → 10 alanlı form → auto-submit
+//   → N-Kolay kart sayfası → sonuç successUrl/failUrl'e POST
+//   → /api/odeme-callback (route DEĞİŞMEDİ — KARAR 395)
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+// KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmez; anahtar
+// açılınca aynen geri gelir. `/odeme/mock` ile AYNI desen (ölçüldü: mock 404
+// döner; 410 webhook deseni ve `/api/odeme-callback`'e ait, sayfaya değil).
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+import { getPaymentProvider } from '../../lib/payment-provider.ts';
+import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
+import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+import { publicOrigin } from '../../lib/public-origin.ts';
+import { istemciIp } from '../../lib/istemci-ip.ts';
+
+if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
+
+const url = Astro.url;
+const ref = (url.searchParams.get('ref') ?? '').trim();
+// Promo kod page id'si — callback `kodKullanimArtir`ı bununla çağırır
+// (sayacın İLK ve TEK artırım noktası). Taşınmazsa promo sayacı hiç artmaz.
+const kodId = (url.searchParams.get('kodId') ?? '').trim();
+
+const baseUrl = publicOrigin(Astro.request);
+
+// Notion TEK sorgu: tutar + pageId + (kullanılmayan) etkinlik meta birlikte gelir.
+const kayit = ref
+  ? await kayitOku(notion, NOTION_KAYITLAR_DB, ref)
+  : null;
+
+/** Kullanıcıya gösterilecek hata — sağlayıcı/altyapı ayrıntısı SIZMAZ. */
+let hata = '';
+let form: { actionUrl: string; alanlar: Record<string, string> } | null = null;
+
+if (!kayit || kayit.durum !== 'bulundu') {
+  // Üç hâl ayrı log'lanır ama kadına tek mesaj: neyin yanlış gittiği
+  // teşhisi Kaan'ın, kadının değil.
+  console.error(`[odeme/nkolay] kayıt okunamadı — ref="${ref}" durum=${kayit?.durum ?? 'ref-yok'}`);
+  hata = 'Kaydın bulunamadı.';
+} else if (!(kayit.tutar > 0)) {
+  // `Beklenen Tutar` boş → ödeme başlatılamaz. Sıfır tutarlı bir form
+  // basmaktansa durmak doğru: sağlayıcıya anlamsız istek gitmez.
+  console.error(`[odeme/nkolay] Beklenen Tutar boş/sıfır — ref="${ref}" pageId=${kayit.pageId}`);
+  hata = 'Ödeme tutarı hazırlanamadı.';
+} else {
+  const saglayici = getPaymentProvider();
+  if (!saglayici.odemeFormu) {
+    // `PAYMENT_PROVIDER=mock` iken bu sayfaya gelinmez (mock kendi sayfasına
+    // yönlendirir). Yine de sessiz kalmaz: yanlış yapılandırma görünür olsun.
+    console.error(`[odeme/nkolay] sağlayıcı "${saglayici.ad}" form POST akışı yazmamış`);
+    hata = 'Ödeme sağlayıcısı hazır değil.';
+  } else {
+    // callback'in beklediği query — route DEĞİŞMEDİ, alan adları onun
+    // `parseGirdi`'sinden birebir: pageId (Notion UUID, `pages.update` için),
+    // ref (OCAK-XXXX, kullanıcıya gösterilen), tutar, sonuc, kodId.
+    // ⚠ `ref` SONEKSİZ gider: `/odeme/tamam` ve refQuery `equals` ile arıyor.
+    const basari = new URL(`${baseUrl}/api/odeme-callback`);
+    basari.searchParams.set('pageId', kayit.pageId);
+    basari.searchParams.set('ref', ref);
+    basari.searchParams.set('tutar', String(kayit.tutar));
+    basari.searchParams.set('sonuc', 'basari');
+    if (kodId) basari.searchParams.set('kodId', kodId);
+
+    const hataDonus = new URL(`${baseUrl}/api/odeme-callback`);
+    hataDonus.searchParams.set('pageId', kayit.pageId);
+    hataDonus.searchParams.set('ref', ref);
+    // `sonuc` varsayılanı 'basari' (callback `parseGirdi`) — hata dönüşünde
+    // AÇIKÇA yazılmalı, yoksa başarısız ödeme başarı sayılır.
+    hataDonus.searchParams.set('sonuc', 'hata');
+
+    const sonuc = saglayici.odemeFormu({
+      referansNo: ref,
+      tutar: kayit.tutar,
+      basariUrl: basari.toString(),
+      hataUrl: hataDonus.toString(),
+      istemciIp: istemciIp(Astro.request),
+      // ⚠ İstek anında üretilir. Modül seviyesinde `new Date()` çağırmak
+      // değeri BUILD ZAMANINDA dondururdu (KARAR 385/464 vakası) ve her
+      // ödeme aynı `rnd`'yi taşırdı.
+      simdi: new Date(),
+    });
+
+    if ('hata' in sonuc) {
+      // Sebep (hangi env eksik) yalnız log'a — kullanıcıya yapılandırma
+      // ayrıntısı gösterilmez.
+      console.error(`[odeme/nkolay] form üretilemedi — ${sonuc.hata}`);
+      hata = 'Ödeme başlatılamadı.';
+    } else {
+      form = sonuc;
+    }
+  }
+}
+---
+<Layout
+  title="Ödemeye yönlendiriliyorsun · OCAK"
+  description="Güvenli ödeme sayfasına geçiş."
+  oda="OCAK"
+  noindex
+>
+  <article class="ocak-yasal">
+    {hata ? (
+      <>
+        <h1>Ödeme başlatılamadı</h1>
+        <p>{hata}</p>
+        <p>
+          Bir şey ters gitti ve bu senin hatan değil. Bize yazarsan kaydını
+          birlikte tamamlarız.
+        </p>
+        <p><a href="/iletisim/bize-yaz">Bize yaz</a></p>
+      </>
+    ) : (
+      <>
+        <h1>Ödemeye yönlendiriliyorsun</h1>
+        <p>
+          Kart bilgilerin bankanın güvenli sayfasında alınır; OCAK bu bilgileri
+          görmez ve saklamaz. Sayfa birkaç saniye içinde açılmazsa aşağıdaki
+          düğmeye dokun.
+        </p>
+        {/* Auto-submit form. JS kapalıysa düğme görünür kalır ve akış elle
+            sürer — JS'e bağlı tek ödeme yolu bırakmak, tarayıcı eklentisi
+            yüzünden ödeme yapamayan kadın demekti. */}
+        <form id="nkolay-form" method="POST" action={form!.actionUrl}>
+          {Object.entries(form!.alanlar).map(([ad, deger]) => (
+            <input type="hidden" name={ad} value={deger} />
+          ))}
+          <button type="submit" class="ocak-btn">Ödeme sayfasına git</button>
+        </form>
+      </>
+    )}
+  </article>
+</Layout>
+
+{!hata && (
+  <script is:inline>
+    // Auto-submit — `is:inline` bilinçli: bu betiğin bundle'a girip
+    // ertelenmesi, kadının boş ekrana bakması demek olurdu.
+    document.getElementById('nkolay-form')?.submit();
+  </script>
+)}

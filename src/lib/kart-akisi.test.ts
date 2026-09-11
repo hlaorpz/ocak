@@ -37,12 +37,13 @@ describe('kartAkisiAcikMi (KARAR 488)', () => {
     expect(kartAkisiAcikMi('\tacik\n')).toBe(true);
   });
 
-  it('kapatılan üç route eksiksiz', () => {
+  it('kapatılan dört route eksiksiz', () => {
     // Bu liste iki tüketicinin ortak kaynağı: `oda-map` eleme + sitemap filtresi.
     // Biri eklenip öteki unutulursa kapalı akışın sayfası Google'a düşer.
     expect([...KART_ROUTELARI].sort()).toEqual([
       '/odeme/iptal',
       '/odeme/mock',
+      '/odeme/nkolay',
       '/odeme/tamam',
     ]);
   });
@@ -59,14 +60,14 @@ describe('ODA_MAP × KART_AKISI (KARAR 488, tüketici 5)', () => {
     expect(KART_AKISI_ACIK).toBe(false);
   });
 
-  it('üç ödeme route\'u eşlemeden DÜŞER', () => {
+  it('dört ödeme route\'u eşlemeden DÜŞER', () => {
     for (const r of KART_ROUTELARI) {
       expect(ODA_MAP).not.toHaveProperty(r);
     }
   });
 
   it('kontrol grubu — yasal sayfalar eşlemede DURUYOR', () => {
-    // Eleme yalnız üç route'u almalı; geniş bir filtre yazılırsa burası kırılır.
+    // Eleme yalnız dört route'u almalı; geniş bir filtre yazılırsa burası kırılır.
     expect(ODA_MAP['/gizlilik']).toBe('OCAK');
     expect(ODA_MAP['/mesafeli-satis']).toBe('OCAK');
     expect(ODA_MAP['/teslimat-iade']).toBe('OCAK');
