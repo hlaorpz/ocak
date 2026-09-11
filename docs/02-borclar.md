@@ -2980,6 +2980,15 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   "muhtemelen" bir deploy ölçütü değildir (KARAR 567).
 - **Kapanış şartı:** `vercel link` ile tazelenir **ya da** dosya silinir. Üçüncü hâl —
   bayat bırakmak — CLI yolunu kalıcı olarak kullanılamaz kılar.
+- ✅ **Ad ayağı kapandı (11 Eyl).** Kaan `vercel link` koştu; `.vercel/repo.json` tazelendi
+  ve artık `projects[0].name = "ocak"` diyor — *"ocak-site"* kalıntısı gitti. Dosya
+  **silinmedi**, silinmesine de gerek kalmadı: doğru adı taşıyor. `scripts/durum-uret.mjs`
+  Vercel kimliğini bu dosyadan okuyor (`project.json` yoksa `projects[0]`: `id` · `name` ·
+  `orgId`) ve hangi dosyadan okuduğunu `04-olcum.md`'de yazıyor.
+- ⏳ **`project.json` ayağı AÇIK — madde damgasız kalıyor.** `.vercel/project.json` hâlâ
+  yok. `repo.json` kimliği taşıyor ama `vercel --prod`'un beklediği dosya o değil; CLI
+  deploy yolu hâlâ kurulu değil. **Kapsam daraltmak borcu kapatmaz** (B19 ve B57'de
+  ölçülen aynı kural).
 - **Bağ:** **B64** (deploy hook ölü dala bağlı) — ikisi birlikte *"elle deploy'un iki yolu
   da güvenilmez"* demektir; bu turda üçüncü yol (git push) kullanıldı.
 
@@ -3212,3 +3221,40 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   Bugün zararsız — kayıt kadınlara açık değil, "parasız Ödendi" riski yok.
 - **İki çıkış:** gerçek N-Kolay provider devreye girer · ya da `KART_AKISI` Production'da kapanır.
 - ⚠ **AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.** **Bağ:** KARAR 575 · KARAR 488 · B192
+
+## B194 — MailerLite alan sayısı hiçbir komutla üretilemiyor
+
+- [ ] **Sahip:** Claude.ai (envanter turu) · **küçük · tekrarlayan**
+- **Ölçüm (11 Eyl):** `00-durum.md` *"on iki custom field"* diyor; kaynağı
+  `20-ref-bot.md` envanteri. Bu repoda alan listesini yeniden üretecek komut **yok** —
+  `grep -rn "custom_fields\|fields:" src/lib src/pages/api` üç eşleşme veriyor ve üçü de
+  alanları **çalışma anında** kuruyor (`kayit.ts:562` · `forms-backend.ts:40` ·
+  `api/form.ts:148`), sabit liste tanımlamıyor. MailerLite paneli CC'ye kapalı
+  (`05-harita.md` §3).
+- **Neden borç:** KARAR 578'in ölçütüne göre bu satır **yazılandır**, üretilen değil —
+  yani `04-olcum.md`'ye giremez ve `durum-uret.mjs` onu tazeleyemez. Dolayısıyla hesapta
+  bir alan eklenir/silinirse doküman **sessizce** bayatlar ve bunu gösterecek mekanizma
+  yoktur. Tam olarak KARAR 578'in kapatmaya çalıştığı sınıf, kapatılamayan ucu.
+- **Kapanış şartı — üç yol, biri yeter:** (a) alan listesi kodda tek bir sabit tanıma
+  çekilir, betik onu sayar · (b) Claude.ai MailerLite connector'ıyla envanteri tazeleyen
+  bir tur konvansiyonu kurulur ve `20-ref-bot.md`'ye tarih damgası düşer · (c) rakam
+  dokümandan tamamen çıkar, yerine envantere işaretçi kalır.
+- **Bağ:** KARAR 578 · KARAR 579 · B165 (şablon envanteri)
+
+## B195 — `baslik-denetim.mjs`'i koşan bir mekanizma yok
+
+- [ ] **Sahip:** CC · **küçük**
+- **Ölçüm (11 Eyl):** betik doğdu (`18a0289`) ve bu turda elle koşuldu, 0 döndü.
+  Ama onu çağıran hiçbir şey yok: pre-commit hook yok, CI adımı yok, `npm run` girdisi
+  yok. `package.json` `scripts` bloğunda **sekiz** giriş var (`dev` · `start` · `check` ·
+  `build` · `preview` · `astro` · `test` · `test:ui`) ve hiçbiri denetçiyi çağırmıyor.
+- **Neden borç:** denetçinin bozulma biçimi tam da budur — **koşulmaz ve kimse fark
+  etmez.** Kural `ocak-arsivci`'nin DUR listesinde yazılı, yani CC'nin hatırlamasına
+  bağlı; hatırlamayan bir oturum başlığı sessizce şişirir. Aynı sınıf `durum-uret.mjs`
+  için de geçerli, ama orada mühürdeki *Koşum* damgası bayatlığı görünür kılıyor —
+  denetçide böyle bir iz yok, çıktısı sessizlik.
+- ⚠ **Kapsam uyarısı:** `ocak-lint`'e **eklenmez** (KARAR 581 kaydı) — o skill marka dili
+  denetler, bu yapısal denetimdir; ikisini karıştırmak lint'in kapsamını bulandırır.
+- **Kapanış şartı:** betiği koşan bir mekanizma kurulur — `npm run denetim` girdisi,
+  pre-commit hook ya da sohbet sonu patch'inin zorunlu adımı. Hangisi olacağı ayrı karar.
+- **Bağ:** KARAR 581 · B50 (skill senkron denetiminin aynı körlüğü)

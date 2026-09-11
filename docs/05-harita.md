@@ -1,6 +1,6 @@
 # OCAK — DOKÜMAN HARİTASI
 
-**Son güncelleme:** 11 Ağustos 2026 · B47
+**Son güncelleme:** 11 Eylül 2026 · ölçüm / yargı ayrımı turu (KARAR 578–582) · önceki: 11 Ağustos 2026 · B47
 
 > Bu dosya **liste değildir.** Dosya listesi iki yerde zaten var ve ikisi de geçerli:
 > `CLAUDE.md` sonundaki *Doküman haritası* paragrafı (CC'nin oturum başında gördüğü) ve
@@ -21,7 +21,7 @@
 | 1 | **Ham gerçeklik** — `git`, `dist/`, canlı sistem, API cevabı | KARAR 102: gerçeklik spec'i ezer |
 | 2 | **Kronoloji** (`90-kronoloji/`) — bir olayın ne zaman, neden olduğu | KARAR 61: append-only, düzeltilmez |
 | 3 | **Gövde metni** — `02-borclar.md` madde gövdeleri, `20-ref-*` bölümleri | ayrıntı gövdede yaşar |
-| 4 | **İndeks / tablo / sayaç** — `01-kararlar.tsv`, sahip tabloları, `00-durum.md` yönlendirme tablosu, `CLAUDE.md` harita paragrafı | KARAR 456: ledger indekstir, referans değil |
+| 4 | **İndeks / tablo / sayaç** — `01-kararlar.tsv`, sahip tabloları, `00-durum.md` yönlendirme tablosu, `CLAUDE.md` harita paragrafı, **`04-olcum.md`** | KARAR 456: ledger indekstir, referans değil · KARAR 579 |
 | 5 | **Ayna** — project files kopyaları, `10-marka.md`'nin claude.ai kopyası | KARAR 471: repo kazanır |
 
 ### Bundan çıkan üç kural
@@ -41,11 +41,23 @@ kalıcı bir kuralı yürürlükten kalkmış bir karara bağlayabilir.
 ⚠ **Ölçüm her zaman beyanı yener** (KARAR 470) — ve bu sıranın dışındadır, üstündedir.
 Bir dosyanın kendi hakkındaki beyanı da ölçülür.
 
+⚠ **Üretilen dosya indekstir; gövdeyi yenmez** (KARAR 579). `04-olcum.md` 4. sırada
+oturur, 1. sırada değil: ham gerçekliğin *kendisi* değil, bir komutun ondan aldığı
+**anlık görüntüsüdür** ve koşulduğu ana aittir. Bir gövde metniyle çeliştiğinde önce
+**betiği yeniden koş** — çelişki hâlâ duruyorsa gövde kazanır ve betik düzeltilir.
+Ters yön yapılmaz: üretilen bir rakam, bir yargıyı yürürlükten kaldırmaz.
+
 ---
 
 ## 2 · DOSYA SÖZLEŞMELERİ
 
 Her dosya için: **ne taşır · ne taşımaz · kim yazar · nasıl bozulur.**
+
+⚠ **Üç canlı dosyanın başlığı ortak sözleşmeye tabidir** (KARAR 581). `00-durum.md` ·
+`02-borclar.md` · `03-sira.md` — dosya başından ilk `---`'a kadar olan bölge **replace-only**'dir
+ve en fazla **dört dolu satır** taşır: tarih · tur adı · (varsa) dönem HEAD.
+`önceki:` zinciri, ölçüm paragrafı, sayaç ve tarihçe anlatısı orada yaşayamaz.
+Denetçi: `scripts/baslik-denetim.mjs` — bulursa dosya + satır + sebep basar, 1 döner.
 
 ### `CLAUDE.md` — CC sabit kuralları
 - **Taşır:** her oturumda geçerli kurallar, kısa.
@@ -62,6 +74,21 @@ Her dosya için: **ne taşır · ne taşımaz · kim yazar · nasıl bozulur.**
 - **Bozulma biçimi:** cap'e dayanır ve en eski dönem bloğu kronolojiye inmelidir.
   İnmezse ya kırpılır (yasak) ya cap aşılır.
 
+### `04-olcum.md` — üretilen ölçüm yüzeyi
+- **Taşır:** bir komutun yeniden üretebildiği her sayı (KARAR 578): canlı HEAD, çalışma
+  ağacı, dal farkı, test, build sayımı, `docs/` satır sayıları, borç sayımı, ledger
+  bütünlüğü, Vercel kimliği. Her rakam **yöntemiyle** yazılır (KARAR 470-b).
+- **Taşımaz:** yargı, gerekçe, niyet, teşhis — onlar `00-durum.md`'de ve kronolojide yaşar.
+  **Dönem HEAD'i de taşımaz**: o bir anlık görüntü etiketidir, yargıdır (KARAR 580).
+- **Yazar:** `scripts/durum-uret.mjs`, dosyayı **sıfırdan** yeniden yazarak. Elle
+  düzenlenmez; yanlışsa betik düzeltilir ve yeniden koşulur (kural 1-b). Başındaki mühür
+  bunu söyler.
+- **Bozulma biçimi:** **betik koşulmaz, dosya sessizce bayatlar — mühür bunu göstermez.**
+  Mühür "bu dosya üretilendir" der, "bu rakam bugünündür" demez. Panzehir dosyanın
+  başındaki *Koşum* damgası: tarihi okunmadan içindeki hiçbir rakam alıntılanmaz.
+  İkinci bozulma: pahalı ayak koşulmadığında alan *"bu koşumda ölçülmedi"* yazar —
+  bu satır bir **eksiklik** kaydıdır, sıfır değil; sayı yerine geçirilmez.
+
 ### `01-kararlar.tsv` — karar ledger'ı
 - **Taşır:** karar numarası, başlık, durum, ilişki, kaynak çapası. **İndekstir.**
 - **Taşımaz:** gerekçe. Bir kararın *neden* alındığı kronolojide yaşar; tsv oraya işaret eder.
@@ -74,8 +101,10 @@ Her dosya için: **ne taşır · ne taşımaz · kim yazar · nasıl bozulur.**
 - **Taşımaz:** ürün işi (ödeme, WhatsApp, Instagram, mail akışları) — o kuyruk başka yerde.
   **Yapılacaklar listesi değildir.**
 - **Yazar:** her sohbet sonu patch'i.
-- **Bozulma biçimi:** başındaki sayaç ve sahip tablosu gövdelerden ayrışır (B55).
-  Kural: **her eklemede yeniden ölçülür, devralınmaz** (KARAR 470).
+- **Bozulma biçimi:** sahip tablosu gövdelerden ayrışır (B55). Kural: **her eklemede
+  yeniden ölçülür, devralınmaz** (KARAR 470). ⚠ Saklanan sayaç 11 Eylül 2026'da
+  **kalktı** (KARAR 579) — sayım `04-olcum.md`'de yaşıyor; bu dosyaya bir daha rakam
+  yazılmaz, yazılırsa aynı gün bayatlar.
 
 ### `03-sira.md` — kuyruk
 - **Taşır:** sıradaki iş, kim yapar, nerede, nasıl açılır. **Kısa kalır.**

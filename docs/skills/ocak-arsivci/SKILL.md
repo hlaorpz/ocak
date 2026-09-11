@@ -23,6 +23,30 @@ yazılan rakamı sonraki bölümlerin commit'leri geçer; satır doğduğu anda 
 *Vaka: ADIM 4 patch'i `00-durum.md`'ye `f42911f` yazdı, tur `76e8bee` ile kapandı.
 Kural o gün yazılmıştı, mekanizma yoktu.*
 
+## Rakam doğrulaması = betik koşumu (KARAR 578 · 579)
+
+Beş bölümün rakam ayağı artık **elle yazılmaz.** Kapanış commit'inden önce koş:
+
+```bash
+cd ~/Desktop/hlaorpz/ocak
+node scripts/durum-uret.mjs              # ucuz — ağ yok, saniyeler
+node scripts/durum-uret.mjs --test       # test ayağı gerekiyorsa
+node scripts/durum-uret.mjs --build      # build sayımı gerekiyorsa
+node scripts/baslik-denetim.mjs          # üç canlı dosya başlığı — 0 dönmeli
+```
+
+`docs/04-olcum.md` **üretilen dosyadır**; bu skill ona elle dokunmaz, betiği koşar.
+
+⛔ **Elle rakam yazımı DUR koşuludur.** Bir patch `00-durum.md` · `02-borclar.md` ·
+`03-sira.md`'ye satır sayısı, test sayısı, build sayımı, borç sayacı ya da dal commit
+farkı yazmanı istiyorsa: **yazma, durdur, raporla.** O rakamın yeri `04-olcum.md`'dir
+ve oraya betik yazar. Patch'ten devralınan rakam ölçülmüş sayılmaz (KARAR 470).
+
+İki istisna, ikisi de yargıdır ve üretilen dosyaya girmez:
+**dönem HEAD** (KARAR 474/580) · bu repodan hiçbir komutun üretemediği dış ölçümler
+(ör. MailerLite alan sayısı — kaynağı `20-ref-bot.md` envanteri, panel CC'ye kapalı).
+İkincisini yazarken **kaynağı da yaz**, yoksa satır sessizce bayatlar.
+
 ## ADIM 0 — önce oku (KARAR 355)
 
 `00-durum.md`'ye yazmadan önce dosyanın beklenen hâlde olduğunu doğrula: çapa var mı,
@@ -108,3 +132,6 @@ yazılır.
 5. `durum` dokuz değerin dışında
 6. `kaynak` boş
 7. Kapanış sonrası `git log -2 --format='%h' | tail -1` HEAD satırıyla tutmuyor (KARAR 474)
+8. Patch canlı dosyaya **elle rakam** yazmanı istiyor (KARAR 578/579) — dönem HEAD ve
+   kaynağı yazılı dış ölçümler dışında
+9. `node scripts/baslik-denetim.mjs` sıfır dönmüyor (KARAR 581)

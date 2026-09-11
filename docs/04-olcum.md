@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.09.2026 09:30 (Europe/Istanbul) · bayraklar: `--test --build`
+**Koşum:** 11.09.2026 10:42 (Europe/Istanbul) · bayraklar: `--test --build`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,11 +18,11 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `dc74632` | `git log -1` |
+| canlı HEAD | `ed2f2d6` | `git log -1` |
 | HEAD tarihi | 2026-09-11 | `git log -1 --date=short` |
-| HEAD konusu | docs: B192 somut referansla — uçtan uca tur Production'da koşuldu ve geçti | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 2 kayıt | `git status --porcelain` |
-| `main` ↔ `astro-iskelet` | main **163** commit önde · **0** commit geride | `git rev-list --count` |
+| HEAD konusu | tasi(baslik→kronoloji): 02-borclar ölçüm tarihçesi + 03-sira `önceki:` zinciri | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 8 kayıt | `git status --porcelain` |
+| `main` ↔ `astro-iskelet` | main **167** commit önde · **0** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -48,22 +48,22 @@ rakamlar bu yüzden birebir denk gelmez. Tanım burada yazılıdır, rakam ondan
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 197 |
-| `docs/02-borclar.md` | 3379 |
-| `docs/03-sira.md` | 845 |
-| `docs/05-harita.md` | 158 |
-| `docs/01-kararlar.tsv` | 578 |
+| `docs/00-durum.md` | 199 |
+| `docs/02-borclar.md` | 3260 |
+| `docs/03-sira.md` | 832 |
+| `docs/05-harita.md` | 187 |
+| `docs/01-kararlar.tsv` | 583 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **197** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **199** — ✅ altında
 
 ## BORÇ SAYIMI
 
 | alan | değer | kaynak |
 |---|---|---|
-| toplam madde | 193 | `grep -cE '^## B'` |
+| toplam madde | 195 | `grep -cE '^## B'` |
 | damgalı (kapandı/çözüldü/geri çekildi) | 43 | `^## B` başlıklarında `[✅❌]` |
 | iş değil (ertelendi/planlı) | 2 | `^## B` başlıklarında `[⏸🔵]` |
-| **açık** | **148** | toplam − damgalı − iş değil |
+| **açık** | **150** | toplam − damgalı − iş değil |
 | mükerrer başlık | 0 | `^## B[0-9]+` → `uniq -d` |
 
 *Ölçüt başlıktaki **damga**dır, kelimenin kendisi değil (10 Ağu B01 kaydı).*
@@ -72,8 +72,8 @@ rakamlar bu yüzden birebir denk gelmez. Tanım burada yazılıdır, rakam ondan
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **577** | — |
-| satır sayısı (başlık dahil) | 578 | — |
+| son KARAR numarası | **582** | — |
+| satır sayısı (başlık dahil) | 583 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |

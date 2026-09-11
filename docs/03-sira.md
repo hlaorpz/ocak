@@ -14,6 +14,11 @@ Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 **Sıradaki iş (kod/altyapı hattı, 20 Ağu — değişmedi):** **B64 → B69 → B68 → n8n ödeme onayı.**
 ⚠ İki hat **aynı repoda yaşıyor** (KARAR 463, tek klon) — eşzamanlı koşmazlar.
 
+**Sıradaki iş (doküman hattı, 11 Eyl):** **B195** — `baslik-denetim.mjs`'i koşan bir
+mekanizma (`npm run denetim` · pre-commit hook · patch adımı; hangisi olacağı ayrı karar).
+Ardından **B194** (MailerLite alan sayısının üretilebilir hâle gelmesi ya da dokümandan
+çıkması). ⚠ `00-durum.md` tavana **iki satır** kala duruyor — sonraki tahliye ertelenmez.
+
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
 > kim yapar, nerede yapılır, nasıl açılır.**

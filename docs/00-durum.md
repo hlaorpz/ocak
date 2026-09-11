@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu**
+**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu** · dönem HEAD `ed2f2d6`
 
 ---
 
@@ -69,7 +69,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`b1ee821`** (10 Eyl, N-Kolay turu patch'i; bir önceki dönem `7062846`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem on commit içerdi ve dokuzu KOD** — 19 Ağu'dan bu yana ilk kod turu. Zincir: `7062846 → bcc0196 → e03364d → 20fff25 → dd59c5d → 5a4c5bc → 0b173ac → 213ea0b → 4eb549b → fd946f3 → b1ee821`. ⚠ **Production 26 Ağu'dan 10 Eyl'e kadar `7062846` üstündeydi** — 15 gün, `9acbabb` değil; önceki dönem satırı dönem HEAD'ini deploy sanıyordu (KARAR 577'nin doğuş vakalarından). 10 Eyl'de beş production deploy'u alındı: `e03364d · 213ea0b · 4eb549b · b1ee821 · b1ee821` (sonuncusu redeploy) |
+| `main` dönem HEAD | **`ed2f2d6`** (11 Eyl, ölçüm/yargı ayrımı turu; bir önceki dönem `b1ee821`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem beş commit içerdi ve SIFIRI kod** — yalnız doküman ve iki betik; `src/` ve `public/` açılmadı. ⚠ **Bu turda deploy ALINMADI.** Production hâlâ `b1ee821` üstünde; 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
 | Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı (KARAR 485). ⚠ Commit farkı **buraya yazılmaz** → `docs/04-olcum.md`; elle tutulduğu sürece bayattı (satır "85 commit geride" diyordu, ölçüm **163** verdi) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |

@@ -46,6 +46,15 @@ brief'ten devralınan rakam ölçülmüş sayılmaz.
 İki ölçüm çelişirse önce **tanımlar** karşılaştırılır, sonra rakamlar.
 Çoğu çelişki tanım çelişkisidir.
 
+**(c) Üretilebilen rakam elle yazılmaz** (KARAR 578). `node scripts/durum-uret.mjs`
+[`--test`] [`--build`] → `docs/04-olcum.md`'yi sıfırdan yazar: HEAD, çalışma ağacı, dal
+farkı, test, build sayımı, satır sayıları, borç sayımı, ledger bütünlüğü, Vercel kimliği.
+O dosya elle düzenlenmez; yanlışsa betik düzeltilir. Canlı dosyaya rakam yazma isteği
+doğuyorsa **DUR** — istisna yalnız dönem HEAD'dir (KARAR 474/580).
+
+`node scripts/baslik-denetim.mjs` → üç canlı dosyanın başlık bölgesini denetler
+(KARAR 581): `önceki:` zinciri · ölçüm paragrafı · dört dolu satır tavanı. Sıfır dönmeli.
+
 *Vakalar: B32'de "~37 sığ satır" rakamının kaynağı bulunamadı; B39'da aynı ölçüm
 iki kez yapıldı, 231/232 ve 226/237 verdi — fark karakter-vs-bayt sayımındandı;
 B36'nın dört-biçim tablosu (418) ile bağımsız bir sayım (423) çelişti, kriter
@@ -111,7 +120,8 @@ dosyadan silmek yetmez.
 **Doküman haritası:** tam hâli `docs/05-harita.md`'de — hangi dosya neyi taşır, ne
 taşımaz, kim yazar, nasıl bozulur, ve **çelişkide hangi yüzey kazanır** (KARAR 482).
 Kısa liste: `docs/00-durum.md` (canlı, ≤200 satır) · `01-kararlar.tsv`
-(ledger, indeks) · `02-borclar.md` · `03-sira.md` (kuyruk) · `10-marka.md` ·
+(ledger, indeks) · `02-borclar.md` · `03-sira.md` (kuyruk) · `04-olcum.md`
+(**üretilen** — betik yazar, elle düzenlenmez) · `10-marka.md` ·
 `20-ref-*.md` (tema referansları, yedi dosya) · `90-kronoloji/YYYY-AA.md`
 (append-only, asla yapıştırılmaz) · `_uretilen/` (script çıktısı) · `_arsiv/`.
 
