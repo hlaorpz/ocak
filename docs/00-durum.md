@@ -1,19 +1,21 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 10 Eylül 2026 · **N-Kolay turu — kart yüzeyi mock'la geri açıldı** — KARAR 573–577; on commit, dokuzu kod; B180 koruma ayağı ✅; B185–B193 açıldı. Önceki: 24 Ağustos (MJ görsel turu — V03 kapanışı, KARAR 568–572).
+**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu**
+
+---
 
 > **200 SATIR HARD CAP (KARAR 457).** Aşarsa en eski dönem bloğu `90-kronoloji/`'ye iner.
 > İçerik **silinmez, taşınır** (KIRPMA YASAĞI, KARAR 61). Bu dosya karar durumlarını ve
 > borçları **tekrar etmez, işaret eder** — ikisi de kendi dosyasında yaşar.
 >
-> *Şu an: 10 Eylül ölçümü — **B131 açık.** Bu turda iki blok indi: `ŞU AN NEREDEYİZ`in
-> ADIM 7 dalgaları (canlı ayaklar B36-b · B53/B51 · `baglam.sh` satırda adıyla korundu) ve
-> `Kapanan halka` etkinlik bloğu (B81 adıyla korundu). Tahliye tavanı açar, **kapağı
-> kaldırmaz.***
+> **Rakam burada yaşamaz** (KARAR 578). Bir komutun yeniden üretebildiği her sayı
+> `04-olcum.md`'dedir; burada yalnız o sayıya bakan **yargı** durur. Başlık bölgesi
+> `scripts/baslik-denetim.mjs` ile denetlenir: tarih · tur adı · dönem HEAD, başka bir şey değil.
 
 | Ne arıyorsan | Nereye bak |
 |---|---|
 | **hangi dosya neyi taşır, çelişkide kim kazanır** | **`05-harita.md`** |
+| **şu anki ölçüm** — canlı HEAD, çalışma ağacı, test, build, satır sayıları, borç sayısı, ledger bütünlüğü, Vercel kimliği | **`04-olcum.md`** — üretilen dosya; `scripts/durum-uret.mjs` yazar, elle düzenlenmez |
 | bir kararın durumu / halefi | `01-kararlar.tsv` |
 | bir kararın **gerekçesi** | `90-kronoloji/YYYY-AA.md` — aylık dilim, tam tarihçe (tsv'nin `kaynak` sütunu işaret eder) |
 | açık borç, sahip, tetikleyici | `02-borclar.md` |
@@ -67,19 +69,19 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`b1ee821`** (10 Eyl, N-Kolay turu patch'i; bir önceki dönem `7062846`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). ⚠ **Bu dönem on commit içerdi ve dokuzu KOD** — 19 Ağu'dan bu yana ilk kod turu. Zincir: `7062846 → bcc0196 → e03364d → 20fff25 → dd59c5d → 5a4c5bc → 0b173ac → 213ea0b → 4eb549b → fd946f3 → b1ee821`. ⚠ **Production 26 Ağu'dan 10 Eyl'e kadar `7062846` üstündeydi** — 15 gün, `9acbabb` değil; önceki dönem satırı dönem HEAD'ini deploy sanıyordu (KARAR 577'nin doğuş vakalarından). 10 Eyl'de beş production deploy'u alındı: `e03364d · 213ea0b · 4eb549b · b1ee821 · b1ee821` (sonuncusu redeploy) |
-| Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı, 85 commit geride (KARAR 485) |
+| `main` dönem HEAD | **`b1ee821`** (10 Eyl, N-Kolay turu patch'i; bir önceki dönem `7062846`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem on commit içerdi ve dokuzu KOD** — 19 Ağu'dan bu yana ilk kod turu. Zincir: `7062846 → bcc0196 → e03364d → 20fff25 → dd59c5d → 5a4c5bc → 0b173ac → 213ea0b → 4eb549b → fd946f3 → b1ee821`. ⚠ **Production 26 Ağu'dan 10 Eyl'e kadar `7062846` üstündeydi** — 15 gün, `9acbabb` değil; önceki dönem satırı dönem HEAD'ini deploy sanıyordu (KARAR 577'nin doğuş vakalarından). 10 Eyl'de beş production deploy'u alındı: `e03364d · 213ea0b · 4eb549b · b1ee821 · b1ee821` (sonuncusu redeploy) |
+| Dal modeli | `main` = production (push otomatik canlı) · `astro-iskelet` = **ölü dal**, main'in ata'sı (KARAR 485). ⚠ Commit farkı **buraya yazılmaz** → `docs/04-olcum.md`; elle tutulduğu sürece bayattı (satır "85 commit geride" diyordu, ölçüm **163** verdi) |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
-| Test | **325/325** yeşil — **19 dosya** (`npx vitest run`, 10 Eyl). 294→325 farkı bu turun beş ayağı: `/odeme/tamam` yüzeyi · callback doğrulaması · sayfa başlığı · gövde tekrarı · e-posta. ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
-| Build | **32 prerender + 10 SSR + 6 API route.** Tek sayıya inmez; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı) |
+| Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
+| Build | → `docs/04-olcum.md` (`--build` ayağı). ⚠ **Tek sayıya inmez** ve sayım **yöntemine bağlıdır**; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı). Yöntem artık betikte tanımlı — elle tutulan eski sayım (*32 prerender + 10 SSR*) yönlendirme takma adlarını dışarıda bırakıyordu, betiğinki bırakmıyor. API route sayısı iki yöntemde de aynı |
 | robots.txt | `Disallow: /` — **stealth sürüyor.** Yeni bağ: ilk sosyal post duyurudur → **Gün 1 aynı zamanda robots kararıdır** (KARAR 149) |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ⚠ `tZR9LcwJq9` → **`astro-iskelet`** (ölü dal). Yenisi `notion-content-update-main` → `main` **oluşturuldu ama çağıran yok** — **B64**. Notion webhook + gece cron hâlâ eskisini paylaşır. ⚠ **24 Ağu deploy'u git push'la alındı** — hook'a dokunulmadı; yani **otomatik içerik deploy'u çalışmıyor ve çalışmadığı fark edilmiyor** |
-| Vercel | Team `team_EVx2zHhI9iYscmqsuHckk599` · Project `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` · proje adı **`ocak`** — 24 Ağu canlı teyit (`project.name`) · dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ⚠ `.vercel/project.json` **yok**; elde kalan `.vercel/repo.json` 27 Mayıs'tan ve projeye *"ocak-site"* diyor → **B179**. Bu yüzden `vercel --prod` yolu kullanılmıyor |
+| Vercel | Kimlik (team · project ID · proje adı) → `docs/04-olcum.md`. Dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ⚠ `.vercel/project.json` **hâlâ yok**; kimlik `repo.json`'dan okunuyor. **B179'un ad ayağı ✅ kapandı** — `repo.json` 11 Eyl'de `vercel link` ile tazelendi, artık projeye *"ocak-site"* değil **`ocak`** diyor; `project.json` ayağı **açık**, bu yüzden `vercel --prod` yolu hâlâ kullanılmıyor |
 | Ödeme | **İki yöntem yan yana — Production'da AÇIK.** N-Kolay sanal POS ile anlaşıldı (10 Eyl): kart geri geldi, havale/EFT kaldı. **KARAR 575** — denetim `www.ocak.biz` üzerinden mock sağlayıcıyla koşar (`KART_AKISI=acik` · `PAYMENT_PROVIDER=mock`); Preview (`nkolay-test`) aynı yapılandırmada, **iki ortamın `ODEME_CALLBACK_SIR`'ı ayrıdır.** ✅ **Ölçüldü (11 Eyl, redeploy sonrası):** yöntem grubu iki seçenekle basılıyor (kart varsayılan `checked`) · `/odeme/{mock,tamam,iptal}` üçü de **200** · sitemap 48 → **51 `<loc>`**, üç ödeme route'u girdi · `robots` hâlâ `Disallow: /` · dört yasal+kayıt yüzeyinde sağlayıcı adı **sıfır**. Sağlayıcı implementasyonu onay bekliyor: `payment-provider.ts`'te `mock` çalışıyor, `iyzico` throw ediyor. ⚠ Canlı mock ekranın kapatma borcu **B193** — AÇILIŞ'tan önce. ⚠ Anahtar kapalıyken yöntem radio grubu SSR'da hiç basılmaz — KARAR 488'in tasarımıdır, arıza değil |
 | Referans kodu | **`OCAK-` + 4 karakter**, 29'luk alfabe (`Z` yok — yanlış okunursa geçerli kod üretir; `L` var — `1` alfabede yok, hata gürültülü çıkar). Uzay 29⁴ = 707.281. Notion'da 5 ve 6 haneli eski rakamsal kodlar da yaşıyor, **migration yok** |
 | ⚠ Ödeme onayı | **Kapı doğru, açan mekanizma YOK.** `odeme_durumu` üçüncü değeri `alindi` hiçbir kod tarafından yazılmıyor → ödemesi gelen kadına Zoom/adres bilgisi **elle** gidiyor. n8n akışı kurulana kadar böyle (`03-sira.md` madde 2, sıranın en kritik maddesi) ✅ **Notion iki alan açıldı** (10 Eyl, Kaan): `Beklenen Tutar` (number) · `Mail Gitti` (checkbox). n8n akışının ön koşulu doldu; **akış hâlâ kurulmadı.** Tetikleyici Notion `Ödeme Durumu = Ödendi` — değeri kart callback'i mi Kaan mı yazdı, önemsiz |
-| MailerLite | **On iki custom field** (envanter `20-ref-bot.md`). Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
+| MailerLite | **On iki custom field** — envanter `20-ref-bot.md`. ⚠ Bu rakam **üretilene gitmedi, bilerek**: hesabın alan listesini bu repodan hiçbir komut yeniden üretemez (kod alanları çalışma anında kurar), panel CC'ye kapalıdır — K-1 ölçütüne göre **yazılandır**, tazeliği envanter turuna bağlıdır. Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
 | Callback güvenliği | `odeme-callback` 19 Ağu'dan 10 Eyl'e kadar **kimlik doğrulamasızdı**; adresi ve bir Notion sayfa UUID'sini bilen herkes bir kaydı Ödendi yapabilir, promo sayacını şişirebilirdi. `KART_AKISI` kapalı olduğu için sömürülemedi. Artık `dogrulaCallback()` **provider arayüzünde** (KARAR 395 uygulaması, `5a4c5bc`), **fail-closed** — sır tanımsızsa `401`, gövde Notion'a hiç taşınmadan |
 
 ---
