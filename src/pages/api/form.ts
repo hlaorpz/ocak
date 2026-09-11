@@ -20,6 +20,7 @@ import {
   mailerLiteEkle,
   notionBasvuruYaz,
 } from '../../lib/forms-backend.ts';
+import { originMuhafizi } from '../../lib/origin-muhafiz.ts';
 
 export const prerender = false;
 
@@ -184,6 +185,12 @@ async function handleIletisim(body: FormBody): Promise<Response> {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // ── 0. ORIGIN MUHAFIZI ── Astro'nun `checkOrigin`'i kapatıldı, kural
+  // `origin-muhafiz.ts`'ye taşındı (astro.config.mjs gerekçesi). En başta:
+  // gövde bile okunmaz, MailerLite/Notion'a hiç dokunulmaz.
+  const originRet = originMuhafizi(request);
+  if (originRet) return originRet;
+
   let body: FormBody;
   try {
     body = (await request.json()) as FormBody;

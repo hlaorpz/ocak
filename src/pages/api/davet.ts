@@ -504,6 +504,13 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // ── 0b. SESSİZ RET KAPISI ── Origin → honeypot → zaman damgası.
+  //
+  // ⚠ Bu route `origin-muhafiz.ts`'yi ÇAĞIRMAZ ve bu bilinçli. Astro'nun
+  // `checkOrigin`'i kapatıldığında (astro.config.mjs) diğer üç endpoint'e
+  // `originMuhafizi()` eklendi; buraya eklenmedi çünkü origin kapısı ZATEN
+  // aşağıda ve o bilinçle 403 değil **sessiz 200** dönüyor (bot başarılı
+  // sandığını sansın). Üstüne 403 koymak o kararı sessizce geri alırdı.
+  // İki kapı da aynı kuralı çağırıyor: `originSebebi`.
   // Sıra ucuzdan pahalıya değil, ayırt ediciden ayırt edici olmayana: Origin
   // doğrudan POST'u eler, honeypot form-dolduran botu, damga ikisinin de
   // kaçırdığı "hızlı" denemeyi. Üçü de saf fonksiyon (`davet-kapi.ts`), I/O yok.

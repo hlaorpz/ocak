@@ -17,6 +17,20 @@ const KART_ACIK = kartAkisiAcikMi(
 export default defineConfig({
   site: 'https://www.ocak.biz',
   output: 'static',
+  // Cross-site POST muhafızı Astro'dan ALINDI, `src/lib/origin-muhafiz.ts`'ye
+  // TAŞINDI — kapatılmadı. İki sebep, ikisi de ölçülmüş:
+  //  1. Astro'nun kuralı (`astro/dist/core/app/middlewares.js:8-34`) yalnız
+  //     form-benzeri content-type'ı ya da content-type'ı HİÇ olmayan isteği
+  //     ölçüyor. Dört form endpoint'imiz `application/json` POST alıyor —
+  //     yani muhafız onlara zaten BAKMIYORDU.
+  //  2. `/api/odeme-callback` N-Kolay'dan DIŞ origin'li `x-www-form-urlencoded`
+  //     POST alacak; Astro'nun muhafızı onu handler'a girmeden 403 eder ve
+  //     bayrak route başına ayarlanamaz.
+  // Karşılığı: `originMuhafizi(request)` → `/api/{kayit,form,promo-dogrula}`
+  // başında 403; `/api/davet` kendi sessiz-ret kapısını korur
+  // (`davet-kapi.ts:originSebebi`); callback bilinçli muaf.
+  // ⚠ Bu bayrağı geri `true` yapmak callback'i kırar.
+  security: { checkOrigin: false },
   adapter: vercel({
     webAnalytics: { enabled: false }, // Lansman sonrası açılabilir
   }),

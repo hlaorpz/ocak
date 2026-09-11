@@ -12,6 +12,7 @@
 import type { APIRoute } from 'astro';
 import { notion } from '../../lib/notion.ts';
 import { kodDogrula } from '../../lib/kodlar.ts';
+import { originMuhafizi } from '../../lib/origin-muhafiz.ts';
 
 export const prerender = false;
 
@@ -31,6 +32,12 @@ type PromoBody = {
 };
 
 export const POST: APIRoute = async ({ request }) => {
+  // ── 0. ORIGIN MUHAFIZI ── Astro'nun `checkOrigin`'i kapatıldı, kural
+  // `origin-muhafiz.ts`'ye taşındı (astro.config.mjs gerekçesi). En başta:
+  // gövde bile okunmaz, Notion'a hiç dokunulmaz.
+  const originRet = originMuhafizi(request);
+  if (originRet) return originRet;
+
   let body: PromoBody;
   try {
     body = (await request.json()) as PromoBody;

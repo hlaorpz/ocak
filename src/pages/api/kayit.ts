@@ -22,6 +22,7 @@ import { havaleVadeMetni } from '../../lib/havale-vade.ts';
 import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
+import { originMuhafizi } from '../../lib/origin-muhafiz.ts';
 import {
   FORMAT_TIP,
   FORMAT_MAILERLITE_GROUP,
@@ -443,6 +444,12 @@ async function mailerLiteEkle(args: {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // ── 0. ORIGIN MUHAFIZI ── Astro'nun `checkOrigin`'i kapatıldı, kural
+  // `origin-muhafiz.ts`'ye taşındı (astro.config.mjs gerekçesi). En başta:
+  // gövde bile okunmaz, Notion/MailerLite'a hiç dokunulmaz.
+  const originRet = originMuhafizi(request);
+  if (originRet) return originRet;
+
   let body: KayitBody;
   try {
     body = (await request.json()) as KayitBody;
