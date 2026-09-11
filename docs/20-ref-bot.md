@@ -865,7 +865,12 @@ değişirse çapa kopar.*
 > **hiç var olmadı** — isimler Türkçeleşti ve alan sayısı on ikiye çıktı. Plan
 > cümlesi tarihsel kayıt olarak duruyor, silinmedi (KARAR 61).
 
-#### Alan envanteri — ON İKİ ALAN (ölçüm 18 Ağustos 2026)
+#### Alan envanteri — ON İKİ ALAN (ölçüm 18 Ağustos 2026 · **tazelendi 11 Eylül 2026**)
+
+> **Tazeleme damgası (11 Eyl 2026):** `GET api/fields?limit=50` → 20 alan, 8 MailerLite
+> varsayılanı + **12 OCAK alanı**; aşağıdaki matrisle birebir, eksik/fazla yok.
+> `used_in_automations: true` yalnız `etkinlik_adi`'da — otomasyon tetiği orada.
+> Bu damga B194'ün kapanış konvansiyonudur: alanlara dokunan her tur onu tazeler.
 
 Kaynak: `src/lib/kayit.ts:243-310` (`MailerLiteFieldGirdi` + `MAILERLITE_ALANLAR:271`
 + `mailerLiteCustomFields`), URL helper `src/lib/kayit.ts:354`, çağrı yeri

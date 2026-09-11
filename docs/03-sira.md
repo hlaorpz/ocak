@@ -502,8 +502,10 @@ sayfalar tamamlanamaz.
    KARAR 61: "Kuyruğun başı. Bu kapanmadan Notion içerik güncellemeleri siteye düşmüyor;
    her yayın için elle boş commit gerekiyor. Bir işi değil, bütün içerik hattını bloke
    ediyor.")* Yirmi üç gün kuyruğun başında durdu; kapanınca sıra **B69**'a geçti.
-2. **B69 — MailerLite şablon değişkenleri** (Kaan). Sonrası: otomasyon durumu netleşir
-   (aktif mi pause mu) ve gerekirse aktive edilir.
+2. **B69 — MailerLite şablon değişkenleri** (Kaan). **KISMİ (11 Eyl):** subject · gövde ·
+   test maili ayakları düştü; footer ayağı ücretli plana bağlı bilinen sınıra dönüştü.
+   Otomasyon durumu **ölçüldü: pause** (`enabled: false`). Aktive etmenin önkoşulu artık
+   B69 değil — **madde 4** (n8n akışı) ve **B72** (test verisi temizliği).
 3. **B68 — `pratik-bilgi` altı satır** (Claude.ai → Notion). Havale gerçeğiyle hizalama;
    bekçi dosyalarına ücretli/ücretsiz varyant ayrımı girer.
 4. **n8n ödeme onayı akışı** (Kaan). `odeme_durumu = alindi` yazımı. **Bu olmadan Mail
@@ -511,6 +513,15 @@ sayfalar tamamlanamaz.
    Notion `Ödeme Durumu` değişimi → MailerLite alan güncellemesi; **idempotency işareti
    şart**, yoksa her gece aynı mail gider. *Borç kaydı yok — ürün işi (bkz. `00-durum.md`
    uyarısı: ürün kuyruğu `02-borclar.md`'ye girmez).*
+   ⚠ **Şart 1 — tetik.** Otomasyonun tetiği `field_updated: etkinlik_adi`'dir,
+   `odeme_durumu` değil. Akış yalnız `odeme_durumu = alindi` yazarsa otomasyon **hiç
+   tetiklenmez**; `etkinlik_adi`'ya da dokunmak zorunda.
+   ⚠ **Şart 2 — üç alan birlikte.** İkinci koşul `zoom_link is_not_provided` ile online/yüz
+   yüze ayrımı yapıyor. Ödeme kapısı (KARAR 486) ödemeli kayıtta `zoom_link` · `zoom_sifresi`
+   · `katilim_linki`'yi **bilerek boşaltıyor**. Akış bunları da yazmazsa ödemeli **online**
+   etkinlikte kadın "yüz yüze" mailini alır — Zoom linki yerine mekân bekler. 11 Eyl test
+   gönderiminde bu boşluk gözle görüldü ("Bağlantı:" ve "Şifre:" boş bastı).
+   ⚠ Kartla ödeyende gecikme saniyelerle ölçülür; havalede dürüst olan bekleme, kartta yalan.
 5. **B65 — zip yüklemesi** · **B72 — test verisi temizliği** (ikisi de Kaan).
    B72 sırası önemli: erken temizlik Y1/kapı doğrulamalarının zeminini siler.
 6. **B74 — iPhone Safari eyeball** (Kaan). **KISMİ:** kayıt sayfası ayağı 19 Ağu'da
@@ -700,6 +711,8 @@ Bunlar doküman turuyla ilerlemez; kendi hatlarında yürür.
 | **B53** — MCP yol-token ödünü: token URL yolunda taşınıyor, çünkü claude.ai connector diyaloğu başlık kabul etmiyor (Request headers beta, bu hesapta kapalı) | Kaan (beta erişimi) + CC (kaldırma) | ⚠ **açık ve kendiliğinden kapanmaz** — beta açıldığı gün başlığa geçilir, yol ucu koddan kaldırılır |
 | **B57** — connector araç listesi bayatlıyor: sunucu ilerler, claude.ai şemayı tazelemez, hata vermez | Kaan | bakım kuralı: yeni araç eklenen turun son adımı connector'ı kapat-aç |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion | sırasız |
+| **Test abonesi temizliği** — otomasyonu açmanın önkoşulu | Kaan | Üç mailde 12 gönderim / 6 teslim — **%58 bounce** (ölçüm: MailerLite otomasyon `stats`, 11 Eyl); kaynağı B72'nin test aboneleri. Ayrıca 19 Ağu öncesi kayıtlarda `odeme_durumu` **null**; null ≠ `bekliyor` olduğu için otomasyonun ilk koşulu bunları "ödeme tamam" dalına atıyor — hiçbir şey ödenmemişken "Yerin hazır" giderdi. Temizlik ikisini birden kapatır. **B72 ile aynı iş**, ayrı brief değil |
+| **Resend'e geçiş değerlendirmesi** — pazarlama maili MailerLite'tan Resend'e | Kaan | **AÇILIŞ sonrası; şimdi başlamaz.** `mail.ocak.biz` Resend'de **doğrulanmış** (oluşturma 18 Haz 2026, gönderim+alım açık, eu-west-1 — ölçüm `Resend:list-domains`, 11 Eyl). Gerekçe teknik değil yüzeysel: Resend'de şablon/broadcast gövdesi **API'den yazılabiliyor**, MailerLite'ta yazılamıyor — 11 Eyl turunda üç mailin gövdesi elle yapıştırıldı, bir değişken düz metin olarak indi, ikinci ölçümle yakalandı. İş bölümü kararı: **metni Advaita yazar, API turunu Kaan koşar** ("Advaita tek başına düzenleyemez" itirazı düştü). ⚠ Asıl soru MailerLite vs Resend değil, **neden iki gönderici** — B165 tam bu yüzden açık |
 
 ---
 

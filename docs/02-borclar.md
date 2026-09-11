@@ -1433,6 +1433,18 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   denetlenmedi. Footer İngilizce.
 - **Kapanış şartı:** üç mailde subject + gövde + footer düzeltilir, test maili
   **Gmail koyu tema** ve **Outlook**'ta görülür.
+- **Düşüş notu (11 Eyl):** subject ayağı **düştü** — üçü de `{$etkinlik_basligi}`, Türkçe
+  karaktersiz, doğru alan adı. Gövde ayağı **düştü** — üç mail baştan yazıldı, değişkenler
+  variable düğümü olarak duruyor, `{$name}` gerçek test gönderiminde "Merhaba Kaan," olarak
+  çözüldü. Test maili ayağı **düştü** — iki adrese gönderildi, telefonda doğrulandı.
+- ⚠ **Ölçülmüş tuzak, borcun asıl dersi:** yeni MailerLite builder'ında değişken bir
+  **nesnedir**, metin değil. `{$...}` klavyeden yazılırsa düz metin basar. Bu turda Mail 1'de
+  bir kez tekrar üretildi ve ikinci ölçümle yakalandı. Değişken **seçilerek** eklenir.
+- ⚠ **Footer ayağı açık ve kendiliğinden kapanmaz — kapanış şartı revize edildi.**
+  `unsubscribe_text` "Unsubscribe" olarak kalıyor: ücretsiz planda değiştirilemiyor
+  (Kaan ölçümü, 11 Eyl). Aynı sınıfta mailin altındaki "SENT BY MailerLite" rozeti.
+  Bu ayak artık bir **bilinen sınır**, yapılacak iş değil; ücretli plana geçilirse düşer.
+  Borç bu tek ayakla açık kalır.
 
 ## B70 — `/seremoni` SSS'inde kayıt çelişkisi
 - [ ] **Sahip:** Claude.ai → Notion
@@ -3366,9 +3378,9 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **İki çıkış:** gerçek N-Kolay provider devreye girer · ya da `KART_AKISI` Production'da kapanır.
 - ⚠ **AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.** **Bağ:** KARAR 575 · KARAR 488 · B192
 
-## B194 — MailerLite alan sayısı hiçbir komutla üretilemiyor
+## B194 — MailerLite alan sayısı hiçbir komutla üretilemiyor ✅ KAPANDI (11 Eyl, yol (b))
 
-- [ ] **Sahip:** Claude.ai (envanter turu) · **küçük · tekrarlayan**
+- [x] **Sahip:** Claude.ai (envanter turu) · **küçük · tekrarlayan**
 - **Ölçüm (11 Eyl):** `00-durum.md` *"on iki custom field"* diyor; kaynağı
   `20-ref-bot.md` envanteri. Bu repoda alan listesini yeniden üretecek komut **yok** —
   `grep -rn "custom_fields\|fields:" src/lib src/pages/api` üç eşleşme veriyor ve üçü de
@@ -3384,6 +3396,16 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   bir tur konvansiyonu kurulur ve `20-ref-bot.md`'ye tarih damgası düşer · (c) rakam
   dokümandan tamamen çıkar, yerine envantere işaretçi kalır.
 - **Bağ:** KARAR 578 · KARAR 579 · B165 (şablon envanteri)
+- ✅ **Kapanış (11 Eyl) — yol (b) tatbik edildi.** Claude.ai MailerLite connector'ı bu
+  hesaba bağlandı ve envanter turu koştu: `GET api/fields?limit=50` → **20 alan**, 8'i
+  MailerLite varsayılanı (`name` · `last_name` · `company` · `country` · `city` · `phone` ·
+  `state` · `z_i_p`), **12'si OCAK'ın** — `20-ref-bot.md` matrisiyle birebir, eksik ya da
+  fazla yok. `20-ref-bot.md` envanter başlığına tarih damgası düştü (bkz. §5).
+- **Tur konvansiyonu (şartın istediği):** MailerLite alanlarına dokunan her turun sonunda
+  aynı çağrı koşulur ve `20-ref-bot.md` envanter başlığındaki damga tazelenir. Damga bayatsa
+  rakam şüphelidir — bu, borcun aradığı "sessiz bayatlamayı gösteren mekanizma"nın yerine
+  geçen **elle ama adı konmuş** yoldur. Mükemmel değil; borç bunu (b) şıkkında zaten kabul
+  ediyordu.
 
 ## B195 — `baslik-denetim.mjs`'i koşan bir mekanizma yok ✅ KAPANDI (11 Eyl, açıldığı gün)
 
