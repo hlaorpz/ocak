@@ -3347,9 +3347,19 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kaan kararı (10 Eyl):** N-Kolay denetimi `www.ocak.biz` üzerinden yapılacak, mock ekran
   gösterilecek → `KART_AKISI=acik` · `PAYMENT_PROVIDER=mock` **Production kapsamına** yazılır.
   `ODEME_CALLBACK_SIR` Preview'dakinden **farklı** olur.
-- ⚠ **Ölçüm (11 Eyl, CC): anahtar henüz çevrilmemiş.** `www.ocak.biz/cember/kayit` HTTP 200,
-  yöntem grubu markup'ı yok. Env yazılmadı ya da redeploy alınmadı — **değer build zamanında
-  sabitlenir, env yazmak tek başına yetmez.** Karar alındı, uygulanmadı; ikisi ayrı (KARAR 577).
+- 🔴 **CANLI (11 Eyl, redeploy sonrası ölçüldü).** Anahtar Production'da açık: yöntem grubu
+  iki seçenekle basılıyor (kart varsayılan `checked`) · `/odeme/{mock,tamam,iptal}` üçü de
+  **200** · sitemap 48 → **51 `<loc>`**. Borç artık teorik değil, **yürürlükte**.
+- ⚠ **İlk iki ölçüm sıfır döndü** — env yazılmıştı ama **redeploy alınmamıştı.** Vercel'de
+  env yazmak mevcut build'i değiştirmez; değer build zamanında sabitlenir. Bu turda **iki
+  kez** yaşandı ve iki kez de "env girmedi" sanıldı.
+- ⚠ **Paylaşılan sır sayfa kaynağında görünür.** Mock tasarımı `ODEME_CALLBACK_SIR`'ı
+  `/odeme/mock` formunda gizli input olarak geri gönderiyor — yani **değer HTML'de okunur.**
+  Bu bir güvenlik sınırı değil: **kaza çağrılarını eler, kasıtlıyı elemez.** Mock için kabul
+  edilebilir (gerçek para yok) ve bu yüzden Preview sırrı **rotate edilmiyor**. ⚠ Gerçek
+  N-Kolay sağlayıcısında doğrulama **imza şemasıyla** yapılacak, paylaşılan sırla değil —
+  `dogrulaCallback()` sağlayıcı başına ayrı olduğu için değişiklik yalnız yeni sınıfta olur,
+  route'a dokunulmaz. Değer hiçbir dokümana yazılmadı (CLAUDE.md §8).
 - **Risk:** anahtar açıldığında kadın "Kartla öde" derse **sahte ekran "ödendi" der.**
   Bugün zararsız — kayıt kadınlara açık değil, "parasız Ödendi" riski yok.
 - **İki çıkış:** gerçek N-Kolay provider devreye girer · ya da `KART_AKISI` Production'da kapanır.
