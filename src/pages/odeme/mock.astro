@@ -1,6 +1,6 @@
 ---
 // /odeme/mock — Mock sanal POS checkout sayfası (Brief Aşama 3b ADIM 3b).
-// Gerçek para YOK. PayTR Aşama 6'da yerine gerçek checkout form gelir.
+// Gerçek para YOK. Gerçek tahsilat N-Kolay'da (`/odeme/nkolay`, 11 Eyl 2026).
 //
 // URL params (KayitFormu submit → /api/kayit → checkoutBaslat → mockProvider
 // burayı yönlendirir):
@@ -85,9 +85,10 @@ if (!sir) {
         bakar — GET ve XHR/fetch hariç. Callback `handle()` URL params'tan
         okuyor (POST body fallback'i var), backend değişmedi.
 
-        Gerçek PayTR (Aşama 6) farklı: webhook server-to-server POST atar,
-        Origin header'ı PayTR domain'i veya yok → Astro CSRF reject eder.
-        O noktada `security.checkOrigin: false` config + PayTR webhook imza
+        Gerçek sağlayıcı farklı: dönüş POST'unu dış origin'den atar,
+        Origin header'ı sağlayıcı domain'i veya yok → Astro CSRF reject ederdi.
+        Bu yüzden `security.checkOrigin: false` + `origin-muhafiz.ts` (11 Eyl)
+        ve sağlayıcı imzası
         doğrulama eklenir (CSRF'nin yerini imza alır). */}
     <form method="GET" action="/api/odeme-callback" class="ocak-mock-form">
       <input type="hidden" name="ref" value={ref} />

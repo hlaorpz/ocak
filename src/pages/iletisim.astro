@@ -1,7 +1,8 @@
 ---
 // iletisim.astro — /iletisim override (Brief: yasal Adım 3).
 // Brief'in tarif ettiği "src/pages/iletisim.astro" yoktu; /iletisim Notion'dan
-// [...slug].astro üzerinden geliyordu. PayTR zorunlu kurumsal bloku basmak için
+// [...slug].astro üzerinden geliyordu. Sanal POS sağlayıcısının zorunlu kıldığı
+// kurumsal bloku basmak için
 // sehir-aksami.astro/seremoni.astro pattern'i: getEntry → Layout → PageContent +
 // kurumsal blok. Notion içeriği değişmedi; blok PageContent'in altına geliyor.
 //
@@ -25,7 +26,7 @@ if (!sayfa) {
 >
   <PageContent slug="/iletisim" fragments={sayfa.data.fragments} />
 
-  {/* PayTR kurumsal kimlik bloku — Hakkımızda'daki bilgi/stilde tutarlı. */}
+  {/* Sanal POS kurumsal kimlik bloku — Hakkımızda'daki bilgi/stilde tutarlı. */}
   <article class="ocak-yasal" aria-labelledby="iletisim-kurumsal-baslik">
     <h2 id="iletisim-kurumsal-baslik" style="text-align: center;">Kurumsal Bilgiler</h2>
 

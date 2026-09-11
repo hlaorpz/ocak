@@ -3,7 +3,7 @@
  *
  * ── Ne olduğu ──
  * Kart akışı **silinmedi, kapatıldı.** Sağlayıcı anlaşması (KARAR 363 —
- * PayTR/sanal POS hattı) gelene kadar yüzey de backend dalı da kapalı durur;
+ * sanal POS hattı) gelene kadar yüzey de backend dalı da kapalı durur;
  * anlaşma gelince geri açmak bir env değişikliği + entegrasyon olsun,
  * arkeoloji olmasın. Bugünkü tek ödeme ucu havale/EFT (KARAR 217).
  *
@@ -33,7 +33,7 @@
  * üretirdi: backend kapalı, yüzey açık. Tek zaman ekseni daha az yalan söyler.
  *
  * ── `PAYMENT_PROVIDER` neden bu işi yapamaz ──
- * `getPaymentProvider()` (`payment-provider.ts`) `mock`/`iyzico` dışındaki her
+ * `getPaymentProvider()` (`payment-provider.ts`) `mock`/`nkolay` dışındaki her
  * değerde throw eder. `none` yazmak yüzeyi gizlemez, `/api/kayit`'i 500'e
  * düşürür — kadın hata ekranı görür. Ayrı anahtar şart.
  *

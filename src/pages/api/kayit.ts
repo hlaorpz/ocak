@@ -287,7 +287,7 @@ async function notionKayitlaraYaz(args: {
     properties['Kayıt cevapları'] = { rich_text: [{ text: { content: cevaplar } }] };
   }
   // Aşama 3b — Ödeme Yöntemi yönteme göre. Ücretsizde anlamsız (boş).
-  // Kart → "Kredi Kartı" jenerik (gerçek provider Aşama 6 — PayTR onayı sonrası
+  // Kart → "Kredi Kartı" jenerik (gerçek provider N-Kolay — onay sonrası
   // callback override edebilir).
   if (ucretliMi) {
     properties['Ödeme Yöntemi'] = { select: { name: yontem === 'kart' ? 'Kredi Kartı' : 'Havale' } };
@@ -556,8 +556,8 @@ export const POST: APIRoute = async ({ request }) => {
     // bankada eşleştirmeyi referans no üzerinden yapar (kısa, net).
     const aciklamaSablonu = havaleAciklamasi(referansNo);
 
-    // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock şimdi, PayTR
-    // Aşama 6). Sayfa origin Vercel `x-forwarded-*` header'larından
+    // Aşama 3b — kart yöntemi seçilirse checkoutBaslat (mock ya da nkolay,
+    // `PAYMENT_PROVIDER`e göre). Sayfa origin Vercel `x-forwarded-*` header'larından
     // (Bulgu 1 fix); basariUrl /odeme/tamam, hataUrl /odeme/iptal.
     let checkoutUrl: string | undefined;
     if (yontem === 'kart') {
@@ -803,7 +803,7 @@ export const POST: APIRoute = async ({ request }) => {
       : undefined;
 
   // Aşama 3b — kart yöntemi + Direkt + ödeme gerekli → checkoutBaslat
-  // (mock; PayTR Aşama 6). promoSonuc.kodId callback'e taşınır
+  // (`PAYMENT_PROVIDER`e göre mock ya da nkolay). promoSonuc.kodId callback'e taşınır
   // (kodKullanimArtir orada — ödeme onayında TEK çağrı noktası).
   let checkoutUrl: string | undefined;
   if (direktAkis && yontem === 'kart' && odemeGerekli) {

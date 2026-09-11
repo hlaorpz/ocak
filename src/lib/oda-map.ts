@@ -22,7 +22,7 @@ const ODA_MAP_HAM: Record<string, Oda> = {
   '/adimiz': 'OCAK',
   '/araclar': 'OCAK',
   '/site-rehber': 'OCAK',
-  // Yasal (statik .astro, Notion DIŞI — PayTR onay sayfaları, brief-yasal-sayfalar-adim1.md)
+  // Yasal (statik .astro, Notion DIŞI — sanal POS onay sayfaları, brief-yasal-sayfalar-adim1.md)
   '/hakkimizda': 'OCAK',
   '/gizlilik': 'OCAK',
   '/mesafeli-satis': 'OCAK',

@@ -7,12 +7,12 @@
  *     kullanıcı oraya yönlendirilir. Başarı sonrası sağlayıcı callback'imize
  *     döner ve satırı Ödendi'ye çekeriz.
  *
- *  2. `odemeLinkiUret` — Kapı 2 iyziLink (Aşama 1.6'da kullanılacak). Cember
+ *  2. `odemeLinkiUret` — Kapı 2 link ile ödeme (Aşama 1.6'da kullanılacak). Cember
  *     başvurusu onaylanınca Kayıtlar'a düşer, link kişiye ayrı kanaldan
  *     gönderilir. Bu briefte mock hazır dursun, çağrı 1.6'da.
  *
- * Sağlayıcı seçimi `PAYMENT_PROVIDER` env (`mock` | `iyzico`). `getPaymentProvider`
- * factory env'e göre döner. `iyzico` Aşama 6 — şu an `mock` default.
+ * Sağlayıcı seçimi `PAYMENT_PROVIDER` env (`mock` | `nkolay`). `getPaymentProvider`
+ * factory env'e göre döner. `nkolay` gerçek tahsilat (11 Eyl 2026); `mock` default.
  *
  * MOCK güvenliği: mockPaymentProvider checkout URL'ine `?mock=1` query
  * koyar, callback handler bunu görürse Kayıtlar Notlar alanına "MOCK ödeme"
@@ -530,17 +530,12 @@ export const nkolayPaymentProvider: PaymentProvider = {
 
 /**
  * Sağlayıcı seçimi env'den. `PAYMENT_PROVIDER` boş/undefined → mock default.
- * `iyzico` Aşama 6'da yazılacak — şu an çağrılırsa hata fırlatır (sessiz
- * yanlış-sağlayıcı yerine erken patlar).
+ * Tanınmayan her değer hata fırlatır — sessiz yanlış-sağlayıcı yerine erken
+ * patlar. Bir sağlayıcı yazılmadan adı buraya girmez.
  */
 export function getPaymentProvider(): PaymentProvider {
   const which = (import.meta.env.PAYMENT_PROVIDER ?? 'mock').toLowerCase();
   if (which === 'mock') return mockPaymentProvider;
   if (which === 'nkolay') return nkolayPaymentProvider;
-  if (which === 'iyzico') {
-    throw new Error(
-      'PAYMENT_PROVIDER=iyzico — Aşama 6\'da yazılacak (iyzicoPaymentProvider). Şimdilik PAYMENT_PROVIDER=mock kullan.',
-    );
-  }
-  throw new Error(`PAYMENT_PROVIDER bilinmiyor: "${which}". Geçerli: mock | nkolay | iyzico.`);
+  throw new Error(`PAYMENT_PROVIDER bilinmiyor: "${which}". Geçerli: mock | nkolay.`);
 }

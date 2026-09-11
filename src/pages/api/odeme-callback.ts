@@ -1,7 +1,7 @@
 // /api/odeme-callback — Ödeme sağlayıcısı callback'i (Brief: brief-odeme-
-// asama3b-provider-mock.md ADIM 3c). Mock şu an; PayTR Aşama 6'da bu
-// endpoint'in imzasını + body shape'ini paylaşacak (sadece imza doğrulama
-// + provider-specific field eşleme eklenir).
+// asama3b-provider-mock.md ADIM 3c). Sağlayıcıdan bağımsız: imza doğrulaması
+// sağlayıcı arayüzünde yaşar (`dogrulaCallback`, KARAR 395), bu dosya yalnız
+// "geçerli mi" diye sorar.
 //
 // İŞ DİSİPLİNİ:
 //  - Kayıtlar pending satırını Ödendi'ye çeker (`Ödenen Tutar` + `Ödeme
@@ -15,9 +15,8 @@
 //    (sayaç defansif — gerçek tahsilat öncelikli).
 //  - Başarı → /odeme/tamam, iptal/hata → /odeme/iptal redirect.
 //
-// Mock akış: GET (URL query → /odeme/tamam yönlendirme) ve POST (form
-// submit) ikisi de desteklenir; PayTR genelde POST webhook + GET dönüş
-// kullanır, ikisini de hazırlayalım.
+// GET (URL query → /odeme/tamam yönlendirme) ve POST (form submit) ikisi de
+// desteklenir: mock GET kullanır, N-Kolay dönüşü POST eder.
 import type { APIRoute } from 'astro';
 import { notion } from '../../lib/notion.ts';
 import { kodKullanimArtir } from '../../lib/kodlar.ts';
