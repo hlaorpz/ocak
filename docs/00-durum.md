@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Eylül 2026 · **WA ikinci hat turu — numara birleşmesi** · dönem HEAD `b5ff542`
+**Son güncelleme:** 11 Eylül 2026 · **N-Kolay sağlayıcı turu** · dönem HEAD `5ace816`
 
 ---
 
@@ -78,11 +78,11 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ✅ **B64 KAPANDI (11 Eyl).** Gecelik tazeleme ve Notion içerik güncellemesi artık **production'a basıyor.** n8n *"OCAK Gecelik Rebuild"* ve Notion Sayfalar DB automation'ı aynı yeni hook'u çağırıyor: `notion-content-update-main` (`x2LnNpVvuG`, ref `main`). Elle tetiklemede deployment READY oldu — `githubCommitRef: main` · `target: production` · alias listesinde `www.ocak.biz`; `/hikaye` Yayınla uncheck→check testi de production build doğurdu (`deployHookName: notion-content-update-main`). Eski `tZR9LcwJq9` **revoke edildi.** ⚠ Mayıs'tan beri açık duran *"Notion automation bozuk"* teşhisi de burada kapandı: automation bozuk **değildi**, ölü hook'a basıyordu. Bu satır **yazılandır** — kaynağı CC'ye kapalı yüzey (Kaan + Claude.ai Vercel MCP, 11 Eyl), hiçbir komut üretemez. Kapanmadan önceki ölçüm ve teşhis **silinmedi, taşındı** (KARAR 61): `02-borclar.md` B64 bloğu + `90-kronoloji/2026-09.md` |
 | Vercel | Kimlik (team · project ID · proje adı) → `docs/04-olcum.md`. Dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ✅ **B179 KAPANDI (11 Eyl) — düzeltmeyle değil, "kabul edildi" ile.** `rm -rf .vercel && vercel link --yes` koşuldu; CLI yine yalnız `repo.json` yazdı, `project.json` yazmadı — üç deneme aynı sonucu verdi. Sebep arıza değil: proje GitHub'a bağlı olduğu için CLI **repo seviyesinde** bağlıyor. `project.json`'a bağımlı tek yol `vercel --prod` ve o yol kullanılmıyor — deploy git push'la gidiyor. **KARAR 584** sapmayı doktrine çevirdi: kimlik `repo.json`'dan okunur, `project.json` aranmaz; `scripts/durum-uret.mjs` zaten öyle yapıyor ve hangi dosyadan okuduğunu yazıyor. ⚠ Bu, **"kabul edildi" sınıfının ilk vakasıdır** — bir borcun düzeltilmeden, sapması doktrine alınarak kapanması; kapanış yolu ledger'da henüz tanımlı değil (`03-sira.md`) |
-| Ödeme | **İki yöntem yan yana — Production'da AÇIK.** N-Kolay sanal POS ile anlaşıldı (10 Eyl): kart geri geldi, havale/EFT kaldı. **KARAR 575** — denetim `www.ocak.biz` üzerinden mock sağlayıcıyla koşar (`KART_AKISI=acik` · `PAYMENT_PROVIDER=mock`); Preview (`nkolay-test`) aynı yapılandırmada, **iki ortamın `ODEME_CALLBACK_SIR`'ı ayrıdır.** ✅ **Ölçüldü (11 Eyl, redeploy sonrası):** yöntem grubu iki seçenekle basılıyor (kart varsayılan `checked`) · `/odeme/{mock,tamam,iptal}` üçü de **200** · sitemap 48 → **51 `<loc>`**, üç ödeme route'u girdi · `robots` hâlâ `Disallow: /` · dört yasal+kayıt yüzeyinde sağlayıcı adı **sıfır**. Sağlayıcı implementasyonu onay bekliyor: `payment-provider.ts`'te `mock` çalışıyor, `iyzico` throw ediyor. ⚠ Canlı mock ekranın kapatma borcu **B193** — AÇILIŞ'tan önce. ⚠ Anahtar kapalıyken yöntem radio grubu SSR'da hiç basılmaz — KARAR 488'in tasarımıdır, arıza değil |
+| Ödeme | **İki yöntem yan yana — Production'da AÇIK.** N-Kolay sanal POS ile anlaşıldı (10 Eyl): kart geri geldi, havale/EFT kaldı. **KARAR 575** — denetim `www.ocak.biz` üzerinden mock sağlayıcıyla koşar (`KART_AKISI=acik` · `PAYMENT_PROVIDER=mock`); Preview (`nkolay-test`) aynı yapılandırmada, **iki ortamın `ODEME_CALLBACK_SIR`'ı ayrıdır.** ✅ **Ölçüldü (11 Eyl, redeploy sonrası):** yöntem grubu iki seçenekle basılıyor (kart varsayılan `checked`) · `/odeme/{mock,tamam,iptal}` üçü de **200** · sitemap 48 → **51 `<loc>`**, üç ödeme route'u girdi · `robots` hâlâ `Disallow: /` · dört yasal+kayıt yüzeyinde sağlayıcı adı **sıfır**. ✅ **Sağlayıcı yazıldı (11 Eyl).** `payment-provider.ts`'te `nkolay` dalı — Ortak Ödeme Sayfası form POST'u (`/odeme/nkolay`, `prerender=false`, `KART_AKISI` kapalıyken 404), **iki ayrı hash** (istek: `sx|clientRefCode|amount|successUrl|failUrl|rnd|customerKey|secret` · dönüş: `MERCHANT_NO|REFERENCE_CODE|AUTH_CODE|RESPONSE_CODE|USE_3D|RND|INSTALLMENT|AUTHORIZATION_AMOUNT|CURRENCY_CODE|secret`), SHA-512 → base64, sabit zamanlı karşılaştırma. `iyzico` dalı kaldırıldı (**B186 ✅**). ⚠ **Devrede değil** — `PAYMENT_PROVIDER` hâlâ `mock`; dört N-Kolay anahtarı Kaan'da. ⚠ Mutabakat (`PaymentList`) ve iptal/iade servisleri **yazılmadı** — **B200**. ⚠ Canlı mock ekranın kapatma borcu **B193** — AÇILIŞ'tan önce. ⚠ Anahtar kapalıyken yöntem radio grubu SSR'da hiç basılmaz — KARAR 488'in tasarımıdır, arıza değil |
 | Referans kodu | **`OCAK-` + 4 karakter**, 29'luk alfabe (`Z` yok — yanlış okunursa geçerli kod üretir; `L` var — `1` alfabede yok, hata gürültülü çıkar). Uzay 29⁴ = 707.281. Notion'da 5 ve 6 haneli eski rakamsal kodlar da yaşıyor, **migration yok** |
 | ⚠ Ödeme onayı | **Kapı doğru, açan mekanizma YOK.** `odeme_durumu` üçüncü değeri `alindi` hiçbir kod tarafından yazılmıyor → ödemesi gelen kadına Zoom/adres bilgisi **elle** gidiyor. n8n akışı kurulana kadar böyle (`03-sira.md` madde 2, sıranın en kritik maddesi) ✅ **Notion iki alan açıldı** (10 Eyl, Kaan): `Beklenen Tutar` (number) · `Mail Gitti` (checkbox). n8n akışının ön koşulu doldu; **akış hâlâ kurulmadı.** Tetikleyici Notion `Ödeme Durumu = Ödendi` — değeri kart callback'i mi Kaan mı yazdı, önemsiz |
 | MailerLite | **On iki custom field** — envanter `20-ref-bot.md`. ⚠ Bu rakam **üretilene gitmedi, bilerek**: hesabın alan listesini bu repodan hiçbir komut yeniden üretemez (kod alanları çalışma anında kurar), panel CC'ye kapalıdır — K-1 ölçütüne göre **yazılandır**, tazeliği envanter turuna bağlıdır. Ödeme kapısı canlı (KARAR 486) · alan hijyeni canlı (`92e580e`). Otomasyon `OCAK — kayıt onayı (tüm formatlar)` kurulu — tetik `Updates field: etkinlik_adi`, koşul `odeme_durumu`; **aktif mi pause mu Kaan'da doğrulanacak** |
-| Callback güvenliği | `odeme-callback` 19 Ağu'dan 10 Eyl'e kadar **kimlik doğrulamasızdı**; adresi ve bir Notion sayfa UUID'sini bilen herkes bir kaydı Ödendi yapabilir, promo sayacını şişirebilirdi. `KART_AKISI` kapalı olduğu için sömürülemedi. Artık `dogrulaCallback()` **provider arayüzünde** (KARAR 395 uygulaması, `5a4c5bc`), **fail-closed** — sır tanımsızsa `401`, gövde Notion'a hiç taşınmadan |
+| Callback güvenliği | `odeme-callback` 19 Ağu'dan 10 Eyl'e kadar **kimlik doğrulamasızdı**; adresi ve bir Notion sayfa UUID'sini bilen herkes bir kaydı Ödendi yapabilir, promo sayacını şişirebilirdi. `KART_AKISI` kapalı olduğu için sömürülemedi. Artık `dogrulaCallback()` **provider arayüzünde** (KARAR 395 uygulaması, `5a4c5bc`), **fail-closed** — sır tanımsızsa `401`, gövde Notion'a hiç taşınmadan. ✅ **11 Eyl'de kapı sayısı arttı:** kayıt kimliği **yalnız hash kapsamındaki alandan** çözülür (**KARAR 593**) · `İşlem No` dolu ise replay reddedilir · `Beklenen Tutar` boşsa ödeme **koşulsuz** reddedilir (**594**) · düşük tutar reddedilir, fazla tutar kabul edilir ve red **gerekçesiyle log'lanır** (**595**). Hiçbir red Notion'a dokunmadan döner |
 
 ---
 
@@ -146,14 +146,12 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
-- **24 Ağustos (MJ görsel turu — V03 kapanışı):** V03 gövdesi uzaklaştırıldı — `ustKaranlik`
-  medyanı **%52.0 → %94.8**, geçen kare 1/18 → 13/18; dört zemin mühürlendi (**z08–z11**).
-  V10 kilim üç turda **terk edildi** (568–572; ders: *kumaş yüzey değildir, düşer*). → `90-kronoloji/2026-08.md`
-- **24 Ağustos (Sayfalar metin turu + DEPLOY):** "Çember Lideri"nin Notion ayağı kapandı
-  (on yer). **Deploy git push'la alındı** — `tZR9LcwJq9` hook'una dokunulmadı (ölü dal, **B64**).
-  Üç bekçi bandı kaydı: Seremoni `3.571–3.686` · Açık Kapı `3.044–3.330` · Çember `3.472–3.771`.
-  Slug konvansiyonu (**559**) + dört ad (**560**); Kayıtlar DB'de iki test satırı olduğu
-  için **slug değişimi bedelsizdi.** → `90-kronoloji/2026-08.md`
+- **11 Eylül (N-Kolay sağlayıcı turu):** yedi commit, `ef09c47`→`5ace816`. Origin muhafızı
+  kendi kodumuza taşındı (**591 · 592**), N-Kolay sağlayıcısı + Ortak Ödeme Sayfası form
+  POST'u yazıldı, callback fail-closed kapıları arttı (**593 · 594 · 595 · 596**), **B186 ✅**.
+  ⚠ Devrede değil — anahtarlar Kaan'da. → `90-kronoloji/2026-09.md`
+- **24 Ağustos (MJ görsel turu · Sayfalar metin turu + DEPLOY)** → `90-kronoloji/2026-08.md`
+  (11 Eylül tahliyesi, KARAR 457/61)
 - **19 Ağustos (B turu — sosyal medya + AÇILIŞ · Faz 1 — ödeme yüzeyi):** iki blok da 11 Eylül'de kronolojiye **indi** (KARAR 457/61) → `90-kronoloji/2026-09.md`. Canlı ayaklar adıyla duruyor: **AÇILIŞ 24–27 Eylül** (KARAR 492) · `KART_AKISI` (488) · `OCAK-XXXX` (489 · 490) · **B76 ✅**.
 - **Daha eski dönemler** (11 Ağu · 17–19 Ağu üç format · 18–19 Ağu içerik+altyapı) → `90-kronoloji/2026-08.md` (19 Ağu tahliyesi, KARAR 457/61)
 
@@ -170,6 +168,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Yolculuk fiyatlandırma → ilk etkinlik | Kaan + Advaita |
 | Sosyal medya **Gün 1** önkoşulları (Gün 0 ✅ 23 Ağu, KARAR 542) | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
+| N-Kolay mutabakat + iptal/iade servisleri (**B200**), ön koşulu **B202** | CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
 | Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |

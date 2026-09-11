@@ -3332,6 +3332,16 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - İlk gerçek kayıttan önce silinir ya da işaretlenir — **üç yüzey birden**:
   Notion satırı · etkinlik sayaçları · MailerLite kontağı.
 - ⚠ **B72 ile sırası önemli** — erken temizlik kapı doğrulamalarının zeminini siler.
+- **11 Eylül eki — üç kalıntı daha (N-Kolay turu):**
+  - **Başvurular DB'de bir eyeball satırı** — `/iletisim/bize-yaz` üzerinden origin muhafızı
+    doğrulaması için gönderildi (Kaan, iPhone değil masaüstü). `Tip: İletişim`.
+  - **Kayıtlar DB'de `OLCUM-KURUS-<epoch>`** — Notion `number` alanının kuruşu koruyup
+    korumadığını ölçmek için açıldı, okundu, **arşivlendi** (`archived:true` teyitli).
+    Silinmedi; arşiv kaydı ölçümün kanıtıdır.
+  - ⚠ **Tek `Beklemede` satırının `Beklenen Tutar`'ı `1000` olarak elle dolduruldu** (Kaan,
+    11 Eyl). **Bu rakam ölçülmedi, seçildi** — o kaydın gerçek tutarıyla karşılaştırılmadı.
+    Gerçek tutar daha yüksekse kayıt eksik tutarla `Ödendi` olur; daha düşükse gerçek ödeme
+    `401` yer. İlk gerçek kayıt penceresinden önce **doğrulanmalı.**
 
 ## B193 — Production'da mock ödeme ekranı canlı
 - [ ] **Sahip:** Kaan · **BÜYÜK** · **Tetikleyici:** ilk gerçek kayıt penceresi açılmadan önce
@@ -3467,3 +3477,66 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   olduğunu bilmiyor. Gerekçesiz kural *"bot hattıysa neden linklenmiyor"* diye kırılır.
   CC bunu `.claude/notes.md`'ye yazdı, bir sonraki dokunuşa iliştirilecek — ayrı brief yok.
 - **Bağ:** KARAR 585 · 587.
+
+## B200 — N-Kolay mutabakat ve iptal/iade servisleri yazılmadı
+- [ ] **Sahip:** CC · **Tetikleyici:** ilk gerçek ödemelerden sonra, hacim birkaç kaydı aşınca
+- **Körlük:** dönüş bildirimi **yalnız** tarayıcının `successUrl`/`failUrl`'e POST'udur —
+  sunucu-sunucu webhook **yok**. Kadın 3D ekranında sekmeyi kapatırsa para çekilir,
+  bizim tarafta **hiçbir kayıt oluşmaz** ve bunu yakalayan bir şey yoktur.
+- **Panzehir yazılmadı:** N-Kolay `POST /Vpos/Payment/PaymentList` (multipart/form-data,
+  hash `sx|startDate|endDate|clientRefCode|merchantSecretKey`, `STATUS` ∈ SUCCESS · ERROR ·
+  NEW — `NEW` = başlatılıp bitirilmemiş işlem).
+- **İptal/iade de yok** — N-Kolay panelinden **elle** yapılır.
+- ⚠ `NKOLAY_SX_LIST` ve `NKOLAY_SX_IPTAL` env yüzeyinde **hazır ama hiçbir kod okumuyor.**
+- **Ön koşulu B202** — mutabakat `clientRefCode` ile sorgulanır, o değer bugün kaydedilmiyor.
+- **Bugün kabul edilebilir:** ilk ödemeler birkaç kadınla başlıyor, panelden gözle yeterli.
+  **Bağ:** B202 · KARAR 596
+
+## B201 — `REFERENCE_CODE` alan adı varsayımı ölçülmedi
+- [ ] **Sahip:** ilk gerçek N-Kolay işlemi · **Tetikleyici:** pazartesi test işlemi
+- Dönüş gövdesindeki `REFERENCE_CODE`'un bizim `clientRefCode`'umuzun yankısı olduğu
+  **varsayımdır** — altın vektör yok, canlı işlem yok, entegrasyon dokümanı repoda yok.
+- Kod **fail-closed** davranır: biçim `^OCAK-[A-Z0-9]{4}-\d{5}$` tutmazsa reddeder ve
+  **gövdenin alan adlarını** (değerleri değil) log'a basar. İlk işlem gerçek adı söyleyecek.
+- Test fixture'ı varsayımı taşıyor ve **başında açıkça yazılı** — sessiz bırakılmadı.
+- Aranacak satır: `[nkolay] REFERENCE_CODE biçimi tutmadı — gövdedeki ALAN ADLARI: …`
+  **Bağ:** KARAR 593
+
+## B202 — Gönderilen `clientRefCode` hiçbir yere yazılmıyor
+- [ ] **Sahip:** CC · **Tetikleyici:** B200'den önce
+- `/odeme/nkolay` render anında `OCAK-XXXX-<epoch>` üretiyor ve N-Kolay'a gönderiyor;
+  **epoch sonekli tam hâli Notion'a düşmüyor.** Mutabakat servisi bu kodla sorgular —
+  yani bugün **sorulacak değer kayıp.**
+- Her deneme yeni sonek üretir; alan son denemeyi taşır, öncekiler üzerine yazılır.
+  Çoklu deneme geçmişi gerekirse ayrı karar.
+- ⚠ Hedef alan **`İşlem No` DEĞİL** — o, dönüşte gelen N-Kolay işlem numarası için.
+  Yeni Notion alanı gerekiyorsa Kaan açar.
+- CC prompt'u yazıldı, **verilmedi** (11 Eyl, oturum kapandı). **Bağ:** B200 · KARAR 596
+
+## B203 — `CURRENCY_CODE` boş dönüşte hash'e ne konacağı teyitsiz
+- [ ] **Sahip:** Kaan (N-Kolay temsilcisi) · **Tetikleyici:** pazartesi test işleminden önce
+- Dönüş hash formülü `CURRENCY_CODE` alanını **içeriyor**, ama dokümanın non-3D örnek
+  dönüşünde alan **hiç görünmüyor**; 3D örneğinde `TRY` olarak dönüyor. İstekte ise
+  numerik gidiyor (`949`/`840`/`978`).
+- **Kod bugün boş dize varsayıyor.** Varsayım yanlışsa **her imza doğrulaması düşer.**
+- Sorulacak tek cümle: *dönüş POST'unda `CURRENCY_CODE` gelmediğinde `hashDataV2`
+  hesabında o alana ne konuyor — boş dize mi, `TRY` mi, `949` mü?*
+- Yanıt gelmezse ilk test işleminin log'u söyler: `[nkolay] hashDataV2 tutmadı` satırı
+  hesaplanan ham dizeyi **sır maskeli** basıyor. **Bağ:** B201
+
+## B204 — `00-durum.md` iki farklı dönem HEAD taşıyor
+- [ ] **Sahip:** Claude.ai (patch üreten oturum) · **Tetikleyici:** bir sonraki doküman turu
+- **11 Eylül N-Kolay patch'i başlığı güncelledi, tabloyu unuttu.** `00-durum.md` başlık
+  satırı artık dönem HEAD `5ace816` diyor; `KOD / DEPLOY GERÇEĞİ` tablosundaki
+  `main dönem HEAD` satırı hâlâ **`b5ff542`** diyor ve o dönemin anlatısını
+  (WA ikinci hat turu, `src/lib/api.ts`, `dpl_E8vgJh7q…`) taşıyor.
+- **Konvansiyon vardı, patch atladı:** bir önceki tur (`ae3b8ca`) iki satırı **aynı diff'te**
+  güncellemişti — `git show ae3b8ca -- docs/00-durum.md` ile teyitli. Patch'in kapsamı
+  daraldı, çelişki doğdu.
+- **CC uzlaştırmadı, bilerek** (KARAR 102 · KIRPMA YASAĞI): tablo satırı yalnız rakam değil
+  **anlatı** taşır; onu yeniden yazmak patch'in yazmadığı metni üretmek olurdu. Kaan'ın
+  kararı bu yönde (11 Eyl).
+- **Kapanışı:** sonraki patch tablo satırını bu dönemin anlatısıyla yeniden yazar, düşen
+  `b5ff542` anlatısı `90-kronoloji/2026-09.md`'ye iner (KARAR 61).
+- ⚠ **Not:** `scripts/baslik-denetim.mjs` bunu yakalamaz ve yakalaması beklenmez — denetim
+  alanı ilk `---` satırına kadardır, tablo o sınırın altındadır. **Bağ:** KARAR 474 · 580 · 581

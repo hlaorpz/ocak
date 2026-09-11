@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.09.2026 21:52 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.09.2026 23:47 (Europe/Istanbul) · bayraklar: `--test`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,24 +18,22 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `12739d3` | `git log -1` |
+| canlı HEAD | `5ace816` | `git log -1` |
 | HEAD tarihi | 2026-09-11 | `git log -1 --date=short` |
-| HEAD konusu | temizlik(B186): iyzico/PayTR kalıntıları — 21 satır dönüştürüldü, iki muhafız korundu | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 1 kayıt | `git status --porcelain` |
+| HEAD konusu | odeme(muhafiz): tutar + replay kapıları — dogrulaCallback tüketimi | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 6 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **20** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **22** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
 | alan | değer | kaynak |
 |---|---|---|
-| vitest sonucu | *bu koşumda ölçülmedi* | `npx vitest run` |
-
-*`--test` bayrağıyla koşulur.*
+| vitest sonucu | 398 passed (398) · dosya: 22 passed (22) | `npx vitest run` |
 
 ## BUILD
 
@@ -45,22 +43,22 @@
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 193 |
-| `docs/02-borclar.md` | 3469 |
-| `docs/03-sira.md` | 884 |
+| `docs/00-durum.md` | 192 |
+| `docs/02-borclar.md` | 3542 |
+| `docs/03-sira.md` | 906 |
 | `docs/05-harita.md` | 187 |
-| `docs/01-kararlar.tsv` | 591 |
+| `docs/01-kararlar.tsv` | 597 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **193** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **192** — ✅ altında
 
 ## BORÇ SAYIMI
 
 | alan | değer | kaynak |
 |---|---|---|
-| toplam madde | 199 | `grep -cE '^## B'` |
+| toplam madde | 204 | `grep -cE '^## B'` |
 | damgalı (kapandı/çözüldü/geri çekildi) | 49 | `^## B` başlıklarında `[✅❌]` |
 | iş değil (ertelendi/planlı) | 2 | `^## B` başlıklarında `[⏸🔵]` |
-| **açık** | **148** | toplam − damgalı − iş değil |
+| **açık** | **153** | toplam − damgalı − iş değil |
 | mükerrer başlık | 0 | `^## B[0-9]+` → `uniq -d` |
 
 *Ölçüt başlıktaki **damga**dır, kelimenin kendisi değil (10 Ağu B01 kaydı).*
@@ -69,8 +67,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **590** | — |
-| satır sayısı (başlık dahil) | 591 | — |
+| son KARAR numarası | **596** | — |
+| satır sayısı (başlık dahil) | 597 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |

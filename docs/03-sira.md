@@ -133,21 +133,32 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
 
 0. ✅ **Kod tarafı hazır.** On commit, İŞ 4 uçtan uca koşuldu (Kaan), Preview ayakta
    (`nkolay-test`, `f8409c4`).
-1. ⏳ **Production anahtarı çevrilecek** (Kaan) — `KART_AKISI=acik` · `PAYMENT_PROVIDER=mock` ·
-   `ODEME_CALLBACK_SIR` (Preview'dakinden **farklı**), sonra **redeploy** (değer build
-   zamanında sabitlenir). ⚠ 11 Eyl ölçümünde **henüz çevrilmemişti.** Çevrilince **B193**
-   canlı borç olur — AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.
-2. ⏳ **N-Kolay'dan dört girdi bekleniyor** (Kaan → `nkolayPos@nkolay.com.tr`): logo seti
-   (Visa/MC + kendi rozeti) · **callback imza şeması** · **site denetim kriter listesi** ·
-   test kartları. ⚠ Kriter listesi gelmeden neyi karşıladığımızı **ölçemiyoruz** — hattın
-   gerçek darboğazı bu.
+1. ✅ **Production anahtarı çevrildi** (11 Eyl, redeploy sonrası ölçüldü) — `KART_AKISI=acik` ·
+   `PAYMENT_PROVIDER=mock` · `ODEME_CALLBACK_SIR` Preview'dakinden **farklı**. **B193 artık
+   canlı borç** — AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.
+   *(Kapanan hâli, KARAR 61: bu satır 11 Eylül sabahına kadar "henüz çevrilmemişti" diyordu;
+   B193 gövdesi aynı gün 🔴 CANLI ölçümünü taşıyordu. Çelişki N-Kolay turunda fark edildi.)*
+   ⚠ **Env yazmak mevcut build'i değiştirmez** — değer build zamanında sabitlenir, redeploy şart.
+2. **N-Kolay girdileri — ikisi kapandı, ikisi duruyor** (11 Eyl):
+   - ✅ **Callback imza şeması** — entegrasyon dokümanından okundu ve **uygulandı**
+     (`b53802a`). Kalan tek boşluk `CURRENCY_CODE` → **B203**.
+   - ✅ **Site denetim kriter listesi** — `paynkolay.com.tr/sss`, *Başvuru* bölümü.
+     Yedi kalemin altısı karşılanıyor; **açık tek kalem fiyat bilgisi** (Yolculuk fiyat
+     bandı, YAYINI KİLİTLEYENLER md.4). ⚠ Dışlama maddesi *"test aşamasındaki siteler
+     değerlendirilmez"* KARAR 575 ile gerilimli.
+   - ⏳ **Logo seti** (Visa/MC + kendi rozeti) — madde 4'ü kilitliyor.
+   - ⏳ **Test kartları** + ⏳ **kendi dört anahtarımız** (`sx` · `sx list` · `sx iptal` ·
+     `merchantSecretKey`, **test ve prod ayrı**). ⚠ Dokümandaki test değerleri iki sayfada
+     **çelişiyor** — panelden alınacak, dokümandan değil.
 3. ⏳ **Muhasebeci/hukuk iki soru:** cayma hakkı istisnası (6502 md.15, belirli tarihte
    yapılan hizmet) · "internetten satış" e-ticaret fatura serisi (kart geldiğine göre
    **büyük ihtimalle evet**).
 4. **Güven şeridi** — KARAR 297 iyzico şeridini kaldırmıştı; `public/odeme/` yok, çizen
    komponent yok, ölü kod kalmamış. Logo seti gelmeden kurulamaz.
-5. **N-Kolay provider** — `payment-provider.ts`'e implementasyon + gerçek
-   `dogrulaCallback()`. İmza şemasına kilitli. Aynı turda **B186** temizlenir.
+5. ✅ **N-Kolay provider yazıldı (11 Eyl).** `payment-provider.ts` `nkolay` dalı +
+   `/odeme/nkolay` form POST sayfası + gerçek `dogrulaCallback()` + tutar/replay kapıları.
+   **B186 aynı turda temizlendi.** ⚠ **Devreye girmedi** — madde 8.
+   Açık kalanlar: **B200** (mutabakat + iptal/iade) · **B201** · **B202** · **B203**.
 6. **`nkolay-test` dalı silinecek** — iş bitince `git push origin --delete nkolay-test`.
    ⚠ **Şart 11 Eylül'de yazıldı:** *"iş bitince"* = **AÇILIŞ'tan sonra**, önce değil.
    Dal, ödeme **Preview ortamının** kendisidir ve `ODEME_CALLBACK_SIR`'ı production'dan
@@ -156,6 +167,17 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
    onu ölü dal gibi gösteriyordu. Kalan uzak dallar: `main` + `nkolay-test`.
 7. **Muhafız turu** — **B188** (KARAR 488'in dört ölçüsüz tüketicisi) **birinci**, sonra
    **B189**'un kalanı. Kendi brief'iyle gelir.
+8. 🎯 **Devreye alma — pazartesi (sıra bağlayıcı):**
+   1. **B202** kapanır (gönderilen `clientRefCode` Notion'a yazılır) — beş dakika, mutabakatın
+      ön koşulu.
+   2. Beş `NKOLAY_*` değeri Vercel'e, **üç ortama**; `PAYMENT_PROVIDER=nkolay`; **redeploy.**
+   3. `NKOLAY_BASE_URL` **test** adresiyle uçtan uca bir işlem. Log'da iki satır aranır:
+      `[nkolay] hashDataV2 tutmadı` (→ **B203**) · `[nkolay] REFERENCE_CODE biçimi tutmadı`
+      (→ **B201**). İkisi de çıkmazsa hat çalışıyor.
+   4. Test yeşilse `NKOLAY_BASE_URL` **prod** adresine; kendi kartla küçük tutarlı gerçek
+      işlem; panelden iade.
+   5. **B193** kapanır (mock ekran kalkar). **B192** temizliği bundan önce doğrulanır —
+      özellikle elle yazılmış `Beklenen Tutar = 1000`.
 
 ---
 
