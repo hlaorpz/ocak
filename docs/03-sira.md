@@ -1,30 +1,12 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 10 Eylül 2026 (**N-Kolay turu — kart yüzeyi mock'la geri açıldı**) ·
-**KARAR 573–577** mühürlendi · on commit, **dokuzu kod** (19 Ağu'dan bu yana ilk kod turu) ·
-test **325/325 · 19 dosya** · **B180 koruma ayağı ✅**, **B185–B193** açıldı · İŞ 4 uçtan uca
-koşuldu (Kaan) ·
-önceki: 24 Ağustos (**Sayfalar metin turu + C listesi + DEPLOY**) ·
-**KARAR 558–567** mühürlendi · **DEPLOY ALINDI** — `1b4b998` → **`9acbabb`**, sekiz canlı
-kontrolün sekizi tuttu · **B80 ✅ · B164 ✅**, **B174–B181** açıldı ·
-önceki: 24 Ağustos (**sıfır dolgu turu**) · **KARAR 555–557** — jetonlar
-sıfır dolgulu (`C01`–`C24` · `V01`–`V09` · `z01`–) · karusel zemini yüzey olur, nesne olmaz ·
-sert kapı ölçütü yöntemiyle yazılır; **B171 ✅ kapandı**, **B172–B173** açıldı (C09 ve C20
-karusel zemini) · önceki: 23 Ağustos (**adlandırma turu**) · **KARAR 552–554** — zemin dosya
-adı zemine bağlanır · `İn`→`Cn`, `Pn`→`Vn` · atama öncesi sıra+borç okunur; **B169–B171**
-açıldı, `docs/31-zemin.md` doğdu · önceki: **EK tur** · **KARAR 551** Çember Lideri →
-**Çember Rehberi**, B160 ✅ kapandı, B165–B168 açıldı · `00-durum.md` **bilerek bekletiliyor**
-(aşağıda) · önceki: **Advaita yorum turu** — 14 etkinlik gövdesi yeniden
-yazıldı, KARAR 547–550 mühürlendi, KARAR 506 SUPERSEDE, B144–B164 açıldı · **DEPLOY YAPILMADI**
-(bilinçli, `02-borclar.md` B163) · aynı gün: Gün 0 görsel turu (KARAR 542–546 · B139–B141) ve
-arşivci turu (B142–B143) · önceki: 20 Ağustos 2026 · **fikir kuyruğu korpusa alındı** — B108–B120 açıldı ·
-**FİKİR HAVUZU** ve **KARAR ADAYLARI** başlıkları doğdu (F-1…F-5 · A-1…A-5),
-karar mühürlenmedi (ledger 523'te sabit) · önceki: **Marka işareti ✅ · başlık kanonu ✅** —
-KARAR 522 · 523; borçlar B105 · B107 (B106 aynı gün kapandı) ·
-WABA display name turu (KARAR 519–521 · B103–B104 · KARAR 410 SUPERSEDE) ·
-önceki: WA yüzen buton turu (KARAR 517–518 · KARAR 396 SUPERSEDE) ·
-B102 turu · gölge satır turu (KARAR 514–516 · B101) · üç-format turu
-(KARAR 496–513 · B88–B100 · KARAR 79 SUPERSEDE)
+**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu**
+
+---
+
+> `önceki:` zinciri burada yaşamaz (KARAR 581). Tur zinciri `90-kronoloji/`'de dilim
+> dilim zaten yaşıyor; başlıktaki ikinci kopya onu bayatlatıyordu. Sekiz halka
+> 11 Eylül 2026'da `90-kronoloji/2026-08.md`'ye **indi** — silinmedi, taşındı (KARAR 61).
 
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
