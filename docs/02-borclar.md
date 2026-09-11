@@ -3249,12 +3249,30 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Çözüm:** `src/components/yasal/IadeMetni.astro`. **Bağ:** KARAR 395 · KARAR 576
 
 ## B186 — kalan PayTR/iyzico geçişleri
-- [ ] **Sahip:** CC · **Küçük** · **Tetikleyici:** N-Kolay provider implementasyonu
+- [x] **KAPANDI** (11 Eyl, `12739d3`) · **Sahip:** CC · **Küçük** · **Tetikleyici:** N-Kolay provider implementasyonu
 - 19 satır: JSX/frontmatter yorumu, sunucu tarafı hata dizesi, `getPaymentProvider()`
   throw metinleri. **Kullanıcıya çıkmıyor** — `dist/` ve `.vercel/output/static/` temiz;
   `_functions/pages/api/kayit.astro.mjs` içinde dört `iyzico` throw dizesi var.
 - Kaan kararı (10 Eyl): dursun, ayrı borç. N-Kolay implementasyonu gelince aynı turda temizlenir.
 - **Bağ:** KARAR 576 · `e03364d` (kullanıcı-görünür olan zaten kaldırıldı)
+- ⚠ **DÜZELTME (11 Eyl) — yukarıdaki iki iddia yanlıştı, satırlar KORUNDU (KARAR 61):**
+  - **"19 satır" değil, 23.** Ölçüm:
+    `grep -rniE "iyzico|paytr|iyzilink" --include=*.ts --include=*.astro --include=*.mjs src astro.config.mjs`
+    → 23 eşleşme. Eski rakamın üretildiği komut kayıtlı değildi, yani doğrulanamıyordu
+    (KARAR 470'in tam vakası).
+  - **Throw dizeleri `kayit.astro.mjs`'de değildi.** Build çıktısında
+    `chunks/payment-provider_*.mjs` içinde üç dize olarak yaşıyorlardı; `kayit` function'ı
+    onları yalnız import ediyordu. "Kullanıcıya çıkmıyor" ayağı doğruydu
+    (`dist/client` ve `output/static` sıfır).
+- **Kapanış (11 Eyl, `12739d3`):** 23'ten **21'i** dönüştürüldü — kırpılmadı, anlamı
+  korunarak yeniden yazıldı. Tek gerçek silme `getPaymentProvider()`'ın `iyzico` dalı;
+  davranış aynı kaldı (tanınmayan değer jenerik throw'a düşer).
+  **İki satır KASITLI KORUNDU, silinmemeli:** `payment-provider.test.ts:161` ve
+  `nkolay.test.ts:335` — ikisi de route'un sağlayıcı ADINA dallanmadığını ölçen muhafız
+  (KARAR 395). Brief "22'sini temizle" diyordu; ikinci muhafızı aynı oturumun N-Kolay
+  turu (`b53802a`) eklediği için sayı 21'e düştü.
+  **Build çıktısı ölçümü: `.vercel/output/functions` 7 → 0** (`dist/client` ve
+  `output/static` zaten 0 idi). Kalan iki eşleşme yalnız kaynakta, test dosyalarında.
 
 ## B187 — `20-ref-notion.md` Kayıtlar şeması bayat
 - [ ] **Sahip:** Claude.ai → CC · **Tetikleyici:** Notion şemasına dayanan bir sonraki iş

@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.09.2026 14:43 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.09.2026 21:52 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `ae3b8ca` | `git log -1` |
+| canlı HEAD | `12739d3` | `git log -1` |
 | HEAD tarihi | 2026-09-11 | `git log -1 --date=short` |
-| HEAD konusu | docs: WA ikinci hat turu · KARAR 585-590 · B19·B104 kapandı | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 2 kayıt | `git status --porcelain` |
+| HEAD konusu | temizlik(B186): iyzico/PayTR kalıntıları — 21 satır dönüştürüldü, iki muhafız korundu | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 1 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
 | `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **14** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **20** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -46,7 +46,7 @@
 | dosya | satır |
 |---|---|
 | `docs/00-durum.md` | 193 |
-| `docs/02-borclar.md` | 3451 |
+| `docs/02-borclar.md` | 3469 |
 | `docs/03-sira.md` | 884 |
 | `docs/05-harita.md` | 187 |
 | `docs/01-kararlar.tsv` | 591 |
