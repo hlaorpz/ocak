@@ -3335,11 +3335,24 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ölçülmedi:** tek vaka mı, desen mi.
 - ⚠ **B64'ün akrabası** — ikisi de deploy tetikleme hattında. **Bağ:** B64
 
-## B192 — Notion'da mock test satırı
-- [ ] **Sahip:** Kaan · **Tetikleyici:** ilk gerçek kayıt penceresinden önce
-- İŞ 4 uçtan uca koşuldu (10 Eyl, **Kaan'ın raporu** — CC bağımsız doğrulamadı).
-  Kayıtlar DB'de `Notlar` alanı `MOCK ödeme — <ISO>` diyen satır duruyor.
-- İlk gerçek kayıttan önce silinir ya da işaretlenir.
+## B192 — Notion'da mock test satırları
+- [ ] **Sahip:** Kaan · **Tetikleyici:** **ilk gerçek kayıt penceresi açılmadan önce**
+- **İki tur, iki kalıntı.** (a) İŞ 4 Preview'da koşuldu (10 Eyl, **Kaan'ın raporu** —
+  CC bağımsız doğrulamadı). (b) Uçtan uca tur **Production'da** koşuldu (11 Eyl, CC),
+  aşağıdaki satır **ölçülmüş ve adıyla kayıtlı**:
+
+  - **`OCAK-5HNJ`** · Notion sayfa `3d8b61eb-fa87-81f5-a1de-e9bd069debcd`
+  - Kayıtlar satırı: `Ödeme Durumu = Ödendi` · `Ödenen Tutar = 1000` ·
+    `Notlar = "MOCK ödeme — <ISO>"`
+  - Etkinlik **Neyi Bekliyorsun? · 16 Eylül** — sayaçları **bir arttı**
+    (Toplam Kayıt Sayısı · Tahsil Edilen Gelir), **Kalan Kontenjan bir azaldı**.
+    ⚠ **Satır silinince sayaç da düzeltilmeli** — rollup/formula otomatik döner ama
+    kontrol edilmeden bırakılmaz.
+  - **MailerLite'a `kaan@ocak.biz` kontağı yazıldı** (`ok: true · status 200`).
+    Otomasyon aktifse o adrese kayıt onayı maili gitmiş olabilir.
+
+- İlk gerçek kayıttan önce silinir ya da işaretlenir — **üç yüzey birden**:
+  Notion satırı · etkinlik sayaçları · MailerLite kontağı.
 - ⚠ **B72 ile sırası önemli** — erken temizlik kapı doğrulamalarının zeminini siler.
 
 ## B193 — Production'da mock ödeme ekranı canlı
