@@ -483,7 +483,7 @@ no	tarih	baslik	durum	iliski	kaynak
 482	2026-08-11	Otorite sırası: indeks, indekslediği gövdeyi asla yenmez	KALICI	←102 · ↔456	2026-08.md#k482
 483	2026-08-11	Belgenin düzyazı rakamı kendi gövdesiyle sınanmadan yazılmaz	KALICI	←470 · ↔465	2026-08.md#k483
 484	2026-08-19	Bir rakam tek yüzeyde yaşar — kural bir yerde, envanter başka yerde	KALICI	←470 · ↔483	2026-08.md#k484
-485	2026-08-19	İçerik build'i kod dalıyla aynı yerden gelir — deploy hook `main`'e bakar	ACIK-BORC	B64	2026-08.md#k485
+485	2026-08-19	İçerik build'i kod dalıyla aynı yerden gelir — deploy hook `main`'e bakar	AKTIF	B64	2026-08.md#k485
 486	2026-08-19	Katılım linki ödeme alınmadan hiçbir yüzeyde gösterilmez — kural maile de uygulanır	AKTIF	←220	2026-08.md#k486
 487	2026-08-19	Canlı production polling ile dövülmez — doğrulama tek atışlık ya da gerçek tarayıcıyla	KALICI	↔355	2026-08.md#k487
 488	2026-08-19	Kart akışı silinmez, `KART_AKISI` env anahtarıyla kapatılır	AKTIF	←363 · ←217	2026-08.md#k488
@@ -582,3 +582,4 @@ no	tarih	baslik	durum	iliski	kaynak
 581	2026-09-11	Canlı dosya başlığı replace-only ve en fazla dört dolu satır — tarih, tur adı, varsa dönem HEAD; önceki zinciri, ölçüm paragrafı, sayaç ve tarihçe anlatısı başlıkta yaşayamaz, kronolojiye aittir	AKTIF	←578 · ←61 · ↔B195	2026-09.md#k581
 582	2026-09-11	Kronoloji tur başlığı sabit biçim taşır: ## YYYY-AA-GG — tur adı · KARAR n–m · B açılan/kapanan · HEAD xxxxxxx; geriye dönük uygulanmaz, bu turdan itibaren geçerlidir	AKTIF	←456 · ←61	2026-09.md#k582
 583	2026-09-11	Başlık denetçisi ocak-arsivci'nin ADIM 0'ında koşar — çıkış kodu 0 değilse DUR; pre-commit hook her kod commit'inde boşuna ateşler, npm script hatırlamak gerektirir, ikisi de reddedildi. Başlık şişmesi yalnız patch yazımında doğar, denetim riskin doğduğu kapıda durur	AKTIF	←581 · ←355 · ↔B195	2026-09.md#k583
+584	2026-09-11	Vercel kimliği .vercel/repo.json'dan okunur, .vercel/project.json aranmaz — proje GitHub'a bağlı olduğu için CLI repo seviyesinde bağlıyor ve üç vercel link denemesi aynı sonucu verdi; project.json'a bağımlı tek yol vercel --prod ve kullanılmıyor, deploy git push'la gidiyor. Sapma arıza değil, kabul edildi ve doktrine döndü	AKTIF	↔B179 · ←579 · ←567	2026-09.md#k584

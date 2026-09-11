@@ -76,10 +76,19 @@ const porcelain = kabuk('git status --porcelain');
 const agacTemiz = porcelain === null ? null : porcelain.trim() === '';
 const kirliSayi = porcelain === null ? null : porcelain.trim() === '' ? 0 : porcelain.trim().split('\n').length;
 
-// ── 3 · Dal farkı: main ↔ astro-iskelet ──────────────────────────────────────
-const dalVar = (kabuk('git rev-parse --verify --quiet astro-iskelet') || '').trim() !== '';
-const mainOnde = dalVar ? tekSatir('git rev-list --count astro-iskelet..main') : null;
-const mainGeride = dalVar ? tekSatir('git rev-list --count main..astro-iskelet') : null;
+// ── 3 · Dallar: uzak dal listesi + her birinin main'e göre durumu ────────────
+// 11 Eyl: dört ölü dal silindi, `astro-iskelet` artık yok. Sabit dal adı yerine
+// uzakta ne varsa o ölçülüyor — silinen dal "ölçülmedi" diye görünmesin (KARAR 578).
+const uzakDallar = (kabuk("git branch -r --format='%(refname:short)'") || '')
+  .split('\n')
+  .map((s) => s.trim())
+  // `origin/HEAD` kısaltması `origin`'e düşer — dal değil, simgesel işaretçi; elenir.
+  .filter((s) => s && s.includes('/') && !s.includes('->'));
+const dalDurum = uzakDallar.map((d) => ({
+  ad: d,
+  onde: tekSatir(`git rev-list --count ${d}..main`),
+  geride: tekSatir(`git rev-list --count main..${d}`),
+}));
 
 // ── 4 · Test — yalnız --test ile ─────────────────────────────────────────────
 let testSatiri = OLCULMEDI;
@@ -239,11 +248,19 @@ s.push(`| HEAD konusu | ${yok(headKonu)} | \`git log -1 --format=%s\` |`);
 s.push(
   `| çalışma ağacı | ${agacTemiz === null ? OLCULMEDI : agacTemiz ? '**temiz**' : `**kirli** — ${kirliSayi} kayıt`} | \`git status --porcelain\` |`
 );
-s.push(
-  `| \`main\` ↔ \`astro-iskelet\` | ${
-    dalVar ? `main **${yok(mainOnde)}** commit önde · **${yok(mainGeride)}** commit geride` : OLCULMEDI + ' (dal yok)'
-  } | \`git rev-list --count\` |`
-);
+s.push(`| uzak dal sayısı | **${dalDurum.length}** | \`git branch -r\` |`);
+s.push('');
+s.push('| uzak dal | main\'e göre | kaynak |');
+s.push('|---|---|---|');
+if (dalDurum.length === 0) {
+  s.push(`| *uzak dal yok* | ${OLCULMEDI} | \`git branch -r\` |`);
+} else {
+  for (const d of dalDurum) {
+    s.push(
+      `| \`${d.ad}\` | main **${yok(d.onde)}** commit önde · **${yok(d.geride)}** commit geride | \`git rev-list --count\` |`
+    );
+  }
+}
 s.push('');
 s.push('## TEST');
 s.push('');
@@ -330,8 +347,10 @@ if (!vercel) {
   s.push(`| team / org ID | \`${yok(vercel.org)}\` |`);
   if (vercel.kaynak === '.vercel/repo.json') {
     s.push('');
-    s.push('⚠ `project.json` **yok** — değerler `repo.json`\'un `projects[0]` kaydından okundu.');
-    s.push('`vercel --prod` yolu bu dosyayla kurulmaz (**B179**).');
+    s.push('`project.json` **yok** — değerler `repo.json`\'un `projects[0]` kaydından okundu.');
+    s.push('**Beklenen hâldir, arıza değil** (KARAR 584): proje GitHub\'a bağlı olduğu için');
+    s.push('CLI repo seviyesinde bağlıyor. `vercel --prod` yolu bu dosyayla kurulmaz ve');
+    s.push('kurulması beklenmiyor — deploy git push ve `notion-content-update-main` hook\'uyla gidiyor.');
   }
 }
 s.push('');

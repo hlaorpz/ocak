@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu**
+**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu**
 
 ---
 
@@ -16,7 +16,7 @@ kendisi işe yarıyor (KARAR 61 ruhu).
 
 | Kim | Açık maddeler |
 |---|---|
-| **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 · **B64** · B65 · B69 · B72 · B73 · B74 |
+| **Kaan** | B07 · B12 · B14 · B15 · B18 · **B19** (yayını kilitleyen) · B53 · B57 · **B64 ✅** · B65 · B69 · B72 · B73 ✅ · B74 |
 | **CC** | B09 · B10 · B11 · B16 · B17 · B45 · B46 · B48 · B51 · B60 · B61 · B62 · B63 |
 | **Claude.ai** | B04 · B08 · B31 · B35 · B36 · B38 · B39 · B41 · B43 · B44 · B49 · B52 · B59 · B66 · B67 · B68 · B70 · B71 |
 
@@ -1306,8 +1306,8 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Gerekçenin tam hâli:** `20-ref-bot.md`, alan envanteri bölümü — Y1 notunun
   sonundaki "Aynı filtre `forms-backend.ts:43`'te DURUYOR — bilinçli" paragrafı.
 
-## B64 — Deploy hook URL geçişi; yeni hook oluşturuldu ama kimse çağırmıyor
-- [ ] **Sahip:** Kaan
+## B64 — Deploy hook URL geçişi; yeni hook oluşturuldu ama kimse çağırmıyor ✅ KAPANDI (11 Eyl)
+- [x] **Sahip:** Kaan
 - **Tetikleyici:** KARAR 485. Eski hook `tZR9LcwJq9` (`notion-content-update`)
   `astro-iskelet` dalına bakıyor — ölü dal, `main`'den 85 commit geride.
   *(Bu rakam yazıldığı gün doğruydu; 11 Eyl ölçümü **163** verdi — aşağıdaki ölçüm
@@ -1346,6 +1346,24 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - ⚠ Ölçüm KARAR açmadı — **bu bir ölçümdür, karar değil.** Çözüm ayrı tur.
 - ⚠ **Üçüncü ölçüm geldiğinde üç rakam birlikte kronolojiye iner; gövdede tek güncel
   rakam kalır.** (Claude.ai, 11 Eylül)
+- ✅ **KAPANDI (11 Eylül 2026 — Kaan + Claude.ai Vercel MCP).** Kapanış şartının dört
+  ayağının dördü de karşılandı, ve **üçüncü bir çağıran ortaya çıktı**:
+  - **n8n *"OCAK Gecelik Rebuild"*** → yeni hook `notion-content-update-main`
+    (`x2LnNpVvuG`, ref `main`). Elle tetiklendi: deployment **READY 52 sn** ·
+    `githubCommitRef: main` · `target: production` · commit `d8732c4` ·
+    alias listesinde `www.ocak.biz`.
+  - **Notion Sayfalar DB automation** → aynı hook. `/hikaye` **Yayınla** uncheck→check
+    ile sınandı: ~30 sn'de production build, `deployHookName: notion-content-update-main`.
+  - **Eski hook `tZR9LcwJq9` revoke edildi** — geri dönüş yolu kapalı.
+- ⚠ **Mayıs'tan beri açık duran ikinci teşhis de burada kapandı:** Notion automation'ı
+  **bozuk değildi**, ölü hook'a basıyordu. Dört aydır *"automation çalışmıyor"* diye
+  taşınan belirtinin tek sebebi bu maddeydi. İki ayrı arıza sanılan şey tek arızaydı.
+- **KARAR 485** `ACIK-BORC` → **AKTIF**: kararın söylediği şey artık kurulu.
+  ⚠ Bu borç **yeni KARAR açmadı** — uygulanan, 19 Ağustos'ta zaten mühürlenmiş karardı.
+- ⚠ **Kapanış da kapalı yüzeyden geldi** (`05-harita.md` §3). CC `vercel` CLI çağırmadı,
+  n8n'e ve Notion'a bakmadı; yukarıdaki alanlar **Kaan'ın ve Claude.ai oturumunun
+  beyanıdır.** Yerelde çakıştırılabilen tek ayak `d8732c4`'tür ve `git log` ile tutuyor.
+  Tam bağımsız teyit, bir sonraki içerik değişikliğinin siteye **kendiliğinden** düşmesidir.
 
 ## B65 — `ocak-etkinlik.zip` yeniden yüklemesi
 - [ ] **Sahip:** Kaan
@@ -1418,12 +1436,28 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - **Kapanış şartı:** Eylül'de gerçek kayıt gelmeden temizlenir. Erken temizlik
   Y1/kapı doğrulamalarının zeminini siler — sıralama önemli.
 
-## B73 — `pre-merge-kayit-penceresi` tag'i push edilmedi
-- [ ] **Sahip:** Kaan
+## B73 — `pre-merge-kayit-penceresi` tag'i push edilmedi ✅ KAPANDI (11 Eyl)
+- [x] **Sahip:** Kaan
 - **Belirti:** yerelde duruyor, remote'ta yok. `git push --tags` yerine tek tag
   push edildiği için kaldı (19 Ağu, `kurtarma-2026-08-19` gönderilirken bilinçli).
 - **Kapanış şartı:** gönderilecek mi karar verilir; gönderilmeyecekse yerelden
   silinir ve sebebi buraya yazılır.
+- ✅ **KAPANDI (11 Eylül 2026) — cevap "hayır".** Temmuz'dan beri açık duran soru
+  cevaplandı: tag **uzağa gönderilmeyecek.**
+  - **Ölçüm:** `git ls-remote --tags origin` **tek** tag döndürdü (`kurtarma-2026-08-19`);
+    `pre-merge-kayit-penceresi` uzağa **hiç push edilmemiş.** Belirti doğrulandı.
+  - **Karar:** kurtarma çivisi **yerel bir güvenlik ağıdır**, paylaşılan bir işaret değil.
+    Uzakta karşılığı olmayan yerel bir tag arıza değildir — bu repoda kurtarma tag'leri
+    zaten yerelde doğup yerelde yaşıyor (bkz. `kurtarma-2026-09-11-b64-dal-temizligi`).
+  - ⚠ **Yerelden de silinmedi, bilerek — ve bu bir şart daraltmasıdır.** Kapanış şartı
+    *"gönderilmeyecekse yerelden silinir"* diyordu; silinmedi, tag'e **dokunulmadı.**
+    Daraltma sessiz kalmasın diye buraya yazıldı (B19 · B57 · B179'da ölçülen aynı kural).
+  - 📐 **Ölçüm (11 Eyl):** `pre-merge-kayit-penceresi` = `3c2b865` ve
+    `git merge-base --is-ancestor pre-merge-kayit-penceresi main` **0 döndü** — tag
+    main'in **atasıdır.** Yani işaret ettiği ağaç zaten `main` üzerinden erişilebilir;
+    tag'i tutmak da silmek de veri kaybı üretmiyor. Aynı turda silinen
+    `kurtarma-2026-08-19` (`688bee5`) ile **aynı sınıfta** olduğu böylece ölçüldü —
+    ayrımı teknik değil, tercihtir: uzakta karşılığı olmayan yerel bir tag arıza değildir.
 
 ## B74 — iPhone Safari eyeball borcu (on bir commit birikti)
 - [ ] **Sahip:** Kaan
@@ -2715,6 +2749,12 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** Sayfalar DB'nin dokuz sayfası da bitince **tek seferde** deploy.
   Deploy hook uyarısı geçerli: **B64** — Notion webhook + gece cron hâlâ `astro-iskelet`
   (ölü dal) hook'unu paylaşıyor.
+  ✅ **Bu uyarı 11 Eylül'de düştü — B64 kapandı.** Notion webhook'u da gecelik n8n akışı da
+  artık `notion-content-update-main`'e (ref `main`, `target: production`) basıyor. Yani bu
+  borcun *"deploy edemiyoruz"* ayağı kalktı; kalan ayak **ne zaman** deploy edileceğidir,
+  ve o hâlâ *"dokuz sayfa bitince tek seferde"*. ⚠ Yeni durum bir yan etki getirdi:
+  **Notion'daki her yayın artık kendiliğinden siteye düşüyor** — "deploy sonda" ağı
+  otomatikleşen hatta çalışmaz.
 - ⚠ **Kayıt buraya, iş `03-sira.md`'ye.** `02-borclar.md` bir yapılacaklar listesi değil,
   **fark edilmiş tutarsızlıkların defteri** (`00-durum.md`). Notion ≠ site bir tutarsızlıktır
   ve kaydı burada durur; **sıradaki iş olarak `03-sira.md`'de yaşar.**
@@ -2995,9 +3035,9 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Not:** `03-sira.md` *"Ritüel Tasarımı gövdesinin hiçbir bölümü Advaita'ya gösterilmedi"*
   diyor; bu borç o kalemin **tek somut sorusudur.**
 
-## B179 — `.vercel/repo.json` bayat, `.vercel/project.json` hiç yok
+## B179 — `.vercel/repo.json` bayat, `.vercel/project.json` hiç yok ✅ KAPANDI (11 Eyl, "kabul edildi")
 
-- [ ] **Sahip:** Kaan · **küçük · tek komut**
+- [x] **Sahip:** Kaan · **küçük · tek komut**
 - **Ölçüm (24 Ağu):** `.vercel/project.json` **yok**. Elde kalan `.vercel/repo.json`
   **27 Mayıs** tarihli ve projeye **`ocak-site`** diyor; Vercel'de gerçek ad **`ocak`**
   (canlı teyit: deployment yanıtında `project.name = "ocak"`). Proje ID eşleşiyor
@@ -3019,6 +3059,25 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   ölçülen aynı kural).
 - **Bağ:** **B64** (deploy hook ölü dala bağlı) — ikisi birlikte *"elle deploy'un iki yolu
   da güvenilmez"* demektir; bu turda üçüncü yol (git push) kullanıldı.
+- ✅ **KAPANDI (11 Eylül 2026) — cevap "kabul edildi".** Yukarıdaki ⏳ ayağı çözülmedi;
+  **sapmanın arıza olmadığı ölçüldü** ve doktrine alındı (**KARAR 584**).
+  - **Ölçüm:** `rm -rf .vercel && vercel link --yes` koşuldu. CLI yine yalnız `repo.json`
+    yazdı, `project.json` **yazmadı.** Üç deneme aynı sonucu verdi — yani bu bayat bir
+    dosyanın kalıntısı değil, CLI'ın **şu anki davranışı.**
+  - **Sebep:** proje GitHub'a bağlı olduğu için CLI bağlamayı **repo seviyesinde** kuruyor;
+    `repo.json` bu bağlamanın doğru ve tam çıktısıdır. Eksik olan bir dosya değil, **başka
+    bir bağlama modeli** söz konusu.
+  - **Sonuç:** `project.json`'a bağımlı tek yol `vercel --prod` ve o yol **kullanılmıyor** —
+    deploy git push'la gidiyor (B64 kapanışından sonra Notion/gece tazelemesi de öyle).
+    `scripts/durum-uret.mjs` kimliği `repo.json`'dan okuyor ve **hangi dosyadan okuduğunu
+    `04-olcum.md`'ye yazıyor**; kaynak gizlenmiyor.
+- ⚠ **Bu, "kabul edildi" sınıfının ilk vakasıdır.** Bir borç ne düzeltilerek ne iptal
+  edilerek kapandı: **sapması ölçüldü, zararsız bulundu ve doktrine döndü.** Ledger'daki
+  dokuz `durum` değerinin hiçbiri bu yolu adıyla tarif etmiyor (`AKTIF` kararı anlatır,
+  `IPTAL` vazgeçişi, `KULLANILMADI` kullanılmamayı) — **kapanış yolunun ledger tanımı
+  eksik**, `03-sira.md`'ye not düşüldü, ayrı tur.
+  ⚠ Ayrım ince ve korunmalı: *"kabul edildi"* **ölçülmüş bir zararsızlıktır**, kapsam
+  daraltması değil. B19 · B57 · B73'te reddedilen şey ölçülmeden daraltmaktı.
 
 ## B180 — `tools/ocak-kart-derleyici.html` sahipsiz: commit'siz değişiklik + adsız kopya
 

@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Eylül 2026 · **ölçüm / yargı ayrımı turu**
+**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu**
 
 ---
 
@@ -11,13 +11,17 @@
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 
-**Sıradaki iş (kod/altyapı hattı, 20 Ağu — değişmedi):** **B64 → B69 → B68 → n8n ödeme onayı.**
+**Sıradaki iş (kod/altyapı hattı, 11 Eyl):** **B69 → B68 → n8n ödeme onayı.**
+✅ Kuyruğun başındaki **B64 düştü** (11 Eyl, kapandı) — 20 Ağustos'tan beri değişmeyen
+sıra ilk kez ilerledi. Notion içerik güncellemeleri artık siteye **kendiliğinden** düşüyor;
+elle boş commit atma zorunluluğu kalktı.
 ⚠ İki hat **aynı repoda yaşıyor** (KARAR 463, tek klon) — eşzamanlı koşmazlar.
 
-**Sıradaki iş (doküman hattı, 11 Eyl):** **B195** — `baslik-denetim.mjs`'i koşan bir
-mekanizma (`npm run denetim` · pre-commit hook · patch adımı; hangisi olacağı ayrı karar).
-Ardından **B194** (MailerLite alan sayısının üretilebilir hâle gelmesi ya da dokümandan
-çıkması). ⚠ `00-durum.md` tavana **iki satır** kala duruyor — sonraki tahliye ertelenmez.
+**Sıradaki iş (doküman hattı, 11 Eyl):** **"kabul edildi" kapanış yolunun ledger tanımı**
+(aşağıda, SIRADAKİ İŞ madde 2) → sonra **B194** (MailerLite alan sayısının üretilebilir
+hâle gelmesi ya da dokümandan çıkması). ✅ **B195 kapandı** (11 Eyl, KARAR 583 — denetçi
+`ocak-arsivci`'nin ADIM 0'ında koşuyor). ⚠ `00-durum.md` tavana **iki satır** kala
+duruyor — sonraki tahliye ertelenmez.
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -38,6 +42,16 @@ satırdır ve sınırsız uzar, tavan onu görmez. Bu turda `Deploy hook` ve dö
 hücreleri tam olarak böyle büyüdü. **Tavan birimi yeniden değerlendirilecek — ayrı tur.**
 ⚠ Satır 199'da *uçlarda* sabit; arada 197'ye inip geri çıktı — "sabit" uç ölçümüdür,
 seyir değil.
+
+**2 · "Kabul edildi" kapanış yolunun ledger tanımı yok** (11 Eyl · KARAR açılmadı, ayrı tur).
+**B179** bu yoldan kapandı — düzeltilerek değil, **sapması ölçülüp zararsız bulunarak ve
+doktrine alınarak** (KARAR 584). Ledger'ın dokuz `durum` değerinin hiçbiri bunu adıyla
+tarif etmiyor: `AKTIF` bir kararı anlatır, `IPTAL` vazgeçişi, `KULLANILMADI` kullanılmamayı.
+Karar verilecek iki şey var: **(a)** bu yol yeni bir `durum` değeri mi ister, yoksa
+mevcut bir değerin gövdedeki damgayla ayrıştırılması mı yeter · **(b)** ölçüt ne olur —
+*"kabul edildi"* ile *"kapsam daraltıldı"* arasındaki sınır yazılı olmazsa, gelecekte her
+daraltma "kabul" diye geçer. ⚠ Ayrım şu an yalnız B179 gövdesinde yaşıyor: kabul,
+**ölçülmüş** bir zararsızlıktır; daraltma ölçülmemiş bir vazgeçiştir (B19 · B57 · B73).
 
 > ✅ **`00-durum.md` YAZILDI (24 Ağustos) — bekleme koşulu doldu.**
 > 23 Ağustos kararı *"Sayfalar DB turu bitene kadar bekliyor; o turda tahliye + yazım
@@ -119,6 +133,11 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
 5. **N-Kolay provider** — `payment-provider.ts`'e implementasyon + gerçek
    `dogrulaCallback()`. İmza şemasına kilitli. Aynı turda **B186** temizlenir.
 6. **`nkolay-test` dalı silinecek** — iş bitince `git push origin --delete nkolay-test`.
+   ⚠ **Şart 11 Eylül'de yazıldı:** *"iş bitince"* = **AÇILIŞ'tan sonra**, önce değil.
+   Dal, ödeme **Preview ortamının** kendisidir ve `ODEME_CALLBACK_SIR`'ı production'dan
+   **ayrıdır** (KARAR 575); silinmesi denemeyi yapacak ortamı da siler. Aynı turda dört
+   ölü dal temizlenirken bu **bilerek bırakıldı** — tek başına *"iş bitince sil"* satırı
+   onu ölü dal gibi gösteriyordu. Kalan uzak dallar: `main` + `nkolay-test`.
 7. **Muhafız turu** — **B188** (KARAR 488'in dört ölçüsüz tüketicisi) **birinci**, sonra
    **B189**'un kalanı. Kendi brief'iyle gelir.
 
@@ -134,11 +153,14 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
    Taslak slug'ları **Kaan** yazacak. ⏳ **Pencere ilk gerçek kayıtla kapanır.**
 3. **Şablon taraması** (**B165**) — MailerLite + Resend, KARAR 558 kapsamıyla.
    **İlk gerçek kayıt açılmadan önce.** Aynı turda **B174** (kakao grubu var mı).
-4. **Deploy hook — B64.** `tZR9LcwJq9` hâlâ `astro-iskelet` **ölü dalına** bağlı.
-   ⚠ Bu turda push yoluyla deploy alındığı için **sorun görünmedi**, ama Notion webhook ve
-   gece cron'u hâlâ ölü dala basıyor — yani **otomatik içerik deploy'u çalışmıyor** ve
-   çalışmadığı **fark edilmiyor.** Yanında **B179** (`.vercel/repo.json` bayat): elle
-   deploy'un iki yolu da güvenilmez, bu tur üçüncü yolu (git push) kullandı.
+4. ✅ **Deploy hook — B64 KAPANDI (11 Eyl).** *(Kapanan hâli, KARAR 61 — silinmez:
+   `tZR9LcwJq9` `astro-iskelet` ölü dalına bağlıydı; push yoluyla deploy alındığı için
+   sorun görünmüyordu ama otomatik içerik deploy'u çalışmıyordu ve çalışmadığı fark
+   edilmiyordu.)* Notion webhook'u da gecelik n8n akışı da artık
+   `notion-content-update-main` (ref `main`, `target: production`) çağırıyor; eski hook
+   revoke edildi. ✅ Yanındaki **B179 da kapandı** — düzeltilerek değil, **kabul edilerek**
+   (KARAR 584): `vercel --prod` yolu kurulmuyor ve kurulmasına gerek yok, deploy git push
+   ve hook üzerinden gidiyor.
 5. **B159** — `bes-kadim-kaynak` → `dort-yon-bir-ocak`. `src/`'de **19 eşleşme / 6 dosya**;
    Notion + kod **atomik** (KARAR 409).
 6. **Kod kuyruğu** — aşağı-kaydırma işareti (**B161**, ana sayfa + `/sen-neredesin`, ortak
@@ -438,9 +460,10 @@ sayfalar tamamlanamaz.
 **Sıra kararı — 19 Ağustos 2026 (docs-patch-2026-08-19).** Doküman hattı; yukarıdaki
 ürün sırasıyla **paralel** yürür, biri ötekini beklemez. Öncelik sırasıyla:
 
-1. **B64 — deploy hook URL geçişi** (Kaan). **Kuyruğun başı.** Bu kapanmadan Notion
-   içerik güncellemeleri siteye düşmüyor; her yayın için elle boş commit gerekiyor.
-   Bir işi değil, **bütün içerik hattını** bloke ediyor.
+1. ✅ **B64 — deploy hook URL geçişi** (Kaan). **KAPANDI (11 Eyl).** *(Kapanan hâli,
+   KARAR 61: "Kuyruğun başı. Bu kapanmadan Notion içerik güncellemeleri siteye düşmüyor;
+   her yayın için elle boş commit gerekiyor. Bir işi değil, bütün içerik hattını bloke
+   ediyor.")* Yirmi üç gün kuyruğun başında durdu; kapanınca sıra **B69**'a geçti.
 2. **B69 — MailerLite şablon değişkenleri** (Kaan). Sonrası: otomasyon durumu netleşir
    (aktif mi pause mu) ve gerekirse aktive edilir.
 3. **B68 — `pratik-bilgi` altı satır** (Claude.ai → Notion). Havale gerçeğiyle hizalama;
