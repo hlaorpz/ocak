@@ -162,7 +162,7 @@ describe('originMuhafizi — Vercel proxy (publicOrigin Bulgu 1 regresyonu)', ()
   });
 
   it('lokal dev: http Origin, publicOrigin https üretir → host eşleşir, geçer', () => {
-    // `davet-kapi.ts:107-115` gerekçesi — tam dize karşılaştırması dev'i
+    // `origin-kural.ts:originSebebi` gerekçesi — tam dize karşılaştırması dev'i
     // kırar ve kapı "her yerde reddediyor" diye yanlış yeşil verir.
     const req = new Request('http://localhost:4321/api/form', {
       method: 'POST',

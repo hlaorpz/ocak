@@ -94,34 +94,17 @@ export function zamanDamgasiSebebi(
 }
 
 /**
- * Origin kapısı. Geçerliyse `null`, değilse ret sebebi.
+ * Origin kapısı — **kural bu dosyadan TAŞINDI** (11 Eyl 2026).
  *
- * ── Neden host karşılaştırması, neden tam origin değil ──
- * `beklenenOrigin` `publicOrigin()`ten gelir; o helper `x-forwarded-proto`
- * yokken şemayı `https`e sabitler (`public-origin.ts:21`). Lokal dev'de
- * tarayıcı `Origin: http://localhost:4321` yollar, `publicOrigin` ise
- * `https://localhost:4321` üretir — tam dize karşılaştırması dev'i kırardı ve
- * kapı "her yerde reddediyor" diye yanlış yeşil verirdi. Şema düşürme bu
- * yüzeyde anlamlı bir vektör değil (site Vercel'de https-only), host yeter.
+ * Gövdesi ve gerekçesi artık `origin-kural.ts`'de, tek nüsha hâlinde. Sebep:
+ * ikinci tüketici geldi (`origin-muhafiz.ts`, Astro `checkOrigin`'inin kendi
+ * karşılığı — `ef09c47`) ve o modülün buraya import atması bağımlılığı ters
+ * yöne kurmuştu (genel → özel). Kural şimdi ikisinin de üstünde.
  *
- * `Origin` header'ı GET/HEAD dışındaki her istekte tarayıcı tarafından
- * yollanır — same-origin POST dahil. Yani header'ın YOKLUĞU "tarayıcıdan
- * gelmedi" demektir; opaque `null` origin de (sandbox iframe, yönlendirme
- * zinciri) burada reddedilir.
+ * Bu satır re-export olarak DURUYOR, kaldırılmadı: `api/davet.ts` ve
+ * `davet-kapi.test.ts` kuralı buradan alıyor, çağrı yüzeyi değişmesin
+ * (CLAUDE.md §5 — taşıma, kırpma değil). `originSebebi`'nin dönüş tipi
+ * `OriginRetSebebi`; `SessizRetSebebi` o iki değeri kapsadığı için
+ * `sessizRet(originRet)` tip olarak aynen çalışır.
  */
-export function originSebebi(
-  gelenOrigin: string | null | undefined,
-  beklenenOrigin: string,
-): SessizRetSebebi | null {
-  if (!gelenOrigin) return 'origin-yok';
-  let gelenHost: string;
-  let beklenenHost: string;
-  try {
-    gelenHost = new URL(gelenOrigin).host;
-    beklenenHost = new URL(beklenenOrigin).host;
-  } catch {
-    return 'origin-uyusmuyor';
-  }
-  if (!gelenHost || !beklenenHost) return 'origin-uyusmuyor';
-  return gelenHost === beklenenHost ? null : 'origin-uyusmuyor';
-}
+export { originSebebi, type OriginRetSebebi } from './origin-kural.ts';

@@ -30,12 +30,12 @@
  * şey; imza yazdırabildiğimiz tek şey.
  *
  * `/api/davet` de girmez — **zaten kendi origin kapısı var**
- * (`davet-kapi.ts:originSebebi`, `api/davet.ts:510-514`) ve orası bilinçli
+ * (aynı kural: `origin-kural.ts:originSebebi`) ve orası bilinçli
  * olarak 403 değil **sessiz 200** döner (bot başarılı sandığını sansın,
  * varyasyon denemesin). Üstüne 403 koymak o kararı sessizce geri alırdı.
  *
  * ── Karşılaştırma kuralı ikinci kez YAZILMADI ──
- * Host karşılaştırması `davet-kapi.ts:originSebebi`'ye devredilir. O
+ * Host karşılaştırması `origin-kural.ts:originSebebi`'ye devredilir. O
  * fonksiyon tam origin değil **host** karşılaştırır ve gerekçesi ölçülmüş:
  * `publicOrigin()` şemayı `https`e sabitliyor (`public-origin.ts:21`),
  * lokal dev'de tarayıcı `http://localhost:4321` yollar — tam dize
@@ -43,15 +43,19 @@
  * yeşil verir. Bir güvenlik kuralının iki kopyası, ikisini elle eşit tutma
  * borcudur; tek kopya kalsın.
  *
- * ⚠ Bu dosyanın `davet-kapi.ts`'ye bakması bağımlılık yönü olarak ters
- * (genel → özel). Doğru yer ortak bir `origin-kural.ts`; o taşıma ayrı
- * karar ister (CLAUDE.md §5 — birleştirme yeniden yazımdır).
+ * Kural ilk yazımda `davet-kapi.ts`'de yaşıyordu ve bu dosya oraya import
+ * atıyordu — genel modül özel modüle bakıyor demekti. `origin-kural.ts`
+ * o borcu kapattı; kural artık iki tüketicinin de üstünde.
  */
-import { originSebebi } from './davet-kapi.ts';
+import { originSebebi } from './origin-kural.ts';
 import { publicOrigin } from './public-origin.ts';
 
-/** Ret sebebi — YALNIZ log'a. 403 gövdesine asla girmez. */
-export type OriginRetSebebi = 'origin-yok' | 'origin-uyusmuyor';
+/**
+ * Ret sebebi — YALNIZ log'a. 403 gövdesine asla girmez.
+ * Tanım `origin-kural.ts`'de; buradan da görünsün diye re-export ediliyor.
+ */
+export type { OriginRetSebebi } from './origin-kural.ts';
+import type { OriginRetSebebi } from './origin-kural.ts';
 
 /**
  * İsteğin beyan ettiği origin. `Origin` OTORİTERDİR; yalnız o header hiç
@@ -87,10 +91,11 @@ export function istekOrigini(request: Request): string | null {
 export function originMuhafizSebebi(request: Request): OriginRetSebebi | null {
   const sebep = originSebebi(istekOrigini(request), publicOrigin(request));
   if (!sebep) return null;
-  // `originSebebi`'nin BEYAN EDİLEN tipi davet'in dokuz değerli sessiz-ret
-  // birliği; gerçekte bu ikisinden başkasını dönmüyor. Daraltma yine de
-  // açık yazılıyor ve bilinmeyen bir değer `origin-uyusmuyor`a düşüyor —
-  // fail-closed: tanımadığımız bir sebep isteği GEÇİRMEZ, reddeder.
+  // Daraltma açık yazılıyor ve bilinmeyen bir değer `origin-uyusmuyor`a
+  // düşüyor — fail-closed: tanımadığımız bir sebep isteği GEÇİRMEZ, reddeder.
+  // (Kural `davet-kapi.ts`'deyken dönüş tipi dokuz değerli sessiz-ret
+  // birliğiydi; `origin-kural.ts` taşımasından sonra iki değer. Daraltma
+  // gereksizleşmedi: kural genişlerse bu satır yine kapıyı kapalı tutar.)
   return sebep === 'origin-yok' ? 'origin-yok' : 'origin-uyusmuyor';
 }
 

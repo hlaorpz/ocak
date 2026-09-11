@@ -513,7 +513,9 @@ export const POST: APIRoute = async ({ request }) => {
   // İki kapı da aynı kuralı çağırıyor: `originSebebi`.
   // Sıra ucuzdan pahalıya değil, ayırt ediciden ayırt edici olmayana: Origin
   // doğrudan POST'u eler, honeypot form-dolduran botu, damga ikisinin de
-  // kaçırdığı "hızlı" denemeyi. Üçü de saf fonksiyon (`davet-kapi.ts`), I/O yok.
+  // kaçırdığı "hızlı" denemeyi. Üçü de saf fonksiyon, I/O yok (`davet-kapi.ts`;
+  // origin kuralının gövdesi 11 Eyl'de `origin-kural.ts`'ye taşındı, çağrı
+  // yüzeyi re-export ile aynı kaldı).
   const originRet = originSebebi(
     request.headers.get('origin'),
     publicOrigin(request),

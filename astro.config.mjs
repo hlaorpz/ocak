@@ -28,7 +28,7 @@ export default defineConfig({
   //     bayrak route başına ayarlanamaz.
   // Karşılığı: `originMuhafizi(request)` → `/api/{kayit,form,promo-dogrula}`
   // başında 403; `/api/davet` kendi sessiz-ret kapısını korur
-  // (`davet-kapi.ts:originSebebi`); callback bilinçli muaf.
+  // (aynı kural: `origin-kural.ts:originSebebi`); callback bilinçli muaf.
   // ⚠ Bu bayrağı geri `true` yapmak callback'i kırar.
   security: { checkOrigin: false },
   adapter: vercel({
