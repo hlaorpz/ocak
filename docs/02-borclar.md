@@ -1344,6 +1344,8 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   ölçümün verdiği commit ile aynı. Geri kalan alanlar (`target` · ritim · koşum sayısı)
   yalnız panelden görünür, **teyitsizdir.**
 - ⚠ Ölçüm KARAR açmadı — **bu bir ölçümdür, karar değil.** Çözüm ayrı tur.
+- ⚠ **Üçüncü ölçüm geldiğinde üç rakam birlikte kronolojiye iner; gövdede tek güncel
+  rakam kalır.** (Claude.ai, 11 Eylül)
 
 ## B65 — `ocak-etkinlik.zip` yeniden yüklemesi
 - [ ] **Sahip:** Kaan

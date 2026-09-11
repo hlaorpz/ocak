@@ -30,6 +30,15 @@ Ardından **B194** (MailerLite alan sayısının üretilebilir hâle gelmesi ya 
 
 ## SIRADAKİ İŞ
 
+**1 · `00-durum.md` tavanı yanlış birimi ölçüyor** (11 Eyl · KARAR açılmadı, ayrı tur).
+**Ölçüm:** 10–11 Eylül arası satır **199'da sabit kaldı**, bayt **16.360 → 18.306
+(+%12)** — uçlar `b1ee821` → `c4c7974`, yöntem `git show <c>:docs/00-durum.md | wc -lc`.
+KARAR 457 **satır** sayıyor; içerik ise **satır uzatarak** büyüyor: tablo hücresi tek
+satırdır ve sınırsız uzar, tavan onu görmez. Bu turda `Deploy hook` ve dönem HEAD
+hücreleri tam olarak böyle büyüdü. **Tavan birimi yeniden değerlendirilecek — ayrı tur.**
+⚠ Satır 199'da *uçlarda* sabit; arada 197'ye inip geri çıktı — "sabit" uç ölçümüdür,
+seyir değil.
+
 > ✅ **`00-durum.md` YAZILDI (24 Ağustos) — bekleme koşulu doldu.**
 > 23 Ağustos kararı *"Sayfalar DB turu bitene kadar bekliyor; o turda tahliye + yazım
 > birlikte koşulur"* diyordu. Tur bitti, deploy alındı, ikisi birlikte koşuldu:
