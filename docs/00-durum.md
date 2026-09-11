@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu** · dönem HEAD `d8732c4`
+**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu (ikinci geçiş)** · dönem HEAD `094fd0f`
 
 ---
 
@@ -69,7 +69,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`d8732c4`** (11 Eyl, dal temizliği + üç kapanış turu; bir önceki dönem `de74216`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem de SIFIR kod içerdi** — yalnız doküman ve `scripts/durum-uret.mjs`'in bir çıktı satırı; `src/` ve `public/` açılmadı. ⚠ **Deploy ayrımı:** bu repoda doküman commit'i de production'a deploy olur — *"deploy alınmadı"* ifadesi **promote/eyeball turunu** kasteder, push'u değil. 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
+| `main` dönem HEAD | **`094fd0f`** (11 Eyl, dal temizliği + üç kapanış turu, ikinci geçiş; bir önceki dönem `d8732c4`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem de SIFIR kod içerdi** — yalnız doküman ve `scripts/durum-uret.mjs`'in bir çıktı satırı; `src/` ve `public/` açılmadı. ⚠ **Deploy ayrımı:** bu repoda doküman commit'i de production'a deploy olur — *"deploy alınmadı"* ifadesi **promote/eyeball turunu** kasteder, push'u değil. 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |

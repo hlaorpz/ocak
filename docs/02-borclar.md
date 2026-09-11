@@ -594,6 +594,21 @@ kendisi işe yarıyor (KARAR 61 ruhu).
   düzeltilecek olan HEDEF YAPI'dır. B39'un ADIM 0'ında karara bağlanır,
   kapsamı şimdiden genişletilmez.
 - **Kaynak:** ADIM 4 açılış paketi hazırlığı, 8 Ağustos 2026.
+- ⚠ **11 Eyl:** `31-zemin.md` de sözleşmesiz (numaralı ve kanonik, `05-harita.md` §2'de
+  yok). B39 iki içerik dosyasını kapsıyor, bunu kapsamıyor — sözleşme metni Claude.ai'ye
+  ait, ayrı tur. Aynı notun ikinci ayağı: `05-harita.md` kendi başlığında (`:3`) `önceki:`
+  zinciri taşıyor; KARAR 581 üç dosyayı kapsıyor (`00-durum.md` · `02-borclar.md` ·
+  `03-sira.md`), harita o üçte değil — `scripts/baslik-denetim.mjs` deseni arıyor ama o
+  dosyaya bakmıyor, **denetçi görmüyor.**
+  📐 *Ölçüm (11 Eyl, üretilebilir):* `docs/` kökündeki `.md` dosyalarından `05-harita.md`
+  §2'de adı geçmeyenler — `20-ref-*.md` (glob olarak kapsanıyor) ve `05-harita.md` (kendi
+  §4'ünde bakımı tanımlı) elenerek **beş** dosya: `31-zemin.md` · `ocak-kaynak-kanonu.md` ·
+  `Ocak-Mufredat.md` · `sayfa-yazim-rehberi.md` · `2026-08-06-ocak-gecis-plani.md`.
+  Beşin **üçü zaten kayıtlı** — ilk ikisi bu maddenin gövdesinde, üçüncüsü yukarıdaki
+  *"İşaretlenen, kapsam dışı"* satırında ve geçiş planının sapma kaydında (madde 6 · 6-ek · 9).
+  Yeni borç açılmadı: **mükerrer olurdu.** Kayıtsız kalan tek dosya `31-zemin.md`'dir.
+  *(`2026-08-06-ocak-gecis-plani.md`'nin tarihli adı `_arsiv/` konvansiyonudur ama
+  `00-durum.md` ona canlı yol haritası diye işaret ediyor — ayrı soru, bu notun dışında.)*
 
 ## B40 — "KIRPMA YASAĞI 61/88" konvansiyonu yanlış ✅ KAPANDI (11 Ağu, commit `b72c539`)
 
