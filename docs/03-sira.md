@@ -20,8 +20,9 @@ elle boş commit atma zorunluluğu kalktı.
 **Sıradaki iş (doküman hattı, 11 Eyl):** **"kabul edildi" kapanış yolunun ledger tanımı**
 (aşağıda, SIRADAKİ İŞ madde 2) → sonra **B194** (MailerLite alan sayısının üretilebilir
 hâle gelmesi ya da dokümandan çıkması). ✅ **B195 kapandı** (11 Eyl, KARAR 583 — denetçi
-`ocak-arsivci`'nin ADIM 0'ında koşuyor). ⚠ `00-durum.md` tavana **iki satır** kala
-duruyor — sonraki tahliye ertelenmez.
+`ocak-arsivci`'nin ADIM 0'ında koşuyor). ⚠ `00-durum.md` tavan baskısı **11 Eyl'de
+hafifledi** — WA turu 19 Ağustos'un iki bloğunu tahliye etti; güncel satır sayısı
+`04-olcum.md`'de, rakam buraya yazılmaz (KARAR 578).
 
 > Bu dosya **ne yapıldığını** değil **sırada ne olduğunu** tutar. Durum `00-durum.md`'de,
 > borçlar `02-borclar.md`'de, gerekçe kronolojide yaşar. Burada yalnız: **sıradaki iş,
@@ -52,6 +53,21 @@ mevcut bir değerin gövdedeki damgayla ayrıştırılması mı yeter · **(b)**
 *"kabul edildi"* ile *"kapsam daraltıldı"* arasındaki sınır yazılı olmazsa, gelecekte her
 daraltma "kabul" diye geçer. ⚠ Ayrım şu an yalnız B179 gövdesinde yaşıyor: kabul,
 **ölçülmüş** bir zararsızlıktır; daraltma ölçülmemiş bir vazgeçiştir (B19 · B57 · B73).
+
+**3 · Patch yazım standardı Project Files'ta yaşıyor** (Claude.ai, 11 Eyl · ayrı tur).
+Kanonik evi **`20-ref-protokoller.md`**; oraya taşınınca Project Files'tan **düşecek** —
+iki kopya ayrışmasın. ⚠ Taşıma ile silme **aynı turda** yapılır; arada kalan pencerede
+iki kopya birden canlı görünür ve hangisinin otorite olduğu belirsizleşir (KARAR 471'in
+aynı sınıfı: kopya otorite değil aynadır).
+
+**4 · Token kuralı proje talimatına eklendi, korpusta evi yok** (11 Eyl · ayrı tur).
+Kural: **token/anahtar/hook URL'i URL'e, sorgu dizesine, patch'e ya da sohbete yazılmaz;
+yalnız başlıkta taşınır** (KARAR 97 · 587). Şu an yalnız proje talimatında yaşıyor —
+korpusta karşılığı yok, yani CC dışı bir yüzey onu okuyamaz. **Madde 3'ün taşımasıyla
+birlikte** `20-ref-protokoller.md`'ye yazılacak; ikisi aynı dosyaya gidiyor, ayrı tur
+açılmaz. ⚠ Kuralın bedeli bu turda ödendi: ölçüm token'ı sorgu dizesine konduğu için
+hata mesajı URL'yi olduğu gibi bastı ve token ekran görüntüsünde açığa çıktı, revoke
+edildi (`90-kronoloji/2026-09.md`, WA ikinci hat turu).
 
 > ✅ **`00-durum.md` YAZILDI (24 Ağustos) — bekleme koşulu doldu.**
 > 23 Ağustos kararı *"Sayfalar DB turu bitene kadar bekliyor; o turda tahliye + yazım

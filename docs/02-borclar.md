@@ -3428,6 +3428,9 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** kabuk kaydın kaldırılması, ardından profilin fiilen yazılabildiğinin
   görülmesi. ⚠ Canlı hat **farklı pnid'de** — kabuk kaydı silmek botu etkilemez, ama silme
   geri alınamaz olduğu için ölçüm tekrarlanmadan yapılmaz (KARAR 588).
+- ⚠ **11 Eyl:** profil metni **WhatsApp Manager'dan** yazılacak; kabuk kayıt
+  (`1248598625011917`) silinmeden alanlar **kilitli kalabilir.** Silme geri alınamaz —
+  ölçüm tekrarlanmadan yapılmaz.
 - **Hazır metin (yazılacak profil açıklaması):** *"Kadınların kadim ateşi. Çemberler,
   seremoniler, atölyeler, yolculuklar. Buradan yazdığında yapay zekâ asistanımız yanıtlıyor;
   gerektiğinde bir kız kardeşe devrediyor."*
