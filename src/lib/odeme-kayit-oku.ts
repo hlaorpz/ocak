@@ -91,6 +91,12 @@ export type KayitOkumaSonuc = {
    * SONRASI callback'in yazdığı ayrı alandır — ikisi karıştırılmamalı.
    */
   tutar: number;
+  /**
+   * Kayıtlar `İşlem No` (rich_text). **Replay muhafızının okuduğu alan:**
+   * doluysa bu kayıt zaten bir ödemeyle kapanmıştır ve ikinci bir dönüş
+   * kabul edilmez. Boş dize = henüz ödenmemiş.
+   */
+  islemNo: string;
 };
 
 /**
@@ -117,6 +123,7 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     // form basmaz (sağlayıcı FAIL-CLOSED `tutar geçersiz` döner). Boş yerine
     // `0` seçildi ki tip sayı kalsın ve karşılaştırma dallanması gerekmesin.
     tutar: 0,
+    islemNo: '',
   };
 }
 
@@ -172,8 +179,12 @@ export async function kayitOku(
     // aynı sayfadan okunur — satır zaten elimizde.
     const pageId: string = (kayit as { id?: string }).id ?? '';
     const tutar: number = props['Beklenen Tutar']?.number ?? 0;
+    const islemNo: string = (props['İşlem No']?.rich_text ?? [])
+      .map((t: any) => t.plain_text ?? '')
+      .join('')
+      .trim();
 
-    const bulundu = { ...bosSonuc('bulundu'), davetEdenAd, pageId, tutar };
+    const bulundu = { ...bosSonuc('bulundu'), davetEdenAd, pageId, tutar, islemNo };
 
     const etkRel: string = props['Etkinlikler']?.relation?.[0]?.id ?? '';
     if (!etkRel) return bulundu;

@@ -18,7 +18,9 @@
 // GET (URL query → /odeme/tamam yönlendirme) ve POST (form submit) ikisi de
 // desteklenir: mock GET kullanır, N-Kolay dönüşü POST eder.
 import type { APIRoute } from 'astro';
-import { notion } from '../../lib/notion.ts';
+import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+// Tutar + replay muhafızı kaydı imza kapsamındaki referanstan çözer (11 Eyl).
+import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
 import { kodKullanimArtir } from '../../lib/kodlar.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
@@ -37,8 +39,10 @@ async function odemeyiOnayla(args: {
   tutar: number;
   mockMu: boolean;
   kodId?: string;
+  /** Replay kilidi — `İşlem No` alanına yazılır, ikinci dönüş burada takılır. */
+  islemNo?: string;
 }): Promise<{ ok: boolean; error?: string; kodArtimi?: number; kodAdi?: string }> {
-  const { basvuruId, tutar, mockMu, kodId } = args;
+  const { basvuruId, tutar, mockMu, kodId, islemNo } = args;
 
   // Aşama 3b-fix ADIM 2 — kodId varsa Kodlar'dan kod adını al (Kayıtlar.
   // Kullanılan Kod rich_text alanına yazılacak). Tek Notion update'te dahil
@@ -76,6 +80,12 @@ async function odemeyiOnayla(args: {
       rich_text: [{ text: { content: kodAdi } }],
     };
   }
+  // Replay kilidi BURADA kapanır: bir sonraki dönüş bu alanı dolu bulur ve
+  // `handle()` 401 döner. Yazım ödeme onayıyla AYNI `pages.update` çağrısında
+  // — ayrı çağrı olsaydı ikisinin arasında ikinci bir dönüş geçebilirdi.
+  if (islemNo) {
+    properties['İşlem No'] = { rich_text: [{ text: { content: islemNo } }] };
+  }
   try {
     await notion.pages.update({ page_id: basvuruId, properties });
   } catch (err) {
@@ -103,6 +113,13 @@ async function odemeyiOnayla(args: {
 function parseGirdi(url: URL, bodyParams: URLSearchParams | null) {
   const get = (k: string) =>
     bodyParams?.get(k) ?? url.searchParams.get(k) ?? '';
+  // ⚠ **`basvuruId`, `refSuccess` ve `tutarRaw` ARTIK TÜKETİLMİYOR** (11 Eyl,
+  // tutar+replay turu). Kayıt ve tutar imza kapsamındaki `dogrulama`dan
+  // geliyor; query'den okumak, imzanın koruduğu şeyi imzasız alana
+  // devretmek olurdu. Alanlar SİLİNMEDİ (KARAR 61) ama okunmuyor —
+  // **yeniden kullanmadan önce durup düşün:** bu üçü çağıranın serbestçe
+  // yazabildiği değerlerdir. Hâlâ tüketilenler: `sonuc` · `mockMu` · `kodId`.
+  //
   // Aşama 3b-fix tasarım: ref=OCAK-XXXX (kullanıcıya görünür, success'e),
   // pageId=Notion UUID (pages.update için). Eski mock URL'sinde pageId yok
   // → ref'i basvuruId saymıştık; backward-compat fallback.
@@ -178,35 +195,90 @@ async function handle(request: Request): Promise<Response> {
   // ile aynı kök; ortak helper.
   const baseUrl = publicOrigin(request);
 
-  if (!girdi.basvuruId) {
-    return redirect(`${baseUrl}/odeme/iptal?hata=ref-yok`);
+  // ────────────────────────────────────────────────────────────────────────
+  // TUTAR + REPLAY MUHAFIZI (11 Eyl 2026, ikinci tur)
+  //
+  // Buraya kadar yalnız İMZA doğrulandı: "bu dönüş gerçekten sağlayıcıdan
+  // geldi." Bu üç kapı ayrı bir soruya bakar: "geldiği yer doğru olsa bile,
+  // DOĞRU KAYDA, DOĞRU TUTARDA ve İLK KEZ mi geliyor?"
+  //
+  // ⚠ Kayıt `dogrulama.referansKodu`'ndan çözülür — query `pageId` YOK
+  // SAYILIR. Query imza kapsamında değil; dönüş POST'unu kullanıcının
+  // tarayıcısı gönderdiği için oradan kayıt çözmek, imzanın koruduğu şeyi
+  // imzasız alana devretmek olurdu.
+  //
+  // KARAR 395 korunuyor: route sağlayıcı ADINA dallanmaz. Üç alanı da
+  // arayüz veriyor (`CallbackDogrulama`), sağlayıcı kendi imza kapsamından
+  // dolduruyor.
+  if (!dogrulama.referansKodu) {
+    console.warn('[odeme-callback] doğrulama referans taşımıyor (401) — kayıt çözülemez');
+    return new Response('Callback doğrulanamadı.', { status: 401 });
   }
+  const kayit = await kayitOku(notion, NOTION_KAYITLAR_DB, dogrulama.referansKodu);
+  if (kayit.durum !== 'bulundu' || !kayit.pageId) {
+    console.warn(
+      `[odeme-callback] kayıt çözülemedi (401) — ref=${dogrulama.referansKodu} durum=${kayit.durum}`,
+    );
+    return new Response('Callback doğrulanamadı.', { status: 401 });
+  }
+  // ⚠ REPLAY: alan doluysa bu kayıt zaten bir ödemeyle kapanmış. İkinci
+  // dönüş — aynı gövdenin tekrarı ya da ikinci bir çekim — kabul edilmez.
+  if (kayit.islemNo) {
+    console.warn(
+      `[odeme-callback] replay reddedildi (401) — ref=${dogrulama.referansKodu} ` +
+        `mevcut İşlem No dolu, gelen=${dogrulama.islemNo ?? '(yok)'}`,
+    );
+    return new Response('Callback doğrulanamadı.', { status: 401 });
+  }
+  // ⚠ FAIL-CLOSED ve SESSİZ DEĞİL (Kaan, 11 Eyl): `Beklenen Tutar` yazımı
+  // `54599ea` ile geldi; ondan önce açılmış pending satırlarda alan BOŞ.
+  // Kıyas yapılamıyorsa ödeme onaylanmaz — ama sessiz red "para alındı,
+  // kayıt Beklemede, iz yok" demek olurdu. Log referansı taşır.
+  if (!(kayit.tutar > 0)) {
+    console.error(
+      `[odeme-callback] Beklenen Tutar boş, kıyas yapılamadı (401) — ` +
+        `ref=${dogrulama.referansKodu} pageId=${kayit.pageId} gelen tutar=${dogrulama.tutar ?? '(yok)'}`,
+    );
+    return new Response('Callback doğrulanamadı.', { status: 401 });
+  }
+  // Yetkilendirilen tutar beklenenin ALTINDAysa reddet. Üstü kabul edilir:
+  // taksit/komisyon farkı sağlayıcı tarafında tutarı yukarı çekebilir ve
+  // fazla tahsilatı reddetmek kadını ödemiş ama kaydı kapanmamış bırakırdı.
+  if (!(typeof dogrulama.tutar === 'number') || dogrulama.tutar < kayit.tutar) {
+    console.warn(
+      `[odeme-callback] tutar düşük (401) — ref=${dogrulama.referansKodu} ` +
+        `beklenen=${kayit.tutar} gelen=${dogrulama.tutar ?? '(yok)'}`,
+    );
+    return new Response('Callback doğrulanamadı.', { status: 401 });
+  }
+
   if (girdi.sonuc !== 'basari') {
-    return redirect(`${baseUrl}/odeme/iptal?ref=${encodeURIComponent(girdi.basvuruId)}`);
-  }
-  const tutar = Number(girdi.tutarRaw);
-  if (!Number.isFinite(tutar) || tutar < 0) {
-    return redirect(`${baseUrl}/odeme/iptal?ref=${encodeURIComponent(girdi.basvuruId)}&hata=tutar`);
+    return redirect(`${baseUrl}/odeme/iptal?ref=${encodeURIComponent(dogrulama.referansKodu)}`);
   }
 
   const sonuc = await odemeyiOnayla({
-    basvuruId: girdi.basvuruId,
-    tutar,
+    // ⚠ Notion UUID artık query'den DEĞİL, imza kapsamındaki referansla
+    // çözülen kayıttan geliyor.
+    basvuruId: kayit.pageId,
+    // Kaydedilen tutar da imza kapsamından — query `tutar` artık okunmuyor.
+    tutar: dogrulama.tutar,
     mockMu: girdi.mockMu,
     kodId: girdi.kodId,
+    islemNo: dogrulama.islemNo,
   });
   if (!sonuc.ok) {
     // Notion update başarısız → kullanıcıya iptal göster, Kaan Notlar'dan
     // tespit eder (mock damgası yok ama Beklemede kalır).
     return redirect(
-      `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(girdi.basvuruId)}&hata=notion`,
+      `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(dogrulama.referansKodu)}&hata=notion`,
     );
   }
   // Aşama 3b-fix tasarım — başarı: success sayfasına refSuccess (OCAK-XXXX)
   // taşınır. Notion UUID (basvuruId) sadece pages.update için kullanıldı;
   // success'te göstermiyoruz (ham UUID kullanıcıya anlamsız).
   const basariUrl = new URL(`${baseUrl}/odeme/tamam`);
-  basariUrl.searchParams.set('ref', girdi.refSuccess || girdi.basvuruId);
+  // Referans imza kapsamından; `/odeme/tamam` onu `equals` ile arıyor.
+  basariUrl.searchParams.set('ref', dogrulama.referansKodu);
   if (girdi.mockMu) basariUrl.searchParams.set('mock', '1');
   return redirect(basariUrl.toString());
 }
