@@ -354,11 +354,18 @@ export function uretRnd(simdi: Date): string {
  * dener) sağlayıcının doğrulama/mutabakat servisi iki işlemi ayırt edemez.
  * Sonek her denemede değişir ve işlemleri ayırır.
  *
- * ── Sonek NEREYE SIZMAZ ──
- * Yalnız giden `clientRefCode` alanında yaşar. Notion başlığına (`Kayıt ID`)
- * ve `/odeme/tamam?ref=` değerine **girmez** — ikisi de ref'i `equals` ile
- * arıyor (`api/kayit.ts` refQuery · `odeme-kayit-oku.ts` sorgusu), sonek
- * sızarsa eşleşme kırılır ve ödemesi alınmış kadın "bulunamadı" ekranı görür.
+ * ── Sonek NEREYE SIZMAZ, NEREDE BİLEREK YAŞAR ──
+ * Notion başlığına (`Kayıt ID`) ve `/odeme/tamam?ref=` değerine **girmez** —
+ * ikisi de ref'i `equals` ile arıyor (`api/kayit.ts` refQuery ·
+ * `odeme-kayit-oku.ts` sorgusu), sonek sızarsa eşleşme kırılır ve ödemesi
+ * alınmış kadın "bulunamadı" ekranı görür.
+ *
+ * Buna karşılık Kayıtlar DB'sinin `Gönderilen Ref` (rich_text) alanında
+ * **bilerek yaşar** (B202, 15 Eyl): mutabakat servisi işlemi bu tam kodla
+ * sorgular, yazan yüzey `/odeme/nkolay` — form basılmadan hemen önce.
+ * Alan son denemeyi taşır.
+ * *(Bu paragrafın önceki hâli "yalnız giden `clientRefCode` alanında yaşar"
+ * diyordu; alan açılmadan önce doğruydu, 15 Eyl'de dönüştürüldü.)*
  *
  * Kaynak zaman damgası (KARAR — Kaan, 11 Eyl): Notion'a sayaç kolonu açılmadı.
  * "Kaçıncı deneme" bilgisi bugün gerekmiyor; gerekirse N-Kolay PaymentList'ten

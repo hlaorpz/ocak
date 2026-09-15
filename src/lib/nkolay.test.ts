@@ -140,7 +140,10 @@ describe('nkolay — giden form alanları', () => {
     expect(dize).toContain('||');
   });
 
-  it('clientRefCode sonekli — ama sonek ref\'e/Notion\'a SIZMAZ', async () => {
+  // Başlığın önceki hâli "sonek ref'e/Notion'a SIZMAZ" idi — Kayıtlar'da
+  // `Gönderilen Ref` alanı yokken doğruydu. Alan 15 Eyl'de açıldı (B202):
+  // sonek `Kayıt ID`'ye ve `ref=`'e sızmaz, `Gönderilen Ref`'te bilerek yaşar.
+  it('clientRefCode sonekli — sonek ref\'e SIZMAZ, `Gönderilen Ref`\'te yaşar', async () => {
     const { nkolayPaymentProvider: p, uretClientRefCode } = await modulYukle();
     const f = p.odemeFormu!(FORM_GIRDI);
     if (!('alanlar' in f)) throw new Error('form üretilmedi');

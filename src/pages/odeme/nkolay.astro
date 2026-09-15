@@ -16,7 +16,8 @@
 //
 // ── Akış ──
 //   /api/kayit → checkoutBaslat → redirect /odeme/nkolay?ref=OCAK-XXXX
-//   → Notion oku (tutar + pageId) → 10 alanlı form → auto-submit
+//   → Notion oku (tutar + pageId) → 10 alanlı form
+//   → Notion yaz (`Gönderilen Ref` = giden `clientRefCode`, B202) → auto-submit
 //   → N-Kolay kart sayfası → sonuç successUrl/failUrl'e POST
 //   → /api/odeme-callback (route DEĞİŞMEDİ — KARAR 395)
 export const prerender = false;
@@ -106,6 +107,38 @@ if (!kayit || kayit.durum !== 'bulundu') {
       hata = 'Ödeme başlatılamadı.';
     } else {
       form = sonuc;
+
+      // ── B202 — giden `clientRefCode` Notion'a düşer ──
+      // Mutabakat servisi (N-Kolay `PaymentList`) işlemi **bu tam kodla**
+      // sorgular. Dönüş POST'u hiç gelmezse — kadın 3D ekranında sekmeyi
+      // kapattı, `STATUS=NEW` — sorulacak tek değer budur. Bu yüzden yazım
+      // GİDİŞ anında yapılır; callback'e bırakılamaz, çünkü mutabakatın var
+      // oluş sebebi tam olarak callback'in GELMEDİĞİ işlemdir.
+      //
+      // ⚠ Form basılmadan ÖNCE ve `await` ile. Response gittikten sonraya
+      // ertelenirse Fluid Compute isteği bitirir ve yazım sessizce düşer.
+      // Bedeli ikinci bir Notion round-trip'i — kadın kart sayfasına birkaç
+      // yüz ms geç varır, kabul edildi (Kaan, 15 Eyl).
+      //
+      // ⚠ Her deneme yeni sonek üretir; alan SON denemeyi taşır, öncekiler
+      // üzerine yazılır. Çoklu deneme geçmişi gerekirse ayrı karar (B202).
+      try {
+        await notion.pages.update({
+          page_id: kayit.pageId,
+          properties: {
+            'Gönderilen Ref': {
+              rich_text: [{ text: { content: sonuc.alanlar.clientRefCode } }],
+            },
+          },
+        });
+      } catch (err) {
+        // FAIL-OPEN, bilerek: yazım düşerse ödeme YİNE DE başlar. Tersi —
+        // mutabakat kolaylığı için kadını ödeme kapısında bırakmak — daha
+        // pahalı. Kayıp yalnız mutabakat tarafında hissedilir ve log'da durur.
+        console.error(
+          `[odeme/nkolay] Gönderilen Ref yazılamadı — ref="${ref}" pageId=${kayit.pageId}: ${String(err).slice(0, 200)}`,
+        );
+      }
     }
   }
 }
