@@ -42,8 +42,18 @@ export default defineConfig({
       // `prerender = false` OLMASINA RAĞMEN sitemap'e giriyordu; dist/ ölçümüyle
       // doğrulandı (19 Ağu: sitemap-0.xml içinde üçü de <loc> olarak vardı).
       // "SSR route sitemap'e girmez" varsayımı bu kurulumda tutmuyor.
+      //
+      // 01 Eki 2026 — `/odeme/` öneki KOŞULSUZ elenir. Ölçüm: canlı
+      // sitemap-0.xml 49 <loc>, dördü /odeme/{iptal,mock,nkolay,tamam} —
+      // çünkü production'da `KART_AKISI=acik` ve yukarıdaki KARAR 488 kapısı
+      // açık akışta dördünü GEÇİRİYOR. Ödeme route'ları hiçbir hâlde arama
+      // sonucu olmamalı: checkout ve dönüş ekranları, kadın oraya sitemap'ten
+      // değil kayıt formundan gelir. KARAR 488 koşulu silinmedi — kart akışı
+      // kapalıyken `oda-map` ile tek kaynaktan konuşmayı sürdürüyor; bu satır
+      // ondan bağımsız, akış açıkken de kapatan ikinci kapıdır.
       filter: (page) =>
         !page.includes('/test') &&
+        !page.includes('/odeme/') &&
         (KART_ACIK || !KART_ROUTELARI.some((r) => page.includes(r))),
     }),
   ],
