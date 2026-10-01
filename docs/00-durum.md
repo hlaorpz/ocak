@@ -191,6 +191,6 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 
 **Lansman tanımı (KARAR 149):** lansman = robots Allow + duyuru. Sitenin canlı olması değil.
 ✅ **Lansman: 1 Ekim 2026** — robots Allow (`520e5fe`, KARAR 599) + duyuru (Kaan bildirdi; kanal kaydedilmedi).
-Site zaten stealth-canlı. **İlk kohort hedefi: 24–27 Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.**
+*Lansmana kadar site stealth-canlıydı (27 May → 1 Eki; KARAR 147 → 599).* **İlk kohort hedefi: 24–27 Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.**
 **Fiyatlandırma:** bu dokümanda rakam tahmini yapılmaz. **Kaan** site sayfalarında görünmez
 (KARAR 89).
