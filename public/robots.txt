@@ -1,12 +1,8 @@
-# Lansman öncesi — Google indekslemiyor.
-# 21 Haziran sabahı Kaan bu dosyayı şu hale çevirecek:
-#
-# User-agent: *
-# Allow: /
-# Disallow: /test
-# Sitemap: https://www.ocak.biz/sitemap-index.xml
-#
+# Lansman: robots Allow, 01 Eki 2026 (KARAR 149). Önceki hâl: Disallow: /
 # /onizleme 19 Ağu 2026'da emekli edildi (Haziran sızıntısı geri alındı)
 
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /odeme/
+Disallow: /api/
+Sitemap: https://www.ocak.biz/sitemap-index.xml
