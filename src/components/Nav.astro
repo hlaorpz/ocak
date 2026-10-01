@@ -2,12 +2,18 @@
 // 6 oda — KARAR 50.
 // Şemsiye sayfalar (Buluşmalar, Yolculuk, Biz) navda görünür;
 // alt sayfaları dropdown #21 sonrası eklenebilir.
-const items = [
+const items: { label: string; href: string; ayrac?: boolean }[] = [
   { label: 'Sen Neredesin?', href: '/sen-neredesin' },
   { label: 'Buluşmalar',     href: '/bulusmalar' },
   { label: 'Yolculuk',       href: '/yolculuk' },
   { label: 'Biz',            href: '/biz' },
   { label: 'İletişim',       href: '/iletisim' },
+  // Takvim odalardan biri değil, odaların "ne zaman"ı — bu yüzden listenin
+  // sonunda ve üstünde ayraçla durur (/bulusmalar'daki numarasız kapanış ile
+  // aynı yer, KARAR 438). Etiket sayfanın/URL'in kelimesiyle birebir aynı:
+  // kadın tıkladığı yerde aynı kelimeyi bulur, ve "bu ay ne var" gibi bir
+  // sıklık sözü verilmez (KARAR 444) — takvim neyi varsa onu gösterir.
+  { label: 'Takvim',         href: '/takvim', ayrac: true },
 ];
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -30,7 +36,7 @@ const isActive = (href: string) =>
     <nav class="nav__menu" aria-label="Ana navigasyon" id="primary-nav">
       <ul class="nav__list">
         {items.map((item) => (
-          <li class="nav__item">
+          <li class={`nav__item${item.ayrac ? ' nav__item--ayrac' : ''}`}>
             <a
               href={item.href}
               class={`nav__link${isActive(item.href) ? ' is-active' : ''}`}
@@ -222,6 +228,18 @@ const isActive = (href: string) =>
       align-items: flex-start;
       padding: var(--space-6) var(--space-5);
       gap: var(--space-4);
+    }
+    /* Ayraç YALNIZ dikey (hamburger) düzende. Satır içi masaüstü düzeninde
+       yatay çizgi anlamsız olurdu ve navda mevcut bir dikey ayraç deseni yok
+       → masaüstünde Takvim ayraçsız, diğerleriyle aynı ritimde durur.
+       align-self:stretch gerekiyor: .nav__list align-items:flex-start olduğu
+       için li genişliği metin kadardır, çizgi "Takvim" eni kadar kalırdı.
+       padding-top çizgiyi iki space-4 boşluğun ortasına oturtur; link'in
+       tipografisine, boyutuna ve dokunma alanına dokunmaz. */
+    .nav__item--ayrac {
+      align-self: stretch;
+      border-top: 1px solid var(--ember-alpha-15);
+      padding-top: var(--space-4);
     }
     .nav__link {
       font-size: var(--text-lg);
