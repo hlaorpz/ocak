@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu**
+**Son güncelleme:** 1 Ekim 2026 · **hamburger Takvim turu**
 
 ---
 
@@ -759,6 +759,10 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **1 Ekim — hamburger Takvim turu ✅** (1 kod commit `2640f49` + bu patch)
+  Takvim menünün son öğesi, mobilde ayraçlı (**KARAR 600**). Advaita'nın isteği;
+  footer bağlantısı yerinde kaldı. Kalan: iPhone Safari eyeball (Kaan).
+  → `90-kronoloji/2026-10.md`
 - **19 Ağustos — WA yüzen buton turu ✅** (3 kod commit + bu patch)
   Buton mobilde `© 2026` satırını kapatıyordu; footer'a duyarlı fade geldi
   (**KARAR 517** — `IntersectionObserver`, `.gizli`, gecikmeli `visibility`).

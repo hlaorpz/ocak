@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 01.10.2026 15:49 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 01.10.2026 17:01 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `520e5fe` | `git log -1` |
+| canlı HEAD | `9ab0c09` | `git log -1` |
 | HEAD tarihi | 2026-10-01 | `git log -1 --date=short` |
-| HEAD konusu | feat(robots): lansman — Allow (KARAR 149) | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 6 kayıt | `git status --porcelain` |
+| HEAD konusu | docs(00-durum): stealth cümlesi lansman sonrası tarihçeye döndü | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 4 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **28** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **31** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -45,13 +45,13 @@
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 196 |
+| `docs/00-durum.md` | 197 |
 | `docs/02-borclar.md` | 3605 |
-| `docs/03-sira.md` | 924 |
+| `docs/03-sira.md` | 928 |
 | `docs/05-harita.md` | 187 |
-| `docs/01-kararlar.tsv` | 600 |
+| `docs/01-kararlar.tsv` | 601 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **196** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **197** — ✅ altında
 
 ## BORÇ SAYIMI
 
@@ -69,8 +69,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **599** | — |
-| satır sayısı (başlık dahil) | 600 | — |
+| son KARAR numarası | **600** | — |
+| satır sayısı (başlık dahil) | 601 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |

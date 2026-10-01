@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu** · dönem HEAD `520e5fe`
+**Son güncelleme:** 1 Ekim 2026 · **hamburger Takvim turu** · dönem HEAD `9ab0c09`
 
 ---
 
@@ -69,7 +69,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`520e5fe`** (1 Eki, robots Allow turu — bir önceki dönem `b5ff542`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `d203581` (sitemap `filter`'ına `/odeme/` öneki) · `520e5fe` (`public/robots.txt` Allow). Production READY, `dpl_7bhfqxbtuvBzvoTjSAuvhoWpHWWG`. Aynı gün aynı commit'te iki production build **ERROR** — Notion arızası (`internal_server_error`), kodla ilgisiz; ayrıntı `90-kronoloji/2026-10.md`. Önceki dönemin (`b5ff542`) anlatısı `90-kronoloji/2026-09.md` sonuna indi (B204, KARAR 61) |
+| `main` dönem HEAD | **`9ab0c09`** (1 Eki, hamburger Takvim turu — bir önceki dönem `520e5fe`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `2640f49` (`src/components/Nav.astro` — menüye Takvim, KARAR 600). Önceki dönemin (`520e5fe`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -146,6 +146,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **1 Ekim — hamburger Takvim turu:** `2640f49` — Takvim menünün son öğesi, mobilde ayraçlı (**KARAR 600**). → `90-kronoloji/2026-10.md`
 - **1 Ekim — LANSMAN (robots Allow turu):** `d203581` + `520e5fe` — site aranabilir (**KARAR 599**) + duyuru (Kaan). Aynı tur
   **B193**'ü teşhis etti: production'da kart seçimi mock ekrana iniyor, öncülü düştü. → `90-kronoloji/2026-10.md`
 - **11 Eylül (N-Kolay sağlayıcı turu):** yedi commit, `ef09c47`→`5ace816`. Origin muhafızı
