@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Eylül 2026 · **MailerLite kayıt onayı turu** · dönem HEAD `67c7fd5`
+**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu** · dönem HEAD `520e5fe`
 
 ---
 
@@ -69,12 +69,12 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`b5ff542`** (11 Eyl, WA ikinci hat turu — numara birleşmesi; bir önceki dönem `094fd0f`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md`; ikisi ayrı şeydir ve bilerek ayrı dosyalarda yaşarlar (KARAR 580). ⚠ **Bu dönem KOD içerdi** — kendinden önceki sıfır-kod dönemler dizisini kırdı: `src/lib/api.ts` + üç component yorumu (`b5ff542`, WhatsApp numarası birleşmesi). Production READY, `dpl_E8vgJh7q…`; canlı ölçüm `/` → 2 link · `/iletisim` → 3 · eski numara **0**. ⚠ **Deploy ayrımı:** bu repoda doküman commit'i de production'a deploy olur — *"deploy alınmadı"* ifadesi **promote/eyeball turunu** kasteder, push'u değil. 10 Eylül'ün beş deploy'u ve 15 günlük `7062846` dönemi `90-kronoloji/2026-09.md`'de |
+| `main` dönem HEAD | **`520e5fe`** (1 Eki, robots Allow turu — bir önceki dönem `b5ff542`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `d203581` (sitemap `filter`'ına `/odeme/` öneki) · `520e5fe` (`public/robots.txt` Allow). Production READY, `dpl_7bhfqxbtuvBzvoTjSAuvhoWpHWWG`. Aynı gün aynı commit'te iki production build **ERROR** — Notion arızası (`internal_server_error`), kodla ilgisiz; ayrıntı `90-kronoloji/2026-10.md`. Önceki dönemin (`b5ff542`) anlatısı `90-kronoloji/2026-09.md` sonuna indi (B204, KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
 | Build | → `docs/04-olcum.md` (`--build` ayağı). ⚠ **Tek sayıya inmez** ve sayım **yöntemine bağlıdır**; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı). Yöntem artık betikte tanımlı — elle tutulan eski sayım (*32 prerender + 10 SSR*) yönlendirme takma adlarını dışarıda bırakıyordu, betiğinki bırakmıyor. API route sayısı iki yöntemde de aynı |
-| robots.txt | `Disallow: /` — **stealth sürüyor.** Yeni bağ: ilk sosyal post duyurudur → **Gün 1 aynı zamanda robots kararıdır** (KARAR 149) |
+| robots.txt | ✅ **`Allow: /` (1 Eki, `520e5fe`, KARAR 599).** `Disallow: /odeme/` · `Disallow: /api/` · `Sitemap: https://www.ocak.biz/sitemap-index.xml`. Ödeme route'ları sitemap'ten de çıktı (`d203581`) — canlı `sitemap-0.xml` **49 → 45 `<loc>`**, `/odeme/` **0** (yöntem: `curl -s …/sitemap-0.xml \| grep -o '<loc>' \| wc -l`, CC 1 Eki). ✅ **Duyuru ayağı da aynı gün düştü** (Kaan bildirdi, 1 Eki; kanal kaydedilmedi — kapalı yüzey, CC doğrulamaya çalışmaz) → KARAR 149'un iki ayağı tamam, **lansman yapıldı.** *Önceki hâl:* `Disallow: /` — stealth, 27 May (KARAR 147) → 1 Eki |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
 | Deploy hook | ✅ **B64 KAPANDI (11 Eyl).** Gecelik tazeleme ve Notion içerik güncellemesi artık **production'a basıyor.** n8n *"OCAK Gecelik Rebuild"* ve Notion Sayfalar DB automation'ı aynı yeni hook'u çağırıyor: `notion-content-update-main` (`x2LnNpVvuG`, ref `main`). Elle tetiklemede deployment READY oldu — `githubCommitRef: main` · `target: production` · alias listesinde `www.ocak.biz`; `/hikaye` Yayınla uncheck→check testi de production build doğurdu (`deployHookName: notion-content-update-main`). Eski `tZR9LcwJq9` **revoke edildi.** ⚠ Mayıs'tan beri açık duran *"Notion automation bozuk"* teşhisi de burada kapandı: automation bozuk **değildi**, ölü hook'a basıyordu. Bu satır **yazılandır** — kaynağı CC'ye kapalı yüzey (Kaan + Claude.ai Vercel MCP, 11 Eyl), hiçbir komut üretemez. Kapanmadan önceki ölçüm ve teşhis **silinmedi, taşındı** (KARAR 61): `02-borclar.md` B64 bloğu + `90-kronoloji/2026-09.md` |
 | Vercel | Kimlik (team · project ID · proje adı) → `docs/04-olcum.md`. Dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ✅ **B179 KAPANDI (11 Eyl) — düzeltmeyle değil, "kabul edildi" ile.** `rm -rf .vercel && vercel link --yes` koşuldu; CLI yine yalnız `repo.json` yazdı, `project.json` yazmadı — üç deneme aynı sonucu verdi. Sebep arıza değil: proje GitHub'a bağlı olduğu için CLI **repo seviyesinde** bağlıyor. `project.json`'a bağımlı tek yol `vercel --prod` ve o yol kullanılmıyor — deploy git push'la gidiyor. **KARAR 584** sapmayı doktrine çevirdi: kimlik `repo.json`'dan okunur, `project.json` aranmaz; `scripts/durum-uret.mjs` zaten öyle yapıyor ve hangi dosyadan okuduğunu yazıyor. ⚠ Bu, **"kabul edildi" sınıfının ilk vakasıdır** — bir borcun düzeltilmeden, sapması doktrine alınarak kapanması; kapanış yolu ledger'da henüz tanımlı değil (`03-sira.md`) |
@@ -100,7 +100,7 @@ Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
    taşıyordu ve dokunulmadı. Eşitlemeye çalışan tur değil, **ayırmaya** çalışan tur yanılır.
 2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`).** `teslimat-iade.astro` ve
    `mesafeli-satis.astro` canlı cümleleri iki yöntemi de kapsıyor, beş yorum bloğu kapandı.
-   ⚠ **`robots Allow` hâlâ açılmadı** — engel kalktı, **karar verilmedi**; `Allow` = duyuru (KARAR 149), kararı Gün 1 verir.
+   ✅ **`robots Allow` açıldı (1 Eki, `520e5fe`, KARAR 599)** — 10 Eylül'de engeli kalkmış, kararı bekleyen satırdı (KARAR 61: damgalandı, silinmedi).
    Hukukçuya kalan iki soru metne **girmedi**: cayma hakkı istisnası (6502 md.15) · e-ticaret fatura serisi.
 3. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel **✅ mühürlendi** (23 Ağu, KARAR 542);
    `KURUCU-URL` ara-değiştir **✅ KAPANDI** (24 Ağu, **B139** · **B184**) — dokuz promptun dokuzunda gerçek `--sref`, `--v 8.1`, `--chaos 5`; `--sref KURUCU-URL` → **0**. ⚠ **Bu madde artık Gün 1'i kilitlemiyor**; kalan kilit V05–V09'un üretimde hiç sınanmamış olması (ilk parti kanarya).
@@ -146,6 +146,8 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **1 Ekim — LANSMAN (robots Allow turu):** `d203581` + `520e5fe` — site aranabilir (**KARAR 599**) + duyuru (Kaan). Aynı tur
+  **B193**'ü teşhis etti: production'da kart seçimi mock ekrana iniyor, öncülü düştü. → `90-kronoloji/2026-10.md`
 - **11 Eylül (N-Kolay sağlayıcı turu):** yedi commit, `ef09c47`→`5ace816`. Origin muhafızı
   kendi kodumuza taşındı (**591 · 592**), N-Kolay sağlayıcısı + Ortak Ödeme Sayfası form
   POST'u yazıldı, callback fail-closed kapıları arttı (**593 · 594 · 595 · 596**), **B186 ✅**.
@@ -164,6 +166,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Cephe | Sahip |
 |---|---|
 | Advaita görüşmesi — beş C kalemi + Ritüel ön görev (B178) + K4 Wild Woman (B158) | Kaan + Advaita |
+| 🔴 **B193** — production'da kart → mock ekran → tahsilatsız "ödendi"; karar bekliyor | Kaan |
 | WhatsApp/Meta onay hattı | Kaan |
 | Yolculuk fiyatlandırma → ilk etkinlik | Kaan + Advaita |
 | Sosyal medya **Gün 1** önkoşulları (Gün 0 ✅ 23 Ağu, KARAR 542) | Kaan |
@@ -187,6 +190,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 ---
 
 **Lansman tanımı (KARAR 149):** lansman = robots Allow + duyuru. Sitenin canlı olması değil.
+✅ **Lansman: 1 Ekim 2026** — robots Allow (`520e5fe`, KARAR 599) + duyuru (Kaan bildirdi; kanal kaydedilmedi).
 Site zaten stealth-canlı. **İlk kohort hedefi: 24–27 Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.**
 **Fiyatlandırma:** bu dokümanda rakam tahmini yapılmaz. **Kaan** site sayfalarında görünmez
 (KARAR 89).

@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu**
+**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu**
 
 ---
 
@@ -2119,6 +2119,8 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - ⚠ **Atomik:** banner kurulmadan metin sıkılaştırılmaz; ikisi **aynı commit'te** gider.
   Metin önce düzeltilirse site yazdığını yapmıyor durumuna geçer.
 - **Bağ:** B16 (ilk hafta paketi) içindeki Consent Mode v2 ayağı budur; bu madde onu daraltır ve sahiplendirir.
+- ⚠ **1 Eki — aciliyet değişti.** robots Allow (KARAR 599) ile site aranabilir; etiketler hâlâ
+  rızasız çalışıyor, artan trafik de rızasız ölçülüyor. B193'ten sonra sıradaki budur.
 
 ## B119 — Bülten bölümü e-posta ölçümünü söylemiyor
 
@@ -3377,6 +3379,29 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   Bugün zararsız — kayıt kadınlara açık değil, "parasız Ödendi" riski yok.
 - **İki çıkış:** gerçek N-Kolay provider devreye girer · ya da `KART_AKISI` Production'da kapanır.
 - ⚠ **AÇILIŞ'tan (24–27 Eylül) önce kapanmak zorunda.** **Bağ:** KARAR 575 · KARAR 488 · B192
+- 🔴 **1 Eki — kapanmadı; öncülü düştü.** AÇILIŞ şartı kaçtı. Yukarıdaki *"bugün zararsız —
+  kayıt kadınlara açık değil"* öncülü artık geçmiyor: site aranabilir (KARAR 599), kayıt
+  sayfaları sitemap'te. Hangi etkinliğin şu an ücretli + kart seçenekli kayıt açtığı **ölçülmedi.**
+- **Canlı ölçüm (Claude.ai, 1 Eki, Vercel MCP `web_fetch_vercel_url` — CC doğrulamaya
+  çalışmaz):** `/odeme/mock` → **200**, `noindex, nofollow` taşıyor, gövdesinde
+  `/api/odeme-callback`'e GET eden form ve **dolu `sir` hidden input'u** var. Değer yazılmadı.
+- **İŞ 0 teşhisi (CC, 1 Eki, salt-read, değer basılmadı):** (1) `sir` kaynağı
+  `mock.astro:45` → `payment-provider.ts:187` → `import.meta.env.ODEME_CALLBACK_SIR`, alan adı
+  `CALLBACK_SIR_ALANI='sir'` · (2) `dogrulaCallback()` **aynı değişkeni** okuyor
+  (`payment-provider.ts:266`, fail-closed) — yani sayfada duran değer **production sırrının
+  kendisi** · (3) 404 kapısı tek: `mock.astro:28` `!KART_AKISI_ACIK`; `PAYMENT_PROVIDER`
+  bu sayfayı **kapatmaz** · (4) kart seçen kadın `checkoutBaslat` (`kayit.ts:235`) üzerinden
+  kendi `/odeme/mock` ekranına iner; buton `sir` taşıyarak callback'e gider →
+  **gerçek tahsilat olmadan "ödendi".**
+- ⚠ **"Kaza çağrılarını eler, kasıtlıyı elemez" hükmü (yukarıda) hâlâ doğru — ama bedeli
+  değişti.** O hüküm "gerçek para yok" öncülüne yaslanıyordu; şimdi kadın kartla ödediğini
+  sanıp ödemeden kayıt kapatabilir ve herkes tahsilatsız "ödendi" üretebilir.
+  KARAR 594 · 595 tutar kapıları bunu elemez: tutar formu gönderen tarafındadır.
+- **Önerilen kapanış (Claude.ai, karar Kaan'da — bu patch uygulamaz):** (a) `KART_AKISI`
+  Production'da kapat + **redeploy** · (b) `ODEME_CALLBACK_SIR` Production'da rotate ·
+  (c) Notion Kayıtlar denetimi — 11 Eyl'den beri kart yöntemiyle `Ödendi`'ye geçmiş satır var
+  mı (her biri tahsilatsızdır) · (d) callback'in `KART_AKISI` kapalıyken mock isteğini reddedip
+  reddetmediği ölçülür. **Bağ:** B205
 
 ## B194 — MailerLite alan sayısı hiçbir komutla üretilemiyor ✅ KAPANDI (11 Eyl, yol (b))
 
@@ -3546,8 +3571,8 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - Yanıt gelmezse ilk test işleminin log'u söyler: `[nkolay] hashDataV2 tutmadı` satırı
   hesaplanan ham dizeyi **sır maskeli** basıyor. **Bağ:** B201
 
-## B204 — `00-durum.md` iki farklı dönem HEAD taşıyor
-- [ ] **Sahip:** Claude.ai (patch üreten oturum) · **Tetikleyici:** bir sonraki doküman turu
+## B204 — `00-durum.md` iki farklı dönem HEAD taşıyor ✅ KAPANDI (1 Eki)
+- [x] **Sahip:** Claude.ai (patch üreten oturum) · **Tetikleyici:** bir sonraki doküman turu
 - **11 Eylül N-Kolay patch'i başlığı güncelledi, tabloyu unuttu.** `00-durum.md` başlık
   satırı artık dönem HEAD `5ace816` diyor; `KOD / DEPLOY GERÇEĞİ` tablosundaki
   `main dönem HEAD` satırı hâlâ **`b5ff542`** diyor ve o dönemin anlatısını
@@ -3562,3 +3587,19 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   `b5ff542` anlatısı `90-kronoloji/2026-09.md`'ye iner (KARAR 61).
 - ⚠ **Not:** `scripts/baslik-denetim.mjs` bunu yakalamaz ve yakalaması beklenmez — denetim
   alanı ilk `---` satırına kadardır, tablo o sınırın altındadır. **Bağ:** KARAR 474 · 580 · 581
+- ✅ **Kapanış (1 Eki).** Tablo satırı bu dönemin anlatısıyla yeniden yazıldı; `b5ff542`
+  satırı **birebir** `90-kronoloji/2026-09.md` sonuna indi (KARAR 61). Başlık ve tablo aynı
+  diff'te güncellendi — `ae3b8ca` konvansiyonu geri geldi.
+
+## B205 — `KART_AKISI`'nın Vercel'de okunma anı ölçülmedi
+- [ ] **Sahip:** CC · **küçük** · **Tetikleyici:** B193 kapanışında env değiştirilmeden önce
+- **Kaynak:** CC, robots Allow turu (1 Eki), brief dışı bulgu — kovalanmadı.
+- **İçerik:** `kart-akisi.ts` *"değer build zamanı, REDEPLOY şart"* diyor. Yerel çıktıda
+  katlama koşula bağlı: `.env`'de olan değişken literal'e katlanıyor (`PAYMENT_PROVIDER` →
+  `"mock"`), yalnız `process.env`'de olan **çalışma zamanında** okunuyor. Vercel env'i `.env`
+  olarak vermediğine göre orada runtime okuması beklenir — bu, B193'ün *"env yazmak build'i
+  değiştirmez"* gözlemini ve kod yorumunu Vercel'de **yanlış** kılabilir.
+- ⚠ **Ölçülen yalnız yerel çıktı.** Deploy edilmiş artifact okunmadı
+  (`get_deployment_file_contents` ile tek turda kapanır).
+- ⚠ **Pratik sonuç bugün değişmez:** B193 kapanışında redeploy **her durumda** alınır.
+- **Bağ:** B193 · KARAR 488 · 575

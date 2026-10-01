@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Eylül 2026 · **dal temizliği + üç kapanış turu**
+**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu**
 
 ---
 
@@ -10,6 +10,9 @@
 
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
+
+**🔴 Önce (1 Eki): B193** — kart seçimi production'da mock ekrana iniyor; sıranın önüne
+geçer. Karar Kaan'da, önerilen kapanış B193 gövdesinde. Ardından **B118** (rıza banner'ı).
 
 **Sıradaki iş (kod/altyapı hattı, 11 Eyl):** **B69 → B68 → n8n ödeme onayı.**
 ✅ Kuyruğun başındaki **B64 düştü** (11 Eyl, kapandı) — 20 Ağustos'tan beri değişmeyen
@@ -89,6 +92,7 @@ dayanacağı maddeydi. Faz 1'de taslak yorumda bırakılmıştı.
 
 ⚠ **`robots` `Allow` hâlâ açılmadı** — engel kalktı, **karar verilmedi.** Lansman tanımı
 (KARAR 149) = robots Allow + duyuru; kararı **Gün 1** ile birlikte verir.
+✅ **Lansman yapıldı (1 Eki):** robots Allow (`520e5fe`, KARAR 599) + duyuru (Kaan).
 ⚠ Hukukçuya kalan iki soru metne **girmedi**: cayma hakkı istisnası (6502 md.15) ·
 "internetten satış" e-ticaret fatura serisi.
 
@@ -557,6 +561,7 @@ KARAR 492) bu hattın tamamını süreye bağlıyor.
 6. **robots Allow + Gün 1** — 1–4 kapanınca. ⚠ Yukarıdaki **iade cümlesi ön koşulu**
    bu maddenin de önünde durur; ilk sosyal post duyurudur, yani Gün 1 aynı zamanda
    robots kararıdır (KARAR 149).
+   ✅ **İki ayak da düştü (1 Eki, KARAR 599)** — robots Allow + duyuru; Gün 1 = lansman günü.
 7. ✅ **Kart derleyici sınaması** *(Kaan + Claude, gözle)* — **B86.** İlk gerçek görselle;
    fotoğrafsız zemin kararı.
    ✅ **KAPANDI (23 Ağu, KARAR 546).** C01 kartı gerçek zeminle basıldı. Fotoğrafsız zemin
