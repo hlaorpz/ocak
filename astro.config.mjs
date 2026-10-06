@@ -38,7 +38,10 @@ export default defineConfig({
     sitemap({
       // /test KARAR 143 — Kaan görsel referansı, Google görmemeli.
       //
-      // KARAR 488 — kart akışı kapalıyken üç /odeme/* route'u elenir. Bunlar
+      // KARAR 488 — kart akışı kapalıyken dört /odeme/* route'u elenir. Bunlar
+      // ⚠ "üç" yazıyordu (7 Eki düzeltildi): yorum `/odeme/nkolay` listeye
+      // katılmadan önce yazılmıştı, `KART_ROUTELARI` o günden beri dört üyeli.
+      // Aşağıdaki 19 Ağu ölçümü üç route'luk hâle ait, olduğu gibi duruyor.
       // `prerender = false` OLMASINA RAĞMEN sitemap'e giriyordu; dist/ ölçümüyle
       // doğrulandı (19 Ağu: sitemap-0.xml içinde üçü de <loc> olarak vardı).
       // "SSR route sitemap'e girmez" varsayımı bu kurulumda tutmuyor.
