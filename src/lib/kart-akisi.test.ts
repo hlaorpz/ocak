@@ -1,5 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import { kartAkisiAcikMi, KART_AKISI_ACIK, KART_ROUTELARI } from './kart-akisi.ts';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import {
+  kartAkisiAcikMi,
+  KART_AKISI_ACIK,
+  KART_ROUTELARI,
+  mockSaglayiciMi,
+  MOCK_SAGLAYICI_ACIK,
+  MOCK_ROUTELARI,
+} from './kart-akisi.ts';
 import { ODA_MAP } from './oda-map.ts';
 
 // KARAR 488 — kart akışı anahtarı. `kartAkisiAcikMi` iki bağlamdan okunuyor
@@ -66,11 +73,136 @@ describe('ODA_MAP × KART_AKISI (KARAR 488, tüketici 5)', () => {
     }
   });
 
-  it('kontrol grubu — yasal sayfalar eşlemede DURUYOR', () => {
+  it('kontrol grubu — yasal sayfalar eşlemede DURUYOR (kart akışı kapalı)', () => {
     // Eleme yalnız dört route'u almalı; geniş bir filtre yazılırsa burası kırılır.
     expect(ODA_MAP['/gizlilik']).toBe('OCAK');
     expect(ODA_MAP['/mesafeli-satis']).toBe('OCAK');
     expect(ODA_MAP['/teslimat-iade']).toBe('OCAK');
     expect(ODA_MAP['/hakkimizda']).toBe('OCAK');
+  });
+});
+
+// ── B193 (7 Eki) — `PAYMENT_PROVIDER` ikinci anahtar ───────────────────────
+//
+// Kapatılan açık: `/odeme/mock` yalnız `KART_AKISI` ile korunuyordu, yani
+// production'ın gerçek hâlinde (`KART_AKISI=acik` + `PAYMENT_PROVIDER=nkolay`)
+// sahte "ödendi" üreten bir ekran açıktı. Artık ikinci kapı var.
+describe('mockSaglayiciMi (B193)', () => {
+  it('"mock" açar, büyük/küçük harf ve boşluk toleranslı', () => {
+    expect(mockSaglayiciMi('mock')).toBe(true);
+    expect(mockSaglayiciMi('MOCK')).toBe(true);
+    expect(mockSaglayiciMi('  Mock  ')).toBe(true);
+    expect(mockSaglayiciMi('\tmock\n')).toBe(true);
+  });
+
+  it('"nkolay" KAPATIR — production\'ın yürürlükteki değeri', () => {
+    expect(mockSaglayiciMi('nkolay')).toBe(false);
+    expect(mockSaglayiciMi('NKOLAY')).toBe(false);
+  });
+
+  it('⚠ VARSAYILAN MOCK — `kartAkisiAcikMi`nin TERSİ, bilinçli', () => {
+    // Bu satır bir tutarsızlık GİBİ görünür ve değildir: gerekçe
+    // `kart-akisi.ts`'te adıyla yazılı — **yönlendirme açıkken kapı kapalı
+    // olamaz.** `getPaymentProvider()` tanımsız env'de `mockPaymentProvider`
+    // döndürüp kadını `/odeme/mock`'a yönlendiriyor; kapıyı fail-closed
+    // yapmak kayıt akışını sessizce kırardı (yönlendir → 404).
+    //
+    // Biri bir gün "fail-closed olsun" diye bunu çevirmek isterse: aynı turda
+    // `getPaymentProvider()`ın varsayılanı da çevrilmek zorunda. Bu test o
+    // eşleşmenin kilidi, iki tarafı birlikte düşünmeye zorlar.
+    expect(mockSaglayiciMi(undefined)).toBe(true);
+    expect(mockSaglayiciMi(null)).toBe(true);
+  });
+
+  it('⚠ BOŞ DİZE mock SAYILMAZ — `??` boş dizeyi yakalamaz', () => {
+    // İlk yazımda bu beklenti `true` yazılmış ve KIRILMIŞTI. Ölçüm düzeltti:
+    // `'' ?? 'mock'` → `''`. Kaza değil, factory'nin ÖNCEKİ davranışının
+    // aynısı — eski kod da `''` için mock dalına değil `throw`a gidiyordu.
+    // Yani boş anahtarda iki taraf da kapalı yanda: kapı 404, factory 500.
+    // "Yönlendirme açıkken kapı kapalı olamaz" değişmezi korunuyor, çünkü
+    // boş anahtarda yönlendirme de olmuyor.
+    expect(mockSaglayiciMi('')).toBe(false);
+    expect(mockSaglayiciMi('   ')).toBe(false);
+    expect(mockSaglayiciMi('\t\n')).toBe(false);
+  });
+
+  it('tanınmayan değer mock SAYILMAZ — sayfa kapanır', () => {
+    // Bu değerlerde `getPaymentProvider()` throw ediyor. İki davranış da
+    // "kapalı" tarafta: kapı 404, factory 500. Yarı-açık bir hâl yok.
+    expect(mockSaglayiciMi('iyzico')).toBe(false);
+    expect(mockSaglayiciMi('mockk')).toBe(false);
+    expect(mockSaglayiciMi('none')).toBe(false);
+    expect(mockSaglayiciMi('true')).toBe(false);
+  });
+});
+
+describe('MOCK_ROUTELARI × ODA_MAP (B193, tüketici 5)', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  /**
+   * ⚠ `import.meta.env` BUILD ZAMANINDA sabitlenir — modül bir kez
+   * yüklendikten sonra `vi.stubEnv` onu değiştirmez. Bu yüzden her bileşim
+   * `resetModules` + TAZE import ile ölçülüyor (`payment-provider.test.ts`
+   * `modulYukle` deseni). Sahteler import'tan ÖNCE kurulmalı.
+   */
+  async function odaMapYukle(
+    kartAkisi: string | undefined,
+    saglayici: string | undefined,
+  ) {
+    vi.resetModules();
+    vi.stubEnv('KART_AKISI', kartAkisi as any);
+    vi.stubEnv('PAYMENT_PROVIDER', saglayici as any);
+    const { ODA_MAP: M } = await import('./oda-map.ts');
+    return M;
+  }
+
+  it('vitest ortamında PAYMENT_PROVIDER tanımsız → mock AÇIK', () => {
+    // Ölçüldü (7 Eki, probe): `vitest.config.ts` sade `vitest/config` kullanıyor,
+    // Astro'nun envPrefix'i yok — `.env`'deki `PAYMENT_PROVIDER=mock` test
+    // bağlamına GİRMİYOR, değer `undefined`. Varsayılan onu mock sayıyor.
+    // Bu satır aşağıdaki modül-içi beklentilerin ön şartı; anahtar bir gün
+    // test ortamına girerse önce burası kırılır ve yanlış yeşil vermez.
+    expect(MOCK_SAGLAYICI_ACIK).toBe(true);
+  });
+
+  it('MOCK_ROUTELARI tek üyeli — tamam/iptal sağlayıcı-ORTAK', () => {
+    // `/odeme/{tamam,iptal}` buraya girerse N-Kolay'ın dönüş ekranları 404
+    // olur ve gerçek ödeme yapan kadın boş sayfaya iner. Bu sayı kilidi
+    // o sızmanın tek kapısı.
+    expect([...MOCK_ROUTELARI]).toEqual(['/odeme/mock']);
+  });
+
+  it('PRODUCTION BİLEŞİMİ — acik + nkolay → yalnız /odeme/mock düşer', async () => {
+    // B193'ün kapattığı tam hâl. Üç kardeş route AÇIK kalmalı: N-Kolay
+    // checkout'u ve iki dönüş ekranı gerçek tahsilatın yolu.
+    const M = await odaMapYukle('acik', 'nkolay');
+    expect(M).not.toHaveProperty('/odeme/mock');
+    expect(M['/odeme/nkolay']).toBe('OCAK');
+    expect(M['/odeme/tamam']).toBe('OCAK');
+    expect(M['/odeme/iptal']).toBe('OCAK');
+    // Kontrol grubu — eleme geniş yazılırsa burası kırılır.
+    expect(M['/gizlilik']).toBe('OCAK');
+    expect(M['/takvim']).toBe('Buluşmalar');
+  });
+
+  it('acik + mock → dört route da eşlemede DURUR', async () => {
+    const M = await odaMapYukle('acik', 'mock');
+    for (const r of KART_ROUTELARI) expect(M[r]).toBe('OCAK');
+  });
+
+  it('acik + anahtar tanımsız → mock DURUR (varsayılan mock)', async () => {
+    // `mockSaglayiciMi`nin varsayılanıyla aynı cümle, modül düzeyinde.
+    const M = await odaMapYukle('acik', undefined);
+    expect(M['/odeme/mock']).toBe('OCAK');
+  });
+
+  it('kapali + mock → KART_AKISI dördünü birden eler, sağlayıcıya bakmaz', async () => {
+    // İki anahtar birbirini KAPSAMAZ: kart akışı kapalıyken mock sağlayıcı
+    // seçili olsa bile dördü düşer (KARAR 488 önce gelir).
+    const M = await odaMapYukle('kapali', 'mock');
+    for (const r of KART_ROUTELARI) expect(M).not.toHaveProperty(r);
   });
 });

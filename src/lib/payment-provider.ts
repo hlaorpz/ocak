@@ -37,6 +37,9 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 // gerekçesi o dosyanın başında (muhafız grep'i + "callback gövdesini görmez"
 // tip güvencesi). Buradan yalnız iki saf fonksiyon çağrılıyor.
 import { paymentListAyristir, secKaydi } from './nkolay-mutabakat';
+// B193 — mock kararının TEK kaynağı. Bu modül kendi `PAYMENT_PROVIDER`
+// okumasını mock dalı için YAPMAZ; gerekçesi `getPaymentProvider()` başında.
+import { MOCK_SAGLAYICI_ACIK } from './kart-akisi.ts';
 
 export type CheckoutBaslatGirdi = {
   /** Notion Kayıtlar page id — callback bu satırı Ödendi'ye çeker. */
@@ -867,13 +870,24 @@ export const nkolayPaymentProvider: PaymentProvider = {
 };
 
 /**
- * Sağlayıcı seçimi env'den. `PAYMENT_PROVIDER` boş/undefined → mock default.
+ * Sağlayıcı seçimi env'den. `PAYMENT_PROVIDER` **tanımsız** → mock default.
  * Tanınmayan her değer hata fırlatır — sessiz yanlış-sağlayıcı yerine erken
  * patlar. Bir sağlayıcı yazılmadan adı buraya girmez.
+ *
+ * ⚠ Bu satır *"boş/undefined → mock default"* diyordu ve BOŞ kısmı YANLIŞTI
+ * (7 Eki ölçümü): `'' ?? 'mock'` → `''`, yani boş dize eskiden de mock dalına
+ * değil `throw`a gidiyordu. Davranış değişmedi, yalnız anlatı düzeltildi.
+ *
+ * ⚠ Mock kararı buradan OKUNMUYOR, `kart-akisi.ts`ten geliyor (B193, 7 Eki).
+ * Sebep bir değişmez: **bu factory mock'a yönlendiriyorsa `/odeme/mock` sayfası
+ * açık olmak ZORUNDA.** İki yer ayrı ayrı env okursa o değişmez iki yazımın
+ * eşitliğine bağlı kalır; tek sabiti paylaşınca yapısal olarak garanti olur.
+ * `nkolay` dalının env okuması kalıyor — o dal sayfa kapısını ilgilendirmiyor
+ * ve yalnız mock elendikten sonra sorulur.
  */
 export function getPaymentProvider(): PaymentProvider {
-  const which = (import.meta.env.PAYMENT_PROVIDER ?? 'mock').toLowerCase();
-  if (which === 'mock') return mockPaymentProvider;
+  if (MOCK_SAGLAYICI_ACIK) return mockPaymentProvider;
+  const which = (import.meta.env.PAYMENT_PROVIDER ?? '').trim().toLowerCase();
   if (which === 'nkolay') return nkolayPaymentProvider;
   throw new Error(`PAYMENT_PROVIDER bilinmiyor: "${which}". Geçerli: mock | nkolay.`);
 }

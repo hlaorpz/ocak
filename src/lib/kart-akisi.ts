@@ -37,13 +37,30 @@
  * değerde throw eder. `none` yazmak yüzeyi gizlemez, `/api/kayit`'i 500'e
  * düşürür — kadın hata ekranı görür. Ayrı anahtar şart.
  *
+ * ── `PAYMENT_PROVIDER`'ın yapabildiği: mock yüzeyini DARALTMAK (B193, 7 Eki) ──
+ * Yukarıdaki paragraf hâlâ doğru — `PAYMENT_PROVIDER` kart akışını kapatamaz.
+ * Ama bir şeyi yapabilir: sağlayıcı `nkolay` iken `/odeme/mock` ekranının
+ * açık durması için hiçbir sebep yoktur. Kadın oraya `checkoutBaslat` ile
+ * yalnız mock sağlayıcı seçiliyken iner (`mockPaymentProvider.checkoutBaslat`
+ * → `url.pathname = '/odeme/mock'`); `nkolay` seçiliyken o sayfa ulaşılabilir
+ * kalırsa **tahsilat olmadan "ödendi"** üreten bir yüzey açıkta durur.
+ * Bu yüzden mock sayfasının İKİ kapısı var: `KART_AKISI_ACIK` (akışın tamamı)
+ * ve `MOCK_SAGLAYICI_ACIK` (yalnız mock yüzeyi). İkisi ayrı satır, `&&` ile
+ * birleştirilmez — KARAR 573: koşul ölçülebilir kalmalı.
+ *
  * ── Altı tüketici ──
  *  1. `api/kayit.ts`         — `odemeYontemi === 'kart'` → 400
  *  2. `api/odeme-callback.ts`— 410, hiçbir Notion yazımı yok
  *  3. `KayitFormu.astro`     — yöntem radio grubu SSR'da render edilmez
  *  4. `/odeme/{mock,nkolay,tamam,iptal}` — 404
- *  5. `oda-map.ts`           — dört entry listeden düşer
+ *     ⚠ `/odeme/mock`'un İKİNCİ kapısı da var: `MOCK_SAGLAYICI_ACIK` (B193).
+ *  5. `oda-map.ts`           — dört entry listeden düşer; `/odeme/mock` ayrıca
+ *     `MOCK_SAGLAYICI_ACIK` kapalıyken tek başına düşer (`MOCK_ROUTELARI`)
  *  6. `astro.config.mjs`     — sitemap filtresi dört route'u eler
+ *     ⚠ 01 Eki 2026'dan beri bu tüketici artık anahtara BAĞLI DEĞİL: filtre
+ *     `/odeme/` önekini koşulsuz eliyor (`astro.config.mjs`, gerekçe orada).
+ *     KARAR 488 koşulu silinmedi, ikinci kapı olarak duruyor — yani bu satır
+ *     "anahtar kapalıyken eler" diye okunur, "yalnız o zaman eler" diye değil.
  *
  * Sıra önemli: 1 ve 2 (backend) önce, sonra 3 (yüzey). Yüzeyi önce kaldırmak
  * backend dalını açıkta bırakır.
@@ -71,3 +88,59 @@ export const KART_ROUTELARI = [
   '/odeme/tamam',
   '/odeme/iptal',
 ] as const;
+
+/**
+ * `PAYMENT_PROVIDER` ham değerini "mock sağlayıcı mı" kararına çevirir — saf,
+ * test edilebilir. `kartAkisiAcikMi` ile aynı desen, aynı sebep: kural tek
+ * yerde yaşasın ve iki okuyucu (sayfa kapısı + `getPaymentProvider` factory)
+ * aynı cümleyi söylesin.
+ *
+ * ── ⚠ VARSAYILAN FAIL-CLOSED DEĞİL — bilinçli, gerekçesi ──
+ * **Tanımsız** değer (`undefined`/`null`) mock sayar (true döner).
+ * `kartAkisiAcikMi`'nin tam tersi, ve bu bir tutarsızlık değil:
+ * **yönlendirme açıkken kapı kapalı
+ * olamaz.** `getPaymentProvider()` tanımsız env'de `mockPaymentProvider`
+ * döndürüyor (bu dosyanın altındaki factory), o da kadını `/odeme/mock`'a
+ * yönlendiriyor. Kapıyı burada fail-closed yapmak factory'yi yalanlardı:
+ * kadın yönlendirilir, indiği sayfa 404 verir — yani kayıt akışı sessizce
+ * kırılır ve teşhis "ödeme çalışmıyor" diye gelir.
+ *
+ * `KART_AKISI`'nda fail-closed DOĞRU, çünkü orada karşılığında yönlendirmenin
+ * kendisi de kapanıyor (`api/kayit.ts` → 400). Tek zaman ekseni gibi, tek
+ * irade ekseni de daha az yalan söyler: kapı, kendisine yönlendiren kararla
+ * aynı kaynaktan beslenir.
+ *
+ * Production'da anahtar `nkolay` yazılı (11 Eyl) — yani canlıda kapı KAPALI.
+ * Varsayılanın gevşekliği yalnız anahtarın hiç yazılmadığı ortamlarda (yerel
+ * dev, test) etkili, ve orada mock akışı zaten istenen davranış.
+ *
+ * ── ⚠ BOŞ DİZE mock SAYILMAZ — `??` boş dizeyi yakalamaz, ölçüldü ──
+ * `'' ?? 'mock'` → `''`, yani boş ve yalnız-boşluk değerler false döner.
+ * Bu bir kaza değil, factory'nin ÖNCEKİ davranışının aynısı: eski kod
+ * `(env ?? 'mock').toLowerCase()` yazıyordu ve `''` için `mock` dalına değil
+ * `throw`a gidiyordu. Yani boş anahtarda iki taraf da KAPALI yanda —
+ * kapı 404, factory 500; yarı-açık hâl yok, değişmez korunuyor.
+ * (Eski docstring *"boş/undefined → mock default"* diyordu; 7 Eki'de
+ * koşulduğunda yanlış çıktı ve düzeltildi — gerçeklik spec'i ezer.)
+ */
+export function mockSaglayiciMi(ham: string | undefined | null): boolean {
+  return (ham ?? 'mock').trim().toLowerCase() === 'mock';
+}
+
+/**
+ * Yürürlükteki sağlayıcı mock mu. **Tek okuma noktası** — `/odeme/mock`
+ * sayfası, `oda-map` elemesi ve `getPaymentProvider()` factory'si ÜÇÜ de bu
+ * sabiti okur, kendi `import.meta.env` okumasını yapmaz. Üç ayrı okuma, üç
+ * ayrı yazım hatası ihtimali demekti.
+ *
+ * ⚠ Değer BUILD ZAMANINDA sabitlenir (`KART_AKISI` ile aynı mekanizma) —
+ * Vercel'de anahtarı değiştirmek yetmez, REDEPLOY şart.
+ */
+export const MOCK_SAGLAYICI_ACIK = mockSaglayiciMi(import.meta.env.PAYMENT_PROVIDER);
+
+/**
+ * Yalnız mock sağlayıcıya ait route'lar — sağlayıcı `nkolay` iken bunlar
+ * düşer, kart akışı açık olsa bile. `/odeme/{tamam,iptal}` buraya GİRMEZ:
+ * ikisi sağlayıcı-ortak dönüş ekranları, N-Kolay da onlara dönüyor.
+ */
+export const MOCK_ROUTELARI = ['/odeme/mock'] as const;

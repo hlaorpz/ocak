@@ -203,6 +203,56 @@ describe('PaymentProvider arayüzü — KARAR 395 disiplini', () => {
     expect(MOCK_SAYFA).toMatch(/\{sir && <input[^>]*name=\{CALLBACK_SIR_ALANI\}/);
   });
 
+  it('B193 — mock sayfasının İKİ kapısı var, ikisi de KOŞUL düzeyinde', async () => {
+    const S = kodu(MOCK_SAYFA);
+    // Kapı 1 — kart akışı (KARAR 488). `nkolay.astro` ile birebir aynı satır.
+    expect(S).toMatch(
+      /if \(!KART_AKISI_ACIK\) return new Response\(null, \{ status: 404 \}\);/,
+    );
+    // Kapı 2 — sağlayıcı (B193). AYRI satır, ayrı sebep.
+    expect(S).toMatch(
+      /if \(!MOCK_SAGLAYICI_ACIK\) return new Response\(null, \{ status: 404 \}\);/,
+    );
+    // ⚠ KARAR 573 — varlık ölçümü YETMEZ, koşul ölçülür. `if (false && !X)`
+    // muhafızı devre dışı bırakır ama yukarıdaki iki iddia YİNE yeşil yanardı:
+    // `status: 404` ölü blokta da duruyor. Aşağısı sulandırmayı reddeder.
+    expect(S).not.toMatch(/if \([^)]*&&\s*!KART_AKISI_ACIK\)/);
+    expect(S).not.toMatch(/if \([^)]*&&\s*!MOCK_SAGLAYICI_ACIK\)/);
+    expect(S).not.toMatch(/if \(!KART_AKISI_ACIK\s*&&/);
+    expect(S).not.toMatch(/if \(!MOCK_SAGLAYICI_ACIK\s*&&/);
+    // İki kapının `||` ile tek satıra birleştirilmesi de reddedilir — o hâlde
+    // hangi anahtarın kapattığı ölçülemez hâle gelir.
+    expect(S).not.toMatch(/KART_AKISI_ACIK\s*\|\|/);
+    // 410 DEĞİL: 410 webhook deseni ve `/api/odeme-callback`'e ait, sayfaya
+    // değil (`nkolay.astro` notu, ölçülmüş).
+    expect(S).not.toMatch(/status: 410/);
+  });
+
+  it('B193 — sayfa kendi `PAYMENT_PROVIDER` okumasını YAPMAZ', async () => {
+    const S = kodu(MOCK_SAYFA);
+    expect(S).toMatch(
+      /import \{ KART_AKISI_ACIK, MOCK_SAGLAYICI_ACIK \} from '\.\.\/\.\.\/lib\/kart-akisi\.ts';/,
+    );
+    // Sır okumasıyla aynı disiplin (yukarıdaki test): iki okuma = iki yazım
+    // hatası ihtimali. Sayfa sağlayıcı ADINA göre de dallanmaz.
+    expect(S).not.toMatch(/import\.meta\.env\.PAYMENT_PROVIDER/);
+    expect(S).not.toMatch(/===\s*['"`](mock|nkolay)['"`]/);
+  });
+
+  it('B193 — factory ile sayfa AYNI sabiti okur (yönlendirme ⟺ kapı)', async () => {
+    const LIB = kodu(readFileSync(join(__dirname, 'payment-provider.ts'), 'utf-8'));
+    // Değişmez: bu factory mock'a yönlendiriyorsa `/odeme/mock` açık OLMAK
+    // ZORUNDA. İki yer ayrı env okursa değişmez iki yazımın eşitliğine
+    // bağlı kalır; tek sabiti paylaşınca yapısal garanti olur.
+    expect(LIB).toMatch(/if \(MOCK_SAGLAYICI_ACIK\) return mockPaymentProvider;/);
+    expect(LIB).toMatch(/import \{ MOCK_SAGLAYICI_ACIK \} from '\.\/kart-akisi\.ts';/);
+    // Mock dalı kendi `=== 'mock'` karşılaştırmasını YAPMAZ — kural tek yerde.
+    expect(LIB).not.toMatch(/===\s*['"`]mock['"`]/);
+    // `nkolay` dalının env okuması KALIYOR — bilinçli: o dal sayfa kapısını
+    // ilgilendirmiyor ve yalnız mock elendikten sonra sorulur.
+    expect(LIB).toMatch(/if \(which === 'nkolay'\) return nkolayPaymentProvider;/);
+  });
+
   it('sır `PUBLIC_` önekli DEĞİL — tarayıcı bundle\'ına düşmez', async () => {
     const LIB = readFileSync(join(__dirname, 'payment-provider.ts'), 'utf-8');
     expect(LIB).toMatch(/import\.meta\.env\.ODEME_CALLBACK_SIR/);

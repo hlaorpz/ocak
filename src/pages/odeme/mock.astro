@@ -20,12 +20,19 @@ export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi; anahtar
 // açılınca aynen geri gelir.
-import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+// B193 — İKİNCİ kapı: sağlayıcı `nkolay` iken bu sayfa kart akışı açık olsa
+// bile 404. Gerekçe `kart-akisi.ts`'te (`mockSaglayiciMi` başlığı): nkolay
+// seçiliyken ulaşılabilir bir mock ekranı, tahsilat olmadan "ödendi" üreten
+// bir yüzeydir. Kadın buraya yalnız mock sağlayıcı seçiliyken yönlendirilir.
+import { KART_AKISI_ACIK, MOCK_SAGLAYICI_ACIK } from '../../lib/kart-akisi.ts';
 // İŞ 2 — paylaşılan sır. Tek okuyucu `payment-provider.ts`; sayfa kendi
 // `import.meta.env` okumasını YAPMAZ (iki okuma = iki yazım hatası ihtimali).
 import { callbackSirri, CALLBACK_SIR_ALANI } from '../../lib/payment-provider.ts';
 
 if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
+// ⚠ AYRI SATIR, `&&` ile birleştirilmez (KARAR 573) — iki kapı iki ayrı
+// sebepten kapanıyor ve her birinin koşulu tek tek ölçülebilir kalmalı.
+if (!MOCK_SAGLAYICI_ACIK) return new Response(null, { status: 404 });
 
 const url = Astro.url;
 // Aşama 3b-fix tasarım: ref=OCAK-XXXX (kullanıcı görür), pageId=Notion UUID

@@ -6,7 +6,12 @@
  * eklenmedi; tek doğruluk kaynağı burası.
  */
 
-import { KART_AKISI_ACIK, KART_ROUTELARI } from './kart-akisi.ts';
+import {
+  KART_AKISI_ACIK,
+  KART_ROUTELARI,
+  MOCK_SAGLAYICI_ACIK,
+  MOCK_ROUTELARI,
+} from './kart-akisi.ts';
 
 export type Oda = 'OCAK' | 'Yol' | 'Buluşmalar' | 'Yolculuk' | 'Biz' | 'İletişim';
 
@@ -29,6 +34,7 @@ const ODA_MAP_HAM: Record<string, Oda> = {
   '/teslimat-iade': 'OCAK',
   // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; N-Kolay 11 Eyl)
   // KARAR 488 — kart akışı kapalıyken dört entry aşağıda listeden DÜŞER.
+  // B193 — `/odeme/mock` ayrıca sağlayıcı `nkolay` iken tek başına düşer.
   // Girdiler burada duruyor (silinmedi); eleme `ODA_MAP`'in kurulumunda.
   '/odeme/mock': 'OCAK',
   '/odeme/nkolay': 'OCAK',
@@ -58,17 +64,45 @@ const ODA_MAP_HAM: Record<string, Oda> = {
 };
 
 /**
+ * Yürürlükte DÜŞEN route'lar — iki anahtarın birleşimi, tek küme.
+ *
+ * İki eleme ayrı sebeplerden gelir ve birbirini kapsamaz:
+ *  · `KART_AKISI` kapalı  → dördü de düşer (KARAR 488)
+ *  · `PAYMENT_PROVIDER=nkolay` → `/odeme/mock` tek başına düşer (B193, 7 Eki),
+ *    kart akışı AÇIK olsa bile. Production'ın bugünkü hâli tam olarak bu:
+ *    `KART_AKISI=acik` + `PAYMENT_PROVIDER=nkolay`.
+ *
+ * Birleşim kümesi olarak yazılmasının sebebi: iki iç içe üçlü koşul yazmak
+ * "hangi anahtar neyi eledi" sorusunu okunmaz hâle getirirdi.
+ */
+const DUSEN_ROUTELAR: readonly string[] = [
+  ...(KART_AKISI_ACIK ? [] : KART_ROUTELARI),
+  ...(MOCK_SAGLAYICI_ACIK ? [] : MOCK_ROUTELARI),
+];
+
+/**
  * Slug → Oda, yürürlükteki hâl. KARAR 488 — kart akışı kapalıyken dört ödeme
  * route'u listeden düşer; `getOda()` onlar için fırlatır, ki kapalı bir akışın
- * sayfası sessizce oda kazanmasın. Anahtar açılınca üçü kendiliğinden döner.
+ * sayfası sessizce oda kazanmasın. Anahtar açılınca dördü kendiliğinden döner.
+ *
+ * B193 (7 Eki) — ikinci anahtar: sağlayıcı `nkolay` iken `/odeme/mock` kart
+ * akışı açık olsa bile düşer. Sağlayıcı `mock`'a çevrilirse o da kendiliğinden
+ * döner; iki yönde de elle liste bakımı yok.
+ *
+ * ⚠ Bu eleme bir 404 ÜRETMEZ — `/odeme/mock` statik bir `.astro` ve odasını
+ * `mock.astro`'daki `oda="OCAK"` ile kendi taşıyor; `getOda()` yalnız
+ * `notion-pages.ts`ten, yalnız Notion kaynaklı slug'lar için çağrılıyor.
+ * 404'ü sayfanın kendi kapısı üretir. Burada olan şey tutarlılık: kapalı bir
+ * yüzey eşlemede durup sessizce oda kazanmaz.
  */
-export const ODA_MAP: Record<string, Oda> = KART_AKISI_ACIK
-  ? ODA_MAP_HAM
-  : Object.fromEntries(
-      Object.entries(ODA_MAP_HAM).filter(
-        ([slug]) => !(KART_ROUTELARI as readonly string[]).includes(slug),
-      ),
-    );
+export const ODA_MAP: Record<string, Oda> =
+  DUSEN_ROUTELAR.length === 0
+    ? ODA_MAP_HAM
+    : Object.fromEntries(
+        Object.entries(ODA_MAP_HAM).filter(
+          ([slug]) => !DUSEN_ROUTELAR.includes(slug),
+        ),
+      );
 
 /**
  * Slug'tan oda döner. Slug kapalı sette yoksa fırlatır — Notion'a beklenmedik bir
