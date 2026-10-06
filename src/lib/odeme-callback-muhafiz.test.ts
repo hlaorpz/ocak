@@ -10,16 +10,30 @@ import { join } from 'node:path';
  * İmza doğrulaması "bu dönüş sağlayıcıdan geldi" der. Bu kapılar ayrı bir
  * soruya bakar: **doğru kayda, doğru tutarda, ilk kez mi geliyor?**
  *
- * ⚠ **DOĞRULANMAMIŞ VEKTÖR — fixture bir VARSAYIM üstüne kurulu.**
- * `REFERENCE_CODE`'un bizim `clientRefCode`'umuzun yankısı olduğu
- * ÖLÇÜLMEDİ: altın vektör yok (örnek yanıtların secret'ı yayınlanmamış),
- * canlı işlem koşulmadı, entegrasyon dokümanı repoda yok. Aşağıdaki
- * gövdeler o varsayımı taklit eder. Varsayım yanlışsa kod **fail-closed**
- * reddeder ve gövdenin ALAN ADLARINI log'a basar — ilk test işlemi gerçek
- * alan adını söyleyecek ve bu fixture o gün düzeltilecek.
+ * ✅ **VEKTÖR ÖLÇÜLDÜ (6 Eki 2026) — fixture artık varsayım taşımıyor.**
+ * *(Bu paragrafın önceki hâli "DOĞRULANMAMIŞ VEKTÖR" diyordu ve haklıydı:
+ * `REFERENCE_CODE`'un bizim `clientRefCode`'umuzun yankısı olduğu bir
+ * VARSAYIMDI. Varsayım ÇÜRÜDÜ, B201 kapandı.)*
  *
- * `CLIENT_REFERENCE_CODE` bilinçli olarak KULLANILMIYOR: hash kapsamında
- * değil, yani dönüş POST'unu gönderen tarayıcıdan serbestçe yazılabilir.
+ * Ölçülen gerçek — dönüş gövdesinde İKİ AYRI kimlik var:
+ *   `REFERENCE_CODE`        = N-KOLAY'ın işlem numarası (`IKSIRPF341481127`)
+ *                             → **hash kapsamında**, imzalı
+ *   `CLIENT_REFERENCE_CODE` = bizim `clientRefCode` (`OCAK-7K2M-12345`)
+ *                             → **hash DIŞINDA**, tarayıcıdan yazılabilir
+ *
+ * Kanıt zinciri: 1 Eki canlı dönüşünde hash kapısı geçti, red biçim kapısında
+ * oldu (9 alanlı dize doğru) · N-Kolay paneli iki ayrı sütun gösteriyor ·
+ * canlı `PaymentList` yanıtı aynı ayrımı taşıyor.
+ *
+ * Sonuç: bizim kodumuz dönüşten OKUNAMAZ. Kayıt **mutabakat köprüsüyle**
+ * çözülür — `REFERENCE_CODE` → `PaymentList` (sırla imzalı, N-Kolay'ın kendi
+ * sunucusu) → `clientRefCode` → sonek soyulur → `kayitOku`. Aşağıdaki
+ * fixture bu zinciri taklit eder; `fetch` stub'lanır.
+ *
+ * `CLIENT_REFERENCE_CODE` **dönüş gövdesinden** hâlâ bilinçli olarak
+ * OKUNMUYOR: hash kapsamında değil. Köprünün okuduğu aynı adlı alan farklı
+ * bir yüzeydir (imzalı `PaymentList` yanıtı) ve ayrı modülde yaşar —
+ * gerekçesi `nkolay-mutabakat.ts` başında.
  *
  * KARAR 573 — muhafızların KOŞULU ölçülür: route `import` edilip `POST`
  * gerçek `Request` ile çağrılır, dönen status okunur. Bir kapıyı
@@ -28,8 +42,27 @@ import { join } from 'node:path';
 
 const SECRET = 'm3rch4nt-s3cr3t-K3y';
 const REF = 'OCAK-7K2M';
-const HAM_REF = `${REF}-12345`;
+/** Bizim gönderdiğimiz tam kod — artık dönüşte DEĞİL, `PaymentList`'te yaşıyor. */
+const GONDERILEN_REF = `${REF}-12345`;
+/** Dönüşte gelen = N-Kolay'ın kendi numarası. Biçimi ölçülen örnekle aynı sınıf. */
+const HAM_REF = 'IKSIRPF341481127';
 const BEKLENEN_TUTAR = 1234.56;
+
+/**
+ * `PaymentList` yanıtı — ölçülen İÇ İÇE şekil: `{"result":"<JSON dizesi>"}`.
+ * Satır alanları 6 Eki canlı ölçümünden.
+ */
+function paymentListYanit(
+  satirlar: Array<{ ref?: string; client?: string; status?: string; tip?: string }> = [{}],
+): string {
+  const LIST = satirlar.map((s) => ({
+    REFERENCE_CODE: s.ref ?? HAM_REF,
+    CLIENT_REFERENCE_CODE: s.client ?? GONDERILEN_REF,
+    STATUS: s.status ?? 'SUCCESS',
+    TRANSACTION_TYPE: s.tip ?? 'SALES',
+  }));
+  return JSON.stringify({ result: JSON.stringify({ RESPONSE_CODE: 1, LIST }) });
+}
 
 const sha512b64 = (s: string) => createHash('sha512').update(s, 'utf8').digest('base64');
 
@@ -94,11 +127,35 @@ function notionSahtesi(satir: { tutar?: number | null; islemNo?: string } | null
  * Route'u taze import eder. `KART_AKISI=acik` (410 muhafızı bu suite'in
  * konusu değil) + `PAYMENT_PROVIDER=nkolay` + sahte Notion.
  */
-async function routeYukle(satir: { tutar?: number | null; islemNo?: string } | null) {
+async function routeYukle(
+  satir: { tutar?: number | null; islemNo?: string } | null,
+  opts: {
+    /** `PaymentList` yanıt gövdesi. `null` → ağ hatası. `undefined` → varsayılan eşleşen satır. */
+    paymentList?: string | null;
+    /** `PaymentList` HTTP durumu. */
+    paymentListStatus?: number;
+  } = {},
+) {
   vi.resetModules();
   vi.stubEnv('KART_AKISI', 'acik');
   vi.stubEnv('PAYMENT_PROVIDER', 'nkolay');
   vi.stubEnv('NKOLAY_MERCHANT_SECRET', SECRET);
+  // Mutabakat köprüsünün env yüzeyi. `NKOLAY_SX_LIST` listeleme ucunun AYRI
+  // kimliği — satış `sx`'i ile sorgulamak hash'i bozardı.
+  vi.stubEnv('NKOLAY_SX_LIST', 'sx-list-test');
+  vi.stubEnv('NKOLAY_BASE_URL', 'https://paynkolaytest.ornek.invalid/Vpos');
+
+  // ⚠ `fetch` STUB — testler gerçek ağa çıkmaz. Köprünün çağrıldığını ve NE
+  // gönderdiğini de bu casus ölçer (hash alan adı, kodlama, tarih biçimi).
+  const fetchCasus = vi.fn(async () => {
+    if (opts.paymentList === null) throw new Error('ağ düştü');
+    return new Response(opts.paymentList ?? paymentListYanit(), {
+      status: opts.paymentListStatus ?? 200,
+      headers: { 'content-type': 'text/plain; charset=utf-8' },
+    });
+  });
+  vi.stubGlobal('fetch', fetchCasus);
+
   const sahte = notionSahtesi(satir);
   vi.doMock('../lib/notion.ts', () => ({
     notion: sahte.client,
@@ -107,7 +164,7 @@ async function routeYukle(satir: { tutar?: number | null; islemNo?: string } | n
   const mod = (await import('../pages/api/odeme-callback.ts')) as unknown as {
     POST: (ctx: { request: Request }) => Promise<Response>;
   };
-  return { ...sahte, POST: mod.POST };
+  return { ...sahte, POST: mod.POST, fetchCasus };
 }
 
 function istek(govde: URLSearchParams): Request {
@@ -229,14 +286,99 @@ describe('odeme-callback — beş kapı, KOŞUL ölçülür (KARAR 573)', () => 
     expect(filtre.title.equals).not.toBe(HAM_REF);
   });
 
-  it('7b · sonek biçimi tutmayan REFERENCE_CODE → 401, sorgu bile atılmaz', async () => {
-    for (const bozuk of ['OCAK-7K2M', 'OCAK-7K2M-abc', 'BASKA-XXXX-12345', '']) {
-      const { POST, client } = await routeYukle({ tutar: BEKLENEN_TUTAR });
+  it('7b · REFERENCE_CODE boş/taşınamaz → 401, köprü ÇAĞRILMAZ', async () => {
+    // Kapı artık ŞEKİL sormuyor (`IKSIRPF` çivilenmedi, B201'in hatası
+    // tekrar edilmedi) — "dolu ve taşınabilir mi" soruyor. Bu üç değer
+    // taşınamaz: boş · çok kısa · yasak karakter.
+    for (const bozuk of ['', 'abc', 'IKSIRPF 341481127']) {
+      const { POST, client, fetchCasus } = await routeYukle({ tutar: BEKLENEN_TUTAR });
       const casus = vi.spyOn(client.databases, 'query');
       const res = await POST({ request: istek(imzaliGovde({ REFERENCE_CODE: bozuk })) });
       expect(res.status, bozuk).toBe(401);
+      expect(fetchCasus, bozuk).not.toHaveBeenCalled();
       expect(casus, bozuk).not.toHaveBeenCalled();
     }
+  });
+
+  it('7c · biçimi geçen ama PaymentList\'te eşleşmeyen referans → 401', async () => {
+    // Kapıyı geçmek yetmez: kimliğin KANITI mutabakattır. Eşleşme yoksa
+    // Notion'a hiç gidilmez.
+    const { POST, client } = await routeYukle({ tutar: BEKLENEN_TUTAR });
+    const casus = vi.spyOn(client.databases, 'query');
+    const res = await POST({ request: istek(imzaliGovde({ REFERENCE_CODE: 'IKSIRPF999999999' })) });
+    expect(res.status).toBe(401);
+    expect(casus).not.toHaveBeenCalled();
+  });
+
+  it('7d · CANCEL satırı ödeme SAYILMAZ → 401', async () => {
+    // ⚠ İptal satırı iptal ettiği işlemin `REFERENCE_CODE`'unu taşır. Tipi
+    // sormadan ilk eşleşmeyi almak, iptal edilmiş işlemi ödeme sayardı.
+    const { POST, client } = await routeYukle(
+      { tutar: BEKLENEN_TUTAR },
+      { paymentList: paymentListYanit([{ tip: 'CANCEL' }]) },
+    );
+    const casus = vi.spyOn(client.databases, 'query');
+    expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
+    expect(casus).not.toHaveBeenCalled();
+  });
+
+  it('7e · STATUS=ERROR satırı → 401', async () => {
+    const { POST } = await routeYukle(
+      { tutar: BEKLENEN_TUTAR },
+      { paymentList: paymentListYanit([{ status: 'ERROR' }]) },
+    );
+    expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
+  });
+
+  it('7f · CANCEL + SALES aynı referansta → SALES seçilir, 302', async () => {
+    // Gerçekçi hâl: işlem başarılı, sonra iptal denemesi başarısız olmuş.
+    // Liste iki satır taşır; köprü doğru olanı bulmalı.
+    const { POST, guncellenen } = await routeYukle(
+      { tutar: BEKLENEN_TUTAR },
+      { paymentList: paymentListYanit([{ tip: 'CANCEL', status: 'ERROR' }, {}]) },
+    );
+    expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(302);
+    expect(guncellenen).toHaveLength(1);
+  });
+
+  it('7g · PaymentList ağ hatası / HTTP hatası / bozuk gövde → 401, SESSİZ DEĞİL', async () => {
+    // ⚠ Buraya gelen istek imzasını GEÇMİŞ: para muhtemelen çekilmiş. Kayıt
+    // kapanmıyorsa iz log'da durmalı.
+    const haller: Array<[string, Parameters<typeof routeYukle>[1]]> = [
+      ['ağ', { paymentList: null }],
+      ['http', { paymentListStatus: 500 }],
+      ['bozuk-json', { paymentList: 'bu json değil' }],
+      ['LIST-yok', { paymentList: JSON.stringify({ result: JSON.stringify({ RESPONSE_CODE: 0 }) }) }],
+    ];
+    for (const [ad, opts] of haller) {
+      const hata = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { POST, guncellenen } = await routeYukle({ tutar: BEKLENEN_TUTAR }, opts);
+      expect((await POST({ request: istek(imzaliGovde()) })).status, ad).toBe(401);
+      expect(guncellenen, ad).toHaveLength(0);
+      const satir = hata.mock.calls.map((c) => String(c[0])).join('\n');
+      expect(satir, ad).toContain(HAM_REF); // sağlayıcı referansı iz olarak düşüyor
+      hata.mockRestore();
+    }
+  });
+
+  it('7h · köprü ÖLÇÜLEN sözleşmeyle çağrılıyor — ad · kodlama · tarih biçimi', async () => {
+    // Üç prob turunun kazanımı burada çivili. Biri değişirse N-Kolay sessizce
+    // "Hash Data boş geçilemez" demeye döner ve hat yine kapanır.
+    const { POST, fetchCasus } = await routeYukle({ tutar: BEKLENEN_TUTAR });
+    await POST({ request: istek(imzaliGovde()) });
+    expect(fetchCasus).toHaveBeenCalledTimes(1);
+    const [adres, init] = fetchCasus.mock.calls[0] as unknown as [string, RequestInit];
+    expect(adres).toContain('/Payment/PaymentList');
+    expect(init.method).toBe('POST');
+    // `URLSearchParams` gövdesi → fetch `x-www-form-urlencoded` basar.
+    expect(init.body).toBeInstanceOf(URLSearchParams);
+    const g = init.body as URLSearchParams;
+    expect(g.get('hashDataV2')).toBeTruthy();      // ad: hashData DEĞİL
+    expect(g.get('hash')).toBeNull();
+    expect(g.get('clientRefCode')).toBe('');        // boş geçilebilir, ayıraç yerinde
+    // Tarih: DD.MM.YYYY — nokta ayıraç, ISO DEĞİL.
+    expect(g.get('startDate')).toMatch(/^\d{2}\.\d{2}\.\d{4}$/);
+    expect(g.get('endDate')).toMatch(/^\d{2}\.\d{2}\.\d{4}$/);
   });
 
   it('8 · kayıt bulunamazsa → 401', async () => {
@@ -299,12 +441,28 @@ describe('kaynak disiplini — muhafızların koşulu ve KARAR 395', () => {
     }
   });
 
-  it('CLIENT_REFERENCE_CODE HİÇBİR yerde okunmaz', () => {
-    // Hash kapsamı dışında; oradan kayıt çözmek imzayı imzasız alana
-    // devretmek olurdu.
+  it('CLIENT_REFERENCE_CODE callback yüzeyinde okunmaz (route + sağlayıcı)', () => {
+    // Hash kapsamı dışında; DÖNÜŞ GÖVDESİNDEN kayıt çözmek imzayı imzasız
+    // alana devretmek olurdu.
     const LIB = readFileSync(join(__dirname, 'payment-provider.ts'), 'utf-8');
     expect(kodu(ROUTE)).not.toMatch(/CLIENT_REFERENCE_CODE/);
     expect(kodu(LIB)).not.toMatch(/CLIENT_REFERENCE_CODE/);
+  });
+
+  it('⚠ yasak DARALMADI — dizenin yaşadığı tek yer köprü modülü, o da gövdeyi görmez', () => {
+    // 6 Eki'de köprü geldi ve `CLIENT_REFERENCE_CODE`'u OKUMAK zorunda:
+    // `PaymentList` yanıtında bizim kodumuzun adı o. Ama o yanıt dönüş POST'u
+    // DEĞİL — sırla imzalı bir çağrıya N-Kolay'ın kendi sunucusunun cevabı.
+    //
+    // Dize bu yüzden ayrı modüle taşındı. ⚠ Taşıma yasağı daraltmasın diye
+    // iki şey birlikte çivili: (a) dize YALNIZ o modülde yaşıyor,
+    // (b) o modül callback gövdesine tip düzeyinde erişemez.
+    const KOPRU = kodu(readFileSync(join(__dirname, 'nkolay-mutabakat.ts'), 'utf-8'));
+    expect(KOPRU).toMatch(/CLIENT_REFERENCE_CODE/);          // (a) burada yaşıyor
+    expect(KOPRU).not.toMatch(/URLSearchParams|\bRequest\b/); // (b) gövdeyi göremez
+
+    // Ve route kimliği köprüye HASH KAPSAMINDAN veriyor.
+    expect(kodu(ROUTE)).toMatch(/saglayiciReferansi:\s*dogrulama\.saglayiciReferansi/);
   });
 
   it('query pageId/tutar ARTIK tüketilmiyor', () => {

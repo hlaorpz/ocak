@@ -33,6 +33,10 @@
  */
 
 import { createHash, timingSafeEqual } from 'node:crypto';
+// ⚠ `PaymentList` yanıtının AYRIŞTIRILMASI bilerek ayrı modülde yaşıyor —
+// gerekçesi o dosyanın başında (muhafız grep'i + "callback gövdesini görmez"
+// tip güvencesi). Buradan yalnız iki saf fonksiyon çağrılıyor.
+import { paymentListAyristir, secKaydi } from './nkolay-mutabakat';
 
 export type CheckoutBaslatGirdi = {
   /** Notion Kayıtlar page id — callback bu satırı Ödendi'ye çeker. */
@@ -138,8 +142,31 @@ export type CallbackDogrulama = {
    * imzanın koruduğu şeyi imzasız alana devretmektir: geçerli imzalı tek bir
    * dönüşü yakalayan biri, referansı başkasının kaydına çevirip o kaydı
    * Ödendi'ye çekebilirdi.
+   *
+   * ⚠ **Sağlayıcı bunu doldurmak ZORUNDA DEĞİL** (6 Eki 2026). N-Kolay'ın
+   * dönüşünde bizim kodumuzun yankısı YOK — hash kapsamındaki tek kimlik
+   * sağlayıcının kendi numarası. O sağlayıcı bu alanı BOŞ bırakır ve
+   * `saglayiciReferansi`'nı doldurur; route kaydı mutabakat köprüsüyle çözer.
+   * `mock` doğrudan doldurmaya devam eder — köprüye ihtiyacı yok.
    */
   referansKodu?: string;
+  /**
+   * Sağlayıcının KENDİ işlem referansı — imza kapsamından, ham.
+   *
+   * N-Kolay'da `REFERENCE_CODE` (örn. `IKSIRPF341481127`). Bizim kodumuzla
+   * ilgisi yoktur ve ondan türetilemez; kayda ancak `mutabakatSorgula()` ile
+   * bağlanır.
+   *
+   * ⚠ Neden `referansKodu`'ndan AYRI bir alan: ikisini tek alanda taşımak
+   * "bazen OCAK-XXXX, bazen sağlayıcı numarası" demek olurdu ve `kayitOku()`
+   * sessizce yanlış şeyi arardı. Ayrı alan, hangi kimliğin elde olduğunu
+   * TİP düzeyinde söylüyor.
+   *
+   * Ölçüm: 1 Eki canlı dönüşünde hash kapısı GEÇTİ, `REFERENCE_CODE` hash
+   * kapsamında — yani bu alan imzalıdır. `CLIENT_REFERENCE_CODE` ve
+   * `MERCHANT_OID` kapsamda DEĞİL (9 alanlı dize + ayıraç kanıtı).
+   */
+  saglayiciReferansi?: string;
   /**
    * İşlemin kimliği — Notion `İşlem No` alanına yazılır ve **replay muhafızı**
    * odur: alan doluysa aynı kayıt ikinci kez Ödendi'ye çekilemez.
@@ -172,7 +199,36 @@ export interface PaymentProvider {
    * (sayfaya) Notion'dan gelir, sağlayıcı yalnız imzalar.
    */
   odemeFormu?(p: OdemeFormuGirdi): OdemeFormu;
+  /**
+   * **Mutabakat köprüsü** — sağlayıcının kendi referansından bizim
+   * `clientRefCode`'umuzu bulur. **Opsiyonel**: yalnız dönüşünde bizim
+   * kodumuzun yankısı OLMAYAN sağlayıcılar yazar (`nkolay`). `mock`
+   * yazmaz — o `referansKodu`'nu doğrudan doldurur.
+   *
+   * ⚠ **Bu metot I/O YAPAR** ve bu, `dogrulaCallback`'in senkron-kalma
+   * kuralını çiğnemez: o kural doğrulanmamış isteğin bize iş yaptırmasını
+   * engellemek için var. Bu çağrı route'ta, **hash kapısı geçtikten sonra**
+   * yapılır — yani yalnız imzası doğrulanmış istek için. Doğrulamanın
+   * KENDİSİ hâlâ ağ çağrısı gerektirmiyor; DoS yüzeyi açılmıyor.
+   *
+   * `saglayiciReferansi` YALNIZ imza kapsamından gelir (KARAR 593).
+   */
+  mutabakatSorgula?(p: MutabakatGirdi): Promise<MutabakatSonuc>;
 }
+
+export type MutabakatGirdi = {
+  /** Sağlayıcının kendi işlem referansı — imza kapsamından. */
+  saglayiciReferansi: string;
+  /** Sorgu penceresini kuran an. Test edilebilirlik için dışarıdan verilir. */
+  simdi: Date;
+};
+
+export type MutabakatSonuc =
+  | {
+      /** Bizim gönderdiğimiz tam kod — `OCAK-XXXX-NNNNN`. */
+      clientRefCode: string;
+    }
+  | { hata: string };
 
 /**
  * Paylaşılan sır — `ODEME_CALLBACK_SIR`. `PUBLIC_` öneki YOK: tarayıcıya
@@ -312,6 +368,9 @@ export const mockPaymentProvider: PaymentProvider = {
 function nkolayEnv() {
   return {
     sx: (import.meta.env.NKOLAY_SX ?? '').trim(),
+    // Listeleme ucunun AYRI üye işyeri kimliği. 11 Eyl'den beri env yüzeyinde
+    // duruyordu ve hiçbir kod okumuyordu (B200); ilk okuyucusu mutabakat köprüsü.
+    sxList: (import.meta.env.NKOLAY_SX_LIST ?? '').trim(),
     merchantSecret: (import.meta.env.NKOLAY_MERCHANT_SECRET ?? '').trim(),
     baseUrl: (import.meta.env.NKOLAY_BASE_URL ?? '').trim().replace(/\/+$/, ''),
   };
@@ -390,6 +449,81 @@ export const CLIENT_REF_BICIMI = /^(OCAK-[A-Z0-9]{4})-\d{5}$/;
 export function soyEpochSoneki(kod: string): string | null {
   const m = CLIENT_REF_BICIMI.exec(kod.trim());
   return m ? m[1] : null;
+}
+
+/**
+ * Sağlayıcının KENDİ referansının kabul kapısı — `REFERENCE_CODE`.
+ *
+ * ── Neden önek çivilenmedi ──
+ * Ölçülen tek örnek `IKSIRPF341481127` (6 Eki, N-Kolay paneli + canlı dönüş).
+ * **Bir örnekten `^IKSIRPF\d+$` çıkarmak B201'in hatasını tekrar etmek olur:**
+ * ölçülmemiş bir biçime fail-closed kapı kurmak, hattı sessizce kapatır.
+ * `IKSIRPF`'in terminale mi, üye işyerine mi, işlem tipine mi bağlı olduğu
+ * BİLİNMİYOR; doküman repoda yok (B201).
+ *
+ * ── Kapının gerçek işi ──
+ * Bu değerden kimlik TÜRETİLMİYOR artık — kaydı mutabakat köprüsü çözüyor.
+ * Yani kapı "şekli doğru mu" diye sormaz, **"dolu ve taşınabilir mi"** diye
+ * sorar. İki şeyi korur: (a) boş/eksik referansla köprüye gitmeyi engeller,
+ * (b) değer Notion `İşlem No`'ya ve replay kilidine gittiği için sınırsız/
+ * kontrolsüz dizeyi içeri almaz.
+ *
+ * Sınırlar gerekçeli, keyfi değil: ölçülen örnek 16 karakter; 6 alt sınırı
+ * kısa-çöp dizeleri eler, 64 üst sınırı log ve Notion alanını korur, karakter
+ * kümesi sağlayıcı referanslarının gerçekçi evreni (harf · rakam · `-` `_` `.`).
+ */
+export const NKOLAY_REF_BICIMI = /^[A-Za-z0-9._-]{6,64}$/;
+
+/**
+ * Mutabakat sorgusunun tarih penceresi — **`DD.MM.YYYY`, nokta ayıraç.**
+ *
+ * Ölçüldü (6 Eki, canlı PaymentList): gövdede `DD.MM.YYYY` zorunlu
+ * (*"startDate DD.MM.YYYY formatında olmalı"*) ve **hash dizesinde de aynısı** —
+ * ISO varyantı `hashData error` aldı. İki yer aynı biçimi kullanır.
+ *
+ * ── Pencere neden iki gün ──
+ * Callback işlemden saniyeler sonra gelir, yani işlem "bugün"dür. Tek istisna
+ * gün dönümü: 23:59:58'de çekim, 00:00:01'de callback → tarih kayar. Dün+bugün
+ * penceresi bunu kapatır ve maliyeti yok (aynı tek sorgu).
+ *
+ * Saat dilimi **Europe/Istanbul**: sağlayıcının günü TR günüdür, sunucunun
+ * UTC'si gece yarısı civarında yanlış günü sorardı. `uretRnd` ile aynı gerekçe.
+ */
+export function uretMutabakatPenceresi(simdi: Date): { start: string; end: string } {
+  const gun = (d: Date) => {
+    const p = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Istanbul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(d);
+    const al = (t: string) => p.find((x) => x.type === t)?.value ?? '';
+    return `${al('day')}.${al('month')}.${al('year')}`;
+  };
+  const dun = new Date(simdi.getTime() - 24 * 60 * 60 * 1000);
+  return { start: gun(dun), end: gun(simdi) };
+}
+
+/**
+ * **Hash 3 — mutabakat.**
+ * `sx|startDate|endDate|clientRefCode|merchantSecretKey`
+ *
+ * Alan sırası B200'den (`02-borclar.md`). `clientRefCode` BOŞ geçilebilir
+ * (ölçüldü, 6 Eki: boş varyant iki kayıt döndürdü) ama **ayıracı yerinde
+ * durur** — boş alanı atlamak diziyi kaydırır ve imzayı sessizce bozar;
+ * istek hash'indeki `customerKey` ile aynı kural.
+ *
+ * ⚠ `sx` burada `NKOLAY_SX` DEĞİL, **`NKOLAY_SX_LIST`**. Listeleme ucunun
+ * kendi üye işyeri kimliği var; satış `sx`'i ile sorgulamak hash'i bozar.
+ */
+export function nkolayMutabakatHashDizesi(a: {
+  sxList: string;
+  startDate: string;
+  endDate: string;
+  clientRefCode: string;
+  merchantSecretKey: string;
+}): string {
+  return [a.sxList, a.startDate, a.endDate, a.clientRefCode, a.merchantSecretKey].join('|');
 }
 
 /**
@@ -614,20 +748,29 @@ export const nkolayPaymentProvider: PaymentProvider = {
     }
 
     // ── Kaydı çözecek referans: YALNIZ `REFERENCE_CODE` ──
-    // `CLIENT_REFERENCE_CODE` KULLANILMIYOR ve bu bilinçli: o alan hash
-    // kapsamında değil, yani tarayıcıdan serbestçe yazılabilir. Kaydı oradan
-    // çözmek, imzanın koruduğu şeyi imzasız bir alana devretmek olurdu.
+    // Hash kapsamındaki tek kimlik budur. Dönüşte bizim kodumuzu taşıyan alan
+    // hash DIŞINDA (ölçüldü) ve oradan kayıt çözmek, imzanın koruduğu şeyi
+    // imzasız bir alana devretmek olurdu — KARAR 593.
     //
-    // ⚠ ÖLÇÜLMEDİ: `REFERENCE_CODE`'un bizim `clientRefCode`'umuzun yankısı
-    // olduğu VARSAYIM. Altın vektör yok, canlı işlem koşulmadı. Biçim
-    // tutmazsa fail-closed reddediyoruz ve gövdenin ALAN ADLARINI log'a
-    // basıyoruz — ilk test işlemi gerçek alan adını söyleyecek.
+    // ✅ ÖLÇÜLDÜ (6 Eki 2026) — eski VARSAYIM ÇÜRÜDÜ, B201 kapandı:
+    // `REFERENCE_CODE` bizim `clientRefCode`'umuzun yankısı DEĞİL, N-Kolay'ın
+    // kendi işlem numarası (`IKSIRPF341481127`). Kanıt zinciri:
+    //   · 1 Eki canlı dönüşünde hash kapısı GEÇTİ, red `REFERENCE_CODE`
+    //     biçiminde oldu → 9 alanlı dize doğru, kapsam doğrulandı
+    //   · N-Kolay paneli (POS İşlem Raporu) iki AYRI sütun gösteriyor:
+    //     "Referans Numarası" = bizim kod · "N Kolay Referans Numarası" = onların
+    //   · canlı `PaymentList` yanıtı aynı ayrımı taşıyor (`LIST[]`)
+    //
+    // Bu yüzden burada artık `OCAK-XXXX` TÜRETİLMİYOR — türetilemez. Kapı
+    // yalnız "dolu ve taşınabilir mi" diye sorar (`NKOLAY_REF_BICIMI`,
+    // gerekçesi tanımının yanında), kaydı route'taki mutabakat köprüsü çözer.
     const hamRef = oku('REFERENCE_CODE');
-    const referansKodu = soyEpochSoneki(hamRef);
-    if (!referansKodu) {
+    if (!NKOLAY_REF_BICIMI.test(hamRef)) {
+      // Alan adlarını basmaya devam: bir sonraki şekil kayması da aynı satırda
+      // teşhis edilsin. Değer basılmıyor — `hashData*` bu listede duruyor.
       console.warn(
-        `[nkolay] REFERENCE_CODE biçimi tutmadı (fail-closed) — gövdedeki ALAN ADLARI: ` +
-          `${[...p.keys()].join(', ')}`,
+        `[nkolay] REFERENCE_CODE yok ya da taşınamaz (fail-closed) — ` +
+          `uzunluk=${hamRef.length} · gövdedeki ALAN ADLARI: ${[...p.keys()].join(', ')}`,
       );
       return { gecerli: false, sebep: 'referans-bicimi-tutmadi' };
     }
@@ -642,12 +785,84 @@ export const nkolayPaymentProvider: PaymentProvider = {
     return {
       gecerli: true,
       tutar,
-      referansKodu,
-      // İşlem kimliği = HAM `REFERENCE_CODE` (sonekli). Deneme başına
-      // benzersiz olan tek imza-kapsamlı değer bu; `AUTH_CODE` işlemler
-      // arasında tekrar edebilir, replay kilidi olamaz.
+      // ⚠ `referansKodu` BİLEREK BOŞ: bu sağlayıcının dönüşü bizim kodumuzu
+      // taşımıyor. Route köprüyle çözer. Buraya bir şey yazmak — örneğin
+      // hash dışı alandan okumak — KARAR 593'ü çiğnemek olurdu.
+      saglayiciReferansi: hamRef,
+      // İşlem kimliği = HAM `REFERENCE_CODE`. İşlem başına benzersiz olan tek
+      // imza-kapsamlı değer bu; `AUTH_CODE` işlemler arasında tekrar edebilir,
+      // replay kilidi olamaz. Notion `İşlem No` artık N-Kolay'ın numarasını
+      // taşır — B202'nin öngördüğü kullanım ("o, dönüşte gelen N-Kolay işlem
+      // numarası için") birebir gerçekleşti.
       islemNo: hamRef,
     };
+  },
+
+  /**
+   * Mutabakat köprüsü — `REFERENCE_CODE` → `clientRefCode`.
+   *
+   * `PaymentList` **`clientRefCode` ile filtreliyor**, elimizdeki ise
+   * N-Kolay'ın `REFERENCE_CODE`'u. Bu yüzden sorgu tarih penceresiyle açılır
+   * ve eşleşme dönen `LIST` içinde aranır (`nkolay-mutabakat.ts`).
+   *
+   * Ölçülmüş istek sözleşmesi (6 Eki, üç prob turu):
+   *   uç      `{NKOLAY_BASE_URL}/Payment/PaymentList`
+   *   kodlama `application/x-www-form-urlencoded`   ← multipart DEĞİL
+   *   hash    alan adı **`hashDataV2`**              ← `hashData` değil
+   *   tarih   `DD.MM.YYYY` — gövdede VE hash dizesinde aynı
+   */
+  async mutabakatSorgula({ saglayiciReferansi, simdi }) {
+    const { sxList, merchantSecret, baseUrl } = nkolayEnv();
+    if (!sxList) return { hata: 'NKOLAY_SX_LIST tanımsız' };
+    if (!merchantSecret) return { hata: 'NKOLAY_MERCHANT_SECRET tanımsız' };
+    if (!baseUrl) return { hata: 'NKOLAY_BASE_URL tanımsız' };
+    if (!saglayiciReferansi.trim()) return { hata: 'sağlayıcı referansı boş' };
+
+    const { start, end } = uretMutabakatPenceresi(simdi);
+    // `clientRefCode` BOŞ — aradığımız şey o değil, ayıracı yerinde duruyor.
+    const hash = sha512Base64(
+      nkolayMutabakatHashDizesi({
+        sxList,
+        startDate: start,
+        endDate: end,
+        clientRefCode: '',
+        merchantSecretKey: merchantSecret,
+      }),
+    );
+
+    const govde = new URLSearchParams();
+    govde.append('sx', sxList);
+    govde.append('startDate', start);
+    govde.append('endDate', end);
+    govde.append('clientRefCode', '');
+    govde.append('hashDataV2', hash);
+
+    let yanit: Response;
+    try {
+      yanit = await fetch(`${baseUrl}/Payment/PaymentList`, {
+        method: 'POST',
+        body: govde,
+      });
+    } catch (err) {
+      // Ağ hatası fail-closed: kayıt çözülemez. Sessiz "bulunamadı" demek,
+      // tahsil edilmiş bir ödemeyi ağ gürültüsüyle karıştırmak olurdu.
+      return { hata: `PaymentList ağ hatası: ${String(err).slice(0, 150)}` };
+    }
+    if (!yanit.ok) return { hata: `PaymentList HTTP ${yanit.status}` };
+
+    const kayitlar = paymentListAyristir(await yanit.text());
+    if (kayitlar === null) return { hata: 'PaymentList yanıtı ayrıştırılamadı' };
+
+    const satir = secKaydi(kayitlar, saglayiciReferansi);
+    if (!satir) {
+      return {
+        hata:
+          `PaymentList'te SALES+SUCCESS eşleşmesi yok — ` +
+          `ref=${saglayiciReferansi} pencere=${start}→${end} satır=${kayitlar.length}`,
+      };
+    }
+    if (!satir.clientRefCode) return { hata: 'eşleşen satırda clientRefCode boş' };
+    return { clientRefCode: satir.clientRefCode };
   },
 };
 

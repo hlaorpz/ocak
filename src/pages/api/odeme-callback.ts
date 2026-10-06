@@ -26,7 +26,11 @@ import { publicOrigin } from '../../lib/public-origin.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 // İŞ 2 — callback doğrulaması sağlayıcı arayüzünde yaşar (KARAR 395).
-import { getPaymentProvider, type CallbackDogrulama } from '../../lib/payment-provider.ts';
+import {
+  getPaymentProvider,
+  soyEpochSoneki,
+  type CallbackDogrulama,
+} from '../../lib/payment-provider.ts';
 
 export const prerender = false;
 
@@ -202,22 +206,79 @@ async function handle(request: Request): Promise<Response> {
   // geldi." Bu üç kapı ayrı bir soruya bakar: "geldiği yer doğru olsa bile,
   // DOĞRU KAYDA, DOĞRU TUTARDA ve İLK KEZ mi geliyor?"
   //
-  // ⚠ Kayıt `dogrulama.referansKodu`'ndan çözülür — query `pageId` YOK
-  // SAYILIR. Query imza kapsamında değil; dönüş POST'unu kullanıcının
-  // tarayıcısı gönderdiği için oradan kayıt çözmek, imzanın koruduğu şeyi
-  // imzasız alana devretmek olurdu.
+  // ⚠ Kayıt imza kapsamından çözülür — query `pageId` YOK SAYILIR. Query imza
+  // kapsamında değil; dönüş POST'unu kullanıcının tarayıcısı gönderdiği için
+  // oradan kayıt çözmek, imzanın koruduğu şeyi imzasız alana devretmek olurdu.
+  // *(Bu paragrafın önceki hâli "`dogrulama.referansKodu`'ndan çözülür"
+  // diyordu; 6 Eki'de kimlik çözümü iki yola ayrıldı — hemen aşağıda.)*
   //
   // KARAR 395 korunuyor: route sağlayıcı ADINA dallanmaz. Üç alanı da
   // arayüz veriyor (`CallbackDogrulama`), sağlayıcı kendi imza kapsamından
   // dolduruyor.
-  if (!dogrulama.referansKodu) {
-    console.warn('[odeme-callback] doğrulama referans taşımıyor (401) — kayıt çözülemez');
-    return new Response('Callback doğrulanamadı.', { status: 401 });
+  // ── KİMLİK ÇÖZÜMÜ — iki yol, ikisi de imza kapsamından (6 Eki 2026) ──
+  //
+  // Bazı sağlayıcılar dönüşte BİZİM referansımızı yankılar (`mock`); o zaman
+  // `referansKodu` doludur ve iş burada biter. N-Kolay yankılamıyor — ölçüldü:
+  // dönüşün hash kapsamındaki tek kimliği sağlayıcının KENDİ numarası
+  // (`REFERENCE_CODE` = `IKSIRPF…`), bizim kodumuzu taşıyan alan hash DIŞINDA.
+  //
+  // O hâlde köprü: sağlayıcının referansı → `mutabakatSorgula()` → bizim
+  // `clientRefCode` → soneki soyulur → `kayitOku()`. Sorgu sağlayıcının kendi
+  // sunucusuna, kendi sırrımızla imzalı gidiyor; tarayıcı o kanala giremez.
+  // Yani kimlik hâlâ YALNIZ güvenilir yüzeyden çözülüyor — KARAR 593 yerinde.
+  //
+  // ⚠ Çağrı **hash kapısından SONRA**: doğrulanmamış istek bize ağ çağrısı
+  // yaptıramaz (`dogrulaCallback` bu yüzden senkron kalıyor, arayüz notu).
+  //
+  // KARAR 395 korunuyor: route sağlayıcı ADINA dallanmaz. "Köprü var mı" diye
+  // sorar (`mutabakatSorgula?`), "nkolay mı" diye sormaz.
+  let referansKodu = dogrulama.referansKodu;
+  if (!referansKodu) {
+    if (!dogrulama.saglayiciReferansi) {
+      console.warn('[odeme-callback] doğrulama referans taşımıyor (401) — kayıt çözülemez');
+      return new Response('Callback doğrulanamadı.', { status: 401 });
+    }
+    const koprusu = getPaymentProvider().mutabakatSorgula;
+    if (!koprusu) {
+      console.error(
+        '[odeme-callback] sağlayıcı kendi referansını verdi ama mutabakat köprüsü yok (401)',
+      );
+      return new Response('Callback doğrulanamadı.', { status: 401 });
+    }
+    let mutabakat;
+    try {
+      mutabakat = await koprusu({
+        saglayiciReferansi: dogrulama.saglayiciReferansi,
+        simdi: new Date(),
+      });
+    } catch (err) {
+      console.error(`[odeme-callback] mutabakat çağrısı düştü (401): ${String(err).slice(0, 200)}`);
+      return new Response('Callback doğrulanamadı.', { status: 401 });
+    }
+    if ('hata' in mutabakat) {
+      // ⚠ FAIL-CLOSED ve SESSİZ DEĞİL: buraya gelen istek imzasını geçmiş,
+      // yani para muhtemelen ÇEKİLMİŞ. Kayıt kapanmıyorsa iz log'da durmalı —
+      // sessiz red "para alındı, kayıt Beklemede, iz yok" demek olurdu.
+      console.error(
+        `[odeme-callback] mutabakat kaydı çözemedi (401) — ` +
+          `saglayiciRef=${dogrulama.saglayiciReferansi} sebep=${mutabakat.hata}`,
+      );
+      return new Response('Callback doğrulanamadı.', { status: 401 });
+    }
+    referansKodu = soyEpochSoneki(mutabakat.clientRefCode) ?? undefined;
+    if (!referansKodu) {
+      console.error(
+        `[odeme-callback] mutabakattan gelen kod bizim biçimde değil (401) — ` +
+          `saglayiciRef=${dogrulama.saglayiciReferansi}`,
+      );
+      return new Response('Callback doğrulanamadı.', { status: 401 });
+    }
   }
-  const kayit = await kayitOku(notion, NOTION_KAYITLAR_DB, dogrulama.referansKodu);
+
+  const kayit = await kayitOku(notion, NOTION_KAYITLAR_DB, referansKodu);
   if (kayit.durum !== 'bulundu' || !kayit.pageId) {
     console.warn(
-      `[odeme-callback] kayıt çözülemedi (401) — ref=${dogrulama.referansKodu} durum=${kayit.durum}`,
+      `[odeme-callback] kayıt çözülemedi (401) — ref=${referansKodu} durum=${kayit.durum}`,
     );
     return new Response('Callback doğrulanamadı.', { status: 401 });
   }
@@ -225,7 +286,7 @@ async function handle(request: Request): Promise<Response> {
   // dönüş — aynı gövdenin tekrarı ya da ikinci bir çekim — kabul edilmez.
   if (kayit.islemNo) {
     console.warn(
-      `[odeme-callback] replay reddedildi (401) — ref=${dogrulama.referansKodu} ` +
+      `[odeme-callback] replay reddedildi (401) — ref=${referansKodu} ` +
         `mevcut İşlem No dolu, gelen=${dogrulama.islemNo ?? '(yok)'}`,
     );
     return new Response('Callback doğrulanamadı.', { status: 401 });
@@ -237,7 +298,7 @@ async function handle(request: Request): Promise<Response> {
   if (!(kayit.tutar > 0)) {
     console.error(
       `[odeme-callback] Beklenen Tutar boş, kıyas yapılamadı (401) — ` +
-        `ref=${dogrulama.referansKodu} pageId=${kayit.pageId} gelen tutar=${dogrulama.tutar ?? '(yok)'}`,
+        `ref=${referansKodu} pageId=${kayit.pageId} gelen tutar=${dogrulama.tutar ?? '(yok)'}`,
     );
     return new Response('Callback doğrulanamadı.', { status: 401 });
   }
@@ -246,14 +307,14 @@ async function handle(request: Request): Promise<Response> {
   // fazla tahsilatı reddetmek kadını ödemiş ama kaydı kapanmamış bırakırdı.
   if (!(typeof dogrulama.tutar === 'number') || dogrulama.tutar < kayit.tutar) {
     console.warn(
-      `[odeme-callback] tutar düşük (401) — ref=${dogrulama.referansKodu} ` +
+      `[odeme-callback] tutar düşük (401) — ref=${referansKodu} ` +
         `beklenen=${kayit.tutar} gelen=${dogrulama.tutar ?? '(yok)'}`,
     );
     return new Response('Callback doğrulanamadı.', { status: 401 });
   }
 
   if (girdi.sonuc !== 'basari') {
-    return redirect(`${baseUrl}/odeme/iptal?ref=${encodeURIComponent(dogrulama.referansKodu)}`);
+    return redirect(`${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansKodu)}`);
   }
 
   const sonuc = await odemeyiOnayla({
@@ -270,7 +331,7 @@ async function handle(request: Request): Promise<Response> {
     // Notion update başarısız → kullanıcıya iptal göster, Kaan Notlar'dan
     // tespit eder (mock damgası yok ama Beklemede kalır).
     return redirect(
-      `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(dogrulama.referansKodu)}&hata=notion`,
+      `${baseUrl}/odeme/iptal?ref=${encodeURIComponent(referansKodu)}&hata=notion`,
     );
   }
   // Aşama 3b-fix tasarım — başarı: success sayfasına refSuccess (OCAK-XXXX)
@@ -278,7 +339,7 @@ async function handle(request: Request): Promise<Response> {
   // success'te göstermiyoruz (ham UUID kullanıcıya anlamsız).
   const basariUrl = new URL(`${baseUrl}/odeme/tamam`);
   // Referans imza kapsamından; `/odeme/tamam` onu `equals` ile arıyor.
-  basariUrl.searchParams.set('ref', dogrulama.referansKodu);
+  basariUrl.searchParams.set('ref', referansKodu);
   if (girdi.mockMu) basariUrl.searchParams.set('mock', '1');
   return redirect(basariUrl.toString());
 }

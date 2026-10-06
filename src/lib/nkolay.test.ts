@@ -20,14 +20,28 @@ import { join } from 'node:path';
  */
 
 const SX = 'TEST-SX-273';
+const SX_LIST = 'TEST-SX-LIST-273';
 const SECRET = 'm3rch4nt-s3cr3t-K3y';
 const BASE = 'https://paynkolaytest.nkolayislem.com.tr/Vpos';
+/**
+ * Dönüşte gelen `REFERENCE_CODE` — **N-Kolay'ın kendi numarası**, bizim
+ * kodumuz DEĞİL. Ölçüldü 6 Eki 2026 (panel + canlı dönüş + PaymentList);
+ * eski fixture burada `OCAK-7K2M-12345` taşıyordu ve o bir VARSAYIMDI (B201).
+ */
+const SAGLAYICI_REF = 'IKSIRPF341481127';
 
 async function modulYukle(
-  env: Partial<Record<'NKOLAY_SX' | 'NKOLAY_MERCHANT_SECRET' | 'NKOLAY_BASE_URL', string>> = {},
+  env: Partial<
+    Record<
+      'NKOLAY_SX' | 'NKOLAY_SX_LIST' | 'NKOLAY_MERCHANT_SECRET' | 'NKOLAY_BASE_URL',
+      string
+    >
+  > = {},
 ) {
   vi.resetModules();
   vi.stubEnv('NKOLAY_SX', (env.NKOLAY_SX ?? SX) as any);
+  // Listeleme ucunun AYRI kimliği — mutabakat köprüsünün ilk okuyucusu (B200).
+  vi.stubEnv('NKOLAY_SX_LIST', (env.NKOLAY_SX_LIST ?? SX_LIST) as any);
   vi.stubEnv('NKOLAY_MERCHANT_SECRET', (env.NKOLAY_MERCHANT_SECRET ?? SECRET) as any);
   vi.stubEnv('NKOLAY_BASE_URL', (env.NKOLAY_BASE_URL ?? BASE) as any);
   return import('./payment-provider.ts');
@@ -217,7 +231,7 @@ describe('nkolay.dogrulaCallback — üç kapı, KOŞUL ölçülür (KARAR 573)'
   function yanit(ezme: Record<string, string | null> = {}): URLSearchParams {
     const temel: Record<string, string> = {
       MERCHANT_NO: '273',
-      REFERENCE_CODE: 'OCAK-7K2M-12345',
+      REFERENCE_CODE: SAGLAYICI_REF,
       AUTH_CODE: 'A1B2C3',
       RESPONSE_CODE: '2',
       USE_3D: 'true',
@@ -264,7 +278,7 @@ describe('nkolay.dogrulaCallback — üç kapı, KOŞUL ölçülür (KARAR 573)'
     g.set('hashDataV2', 'yanlis');
     p.dogrulaCallback(istek(), g);
     const satir = String(warn.mock.calls.at(-1)?.[0] ?? '');
-    expect(satir).toContain('OCAK-7K2M-12345'); // teşhis için ham alanlar görünür
+    expect(satir).toContain(SAGLAYICI_REF); // teşhis için ham alanlar görünür
     expect(satir).toContain('[SECRET]');
     expect(satir).not.toContain(SECRET); // ⚠ sır log'a DÜŞMEZ (CLAUDE.md §8)
   });
@@ -323,6 +337,177 @@ describe('nkolay.dogrulaCallback — üç kapı, KOŞUL ölçülür (KARAR 573)'
     const { nkolayPaymentProvider: p } = await modulYukle();
     expect(p.dogrulaCallback(istek(), yanit({ RESPONSE_CODE: '2', AUTH_CODE: '00' })).gecerli).toBe(false);
     expect(p.dogrulaCallback(istek(), yanit({ RESPONSE_CODE: '0', AUTH_CODE: 'A1' })).gecerli).toBe(false);
+  });
+});
+
+describe('nkolay — kimlik: biçim kapısı ve mutabakat köprüsü (6 Eki 2026)', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+    vi.resetModules();
+  });
+
+  const istek2 = () => new Request('https://www.ocak.biz/api/odeme-callback', { method: 'POST' });
+
+  function yanit2(ezme: Record<string, string | null> = {}): URLSearchParams {
+    const temel: Record<string, string> = {
+      MERCHANT_NO: '273',
+      REFERENCE_CODE: SAGLAYICI_REF,
+      AUTH_CODE: 'A1B2C3',
+      RESPONSE_CODE: '2',
+      USE_3D: 'true',
+      RND: '11-09-2026 15:35:10',
+      INSTALLMENT: '0',
+      AUTHORIZATION_AMOUNT: '1234.56',
+      CURRENCY_CODE: '949',
+    };
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries({ ...temel, ...ezme })) if (v !== null) p.set(k, v);
+    const ham = [
+      'MERCHANT_NO', 'REFERENCE_CODE', 'AUTH_CODE', 'RESPONSE_CODE', 'USE_3D',
+      'RND', 'INSTALLMENT', 'AUTHORIZATION_AMOUNT', 'CURRENCY_CODE',
+    ].map((a) => p.get(a) ?? '').concat(SECRET).join('|');
+    p.set('hashDataV2', sha512b64(ham));
+    return p;
+  }
+
+  it('dönüş BİZİM kodumuzu taşımıyor — `referansKodu` BOŞ, `saglayiciReferansi` DOLU', async () => {
+    // Zincirin kalbi: sağlayıcı kaydı çözemiyor, yalnız kendi numarasını
+    // veriyor. Buraya bir `referansKodu` yazmak KARAR 593'ü çiğnemek olurdu.
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    const s = p.dogrulaCallback(istek2(), yanit2());
+    expect(s.gecerli).toBe(true);
+    expect(s.saglayiciReferansi).toBe(SAGLAYICI_REF);
+    expect(s.referansKodu).toBeUndefined();
+    // Replay kilidi N-Kolay'ın numarasını taşır (B202'nin öngördüğü kullanım).
+    expect(s.islemNo).toBe(SAGLAYICI_REF);
+  });
+
+  it('biçim kapısı ÖNEK ÇİVİLEMEZ — `IKSIRPF` dışı referanslar da geçer', async () => {
+    // ⚠ Bu testin işi bir regresyonu önlemek: tek örnekten `^IKSIRPF\d+$`
+    // çıkarmak B201'in hatasını tekrar etmek olurdu. Önek terminale/üye
+    // işyerine bağlı olabilir; doküman repoda yok.
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    for (const ref of ['ABCDEFG123456789', 'XYZ-99-001', 'nkolay_ref.42', '123456']) {
+      const s = p.dogrulaCallback(istek2(), yanit2({ REFERENCE_CODE: ref }));
+      expect(s.gecerli, ref).toBe(true);
+      expect(s.saglayiciReferansi, ref).toBe(ref);
+    }
+  });
+
+  it('biçim kapısı boş/kısa/yasak-karakter referansı REDDEDER', async () => {
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    for (const ref of ['', 'abcde', 'IKSIRPF 341481127', 'a'.repeat(65), 'ref;drop']) {
+      const s = p.dogrulaCallback(istek2(), yanit2({ REFERENCE_CODE: ref }));
+      expect(s.gecerli, JSON.stringify(ref)).toBe(false);
+      expect(s.sebep, JSON.stringify(ref)).toBe('referans-bicimi-tutmadi');
+    }
+  });
+
+  it('red satırı DEĞER basmaz, alan adlarını basar', async () => {
+    const uyari = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    p.dogrulaCallback(istek2(), yanit2({ REFERENCE_CODE: '' }));
+    const satir = String(uyari.mock.calls.at(-1)?.[0] ?? '');
+    expect(satir).toContain('ALAN ADLARI');
+    expect(satir).toContain('hashDataV2');     // ad listesi
+    expect(satir).not.toContain(SECRET);        // sır log'a DÜŞMEZ
+  });
+
+  // ── Mutabakat köprüsü ──
+
+  function paymentListYanit(
+    satirlar: Array<{ ref?: string; client?: string; status?: string; tip?: string }> = [{}],
+  ): string {
+    const LIST = satirlar.map((s) => ({
+      REFERENCE_CODE: s.ref ?? SAGLAYICI_REF,
+      CLIENT_REFERENCE_CODE: s.client ?? 'OCAK-7K2M-12345',
+      STATUS: s.status ?? 'SUCCESS',
+      TRANSACTION_TYPE: s.tip ?? 'SALES',
+    }));
+    return JSON.stringify({ result: JSON.stringify({ RESPONSE_CODE: 1, LIST }) });
+  }
+
+  it('köprü eşleşen SALES+SUCCESS satırından clientRefCode döndürür', async () => {
+    const f = vi.fn(async () => new Response(paymentListYanit(), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    const s = await p.mutabakatSorgula!({ saglayiciReferansi: SAGLAYICI_REF, simdi: AN });
+    expect(s).toEqual({ clientRefCode: 'OCAK-7K2M-12345' });
+  });
+
+  it('köprü hash dizesini sx LIST + DD.MM.YYYY ile kurar (ölçülen sözleşme)', async () => {
+    const f = vi.fn(async () => new Response(paymentListYanit(), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+    const mod = await modulYukle();
+    await mod.nkolayPaymentProvider.mutabakatSorgula!({
+      saglayiciReferansi: SAGLAYICI_REF,
+      simdi: AN,
+    });
+    const g = (f.mock.calls[0] as any)[1].body as URLSearchParams;
+    // Pencere: dün + bugün, Europe/Istanbul. AN = 11 Eyl 2026 15:34 TR.
+    expect(g.get('startDate')).toBe('10.09.2026');
+    expect(g.get('endDate')).toBe('11.09.2026');
+    // Hash: SX_LIST ile — satış `sx`'i DEĞİL. Ayıraç boş alanda da yerinde.
+    const beklenen = sha512b64(`${SX_LIST}|10.09.2026|11.09.2026||${SECRET}`);
+    expect(g.get('hashDataV2')).toBe(beklenen);
+    expect(g.get('sx')).toBe(SX_LIST);
+    expect(g.get('sx')).not.toBe(SX);
+  });
+
+  it('köprü CANCEL ve STATUS≠SUCCESS satırını ödeme SAYMAZ', async () => {
+    for (const ezme of [{ tip: 'CANCEL' }, { status: 'ERROR' }, { tip: 'REFUND' }]) {
+      vi.stubGlobal('fetch', vi.fn(async () => new Response(paymentListYanit([ezme]), { status: 200 })));
+      const { nkolayPaymentProvider: p } = await modulYukle();
+      const s = await p.mutabakatSorgula!({ saglayiciReferansi: SAGLAYICI_REF, simdi: AN });
+      expect(s, JSON.stringify(ezme)).toHaveProperty('hata');
+    }
+  });
+
+  it('köprü FAIL-CLOSED: env eksik · HTTP hatası · ağ hatası · bozuk gövde', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(paymentListYanit(), { status: 200 })));
+    const bosList = await modulYukle({ NKOLAY_SX_LIST: '' });
+    expect(
+      await bosList.nkolayPaymentProvider.mutabakatSorgula!({
+        saglayiciReferansi: SAGLAYICI_REF, simdi: AN,
+      }),
+    ).toEqual({ hata: 'NKOLAY_SX_LIST tanımsız' });
+
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 503 })));
+    const m1 = await modulYukle();
+    expect(
+      await m1.nkolayPaymentProvider.mutabakatSorgula!({ saglayiciReferansi: SAGLAYICI_REF, simdi: AN }),
+    ).toHaveProperty('hata');
+
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('ağ'); }));
+    const m2 = await modulYukle();
+    expect(
+      await m2.nkolayPaymentProvider.mutabakatSorgula!({ saglayiciReferansi: SAGLAYICI_REF, simdi: AN }),
+    ).toHaveProperty('hata');
+
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('json değil', { status: 200 })));
+    const m3 = await modulYukle();
+    expect(
+      await m3.nkolayPaymentProvider.mutabakatSorgula!({ saglayiciReferansi: SAGLAYICI_REF, simdi: AN }),
+    ).toHaveProperty('hata');
+  });
+
+  it('köprü boş sağlayıcı referansıyla ağa HİÇ çıkmaz', async () => {
+    const f = vi.fn(async () => new Response(paymentListYanit(), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+    const { nkolayPaymentProvider: p } = await modulYukle();
+    const s = await p.mutabakatSorgula!({ saglayiciReferansi: '   ', simdi: AN });
+    expect(s).toHaveProperty('hata');
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it('`mock` sağlayıcıda köprü YOK — ihtiyacı da yok', async () => {
+    const mod = await modulYukle();
+    expect(mod.mockPaymentProvider.mutabakatSorgula).toBeUndefined();
   });
 });
 
