@@ -151,18 +151,21 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
      bandı, YAYINI KİLİTLEYENLER md.4). ⚠ Dışlama maddesi *"test aşamasındaki siteler
      değerlendirilmez"* KARAR 575 ile gerilimli.
    - ⏳ **Logo seti** (Visa/MC + kendi rozeti) — madde 4'ü kilitliyor.
-   - ⏳ **Test kartları** + ⏳ **kendi dört anahtarımız** (`sx` · `sx list` · `sx iptal` ·
-     `merchantSecretKey`, **test ve prod ayrı**). ⚠ Dokümandaki test değerleri iki sayfada
-     **çelişiyor** — panelden alınacak, dokümandan değil.
+   - ✅ **Dört anahtar alındı** (Kaan, panelden — 15 Eyl) ve Production'a yazıldı.
+     Test ortamı hiç kullanılmadı: prod'da küçük tutarlı gerçek işlemle doğrulandı,
+     her biri panelden iade edildi.
+   - ⏳ **Hash kapsamı + `CURRENCY_CODE` boş hâli** — N-Kolay desteğine soruldu (6 Eki),
+     yanıt bekleniyor. Birinci soru kendi ölçümümüzle zaten kapandı (KARAR 603).
 3. ⏳ **Muhasebeci/hukuk iki soru:** cayma hakkı istisnası (6502 md.15, belirli tarihte
    yapılan hizmet) · "internetten satış" e-ticaret fatura serisi (kart geldiğine göre
    **büyük ihtimalle evet**).
 4. **Güven şeridi** — KARAR 297 iyzico şeridini kaldırmıştı; `public/odeme/` yok, çizen
    komponent yok, ölü kod kalmamış. Logo seti gelmeden kurulamaz.
-5. ✅ **N-Kolay provider yazıldı (11 Eyl).** `payment-provider.ts` `nkolay` dalı +
-   `/odeme/nkolay` form POST sayfası + gerçek `dogrulaCallback()` + tutar/replay kapıları.
-   **B186 aynı turda temizlendi.** ⚠ **Devreye girmedi** — madde 8.
-   Açık kalanlar: **B200** (mutabakat + iptal/iade) · **B201** · **B202** · **B203**.
+5. ✅ **HAT AÇILDI (6 Eki).** Sağlayıcı 11 Eylül'de yazıldı, kimlik köprüsü 6 Ekim'de
+   kuruldu (`2e7e5b5` · `f1a41b4`, **KARAR 601 · 602 · 603**). Uçtan uca gerçek kart
+   işlemi geçti; Notion `İşlem No` ilk kez doldu. **B201 çürüyerek kapandı · B202 ✅ ·
+   B203 kısmi · B200 kısmi** (okuma kuruldu, iptal/iade yok).
+   ⏳ Kalan: **B208** (iade iki yerde kayboluyor) · **B211** (bildirim halkası).
 6. **`nkolay-test` dalı silinecek** — iş bitince `git push origin --delete nkolay-test`.
    ⚠ **Şart 11 Eylül'de yazıldı:** *"iş bitince"* = **AÇILIŞ'tan sonra**, önce değil.
    Dal, ödeme **Preview ortamının** kendisidir ve `ODEME_CALLBACK_SIR`'ı production'dan
@@ -171,17 +174,18 @@ açacak — **KARAR 566 gereği her metin değişikliği deploy ister.**
    onu ölü dal gibi gösteriyordu. Kalan uzak dallar: `main` + `nkolay-test`.
 7. **Muhafız turu** — **B188** (KARAR 488'in dört ölçüsüz tüketicisi) **birinci**, sonra
    **B189**'un kalanı. Kendi brief'iyle gelir.
-8. 🎯 **Devreye alma — pazartesi (sıra bağlayıcı):**
-   1. **B202** kapanır (gönderilen `clientRefCode` Notion'a yazılır) — beş dakika, mutabakatın
-      ön koşulu.
-   2. Beş `NKOLAY_*` değeri Vercel'e, **üç ortama**; `PAYMENT_PROVIDER=nkolay`; **redeploy.**
-   3. `NKOLAY_BASE_URL` **test** adresiyle uçtan uca bir işlem. Log'da iki satır aranır:
-      `[nkolay] hashDataV2 tutmadı` (→ **B203**) · `[nkolay] REFERENCE_CODE biçimi tutmadı`
-      (→ **B201**). İkisi de çıkmazsa hat çalışıyor.
-   4. Test yeşilse `NKOLAY_BASE_URL` **prod** adresine; kendi kartla küçük tutarlı gerçek
-      işlem; panelden iade.
-   5. **B193** kapanır (mock ekran kalkar). **B192** temizliği bundan önce doğrulanır —
-      özellikle elle yazılmış `Beklenen Tutar = 1000`.
+8. ✅ **Devreye alma tamamlandı (6 Eki).** *(Kapanan hâli, KARAR 61 — beş adımlık sıra
+   yürütüldü; adım 3'teki test ortamı atlandı, doğrulama prod'da küçük tutarla yapıldı.)*
+   ⏳ **Kalan iki ayak, sıra bağlayıcı:**
+   1. **B193** — mock ekran kalkar: `/odeme/mock` yalnız `provider=mock` iken açılsın →
+      deploy → canlıda 404 ölçülsün. **ANCAK ondan sonra** `ODEME_CALLBACK_SIR` production'da
+      yenilensin + redeploy (önce yenilenirse yeni değer mock sayfasının kaynağına düşer).
+   2. **B192** temizliği — Notion'daki test satırları: `OLCUM-KURUS-<epoch>` (arşivli) ·
+      1 Eki `/iletisim` eyeball satırı · `OCAK-YPNW-71604` · `OCAK-EP3E-46507` ·
+      `OCAK-QQ5P` (`Ödendi`, 1 TL, iadesi yapıldı). Elle yazılmış `Beklenen Tutar = 1000`
+      satırı da burada doğrulanır.
+9. 🔴 **Bildirim halkası — B211.** Kart hattı açıldı ama ödemesi geçen kadına mail gitmiyor.
+   Ayrı sohbet, devir dosyası hazır. AÇILIŞ'tan önce.
 
 ---
 

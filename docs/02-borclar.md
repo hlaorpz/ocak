@@ -3538,9 +3538,17 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ön koşulu B202** — mutabakat `clientRefCode` ile sorgulanır, o değer bugün kaydedilmiyor.
 - **Bugün kabul edilebilir:** ilk ödemeler birkaç kadınla başlıyor, panelden gözle yeterli.
   **Bağ:** B202 · KARAR 596
+- ✅ **KISMİ KAPANIŞ (6 Eki) — okuma ayağı kuruldu.** `PaymentList` çağrısı `nkolay-mutabakat.ts`'te
+  yaşıyor ve callback köprüsünde canlı koşuyor (`2e7e5b5` · `f1a41b4`). Sözleşme ölçüldü:
+  alan adı **`hashDataV2`** · biçim **`x-www-form-urlencoded`** · tarih **`DD.MM.YYYY`**
+  (hem gövdede hem hash dizesinde) · yanıt zarfı `{ id, result: { …, LIST: [...] }, error }`.
+  `clientRefCode` **zorunlu değil** — boş geçilince tarih aralığındaki tüm işlemler döner,
+  yani mutabakat sonek bilmeden kurulabilir.
+- ⏳ **Kalan:** iptal/iade servisi ve **periyodik** mutabakat (dönmeyen `STATUS=NEW` işlemleri
+  yakalamak). `NKOLAY_SX_IPTAL` hâlâ hiçbir kod tarafından okunmuyor. **Bağ:** B208
 
-## B201 — `REFERENCE_CODE` alan adı varsayımı ölçülmedi
-- [ ] **Sahip:** ilk gerçek N-Kolay işlemi · **Tetikleyici:** pazartesi test işlemi
+## B201 — `REFERENCE_CODE` alan adı varsayımı ✅ KAPANDI (6 Eki — çürüyerek)
+- [x] **Sahip:** ilk gerçek N-Kolay işlemi · **Tetikleyici:** pazartesi test işlemi
 - Dönüş gövdesindeki `REFERENCE_CODE`'un bizim `clientRefCode`'umuzun yankısı olduğu
   **varsayımdır** — altın vektör yok, canlı işlem yok, entegrasyon dokümanı repoda yok.
 - Kod **fail-closed** davranır: biçim `^OCAK-[A-Z0-9]{4}-\d{5}$` tutmazsa reddeder ve
@@ -3548,9 +3556,19 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - Test fixture'ı varsayımı taşıyor ve **başında açıkça yazılı** — sessiz bırakılmadı.
 - Aranacak satır: `[nkolay] REFERENCE_CODE biçimi tutmadı — gövdedeki ALAN ADLARI: …`
   **Bağ:** KARAR 593
+- 🔴 **VARSAYIM ÇÜRÜDÜ (1 Eki, canlı ölçüm) — kapanış bu.** `REFERENCE_CODE` bizim
+  `clientRefCode`'umuzun yankısı **değil**; N-Kolay'ın kendi işlem numarasıdır
+  (`IKSIRPF…`). Bizim kodumuz dönüşte **`CLIENT_REFERENCE_CODE`** alanında geliyor ve
+  o alan **hash kapsamı dışında** — yani ona güvenilemez (KARAR 593).
+- **Nasıl ölçüldü:** fail-closed kapı tam da tasarlandığı gibi davrandı, reddetti ve gövdenin
+  alan adlarını bastı (28 alan). N-Kolay paneli *POS İşlem Raporu* ikisini **ayrı sütunda**
+  gösteriyor: *Referans Numarası* = `OCAK-57V4-08513` · *N Kolay Referans Numarası* =
+  `IKSIRPF341481127`. Adlandırma sezgiye ters çalışıyor ve bizi üç hafta yanılttı.
+- ✅ **Çözüm yolu (b) seçildi** — kimlik hash korumalı `REFERENCE_CODE`'da kalır, bizim
+  kodumuz `PaymentList` köprüsüyle elde edilir (**KARAR 601**). 593 gevşetilmedi.
 
-## B202 — Gönderilen `clientRefCode` hiçbir yere yazılmıyor
-- [ ] **Sahip:** CC · **Tetikleyici:** B200'den önce
+## B202 — Gönderilen `clientRefCode` hiçbir yere yazılmıyor ✅ KAPANDI (6 Eki)
+- [x] **Sahip:** CC · **Tetikleyici:** B200'den önce
 - `/odeme/nkolay` render anında `OCAK-XXXX-<epoch>` üretiyor ve N-Kolay'a gönderiyor;
   **epoch sonekli tam hâli Notion'a düşmüyor.** Mutabakat servisi bu kodla sorgular —
   yani bugün **sorulacak değer kayıp.**
@@ -3559,6 +3577,13 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - ⚠ Hedef alan **`İşlem No` DEĞİL** — o, dönüşte gelen N-Kolay işlem numarası için.
   Yeni Notion alanı gerekiyorsa Kaan açar.
 - CC prompt'u yazıldı, **verilmedi** (11 Eyl, oturum kapandı). **Bağ:** B200 · KARAR 596
+- ✅ **KAPANDI (6 Eki, `5e85d32`).** Notion `Gönderilen Ref` (text) alanı açıldı (Kaan) ve
+  `/odeme/nkolay` formu basmadan hemen önce epoch sonekli tam kodu oraya yazıyor; `try/catch`
+  ile **fail-open** — yazım düşerse ödeme yine başlar, hata log'a iner.
+- ⚠ **Kimlik yolu bu alana bağlanmadı, bilerek.** `Gönderilen Ref` son denemeyi taşır ve
+  üzerine yazılır; iki kez deneyen kadında callback birinci denemeye ait olabilirdi.
+  Köprü bunun yerine `PaymentList`'ten gelen `clientRefCode`'a mevcut `soyEpochSoneki()`'yi
+  uygulayıp `Kayıt ID`'den çözüyor. Alan **mutabakat için** duruyor.
 
 ## B203 — `CURRENCY_CODE` boş dönüşte hash'e ne konacağı teyitsiz
 - [ ] **Sahip:** Kaan (N-Kolay temsilcisi) · **Tetikleyici:** pazartesi test işleminden önce
@@ -3570,6 +3595,11 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   hesabında o alana ne konuyor — boş dize mi, `TRY` mi, `949` mü?*
 - Yanıt gelmezse ilk test işleminin log'u söyler: `[nkolay] hashDataV2 tutmadı` satırı
   hesaplanan ham dizeyi **sır maskeli** basıyor. **Bağ:** B201
+- ✅ **KISMİ KAPANIŞ (1 Eki, canlı ölçüm).** Gerçek 3D dönüşünde `CURRENCY_CODE` gövdede
+  **geldi** ve hash **tuttu** — `[nkolay] hashDataV2 tutmadı` satırı hiç çıkmadı. Bu dönüş
+  biçimi için soru kapandı; dokuz alanlı formül ve ayıraç sırası doğrulandı.
+- ⏳ **Açık kalan:** alan **hiç gelmediğinde** hash hesabına ne konacağı hâlâ teyitsiz.
+  Kod boş dize varsayıyor. N-Kolay desteğine soruldu (6 Eki), yanıt bekleniyor.
 
 ## B204 — `00-durum.md` iki farklı dönem HEAD taşıyor ✅ KAPANDI (1 Eki)
 - [x] **Sahip:** Claude.ai (patch üreten oturum) · **Tetikleyici:** bir sonraki doküman turu
@@ -3603,3 +3633,91 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   (`get_deployment_file_contents` ile tek turda kapanır).
 - ⚠ **Pratik sonuç bugün değişmez:** B193 kapanışında redeploy **her durumda** alınır.
 - **Bağ:** B193 · KARAR 488 · 575
+
+## B206 — WhatsApp davet linki ham Notion page id taşıyor
+- [ ] **Sahip:** CC + Kaan (ürün kararı) · **küçük ama iki uçlu**
+- `/odeme/tamam` → *"WhatsApp ile çağır"* linki şu biçimde çıkıyor:
+  `/acik-kapi?etkinlik=<36 karakterlik page id>&ref=OCAK-XXXX`.
+  `ref=` **doğru** — davet eden kadının kodu, `Davet Eden Ref` alanı için; dokunulmaz.
+- Kurulduğu yer `DavetKutusu.astro:383-388` (`davetUrl()`); değer zinciri
+  `odeme-kayit-oku.ts:225` → `tamam.astro` → prop. ⚠ **Tek yüzey değil** — aynı bileşen
+  kayıt akışında da mount ediliyor, kapsam `/odeme/tamam`'dan geniş.
+- Slug ek okuma gerektirmiyor: `odeme-kayit-oku.ts:193` Etkinlikler sayfasını zaten tam
+  çekiyor, `Slug` (rich_text) aynı nesnede — okunmuyor sadece.
+- 🔴 **Ama tek taraflı değiştirilemez.** Tüketici `acik-kapi.astro:27-28` →
+  `etkinlikGecmisMi(id)` → `notion.pages.retrieve({ page_id })`. Slug verilirse çağrı hata
+  fırlatır, `catch` sessizce `false` döner ve **geçmiş-etkinlik güvenlik ağı kapanır** —
+  "sessiz fakirleşme" sınıfı. Ya `etkinlikGecmisMi` slug→id çözecek, ya iki parametre
+  birlikte taşınacak.
+- ⚠ **Boş `Slug` hâli için davranış kararı gerekiyor** — loader'ın kendi guard'ı var
+  (`content/config.ts:196-202`), sessizce boş `etkinlik=` göndermek bugünkünden kötü olur.
+- **Hedef sayfa `/acik-kapi` kalacak** (tanıtım), `/acik-kapi/kayit` değil — davet edilen
+  kadın akışa baştan girer (Kaan kararı, 6 Eki). **Bağ:** B207 · KARAR 559
+
+## B207 — KARAR 559'un ledger çapası çözülemiyor
+- [ ] **Sahip:** Claude.ai · **Tetikleyici:** B206'dan önce
+- `docs_karar(559)` çağrısı çapayı çözemiyor: kronolojide madde başlığı yazılmamış.
+  Yani **slug konvansiyonunun tam metni bugün okunamıyor** (B36-b sınıfı, aynı desen).
+- Pratik sonuç: B206'da *"ham id URL'de yasak mı"* sorusu kararın kendisinden
+  doğrulanamıyor; ikincil kaynaklardan çıkarım yapmak gerekiyor.
+- Çapası kırık bir KARAR'a dayanarak iş yapılmaz — önce çapa onarılır. **Bağ:** B36-b · B206
+
+## B208 — İade edilmiş işlem iki yerde birden kayboluyor
+- [ ] **Sahip:** CC (otomatik) / Kaan (elle, bugün) · **Tetikleyici:** periyodik mutabakat turu
+- **(a) `PaymentList` tarafı:** bir ödeme iade edilince satır `TRANSACTION_TYPE: CANCEL`
+  oluyor ve **orijinal `SALES` satırı listede görünmüyor.** İki vakada ölçüldü
+  (`IKSIRPF341189869` · `IKSIRPF343739192`). Köprü yalnız `SALES`+`SUCCESS` kabul ettiği
+  için (KARAR 602) **geriye dönük** mutabakat iade edilmiş işlemleri hiç bulamaz.
+- **(b) Notion tarafı:** panelden iade yapıldığında bu bilgi bize **hiçbir kanaldan
+  ulaşmıyor** — dönüş POST'u yok, webhook yok, dinleyen kod yok. Kayıt `Ödendi` kalır,
+  `İşlem No` dolu kalır; kadın iadesini almış olsa bile sistemde ödemiş görünür.
+- **Bugünkü çözüm elle:** iade yapınca Notion'da `Ödeme Durumu` da düzeltilir (Kaan).
+- **İleriki çözüm:** periyodik mutabakat `CANCEL` satırlarını görüp kaydı kendi düzeltsin —
+  tam olarak `SALES`/`CANCEL` ayrımının işe yaradığı yer. **Bağ:** B200 · KARAR 602
+
+## B209 — Build ve runtime Notion'a sert bağımlı, retry yok
+- [ ] **Sahip:** CC · **Tetikleyici:** bir sonraki Notion dalgası
+- **Ölçülmüş vaka (1 Eki, 11:29–~15:00 UTC):** workspace `Ocak`'ın **içerik düzlemi tamamen
+  kapalıydı** — `internal_server_error` · `"Cross-cell memcached access is not allowed"`.
+  Kimlik uçları (`/v1/users*`) 200, içerik uçları (`databases` · `query` · `search`) 500.
+  İki ayrı token, iki `Notion-Version`, beş ardışık deneme — hepsi aynı. `/v1/search`
+  hiçbir DB id'si almadığı hâlde düştüğü için **izin/paylaşım sorunu olamaz.**
+- **Sonuç ikiye bölündü:**
+  - **Runtime:** `/api/kayit` tek 500'de kaydı düşürüyor; kadın *"bir sorun oluştu"* görür,
+    geriye **hiçbir şey kalmaz.** Dört ölçülmüş düşüş (14:29 · 14:33 · 14:35 · 14:45 TR).
+  - **Build:** `content/config.ts:19` loader'ı tek geçici hatada **tüm build'i** düşürüyor
+    (`Command "npm run build" exited with 1`). O gün ödeme işiyle ilgisi olmayan her deploy
+    kilitlendi.
+- Üç denemenin üçü de başarısız olduğu için bu *"aralıklı dalga"* değil, **tam kesinti**
+  sınıfıydı — ama bir retry katmanı kısa dalgaları yine de kurtarırdı.
+- Notion support ticket'ı açıldı (`request_id` `3153fec8-002d-433e-8878-13914aedbe61` 200 /
+  `9c1561cb-2e33-4838-aa7e-5ad74e9d52c4` 500). **Düzeldi, sebep bilinmiyor, tekrarlayabilir.**
+- ⚠ 1 Ekim turu bu kesintiyi *"iki production build ERROR — Notion arızası"* olarak zaten
+  kaydetmişti (`90-kronoloji/2026-10.md`); bu borç o satırın **teşhisidir**, mükerrer değil.
+
+## B210 — `.env:17` `PUBLIC_HAVALE_IBAN` tırnaksız ve boşluklu
+- [ ] **Sahip:** CC · **çok küçük** · **Tetikleyici:** bir sonraki env dokunuşu
+- Değer tırnaksız yazılmış ve boşluk içeriyor; kabuktan `. ./.env` ile source eden her
+  betik `command not found: 0000` veriyor ve o değişken yüklenmiyor.
+- Vite/Astro'nun `.env` parser'ını **etkilemiyor** (dotenv boşluğu tolere eder) — yani
+  site tarafında görünür bir arıza yok. Yalnız kabuk yolu bozuk.
+- Kaynak: CC, 6 Eki PaymentList ölçümü sırasında, brief dışı bulgu.
+
+## B211 — Ödeme sonrası bildirim halkası yok
+- [ ] **Sahip:** CC + Kaan · 🔴 **AÇILIŞ'tan önce** · **Tetikleyici:** ilk ücretli kayıtlar
+- Kart hattı 6 Ekim'de açıldı — callback Notion'a `Ödendi` yazıyor. **Ama MailerLite bunu
+  görmüyor:** `odeme-callback.ts` içinde `resend|mailerlite|mail|eposta` → **sıfır eşleşme**
+  (CC ölçümü, 6 Eki). Başarılı callback'in log'unda mail denemesi de hatası da yok.
+- `odeme_durumu` tek yerde yazılıyor (`src/lib/kayit.ts:509`, kayıt anında). Üçüncü değer
+  `alindi`'yi hiçbir kod yazmıyor; on dört aktif abonenin hiçbirinde yok.
+- **Sonuç:** ödemesi geçen kadın MailerLite'ta `bekliyor`da kalır, otomasyon ilk dalda
+  kalır, Zoom linkini **hiç almaz.** `/odeme/tamam` sayfasında görüyor (orası Notion'dan
+  okuyor), mail kutusunda görmüyor.
+- 🔴 **Sayfa yalan söylüyor:** `tamam.astro:103` *"Mail kutuna da düştü"* diyor. Halka
+  kurulana kadar bu cümle yumuşatılmalı — kadın bekleyip gelmeyince güven sarsılır.
+- ⚠ `Mail Gitti` alanı 10 Eylül'de açıldı ve **hiçbir yazıcısı yok.**
+- **İki yol, ayrı mekanizma:** kart → callback zaten o an çalışıyor, MailerLite'a da yazsın
+  (n8n'siz). Havale → elle eşleştirme olduğu için Notion'u dinleyen n8n akışı (`03-sira.md`
+  madde 4). ⚠ **KARAR 597'nin iki şartı atlanırsa sessizce bozulur:** tetik `etkinlik_adi`'dır,
+  ve `zoom_link` · `zoom_sifresi` · `katilim_linki` **birlikte** yazılmalıdır.
+- **Devir dosyası hazır** (Claude.ai, 6 Eki) — ayrı sohbette açılacak. **Bağ:** KARAR 597 · 486

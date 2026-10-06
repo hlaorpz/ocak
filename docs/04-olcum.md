@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 01.10.2026 17:01 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 07.10.2026 00:16 (Europe/Istanbul) · bayraklar: `--test --build`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,49 +18,57 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `9ab0c09` | `git log -1` |
-| HEAD tarihi | 2026-10-01 | `git log -1 --date=short` |
-| HEAD konusu | docs(00-durum): stealth cümlesi lansman sonrası tarihçeye döndü | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 4 kayıt | `git status --porcelain` |
+| canlı HEAD | `f1a41b4` | `git log -1` |
+| HEAD tarihi | 2026-10-06 | `git log -1 --date=short` |
+| HEAD konusu | odeme(nkolay): PaymentList zarfı iki biçimde de açılır, log kademeyi söyler | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 7 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **31** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **34** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
 | alan | değer | kaynak |
 |---|---|---|
-| vitest sonucu | *bu koşumda ölçülmedi* | `npx vitest run` |
-
-*`--test` bayrağıyla koşulur.*
+| vitest sonucu | 438 passed (438) · dosya: 23 passed (23) | `npx vitest run` |
 
 ## BUILD
 
-*bu koşumda ölçülmedi* — `--build` bayrağıyla koşulur.
+| alan | değer | kaynak |
+|---|---|---|
+| prerender edilen sayfa | 38 | `dist/client` altındaki `index.html` sayısı |
+| SSR route (toplam) | 19 | `.vercel/output/config.json` · `dest:"_render"` (`_image`/`_server-islands` hariç) |
+| — bunun API route'u | 6 | aynı küme · `^/api/` ile başlayan |
+| — bunun sayfa route'u | 13 | toplam − API |
+
+⚠ **Yöntem beyanı (KARAR 470-b):** prerender sayımı yönlendirme takma adlarını da
+sayar (`/istanbul/*` · `/workshop/*`); SSR sayımı aynı takma adları route tablosunda
+ayrı satır olarak görür. Elle tutulmuş eski sayımlar bunları dışarıda bırakıyordu —
+rakamlar bu yüzden birebir denk gelmez. Tanım burada yazılıdır, rakam ondan doğar.
 
 ## DOKÜMAN SATIRLARI
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 197 |
-| `docs/02-borclar.md` | 3605 |
-| `docs/03-sira.md` | 928 |
+| `docs/00-durum.md` | 194 |
+| `docs/02-borclar.md` | 3723 |
+| `docs/03-sira.md` | 932 |
 | `docs/05-harita.md` | 187 |
-| `docs/01-kararlar.tsv` | 601 |
+| `docs/01-kararlar.tsv` | 604 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **197** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **194** — ✅ altında
 
 ## BORÇ SAYIMI
 
 | alan | değer | kaynak |
 |---|---|---|
-| toplam madde | 205 | `grep -cE '^## B'` |
-| damgalı (kapandı/çözüldü/geri çekildi) | 51 | `^## B` başlıklarında `[✅❌]` |
+| toplam madde | 211 | `grep -cE '^## B'` |
+| damgalı (kapandı/çözüldü/geri çekildi) | 53 | `^## B` başlıklarında `[✅❌]` |
 | iş değil (ertelendi/planlı) | 2 | `^## B` başlıklarında `[⏸🔵]` |
-| **açık** | **152** | toplam − damgalı − iş değil |
+| **açık** | **156** | toplam − damgalı − iş değil |
 | mükerrer başlık | 0 | `^## B[0-9]+` → `uniq -d` |
 
 *Ölçüt başlıktaki **damga**dır, kelimenin kendisi değil (10 Ağu B01 kaydı).*
@@ -69,8 +77,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **600** | — |
-| satır sayısı (başlık dahil) | 601 | — |
+| son KARAR numarası | **603** | — |
+| satır sayısı (başlık dahil) | 604 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |
