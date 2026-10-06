@@ -143,7 +143,7 @@ girmez; o kuyruk başka yerde yaşar.
 - **6 Ekim — N-Kolay kimlik köprüsü turu:** `2e7e5b5` + `f1a41b4`. Hat **açıldı** — gerçek
   kart işlemi uçtan uca geçti. **B201 çürüdü**, **B202 ✅**, **B203** kısmi, **601 · 602 · 603**.
   Aynı gün Notion API kesintisi (B209). → `90-kronoloji/2026-10.md`
-- **7 Ekim — Search Console + DNS envanteri turu:** kod commit'i yok. Domain property doğrulandı, DNS envanteri ilk kez ölçüldü, sitemap `Couldn't fetch` teşhis edildi (**B212**), MCP damgası yalan söylüyor (**B213**), `mail.ocak.biz` zinciri teyitsiz (**B214**). → `90-kronoloji/2026-10.md`
+- **7 Ekim — Search Console + DNS envanteri turu:** kod commit'i yok. Domain property doğrulandı, DNS envanteri ilk kez ölçüldü, sitemap `Couldn't fetch` teşhis edildi (**B212**), MCP damgası yalan söylüyor (**B213** — ❌ **aynı gün çürüdü**, damga doğruydu; bayat olan deploy'du → **B97**), `mail.ocak.biz` zinciri teyitsiz (**B214**). → `90-kronoloji/2026-10.md`
 - **11 Eylül · 24 Ağustos · 19 Ağustos ve öncesi** (N-Kolay sağlayıcı turu · MJ görsel ·
   Sayfalar metin + DEPLOY · B turu · üç format) → `90-kronoloji/2026-08.md` · `2026-09.md`
 
@@ -162,7 +162,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya **Gün 1** önkoşulları (Gün 0 ✅ 23 Ağu, KARAR 542) | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | N-Kolay iptal/iade servisi (**B200** kısmi — okuma kuruldu) · ödeme sonrası bildirim halkası (**B211**) | CC |
-| Arama görünürlüğü — sitemap `Couldn't fetch` (**B212**), 0 indeks · MCP damgası (**B213**) | Kaan + CC |
+| Arama görünürlüğü — sitemap `Couldn't fetch` (**B212**), 0 indeks · MCP checkout tazeliği (**B97** — B213 çürüdü, devraldı) | Kaan + CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
 | Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |

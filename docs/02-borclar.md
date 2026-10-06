@@ -3743,8 +3743,35 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   Pages raporunda indekslenmiş sayfa > 0.
 - ⚠ CC bu borcu doğrulayamaz — *doğrulamaya çalışma.* **Bağ:** KARAR 604 · ←149
 
-## B213 — MCP damgası git HEAD'ini göstermiyor
-- [ ] **Sahip:** CC (`mcp/` sunucusu) · **Tetikleyici:** `03-sira.md` madde 3
+## B213 — MCP damgası git HEAD'ini göstermiyor ❌ ÇÜRÜDÜ (7 Eki, aynı gün)
+- [x] **Sahip:** — · **Kapanış yolu:** ölçüm teşhisi çürüttü · **Devir:** **→B97**
+- 🔴 **DÜŞÜŞ NOTU (7 Eki, açıldığı günün akşamı).** Borç gövdesi aşağıda **silinmedi,
+  damgalandı** (KARAR 61 · 88) — yanlış teşhisin kendisi kayıttır, çünkü kanıt-sanılan
+  gözlem bir daha aynı yoldan geçerse tanınsın.
+- **Çürüten ölçüm (CC, 7 Eki):**
+  `git diff --stat 0f3a0cd 53420c3 -- docs CLAUDE.md scripts` → **BOŞ.** Aradaki iki commit
+  korpusa hiç dokunmamış: `4f38887` yalnız `src/lib/` + `src/pages/odeme/`, `53420c3` yalnız
+  `astro.config.mjs`. İkisi de `IZINLI_KOKLER` (`docs` · `scripts` · `CLAUDE.md`) dışında.
+  Korpus iki commit'te **birebir aynı.**
+- **Sonuç: damga doğruydu.** *"Dosyalar tazeydi, yalnız damga bayattı"* gözlemi hiçbir şey
+  kanıtlamıyor — korpus her iki commit'te aynı olduğu için aynı sonucu verirdi. Konteyner
+  gerçekten `0f3a0cd`'deydi ve `RAILWAY_GIT_COMMIT_SHA` o dağıtımın gerçek commit'ini
+  söylüyordu. Bayat olan **damga değil deploy'du.**
+- **Kök sebep → B97** (*"Railway'in Redeploy düğmesi taze commit çekmez — son başarılı
+  deployment'ı tekrar koşar"*) + `mcp/README.md:154` **Auto deploys bilinçli kapalı.**
+  Oturum başındaki altı hafta bayat korpus (`7062846`) da aynı mekanizma, aynı borç.
+- **Kod değişmedi, değişmesine gerek yoktu.** `mcp/korpus.mjs:60-68` zaten `git-head`
+  fallback taşıyor ve `gitBasindanOku()` kabuğa çıkmadan `.git/HEAD` + refs + `packed-refs`
+  okuyor (İLKE c, `korpus.mjs:6`). Yerelde tatbik edildi: env var yokken
+  `{"commit":"8403561","commit_kaynak":"git-head"}`. Brief'in istediği
+  `git rev-parse --short HEAD` hem İLKE (c)'yi çiğniyor hem **no-op** olurdu — checkout
+  `0f3a0cd`'de ise `.git/HEAD` de `0f3a0cd` der.
+- ⚠ **Asıl kapı B97'de:** damga ile korpusun beklenen hâlini karşılaştıran **tazelik kapısı.**
+  Ayrışma gürültülü olmalı; damgayı değiştirmek bayat deploy'u çözmez, yalnız adını değiştirir.
+- **Bağ:** →B97 · KARAR 479 · ↔B96 (aynı sınıf: yükleme başarılı görünüp etkisiz)
+
+**↓ Aşağısı 7 Eki sabahının çürüyen gövdesi — tarihsel kayıt, geçerli teşhis değil.**
+
 - **Ne:** `ocak-mcp` her cevabında `commit` damgası döndürüyor ama kaynağı
   `commit_kaynak: "ortam-degiskeni"` — git'ten türetilmiyor, elle set edilmiş bir ortam
   değişkeninden okunuyor.
@@ -3761,6 +3788,12 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   kötüdür.**
 - **Bağ:** KARAR 479 · `CLAUDE.md`'deki *"Railway damgası build anıdır"* satırı da bayat —
   damga build anında bile ilerlemiyor; o satır düzeltilmeli.
+  - ❌ **BU İDDİA YANLIŞ (ölçüm: `grep -n "Railway\|damga" CLAUDE.md` → **0 eşleşme**, CC
+    7 Eki).** O cümle **repo'da hiç yok** — claude.ai proje talimatında yaşıyor, korpusta
+    değil. `CLAUDE.md`'de düzeltilecek bir şey yoktu ve **yazılmadı.** Satır silinmedi
+    (KARAR 61): yanlış iddianın kendisi kayıttır. Doğduğu yol:
+    `docs-patch-2026-10-07.md` böyle beyan etti, CC doğrulamadan korpusa geçirdi —
+    **patch iddiası ölçüm değildir** (KARAR 470/102).
 
 ## B214 — `mail.ocak.biz` teslim zinciri teyitsiz
 - [ ] **Sahip:** Kaan · **Tetikleyici:** ilk gerçek kayıttan **önce** — kayıt akışı bu adresi

@@ -57,11 +57,18 @@ mevcut bir değerin gövdedeki damgayla ayrıştırılması mı yeter · **(b)**
 daraltma "kabul" diye geçer. ⚠ Ayrım şu an yalnız B179 gövdesinde yaşıyor: kabul,
 **ölçülmüş** bir zararsızlıktır; daraltma ölçülmemiş bir vazgeçiştir (B19 · B57 · B73).
 
-**3 · MCP damgası yalan söylüyor** (7 Eki · **B213**). Sunucu `commit_kaynak: ortam-degiskeni`
-dönüyor; dosyalar tazeleniyor, damga tazelenmiyor. Bu tur altı hafta bayat bir korpusla
-açıldı ve körlük **sessizdi** — damga ne kadar bayat olduğunu söylemiyor. Kapanış:
-`git rev-parse --short HEAD` ile build anında türetilsin, ya da `bilinmiyor` dönsün.
-`CLAUDE.md`'deki *"Railway damgası build anıdır"* satırı da aynı turda düzeltilir.
+**3 · MCP checkout tazelik kapısı** (7 Eki · **B97**, B213'ten devralındı). **Damga değil
+deploy bayat.** Sunucu `RAILWAY_GIT_COMMIT_SHA`'yı dönüyor ve o değer **doğru** — konteyner
+gerçekten iki commit geride duruyordu. Sebep: `mcp/README.md:154` **Auto deploys bilinçli
+kapalı** + Railway'in **Redeploy düğmesi taze commit çekmez** (B97; taze commit için
+*Deploy latest commit*, Cmd+K). Oturum başındaki altı hafta bayat korpus da bu.
+**Kapanış damgayı değiştirmek değil** — `mcp/korpus.mjs:60-68` zaten `git-head` fallback
+taşıyor ve doğru çalışıyor. Kapanış **tazelik kapısıdır:** damga ile korpusun beklenen hâli
+karşılaştırılsın, ayrışma **gürültülü** olsun. B97'nin *"kalıcı çözüm; elle disiplin bir
+tazelik kapısı değildir"* satırı tam bu. ⚠ Gözlem tuzağı: *"dosyalar taze, damga bayat"*
+hiçbir şey kanıtlamaz — iki commit korpusa dokunmamışsa korpus her ikisinde aynıdır
+(ölçüm: `git diff --stat <a> <b> -- docs CLAUDE.md scripts`). **B213 bu tuzağa düştü ve
+çürüdü.**
 
 **4 · Patch yazım standardı Project Files'ta yaşıyor** (Claude.ai, 11 Eyl · ayrı tur).
 Kanonik evi **`20-ref-protokoller.md`**; oraya taşınınca Project Files'tan **düşecek** —

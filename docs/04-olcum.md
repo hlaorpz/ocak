@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 07.10.2026 02:11 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 07.10.2026 02:37 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `53420c3` | `git log -1` |
+| canlı HEAD | `8403561` | `git log -1` |
 | HEAD tarihi | 2026-10-07 | `git log -1 --date=short` |
-| HEAD konusu | docs(astro.config): sitemap yorumu "üç route" diyordu, dört | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: Search Console + DNS envanteri turu — KARAR 604 · B212-B214 | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 4 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
 | `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **37** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **38** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -46,8 +46,8 @@
 | dosya | satır |
 |---|---|
 | `docs/00-durum.md` | 187 |
-| `docs/02-borclar.md` | 3776 |
-| `docs/03-sira.md` | 938 |
+| `docs/02-borclar.md` | 3809 |
+| `docs/03-sira.md` | 945 |
 | `docs/05-harita.md` | 187 |
 | `docs/01-kararlar.tsv` | 605 |
 
@@ -58,9 +58,9 @@
 | alan | değer | kaynak |
 |---|---|---|
 | toplam madde | 214 | `grep -cE '^## B'` |
-| damgalı (kapandı/çözüldü/geri çekildi) | 53 | `^## B` başlıklarında `[✅❌]` |
+| damgalı (kapandı/çözüldü/geri çekildi) | 54 | `^## B` başlıklarında `[✅❌]` |
 | iş değil (ertelendi/planlı) | 2 | `^## B` başlıklarında `[⏸🔵]` |
-| **açık** | **159** | toplam − damgalı − iş değil |
+| **açık** | **158** | toplam − damgalı − iş değil |
 | mükerrer başlık | 0 | `^## B[0-9]+` → `uniq -d` |
 
 *Ölçüt başlıktaki **damga**dır, kelimenin kendisi değil (10 Ağu B01 kaydı).*
