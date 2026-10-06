@@ -3721,3 +3721,56 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   madde 4). ⚠ **KARAR 597'nin iki şartı atlanırsa sessizce bozulur:** tetik `etkinlik_adi`'dır,
   ve `zoom_link` · `zoom_sifresi` · `katilim_linki` **birlikte** yazılmalıdır.
 - **Devir dosyası hazır** (Claude.ai, 6 Eki) — ayrı sohbette açılacak. **Bağ:** KARAR 597 · 486
+
+## B212 — Sitemap çekilemiyor (`Couldn't fetch`)
+- [ ] **Sahip:** Kaan (kapalı yüzey) · **Tetikleyici:** birkaç gün sonra panele bakmak
+- ⚠ **Kapsam ölçümle daraldı (7 Eki 01:51).** Borç ilk yazıldığında *"site indekslenemiyor"*
+  sanılıyordu. **Live test bunu çürüttü:** `URL is available to Google` · `Page can be indexed`.
+  Site indekslenebilir; çekilemeyen yalnız **sitemap**. İkisi ayrı mekanizmadır — sitemap
+  keşfi hızlandırır, indekslemenin ön koşulu değildir. *0 indeks* artık borcun tanımı değil,
+  **belirtisi.**
+- **Ne:** Sitemap üç kez gönderildi (3 Eki · 7 Eki ×2). Üçünde de durum `Couldn't fetch`,
+  `Last read` **boş**, `Discovered pages` **0**. URL Inspection paneli aynı şeyi kendi diliyle
+  söylüyor: `Sitemaps: Temporary processing error`.
+- **Sunucu tarafı ölçüldü ve temiz** (Kaan, 7 Eki):
+  `curl -sIL https://www.ocak.biz/sitemap-index.xml` → `HTTP/2 200` · `content-type: application/xml` ·
+  gövde tek `<loc>` → `https://www.ocak.biz/sitemap-0.xml` (www'li, redirect yok) ·
+  `curl -sL https://www.ocak.biz/sitemap-0.xml | grep -o '<loc>[^<]*</loc>'` → **45 satır** ·
+  Googlebot UA ile aynı URL → `HTTP/2 200`.
+- **Teşhis:** Google tarafında, **açık.** Dördüncü kez göndermenin faydası yok — Search Console
+  gönderimi değil çekmeyi kuyruğa alır.
+- **Kapanış şartı:** Sitemaps tablosunda durum `Success` **ve** `Discovered pages` > 0, ya da
+  Pages raporunda indekslenmiş sayfa > 0.
+- ⚠ CC bu borcu doğrulayamaz — *doğrulamaya çalışma.* **Bağ:** KARAR 604 · ←149
+
+## B213 — MCP damgası git HEAD'ini göstermiyor
+- [ ] **Sahip:** CC (`mcp/` sunucusu) · **Tetikleyici:** `03-sira.md` madde 3
+- **Ne:** `ocak-mcp` her cevabında `commit` damgası döndürüyor ama kaynağı
+  `commit_kaynak: "ortam-degiskeni"` — git'ten türetilmiyor, elle set edilmiş bir ortam
+  değişkeninden okunuyor.
+- **Ölçüm (7 Eki):** redeploy sonrası Railway deploy log'u `commit=0f3a0cd (ortam-degiskeni)`
+  yazdı; çalışma ağacı HEAD'i `53420c3` idi — **iki commit geride.** Dosyalar tazeydi
+  (`korpus: 122 dosya`, `00-durum.md` 194 satır, son KARAR 603 — ADIM 0 ile birebir),
+  **yalnız damga bayattı.**
+- **Zararı ölçüldü ve büyük:** bu oturum damgaya güvendi ve **altı hafta bayat** bir korpusla
+  konuştu — lansmanın yapıldığını, `site-rehber`'in sitemap'ten çıktığını, iade cümlesinin
+  çözüldüğünü, B64'ün kapandığını göremedi. Üçü de Kaan tarafından düzeltildi. Damga "ne kadar
+  bayat olduğunu" söylemediği için körlük **sessizdi.**
+- **Önerilen kapanış:** damga `git rev-parse --short HEAD` ile build anında türetilsin; env var
+  yolu kaldırılsın. Türetilemiyorsa damga `bilinmiyor` dönsün — **yanlış damga damgasızlıktan
+  kötüdür.**
+- **Bağ:** KARAR 479 · `CLAUDE.md`'deki *"Railway damgası build anıdır"* satırı da bayat —
+  damga build anında bile ilerlemiyor; o satır düzeltilmeli.
+
+## B214 — `mail.ocak.biz` teslim zinciri teyitsiz
+- [ ] **Sahip:** Kaan · **Tetikleyici:** ilk gerçek kayıttan **önce** — kayıt akışı bu adresi
+  kullanıyorsa teslim edilmeyen mail sessiz bir vaat ihlalidir
+- **Ne:** `vercel dns ls ocak.biz` çıktısında (7 Eki, iki sayfa, tam envanter) aynı ada iki
+  farklı kayıt: `mail` **A** `5.252.99.8` (105 gün) · `mail` **MX**
+  `10 inbound-smtp.eu-west-1.amazonaws.com.` (42 gün).
+- Apex ise `MX 10 mail.ocak.biz.` diyor. Yani `selam@ocak.biz` → `mail.ocak.biz` → Resend
+  inbound. Zincirin **hangi ucunun gerçekten teslim aldığı ölçülmedi.**
+- Apex SPF (`v=spf1 a mx include:_spf.mlsend.com include:_spf.mailersend.net ~all`)
+  **Resend'i içermiyor** — beklenen durum, Resend kendi SPF'ini `send.mail` altında taşıyor.
+  Ama apex'ten Resend ile gönderim denenirse **sessizce spam'e düşer.**
+- **Kapanış şartı:** `selam@ocak.biz`'e dışarıdan gerçek bir mail atılır, nereye düştüğü görülür.

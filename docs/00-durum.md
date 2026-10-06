@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 6 Ekim 2026 · **N-Kolay kimlik köprüsü turu** · dönem HEAD `f1a41b4`
+**Son güncelleme:** 7 Ekim 2026 · **Search Console + DNS envanteri turu** · dönem HEAD `53420c3`
 
 ---
 
@@ -76,6 +76,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 | Build | → `docs/04-olcum.md` (`--build` ayağı). ⚠ **Tek sayıya inmez** ve sayım **yöntemine bağlıdır**; Pilot'un "33"ü hiçbirine denk gelmiyordu (D7 kapandı). Yöntem artık betikte tanımlı — elle tutulan eski sayım (*32 prerender + 10 SSR*) yönlendirme takma adlarını dışarıda bırakıyordu, betiğinki bırakmıyor. API route sayısı iki yöntemde de aynı |
 | robots.txt | ✅ **`Allow: /` (1 Eki, `520e5fe`, KARAR 599).** `Disallow: /odeme/` · `Disallow: /api/` · `Sitemap: https://www.ocak.biz/sitemap-index.xml`. Ödeme route'ları sitemap'ten de çıktı (`d203581`) — canlı `sitemap-0.xml` **49 → 45 `<loc>`**, `/odeme/` **0** (yöntem: `curl -s …/sitemap-0.xml \| grep -o '<loc>' \| wc -l`, CC 1 Eki). ✅ **Duyuru ayağı da aynı gün düştü** (Kaan bildirdi, 1 Eki; kanal kaydedilmedi — kapalı yüzey, CC doğrulamaya çalışmaz) → KARAR 149'un iki ayağı tamam, **lansman yapıldı.** *Önceki hâl:* `Disallow: /` — stealth, 27 May (KARAR 147) → 1 Eki |
 | Kanonik adres | **`www.ocak.biz`** (`688bee5`) — köksüz `ocak.biz` 307 ile www'ye döner |
+| Arama görünürlüğü | ✅ **Search Console Domain property doğrulandı (7 Eki).** `google-site-verification` TXT apex'e eklendi (`rec_186f0094562f933e63948d09`, takım `hlaorpz`); `dig +short TXT ocak.biz` dört satır döndü. Instagram `@ocak.biz` platform bağı kuruldu. ⚠ **Lansmandan (1 Eki) altı gün sonra indekslenen sayfa: 0.** Sitemap üç kez gönderildi (3 Eki · 7 Eki ×2), üçünde de `Couldn't fetch` · `Last read` boş · 0 keşif → **B212**. Sunucu tarafı ölçüldü ve temiz: `sitemap-index.xml` 200 · `application/xml` · tek `<loc>` → `www`'li `sitemap-0.xml`; o da **45 `<loc>`**, `site-rehber` **0**, `test` **0** (yöntem: `curl -sL …/sitemap-0.xml \| grep -o '<loc>[^<]*</loc>'`, Kaan 7 Eki). Googlebot UA ile `sitemap-0.xml` **200** — bot'a özel engel yok. ✅ **LIVE TEST (7 Eki 01:51): `URL is available to Google` · `Page can be indexed`** — Googlebot canlıda `www.ocak.biz`'i çekebiliyor, indekslemenin önünde engel yok. Panelin `Crawl allowed? No: blocked by robots.txt` satırı **bayattır**: `Last crawl 25 Eyl`, robots Allow'dan **altı gün önce** — live test onu çürüttü. Ana sayfa `REQUEST INDEXING` ile öncelikli tarama kuyruğunda. Bu satır **yazılandır** — kaynağı CC'ye kapalı yüzey (Google Search Console, Kaan), hiçbir komut üretemez; *doğrulamaya çalışma* |
 | Deploy hook | ✅ **B64 KAPANDI (11 Eyl).** Gecelik tazeleme ve Notion içerik güncellemesi artık **production'a basıyor.** n8n *"OCAK Gecelik Rebuild"* ve Notion Sayfalar DB automation'ı aynı yeni hook'u çağırıyor: `notion-content-update-main` (`x2LnNpVvuG`, ref `main`). Elle tetiklemede deployment READY oldu — `githubCommitRef: main` · `target: production` · alias listesinde `www.ocak.biz`; `/hikaye` Yayınla uncheck→check testi de production build doğurdu (`deployHookName: notion-content-update-main`). Eski `tZR9LcwJq9` **revoke edildi.** ⚠ Mayıs'tan beri açık duran *"Notion automation bozuk"* teşhisi de burada kapandı: automation bozuk **değildi**, ölü hook'a basıyordu. Bu satır **yazılandır** — kaynağı CC'ye kapalı yüzey (Kaan + Claude.ai Vercel MCP, 11 Eyl), hiçbir komut üretemez. Kapanmadan önceki ölçüm ve teşhis **silinmedi, taşındı** (KARAR 61): `02-borclar.md` B64 bloğu + `90-kronoloji/2026-09.md` |
 | Vercel | Kimlik (team · project ID · proje adı) → `docs/04-olcum.md`. Dört domain ayağının dördü de `ocak-*` (**B58 ✅**, 11 Ağu). ✅ **B179 KAPANDI (11 Eyl) — düzeltmeyle değil, "kabul edildi" ile.** `rm -rf .vercel && vercel link --yes` koşuldu; CLI yine yalnız `repo.json` yazdı, `project.json` yazmadı — üç deneme aynı sonucu verdi. Sebep arıza değil: proje GitHub'a bağlı olduğu için CLI **repo seviyesinde** bağlıyor. `project.json`'a bağımlı tek yol `vercel --prod` ve o yol kullanılmıyor — deploy git push'la gidiyor. **KARAR 584** sapmayı doktrine çevirdi: kimlik `repo.json`'dan okunur, `project.json` aranmaz; `scripts/durum-uret.mjs` zaten öyle yapıyor ve hangi dosyadan okuduğunu yazıyor. ⚠ Bu, **"kabul edildi" sınıfının ilk vakasıdır** — bir borcun düzeltilmeden, sapması doktrine alınarak kapanması; kapanış yolu ledger'da henüz tanımlı değil (`03-sira.md`) |
 | Ödeme | **İki yöntem yan yana — Production'da AÇIK.** N-Kolay sanal POS ile anlaşıldı (10 Eyl): kart geri geldi, havale/EFT kaldı. **KARAR 575** — denetim `www.ocak.biz` üzerinden mock sağlayıcıyla koşar (`KART_AKISI=acik` · `PAYMENT_PROVIDER=mock`); Preview (`nkolay-test`) aynı yapılandırmada, **iki ortamın `ODEME_CALLBACK_SIR`'ı ayrıdır.** ✅ **Ölçüldü (11 Eyl, redeploy sonrası):** yöntem grubu iki seçenekle basılıyor (kart varsayılan `checked`) · `/odeme/{mock,tamam,iptal}` üçü de **200** · sitemap 48 → **51 `<loc>`**, üç ödeme route'u girdi · `robots` hâlâ `Disallow: /` · dört yasal+kayıt yüzeyinde sağlayıcı adı **sıfır**. ✅ **Sağlayıcı yazıldı (11 Eyl).** `payment-provider.ts`'te `nkolay` dalı — Ortak Ödeme Sayfası form POST'u (`/odeme/nkolay`, `prerender=false`, `KART_AKISI` kapalıyken 404), **iki ayrı hash** (istek: `sx|clientRefCode|amount|successUrl|failUrl|rnd|customerKey|secret` · dönüş: `MERCHANT_NO|REFERENCE_CODE|AUTH_CODE|RESPONSE_CODE|USE_3D|RND|INSTALLMENT|AUTHORIZATION_AMOUNT|CURRENCY_CODE|secret`), SHA-512 → base64, sabit zamanlı karşılaştırma. `iyzico` dalı kaldırıldı (**B186 ✅**). ✅ **HAT AÇILDI (6 Eki).** `PAYMENT_PROVIDER=nkolay` canlı; uçtan uca gerçek bir kart işlemi geçti — `/odeme/tamam` açıldı, Zoom linki + şifre basıldı, Notion `İşlem No` **ilk kez doldu** (`IKSIRPF343742231`). Kimlik zinciri: dönüşteki hash kapsamlı `REFERENCE_CODE` → `PaymentList` → `CLIENT_REFERENCE_CODE` → `soyEpochSoneki()` → `Kayıt ID` (**KARAR 601**). `CLIENT_REFERENCE_CODE` kimlik çözümünde **okunmaz** — hash dışıdır (593 korundu). ⚠ **İptal/iade servisi hâlâ yok** — panelden elle, **B200** kısmi. ⚠ Canlı mock ekranın kapatma borcu **B193** — AÇILIŞ'tan önce. ⚠ Anahtar kapalıyken yöntem radio grubu SSR'da hiç basılmaz — KARAR 488'in tasarımıdır, arıza değil |
@@ -90,18 +91,8 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 
-1. **B19 ✅ KAPANDI (11 Eyl) — WhatsApp display name.** `…5226` → **"Ocak Kadın Çemberi"**
-   (19 Ağu) · `…0888` → **"Ocak Kadın Topluluğu"** (11 Eyl, onaylı). İki hat da aynı WABA'da
-   (`1052764880644336` · *Ocak · Dijital Asistan*), ikisi de **Connected · CLOUD_API · GREEN**.
-   **B104 ✅ KAPANDI** aynı gün: `…0888` register edildi (`pnid 1137117629495255`), webhook
-   açıldı, canlı round-trip teyit edildi (Kaan, `wa.me/905322080888` → bot yanıtladı).
-   ⚠ **KARAR 518 SUPERSEDE → 585:** bot hattı ile yasal sayfa telefonu artık **ayrı değil** —
-   ikisi de `905322080888`. Site sabiti `b5ff542` ile taşındı, beş yasal sayfa zaten bu numarayı
-   taşıyordu ve dokunulmadı. Eşitlemeye çalışan tur değil, **ayırmaya** çalışan tur yanılır.
-2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`).** `teslimat-iade.astro` ve
-   `mesafeli-satis.astro` canlı cümleleri iki yöntemi de kapsıyor, beş yorum bloğu kapandı.
-   ✅ **`robots Allow` açıldı (1 Eki, `520e5fe`, KARAR 599)** — 10 Eylül'de engeli kalkmış, kararı bekleyen satırdı (KARAR 61: damgalandı, silinmedi).
-   Hukukçuya kalan iki soru metne **girmedi**: cayma hakkı istisnası (6502 md.15) · e-ticaret fatura serisi.
+1. **B19 · B104 ✅ KAPANDI (11 Eyl)** — WhatsApp display name + `…0888` register. KARAR 518 SUPERSEDE → 585. Gövde `90-kronoloji/2026-10.md`'ye indi (7 Eki tahliyesi, KARAR 61).
+2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`)** — `robots Allow` 1 Eki'de açıldı (KARAR 599). Hukukçuya kalan iki soru metne girmedi. Gövde `90-kronoloji/2026-10.md`'ye indi (7 Eki tahliyesi, KARAR 61).
 3. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel **✅ mühürlendi** (23 Ağu, KARAR 542);
    `KURUCU-URL` ara-değiştir **✅ KAPANDI** (24 Ağu, **B139** · **B184**) — dokuz promptun dokuzunda gerçek `--sref`, `--v 8.1`, `--chaos 5`; `--sref KURUCU-URL` → **0**. ⚠ **Bu madde artık Gün 1'i kilitlemiyor**; kalan kilit V05–V09'un üretimde hiç sınanmamış olması (ilk parti kanarya).
 4. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
@@ -152,6 +143,7 @@ girmez; o kuyruk başka yerde yaşar.
 - **6 Ekim — N-Kolay kimlik köprüsü turu:** `2e7e5b5` + `f1a41b4`. Hat **açıldı** — gerçek
   kart işlemi uçtan uca geçti. **B201 çürüdü**, **B202 ✅**, **B203** kısmi, **601 · 602 · 603**.
   Aynı gün Notion API kesintisi (B209). → `90-kronoloji/2026-10.md`
+- **7 Ekim — Search Console + DNS envanteri turu:** kod commit'i yok. Domain property doğrulandı, DNS envanteri ilk kez ölçüldü, sitemap `Couldn't fetch` teşhis edildi (**B212**), MCP damgası yalan söylüyor (**B213**), `mail.ocak.biz` zinciri teyitsiz (**B214**). → `90-kronoloji/2026-10.md`
 - **11 Eylül · 24 Ağustos · 19 Ağustos ve öncesi** (N-Kolay sağlayıcı turu · MJ görsel ·
   Sayfalar metin + DEPLOY · B turu · üç format) → `90-kronoloji/2026-08.md` · `2026-09.md`
 
@@ -170,6 +162,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | Sosyal medya **Gün 1** önkoşulları (Gün 0 ✅ 23 Ağu, KARAR 542) | Kaan |
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | N-Kolay iptal/iade servisi (**B200** kısmi — okuma kuruldu) · ödeme sonrası bildirim halkası (**B211**) | CC |
+| Arama görünürlüğü — sitemap `Couldn't fetch` (**B212**), 0 indeks · MCP damgası (**B213**) | Kaan + CC |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
 | Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |

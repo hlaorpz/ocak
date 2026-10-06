@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 1 Ekim 2026 · **hamburger Takvim turu**
+**Son güncelleme:** 7 Ekim 2026 · **Search Console + DNS envanteri turu**
 
 ---
 
@@ -57,16 +57,22 @@ mevcut bir değerin gövdedeki damgayla ayrıştırılması mı yeter · **(b)**
 daraltma "kabul" diye geçer. ⚠ Ayrım şu an yalnız B179 gövdesinde yaşıyor: kabul,
 **ölçülmüş** bir zararsızlıktır; daraltma ölçülmemiş bir vazgeçiştir (B19 · B57 · B73).
 
-**3 · Patch yazım standardı Project Files'ta yaşıyor** (Claude.ai, 11 Eyl · ayrı tur).
+**3 · MCP damgası yalan söylüyor** (7 Eki · **B213**). Sunucu `commit_kaynak: ortam-degiskeni`
+dönüyor; dosyalar tazeleniyor, damga tazelenmiyor. Bu tur altı hafta bayat bir korpusla
+açıldı ve körlük **sessizdi** — damga ne kadar bayat olduğunu söylemiyor. Kapanış:
+`git rev-parse --short HEAD` ile build anında türetilsin, ya da `bilinmiyor` dönsün.
+`CLAUDE.md`'deki *"Railway damgası build anıdır"* satırı da aynı turda düzeltilir.
+
+**4 · Patch yazım standardı Project Files'ta yaşıyor** (Claude.ai, 11 Eyl · ayrı tur).
 Kanonik evi **`20-ref-protokoller.md`**; oraya taşınınca Project Files'tan **düşecek** —
 iki kopya ayrışmasın. ⚠ Taşıma ile silme **aynı turda** yapılır; arada kalan pencerede
 iki kopya birden canlı görünür ve hangisinin otorite olduğu belirsizleşir (KARAR 471'in
 aynı sınıfı: kopya otorite değil aynadır).
 
-**4 · Token kuralı proje talimatına eklendi, korpusta evi yok** (11 Eyl · ayrı tur).
+**5 · Token kuralı proje talimatına eklendi, korpusta evi yok** (11 Eyl · ayrı tur).
 Kural: **token/anahtar/hook URL'i URL'e, sorgu dizesine, patch'e ya da sohbete yazılmaz;
 yalnız başlıkta taşınır** (KARAR 97 · 587). Şu an yalnız proje talimatında yaşıyor —
-korpusta karşılığı yok, yani CC dışı bir yüzey onu okuyamaz. **Madde 3'ün taşımasıyla
+korpusta karşılığı yok, yani CC dışı bir yüzey onu okuyamaz. **Madde 4'ün taşımasıyla
 birlikte** `20-ref-protokoller.md`'ye yazılacak; ikisi aynı dosyaya gidiyor, ayrı tur
 açılmaz. ⚠ Kuralın bedeli bu turda ödendi: ölçüm token'ı sorgu dizesine konduğu için
 hata mesajı URL'yi olduğu gibi bastı ve token ekran görüntüsünde açığa çıktı, revoke
