@@ -37,6 +37,7 @@ function satir(ezme: Record<string, unknown> = {}) {
     CLIENT_REFERENCE_CODE: CLIENT,
     STATUS: MUTABAKAT_BASARILI_STATUS,
     TRANSACTION_TYPE: MUTABAKAT_ISLEM_TIPI,
+    TRX_DATE: '06.10.2026 22:54:38',
     ...ezme,
   };
 }
@@ -50,14 +51,52 @@ describe('paymentListAyristir — iç içe JSON', () => {
   it('`result` içindeki dizeyi açar ve LIST satırlarını döndürür', () => {
     const k = paymentListAyristir(yanit({ RESPONSE_CODE: 1, LIST: [satir()] }));
     expect(k).toEqual([
-      { referansNo: REF, clientRefCode: CLIENT, status: 'SUCCESS', islemTipi: 'SALES' },
+      {
+        referansNo: REF, clientRefCode: CLIENT, status: 'SUCCESS',
+        islemTipi: 'SALES', trxTarihi: '06.10.2026 22:54:38',
+      },
     ]);
   });
 
-  it('`result` sarmalayıcısı OLMAYAN yanıtı da açar (şekil değişirse)', () => {
-    // Sağlayıcı bir gün düz JSON dönerse köprü çalışmaya devam etsin.
-    const k = paymentListAyristir(JSON.stringify({ LIST: [satir()] }));
+  it('⚠ `result` anahtarı YOKSA tolerans göstermez — null + kademe log\'u', () => {
+    // Davranış 6 Eki'de BİLEREK sertleşti. Önceki sürüm `result` yoksa dış
+    // gövdeyi iç gövde sayıyordu; o tolerans tam olarak bu haftanın yanlış
+    // teşhisini doğurdu (ayrıştırıcı yanlış kademeye bakıp "sağlayıcı şekli
+    // değiştirdi" dedirtti). Ölçülen iki zarfın İKİSİNDE de `result` var;
+    // olmayan bir şekil ölçülmemiştir ve sessizce uyum sağlamak yerine
+    // GÜRÜLTÜ çıkarmalı.
+    const uyari = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(paymentListAyristir(JSON.stringify({ LIST: [satir()] }))).toBeNull();
+    expect(String(uyari.mock.calls.at(-1)?.[0] ?? '')).toContain('kademe=result');
+  });
+
+  it('`result` NESNE gelirse açar — canlı başarılı sorgunun zarfı', () => {
+    // Ölçüldü (6 Eki): başarılı sorguda `result` DİZE değil NESNE ve yanında
+    // `id` · `error` duruyor. İlk sürüm tam buradan düştü.
+    const k = paymentListAyristir(
+      JSON.stringify({ id: 'req-1', error: null, result: { RESPONSE_CODE: 1, LIST: [satir()] } }),
+    );
     expect(k).toHaveLength(1);
+    expect(k![0].clientRefCode).toBe(CLIENT);
+  });
+
+  it('`result` DİZE gelirse de açar — erken doğrulama hatasının zarfı', () => {
+    // Prob turunda "Hash Data boş geçilemez" böyle geldi: dış gövdede tek
+    // anahtar ve değeri JSON dizesi. İki biçim de karşılanmak zorunda.
+    const k = paymentListAyristir(yanit({ RESPONSE_CODE: 1, LIST: [satir()] }));
+    expect(k).toHaveLength(1);
+  });
+
+  it('`error` DOLUYSA sorgu reddedilmiştir — null ve ayrı kademe log\'u', () => {
+    // "LIST yok" ile "sorgu reddedildi" aynı şey değil: ikincisi zarf değil
+    // yetki/parametre sorunudur ve teşhisi bambaşka yere götürür.
+    const uyari = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(
+      paymentListAyristir(JSON.stringify({ id: 'r', error: 'yetkisiz', result: null })),
+    ).toBeNull();
+    const satirLog = String(uyari.mock.calls.at(-1)?.[0] ?? '');
+    expect(satirLog).toContain('sorgu reddedildi');
+    expect(satirLog).toContain('yetkisiz');
   });
 
   it('boş LIST → boş dizi, `null` DEĞİL (ayrım korunur)', () => {
@@ -73,17 +112,24 @@ describe('paymentListAyristir — iç içe JSON', () => {
     expect(paymentListAyristir(yanit({ LIST: 'dizi değil' }))).toBeNull();
   });
 
-  it('LIST yoksa iç anahtarları log\'a basar — şekil kayması SESSİZ kalmaz', () => {
+  it('LIST yoksa KADEMEYİ ve result\'ın İÇ anahtarlarını basar', () => {
+    // ⚠ Önceki log kademeyi söylemiyor ve DIŞ anahtarları basıyordu
+    // (`id, result, error`) — bu "sağlayıcı şekli değiştirdi" diye okundu ve
+    // bir tur kaybettirdi. Artık kademe açık, basılan anahtarlar result'ın içi.
     const uyari = vi.spyOn(console, 'warn').mockImplementation(() => {});
     paymentListAyristir(yanit({ RESPONSE_CODE: 0, RESPONSE_DATA: 'Hash Data boş geçilemez' }));
     const s = String(uyari.mock.calls.at(-1)?.[0] ?? '');
-    expect(s).toContain('`LIST` yok');
+    expect(s).toContain('kademe=LIST');
     expect(s).toContain('RESPONSE_DATA');
+    expect(s).toContain('Hash Data boş geçilemez');
+    expect(s).not.toContain('id, result, error');
   });
 
   it('eksik alanlar boş dizeye düşer, satır düşmez', () => {
     const k = paymentListAyristir(yanit({ LIST: [{ REFERENCE_CODE: REF }] }));
-    expect(k).toEqual([{ referansNo: REF, clientRefCode: '', status: '', islemTipi: '' }]);
+    expect(k).toEqual([
+      { referansNo: REF, clientRefCode: '', status: '', islemTipi: '', trxTarihi: '' },
+    ]);
   });
 
   it('satır olmayan girdiler (null, dize) elenir', () => {
@@ -134,6 +180,51 @@ describe('secKaydi — SALES + SUCCESS, üç kapı', () => {
     const s = String(uyari.mock.calls.at(-1)?.[0] ?? '');
     expect(s).toContain('SALES+SUCCESS satırı yok');
     expect(s).toContain('CANCEL/SUCCESS');
+  });
+
+  it('⚠ VAKA (6 Eki) — iade sonrası SALES satırı KAYBOLUYOR, geriye CANCEL kalıyor', () => {
+    // Kaan iadeyi yaptı ve `PaymentList` o işlem için TEK satır döndürdü:
+    //   REFERENCE_CODE IKSIRPF343739192 · CLIENT_REFERENCE_CODE OCAK-EP3E-46507
+    //   TRANSACTION_TYPE CANCEL · STATUS SUCCESS · TRX_DATE 06.10.2026 22:54:38
+    // Orijinal SALES satırı listede YOK.
+    //
+    // ── Kapı BİLEREK gevşetilmedi ──
+    // Kimlik (hangi kayıt) ile geçerlilik (ödeme duruyor mu) ayrı sorular.
+    // CANCEL satırı kimliği verebilir ama callback onu Ödendi'ye çekerdi:
+    // tutar kapısı geçer, replay kilidi boştur. Yani iade edilmiş bir işlem
+    // "ödendi" olurdu — köprünün önlemek için yazıldığı şeyin aynısı.
+    //
+    // Canlı yolda bu hâl doğmaz: callback ödemeden SANİYELER sonra gelir,
+    // iade ise panelden elle ve sonradan yapılır. Bu satırın CANCEL görünmesi
+    // callback'in ZATEN düşmüş olmasının sonucu, sebebi değil.
+    //
+    // Geriye dönük mutabakat (iade edilmişleri de eşleştirmek) AYRI iştir —
+    // B200'ün yazılmamış yarısı; kimlik kapısını gevşetmekle karıştırılmaz.
+    const liste = paymentListAyristir(
+      yanit({
+        LIST: [
+          {
+            REFERENCE_CODE: 'IKSIRPF343739192',
+            CLIENT_REFERENCE_CODE: 'OCAK-EP3E-46507',
+            TRANSACTION_TYPE: 'CANCEL',
+            STATUS: 'SUCCESS',
+            TRX_DATE: '06.10.2026 22:54:38',
+          },
+        ],
+      }),
+    );
+    // Satır OKUNUYOR — ayrıştırma başarılı, kimlik bilgisi elde.
+    expect(liste).toHaveLength(1);
+    expect(liste![0].clientRefCode).toBe('OCAK-EP3E-46507');
+    expect(liste![0].trxTarihi).toBe('06.10.2026 22:54:38');
+    // Ama ödeme SAYILMIYOR — fail-closed.
+    expect(secKaydi(liste!, 'IKSIRPF343739192')).toBeNull();
+  });
+
+  it('SALES+SUCCESS yok log\'u TARİHİ de taşır (iade mi ödeme mi ayrımı)', () => {
+    const uyari = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    coz({ LIST: [satir({ TRANSACTION_TYPE: 'CANCEL' })] });
+    expect(String(uyari.mock.calls.at(-1)?.[0] ?? '')).toContain('@06.10.2026 22:54:38');
   });
 
   it('boş referansla aramaz', () => {

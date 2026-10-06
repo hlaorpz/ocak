@@ -20,9 +20,25 @@
  * route'un bu modüle **hash kapsamındaki** alanı geçtiği greple doğrulanıyor.
  *
  * ── Ölçülmüş yanıt şekli (6 Eki 2026, Kaan — canlı PaymentList) ──
- *   dış  : {"result":"<JSON dizesi>"}          ← İÇ İÇE, parse edilmeden alan görünmez
- *   iç   : { RESPONSE_CODE, RESPONSE_DATA, LIST: [ … ] }
- *   satır: { REFERENCE_CODE, CLIENT_REFERENCE_CODE, STATUS, TRANSACTION_TYPE, … }
+ * ⚠ **`result` İKİ BİÇİMDE DE GELİYOR** ve bu ölçüldü, savunma amaçlı değil:
+ *
+ *   (a) BAŞARILI sorgu — `result` bir NESNE, yanında `id` ve `error`:
+ *       { id, result: { RESPONSE_CODE, CORE_TRX_ID_RESERVED, RESPONSE_DATA,
+ *         sessionId, LIST: [ … ], ERROR_CODE, ERROR_MESSAGE, TimeStamp }, error }
+ *       Başarılı turda `error: null` — sorgu reddedilmemiş.
+ *
+ *   (b) ERKEN DOĞRULAMA hatası — dış gövdede tek anahtar (`result`) ve değeri
+ *       bir JSON DİZESİ: {"result":"{\"RESPONSE_CODE\":0,…}"}
+ *       (prob turunda *"Hash Data boş geçilemez"* böyle geldi)
+ *
+ *   satır: { REFERENCE_CODE, CLIENT_REFERENCE_CODE, STATUS, TRANSACTION_TYPE,
+ *            TRX_DATE, … }
+ *
+ * İlk sürüm yalnız (b)'yi karşılıyordu — `result`'ı koşulsuz dize sanıyordu ve
+ * (a) geldiğinde dış gövdeyi iç gövde sayıp `LIST` bulamıyordu. Canlı 6 Eki
+ * işlemi (22:55) tam buradan düştü. Teşhisi yanıltan şey log'du: düştüğü
+ * kademeyi söylemiyor, sadece DIŞ anahtarları basıyordu — "şekil kaydı" gibi
+ * okundu, oysa ayrıştırıcı en baştan yanlış kademeye bakıyordu.
  *
  *   `REFERENCE_CODE`        = N-KOLAY'ın işlem numarası (örn. `IKSIRPF341481127`)
  *   `CLIENT_REFERENCE_CODE` = BİZİM `clientRefCode` (örn. `OCAK-57V4-08513`)
@@ -45,6 +61,12 @@ export type MutabakatKaydi = {
   clientRefCode: string;
   status: string;
   islemTipi: string;
+  /**
+   * Satırın işlem zamanı — `DD.MM.YYYY HH:mm:ss` (ölçüldü: `06.10.2026 22:54:38`).
+   * Kimlik çözümünde KULLANILMIYOR; yalnız teşhis içindir. `SALES+SUCCESS`
+   * bulunamadığında "hangi satır ne zaman" sorusunu log'da cevaplıyor.
+   */
+  trxTarihi: string;
 };
 
 /** Köprünün kabul ettiği tek işlem tipi. İade/iptal satırları ödeme değildir. */
@@ -63,31 +85,76 @@ export const MUTABAKAT_BASARILI_STATUS = 'SUCCESS';
  * hata sınıfının aynısını üretir.
  */
 export function paymentListAyristir(hamYanit: string): MutabakatKaydi[] | null {
+  // ⚠ Her red KADEMESİNİ söyler. Önceki sürüm düştüğü kademeyi söylemiyordu
+  // ve teşhis bir tur kaybettirdi: dış anahtarlar basılınca "sağlayıcı şekli
+  // değiştirdi" sanıldı, oysa ayrıştırıcı yanlış kademeye bakıyordu.
+  const anahtarlar = (o: unknown) =>
+    o && typeof o === 'object' ? Object.keys(o as Record<string, unknown>).join(', ') : `(${typeof o})`;
+
   let dis: unknown;
   try {
     dis = JSON.parse(hamYanit);
   } catch {
+    console.warn(
+      `[nkolay-mutabakat] kademe=dış · gövde JSON değil (${hamYanit.length} karakter)`,
+    );
     return null;
   }
-  if (!dis || typeof dis !== 'object') return null;
+  if (!dis || typeof dis !== 'object') {
+    console.warn(`[nkolay-mutabakat] kademe=dış · nesne değil → ${typeof dis}`);
+    return null;
+  }
 
-  // Dış katman `result`'ı JSON DİZESİ olarak taşıyor.
-  const result = (dis as Record<string, unknown>).result;
-  let ic: unknown = dis;
+  const disObj = dis as Record<string, unknown>;
+
+  // Sağlayıcı taşıyıcı hatasını `error` ile bildiriyor. Doluysa sorgu
+  // REDDEDİLMİŞTİR — `LIST` yokluğunu "kayıt bulunamadı" sanmak teşhisi
+  // tamamen yanlış yere götürürdü (zarf değil yetki/parametre sorunu).
+  if (disObj.error != null && disObj.error !== '') {
+    console.warn(
+      `[nkolay-mutabakat] kademe=dış · sorgu reddedildi — error=${String(
+        typeof disObj.error === 'object' ? JSON.stringify(disObj.error) : disObj.error,
+      ).slice(0, 200)}`,
+    );
+    return null;
+  }
+
+  // ── kademe `result` — NESNE ya da JSON DİZESİ olabilir, ikisi de ölçüldü ──
+  let ic: unknown;
+  if (!('result' in disObj)) {
+    console.warn(`[nkolay-mutabakat] kademe=result · anahtar yok · dış anahtarlar: ${anahtarlar(disObj)}`);
+    return null;
+  }
+  const result = disObj.result;
   if (typeof result === 'string') {
     try {
       ic = JSON.parse(result);
     } catch {
+      console.warn(
+        `[nkolay-mutabakat] kademe=result · dize ama JSON değil (${result.length} karakter)`,
+      );
       return null;
     }
+  } else if (result && typeof result === 'object') {
+    ic = result;
+  } else {
+    console.warn(`[nkolay-mutabakat] kademe=result · skaler → ${typeof result}`);
+    return null;
   }
-  if (!ic || typeof ic !== 'object') return null;
+  if (!ic || typeof ic !== 'object') {
+    console.warn(`[nkolay-mutabakat] kademe=result · açıldı ama nesne değil → ${typeof ic}`);
+    return null;
+  }
 
-  const liste = (ic as Record<string, unknown>).LIST;
+  const icObj = ic as Record<string, unknown>;
+  const liste = icObj.LIST;
   if (!Array.isArray(liste)) {
+    // Kademe artık açık: basılan anahtarlar `result`'ın İÇİ, dışı değil.
     console.warn(
-      '[nkolay-mutabakat] yanıtta `LIST` yok — şekil kaymış olabilir; iç anahtarlar: ' +
-        Object.keys(ic as Record<string, unknown>).join(', '),
+      `[nkolay-mutabakat] kademe=LIST · dizi değil (${typeof liste}) · ` +
+        `result anahtarları: ${anahtarlar(icObj)} · ` +
+        `RESPONSE_CODE=${String(icObj.RESPONSE_CODE ?? '(yok)')} ` +
+        `RESPONSE_DATA=${String(icObj.RESPONSE_DATA ?? '(yok)').slice(0, 120)}`,
     );
     return null;
   }
@@ -100,6 +167,7 @@ export function paymentListAyristir(hamYanit: string): MutabakatKaydi[] | null {
       clientRefCode: metin(s.CLIENT_REFERENCE_CODE),
       status: metin(s.STATUS),
       islemTipi: metin(s.TRANSACTION_TYPE),
+      trxTarihi: metin(s.TRX_DATE),
     }));
 }
 
@@ -130,9 +198,14 @@ export function secKaydi(
   if (!satir) {
     // Eşleşme var ama SALES+SUCCESS yok: iptal edilmiş ya da başarısız işlem.
     // Sessiz `null` "işlem bulunamadı" gibi okunurdu; ayrımı log taşır.
+    // ⚠ Bu satır bir vakayı okumayı sağladı (6 Eki): iade yapıldıktan sonra
+    // orijinal SALES satırı listede GÖRÜNMÜYOR, satır CANCEL/SUCCESS oluyor.
+    // Tarih de basılıyor ki "ödeme mi, sonradan iade mi" ayırt edilebilsin.
     console.warn(
       `[nkolay-mutabakat] referans eşleşti ama SALES+SUCCESS satırı yok — ` +
-        `ref=${hedef} bulunan=${eslesen.map((k) => `${k.islemTipi}/${k.status}`).join(' · ')}`,
+        `ref=${hedef} bulunan=${eslesen
+          .map((k) => `${k.islemTipi}/${k.status}@${k.trxTarihi || '?'}`)
+          .join(' · ')}`,
     );
     return null;
   }
