@@ -200,6 +200,16 @@ describe('devam.astro — kaynak disiplini', () => {
     expect(KOD).not.toMatch(/title="/);
   });
 
+  it('`Kartla öde` PAYLAŞILAN düğme sınıfını kullanıyor — yerel kopya yok', () => {
+    // Yerel kopya ayrışmıştı: hover hiç yoktu, metin rengi `--cream`'di
+    // (kardeşlerin `--coal`'ü yerine), uppercase/harf aralığı yoktu, 2px köşe
+    // yuvarlaması vardı — sitenin hiçbir düğmesinde olmayan bir detay.
+    expect(KAYNAK).toMatch(/class="ocak-dugme" href=\{gorunum\.odemeUrl\}/);
+    // Sayfanın `<style>`ında düğme kuralı KALMADI.
+    expect(KOD).not.toMatch(/\.ocak-odeme-devam__dugme\s*\{/);
+    expect(KOD).not.toMatch(/border-radius: 2px/);
+  });
+
   it('sayfa `noindex`', () => {
     expect(KOD).toMatch(/noindex/);
   });
@@ -249,5 +259,49 @@ describe('nkolay.astro — ödeme başlatma kapısı burada DA var', () => {
     const iTutar = KOD.indexOf('!(kayit.tutar > 0)');
     expect(iKapi).toBeGreaterThan(-1);
     expect(iTutar).toBeGreaterThan(iKapi);
+  });
+});
+
+/**
+ * `.ocak-dugme` — birincil düğmenin paylaşılan tek kuralı (global.css).
+ *
+ * Sitede üç birincil düğme vardı ve üçü de yeniden kullanılamıyordu: biri
+ * `section[data-section=…]` ebeveynine bağlı (atmosfer.css), ikisi Astro'nun
+ * bileşen-kapsamlı `<style>`ında. `global.css`'te hiç button kuralı yoktu.
+ * Bu sınıf o üç kardeşten ÖLÇÜLMÜŞ ortak paydadır; yeni tasarım değil.
+ */
+describe('.ocak-dugme — paylaşılan birincil düğme', () => {
+  const CSS = readFileSync(join(__dirname, '..', 'styles', 'global.css'), 'utf-8');
+  const KURAL = CSS.match(/\.ocak-dugme \{[\s\S]*?\n\}/)?.[0] ?? '';
+  const HOVER = CSS.match(/\.ocak-dugme:hover,[\s\S]*?\n\}/)?.[0] ?? '';
+
+  it('kural global.css\'te — bileşen-kapsamlı DEĞİL, yeniden kullanılabilir', () => {
+    expect(KURAL).toBeTruthy();
+  });
+
+  it('kardeşlerin ölçülmüş paydası: ember dolu · coal metin · uppercase · köşe YOK', () => {
+    expect(KURAL).toMatch(/background: var\(--ember\);/);
+    expect(KURAL).toMatch(/border: 1px solid var\(--ember\);/);
+    // ⚠ `--coal`: üç kardeş de ember üstünde KOYU metin kullanıyor.
+    expect(KURAL).toMatch(/color: var\(--coal\);/);
+    expect(KURAL).toMatch(/text-transform: uppercase;/);
+    expect(KURAL).toMatch(/letter-spacing: 0\.15em;/);
+    // Hiçbir kardeşte köşe yuvarlaması yok.
+    expect(KURAL).not.toMatch(/border-radius/);
+  });
+
+  it('HOVER VAR — eksik olan tam buydu', () => {
+    expect(HOVER).toBeTruthy();
+    expect(HOVER).toMatch(/background: var\(--ember-soft\);/);
+    expect(HOVER).toMatch(/box-shadow: 0 0 25px rgba\(196, 75, 47, 0\.3\);/);
+  });
+
+  it('`:focus-visible` hover ile AYNI kuralda — klavye de görsün', () => {
+    expect(CSS).toMatch(/\.ocak-dugme:hover,\s*\n\.ocak-dugme:focus-visible \{/);
+    expect(HOVER).toMatch(/outline: none;/);
+  });
+
+  it('geçiş var — `--duration-base` reduced-motion\'da 0ms, ayrı blok gerekmez', () => {
+    expect(KURAL).toMatch(/transition: background var\(--duration-base\)/);
   });
 });

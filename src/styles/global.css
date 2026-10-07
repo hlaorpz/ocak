@@ -215,3 +215,65 @@ html {
   height: 1px;
   overflow: hidden;
 }
+
+/* === BİRİNCİL DÜĞME — .ocak-dugme ===
+ *
+ * ── Neden var ──
+ * Sitede üç ayrı birincil düğme vardı ve ÜÇÜ DE AYNI deseni kendi yerinde
+ * tekrar ediyordu:
+ *   `.ocak-kayit-cta__buton`  — atmosfer.css:1754, ama `section[data-section=
+ *                               "kayit-btn"|"mini-cta"]` EBEVEYNİNE bağlı,
+ *                               yani başka bir sayfada kullanılamıyor
+ *   `.kayit-formu__submit`    — KayitFormu.astro, bileşen-kapsamlı `<style>`
+ *   `.ates-mektuplari__button`— AtesMektuplari.astro, bileşen-kapsamlı
+ * Üçü de Astro'nun scoped CSS'i ya da ebeveyn seçicisi yüzünden YENİDEN
+ * KULLANILAMAZ durumdaydı; `global.css`'te tek bir button kuralı yoktu.
+ * `/odeme/devam` bu yüzden dördüncü bir kopya yazmıştı ve kopya ayrışmıştı
+ * (aşağıdaki nota bak).
+ *
+ * ── Bu kural YENİ TASARIM DEĞİL, ÖLÇÜLMÜŞ ORTAK PAYDA ──
+ * Değerler üç kardeşten alındı: ember dolu + coal metin + 1px ember kenarlık +
+ * uppercase + geniş harf aralığı + köşe yuvarlaması YOK. Hover üçünde de
+ * `--ember-soft`; ikisinde ayrıca ember parıltısı var ve o da alındı (akış
+ * içindeki birincil eylem `.kayit-formu__submit` ile aynı ağırlıkta dursun).
+ * Ölçüler inline kardeşe (`.ates-mektuplari__button`) göre: bu sınıf blok
+ * değil, satır içi bir eylem düğmesi.
+ *
+ * ⚠ Üç kardeş bu turda RETROFIT EDİLMEDİ. Onları bu sınıfa taşımak görünür
+ * yüzeyde üç ayrı eyeball ister (tam-blok genişlik, farklı padding'ler,
+ * `section` ebeveyn kuralları) ve ayrı bir iştir. Bu commit yalnız dördüncü
+ * kopyayı siliyor.
+ *
+ * `--duration-base` reduced-motion altında zaten `0ms` (tokens.css) —
+ * ayrı bir `@media` bloğu gerekmiyor.
+ */
+.ocak-dugme {
+  display: inline-block;
+  padding: 0.9rem 1.8rem;
+  background: var(--ember);
+  border: 1px solid var(--ember);
+  color: var(--coal);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-out),
+              box-shadow var(--duration-base) var(--ease-out),
+              opacity var(--duration-base) var(--ease-out);
+}
+
+.ocak-dugme:hover,
+.ocak-dugme:focus-visible {
+  background: var(--ember-soft);
+  box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
+  outline: none;
+}
+
+.ocak-dugme:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

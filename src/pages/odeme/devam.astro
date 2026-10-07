@@ -94,7 +94,7 @@ const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
 
       {gorunum.odemeUrl && (
         <p class="ocak-odeme-devam__eylem">
-          <a class="ocak-odeme-devam__dugme" href={gorunum.odemeUrl}>Kartla öde</a>
+          <a class="ocak-dugme" href={gorunum.odemeUrl}>Kartla öde</a>
         </p>
       )}
 
@@ -145,17 +145,12 @@ const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
   .ocak-odeme-devam__eylem {
     margin: var(--space-5) 0 0;
   }
-  .ocak-odeme-devam__dugme {
-    display: inline-block;
-    padding: 0.85rem 2rem;
-    background: var(--ember);
-    color: var(--cream);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    letter-spacing: 0.03em;
-    text-decoration: none;
-    border-radius: 2px;
-  }
+  /* `Kartla öde` artık paylaşılan `.ocak-dugme` (global.css) — bu sayfanın
+   * yerel kopyası KALDIRILDI. Kopya ayrışmıştı: hover HİÇ YOKTU (düğme
+   * imleçle temasta hiçbir şey söylemiyordu), metin rengi `--cream`'di
+   * (ember üstünde kardeşlerin `--coal`'ü yerine), uppercase ve geniş harf
+   * aralığı yoktu, 2px köşe yuvarlaması vardı — sitenin hiçbir düğmesinde
+   * olmayan bir detay. */
   .ocak-odeme-devam__link {
     font-family: var(--font-body);
     font-size: 0.9rem;
