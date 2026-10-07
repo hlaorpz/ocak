@@ -2313,10 +2313,23 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           if (result.katilim?.var && !result.odeme?.gerekli) {
             const cumleEl = katilimDiv.querySelector<HTMLElement>('[data-kf-success-katilim-cumle]')!;
             const degerEl = katilimDiv.querySelector<HTMLElement>('[data-kf-success-katilim-deger]')!;
-            cumleEl.textContent =
+            // ── B211 İŞ 6 — "Mail kutuna da düştü." KOŞULA BAĞLI ──
+            // Cümle iki aydır koşulsuzdu ve mail MailerLite otomasyonundan
+            // gidiyordu; kod gidip gitmediğini bilmiyordu bile. Artık endpoint
+            // `postaGitti` döndürüyor (o istekte Resend kabul etti mi) ve
+            // cümlenin ikinci yarısı yalnız o doğruysa basılıyor.
+            //
+            // Kart seçende kayıt anında mail YOK → yarım cümle basılır.
+            // Gönderim düştüyse de basılmaz: gitmemiş bir mailin geldiğini
+            // söylemek, `/odeme/tamam`'da kaldırdığımız yanlışın aynısı
+            // (fc32dc7). Metin DEĞİŞMEDİ — yalnız koşula bağlandı.
+            const yerCumlesi =
               result.katilim.tipi === 'link'
-                ? 'Buluşma linkin burada. Mail kutuna da düştü.'
-                : 'Buluşacağımız yer burada. Mail kutuna da düştü.';
+                ? 'Buluşma linkin burada.'
+                : 'Buluşacağımız yer burada.';
+            cumleEl.textContent = result.postaGitti
+              ? `${yerCumlesi} Mail kutuna da düştü.`
+              : yerCumlesi;
             // XSS koruması — Notion'dan geliyor ama yine de href'i element olarak set et.
             degerEl.textContent = '';
             if (result.katilim.tipi === 'link') {

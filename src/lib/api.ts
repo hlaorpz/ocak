@@ -47,7 +47,22 @@ export type KayitResponse = {
   basvuruId?: string;
   honeypot?: boolean;
   message?: string;
+  /**
+   * ⚠ B211'de ÖLDÜ. MailerLite abone yazımının sonucuydu; kayıt akışı artık
+   * MailerLite'a yazmıyor (`api/kayit.ts` İŞ 2 notu) ve endpoint bu alanı
+   * DÖNDÜRMÜYOR. Tip silinmedi (CLAUDE.md §5) — bir tüketici kalmışsa
+   * `undefined` görsün, `postaGitti`'ye taşınsın.
+   */
   mailerlite?: { ok: boolean; status: number; error?: string } | null;
+  /**
+   * B211 — kayıt maili O İSTEKTE gönderildi mi (Resend kabul etti).
+   *
+   * Success ekranındaki "Mail kutuna da düştü." cümlesi buna bağlı. Kart
+   * seçende kayıt anında mail YOK → `false` → cümle basılmaz. Gönderim
+   * başarısızsa da `false`: kadına gitmemiş bir mailin geldiğini söylemek,
+   * `/odeme/tamam`'da kaldırdığımız yanlışın aynısı olurdu (`fc32dc7`).
+   */
+  postaGitti?: boolean;
   /**
    * Brief 6 (KARAR 210): havale eşleştirmesi için referans. Format üç turda
    * değişti — `OCAK-XXXXX` (5 hane rakam, Brief 6) → `OCAK-XXXXXX` (6 hane

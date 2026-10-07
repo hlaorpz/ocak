@@ -88,3 +88,51 @@ describe('KayitFormu.astro — KVKK/Mesafeli onay validasyon state (KARAR 254 ad
     );
   });
 });
+
+/**
+ * B211 İŞ 6 — success ekranındaki "Mail kutuna da düştü." cümlesi.
+ *
+ * Cümle iki aydır KOŞULSUZDU ve mail MailerLite otomasyonundan gidiyordu;
+ * kod gidip gitmediğini bilmiyordu. Artık `/api/kayit` `postaGitti` döndürüyor
+ * (o istekte Resend kabul etti mi) ve cümlenin ikinci yarısı yalnız o doğruysa
+ * basılıyor. Kart seçende kayıt anında mail yok → yarım cümle.
+ *
+ * Aynı yanlış `/odeme/tamam`'da da vardı ve orada KALDIRILDI (`fc32dc7`);
+ * burada kaldırmak yerine koşula bağlanıyor, çünkü ücretsiz kayıtta mail
+ * gerçekten o anda gidiyor ve cümle doğru oluyor.
+ */
+describe('KayitFormu.astro — "Mail kutuna da düştü." koşula bağlı (B211 İŞ 6)', () => {
+  const KAYNAK = readFileSync(SOURCE_PATH, 'utf-8');
+  // Ölçütler yorumları ELEYEREK çalışır: yukarıdaki gerekçe bloğu yasaklanan
+  // dizeyi alıntılıyor ve ham kaynakta ölçmek kendi anlatısına takılırdı.
+  const KOD = KAYNAK
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('cümle KOŞULSUZ basılmıyor — `postaGitti`ye bağlı', () => {
+    // Regresyon kilidi: tek parça dize geri gelirse burası kırmızı yanar.
+    expect(KOD).not.toMatch(/'Buluşma linkin burada\. Mail kutuna da düştü\.'/);
+    expect(KOD).not.toMatch(/'Buluşacağımız yer burada\. Mail kutuna da düştü\.'/);
+    expect(KOD).toMatch(/result\.postaGitti/);
+  });
+
+  it('iki yarı ayrı: yer cümlesi KOŞULSUZ, mail cümlesi KOŞULLU', () => {
+    expect(KOD).toMatch(/'Buluşma linkin burada\.'/);
+    expect(KOD).toMatch(/'Buluşacağımız yer burada\.'/);
+    // Mail yarısı yalnız doğru dalda.
+    const dogruDal = KOD.match(/result\.postaGitti\s*\n?\s*\?\s*`[^`]*`/)?.[0] ?? '';
+    expect(dogruDal).toContain('Mail kutuna da düştü.');
+  });
+
+  it('METİN DEĞİŞMEDİ — yeni kamu metni yazılmadı', () => {
+    // Brief §0: yalnız mevcut bir cümle koşula bağlanır ya da kaldırılır.
+    const maili = KOD.match(/Mail kutuna da düştü\./g) ?? [];
+    expect(maili).toHaveLength(1);
+  });
+
+  it('`mailerlite` alanına ARTIK bakılmıyor', () => {
+    // Endpoint o alanı döndürmüyor; okumak sessizce `undefined` görmek olurdu.
+    expect(KOD).not.toMatch(/result\.mailerlite/);
+  });
+});
