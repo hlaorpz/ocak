@@ -167,6 +167,14 @@ export type KayitOkumaSonuc = {
   saatHam: string;
   /** Etkinlikler `Konum Detay` — fiziksel adres, `etkinlik_adres`'e döner. */
   konumDetayHam: string;
+  /**
+   * Etkinlikler `Para Birimi` select — `TRY` · `USD` · `EUR`. Boş olabilir.
+   *
+   * `TUTAR` mail değişkeni birimi TAŞIYOR (şablon kurulumu, 7 Eki): şablonda
+   * sabit "TL" yazmak USD'li bir etkinlikte yanlış tutar söylerdi. Boşun
+   * `TRY`ye düşmesi `tutarMetni`'de, `api/kayit.ts:185` ile aynı varsayılan.
+   */
+  paraBirimiHam: string;
 };
 
 /**
@@ -209,6 +217,7 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     tarihISOHam: '',
     saatHam: '',
     konumDetayHam: '',
+    paraBirimiHam: '',
   };
 }
 
@@ -347,6 +356,7 @@ export async function kayitOku(
       // bağlı, `api/kayit.ts:198` ile birebir. Gerekçe `saatHam` başlığında.
       saatHam: katilimTipiCoz(mekan) === 'link' ? rich('Zoom Başlangıç Saati') : rich('Saat'),
       konumDetayHam: konumDetay,
+      paraBirimiHam: etkProps['Para Birimi']?.select?.name ?? '',
     };
 
     const tipi = katilimTipiCoz(mekan);
