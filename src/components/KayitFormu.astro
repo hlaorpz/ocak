@@ -18,6 +18,7 @@ import { parseKayitSorulari, parseRichTextLines, type KayitFormat } from '../lib
 import { formatEtkinlikTarihi } from '../lib/format-etkinlik';
 import { BOS_STATE_KAPI_HTML } from '../lib/etkinlik-kategori';
 import DavetKutusu from './DavetKutusu.astro';
+import MektupKutusu from './MektupKutusu.astro';
 // KARAR 488 — kart akışı kapalıyken yöntem radyosu SSR'da hiç render EDİLMEZ.
 // `hidden` + JS değil: DOM'da duran bir radyo devtools'tan geri açılabilir ve
 // backend'e `kart` gönderir. Mevcut `syncAskiBolumGorunum()` deseni (tam bursta
@@ -632,6 +633,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           payload.etkinlikId ile doldurur. Görünür yapıp success reveal'la
           aynı anda render edilir. */}
       <DavetKutusu />
+
+      {/* İŞ 5 — Ateş Mektupları tek dokunuş, paylaş bloğunun ALTINDA.
+          YUVA MODU: `kayitId`/`imza` SSR'da bilinmiyor (kayıt henüz olmadı),
+          ikisi submit yanıtından geliyor ve reveal anında dataset'e yazılıyor.
+          Kimlik dolmazsa tıklama koruması bloğu sessizce no-op yapar. */}
+      <MektupKutusu yuva />
     </div>
   </div>
 </section>
@@ -2361,6 +2368,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             // İŞ 4 — paylaşılan bağlantı etkinliğin kendi sayfası. Boş gelirse
             // kutu eski format-sayfası bağlantısına düşer.
             if (result.etkinlikUrl) davetKutusu.dataset.davetUrl = result.etkinlikUrl;
+            // İŞ 5 — Ateş Mektupları bloğunun kimliği. İmza SUNUCUDAN geliyor;
+            // istemci sırrı görmüyor. İkisi de dolmazsa blok no-op kalır.
+            const mektupKutusu = successEl.querySelector<HTMLElement>('[data-mektup-kutusu]');
+            if (mektupKutusu && result.referansNo && result.kayitImzasi) {
+              mektupKutusu.dataset.mektupKayit = result.referansNo;
+              mektupKutusu.dataset.mektupImza = result.kayitImzasi;
+            }
           }
           successEl.hidden = false;
           scrollToSuccess(successEl);

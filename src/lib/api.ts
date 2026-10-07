@@ -154,6 +154,15 @@ export type KayitResponse = {
    * üretmez.
    */
   etkinlikUrl?: string;
+  /**
+   * İŞ 5 (7 Eki) — Ateş Mektupları bloğunun kapısı: `Kayıt ID`'nin HMAC'i
+   * (`/odeme/devam` linkiyle aynı imza). Sır istemciye İNMEZ, yalnız imza iner.
+   *
+   * Neden gerekli: `/api/mektup-katil` adresi Notion'dan okuyor ve `Kayıt ID`
+   * tahmin edilebilir (dört karakter). İmzasız bir uç, kayıtlı adreslerin
+   * bültene RIZASI OLMADAN eklenmesine açık olurdu.
+   */
+  kayitImzasi?: string;
   katilim?: {
     var: boolean;
     tipi: 'link' | 'adres';

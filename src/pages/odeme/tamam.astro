@@ -22,6 +22,8 @@ import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
 import { tamamGorunumu } from '../../lib/odeme-tamam.ts';
 import { etkinlikUrlFormatla } from '../../lib/kayit.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
+import MektupKutusu from '../../components/MektupKutusu.astro';
+import { odemeLinkImzasi, odemeLinkSirri } from '../../lib/odeme-link.ts';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi.
 //
 // ✅ KAPANDI (10 Eyl 2026). Buradaki not iki aydır şunu söylüyordu: "Notion
@@ -135,6 +137,11 @@ const sayfaAciklamasi = gorunum.baslik;
         etkinlikTarihi={etkinlikTarihi}
         landingPath={landingPath}
       />
+
+      {/* İŞ 5 — Ateş Mektupları tek dokunuş, paylaş bloğunun ALTINDA.
+          İmza SUNUCUDA üretiliyor; sır istemciye inmiyor. Kayıt bulunamadıysa
+          `ref` boş olabilir — bileşen o hâlde kendini basmıyor. */}
+      <MektupKutusu kayitId={ref} imza={odemeLinkImzasi(ref, odemeLinkSirri())} />
 
       {/* İŞ 8 sırası: başlık → durum kartı → açıklama → paylaş → Ateş
           Mektupları → referans. Referans kodu EN ALTTA ve küçük. */}

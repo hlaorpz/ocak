@@ -22,7 +22,7 @@ import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/noti
 import { kayitPostaPlani } from '../../lib/kayit-posta.ts';
 import { postaGonder, resendTasima } from '../../lib/posta.ts';
 import { etkinlikBaslangicAni, yerTutmaBitisi, sonAnMetni } from '../../lib/yer-tutma.ts';
-import { odemeLinki, odemeLinkSirri } from '../../lib/odeme-link.ts';
+import { odemeLinki, odemeLinkImzasi, odemeLinkSirri } from '../../lib/odeme-link.ts';
 import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
@@ -963,6 +963,9 @@ export const POST: APIRoute = async ({ request }) => {
     // İŞ 4 — paylaş bloğunun bağlantısı. `etkinlikUrlFormatla` zaten bu
     // dosyada kullanılıyor (MailerLite `etkinlik_url`'ü); aynı kurucu.
     etkinlikUrl: etkinlikUrlFormatla(etk.slug),
+    // İŞ 5 — Ateş Mektupları bloğunun kapısı. `/odeme/devam` linkiyle AYNI
+    // imza; sır istemciye inmiyor, yalnız HMAC iniyor.
+    kayitImzasi: odemeLinkImzasi(referansNo, odemeLinkSirri()),
     mode: 'kayit',
     kayitTipi: direktAkis ? 'Direkt' : 'Başvuru',
     ...(promoResp ? { promo: promoResp } : {}),

@@ -1,0 +1,134 @@
+---
+// MektupKutusu — Ateş Mektupları tek dokunuş (İŞ 5, 7 Eki).
+//
+// İki ekranda AYNI bileşen: havale başarı ekranı (KayitFormu) ve
+// `/odeme/tamam`. Yeri paylaş bloğunun ALTI.
+//
+// ── İstemci e-posta göndermez ──
+// Düğme `/api/mektup-katil`'e yalnız `{ kayitId, imza }` yolluyor; adresi
+// sunucu Notion'dan okuyor. Kadının zaten verdiği adresi ikinci kez istemek
+// anlamsızdı ve bu bloğu `/api/form`'un ikizi yapardı.
+//
+// ── Yalnız tıklamayla ──
+// Hiçbir otomatik ekleme yok. Blok render edilmekle bir şey olmaz; tek
+// tetikleyici dokunuş.
+//
+// ── İmza ──
+// `Kayıt ID` tahmin edilebilir (dört karakter). İmza sunucuda üretilip buraya
+// prop olarak geliyor; sır istemciye inmiyor. İmza boşsa düğme BASILMAZ —
+// çalışmayacak bir düğme göstermek, dokunup hiçbir şey olmamasından kötü.
+import { MEKTUP_METIN } from '../lib/mektup.ts';
+
+export interface Props {
+  /** `OCAK-XXXX`. Boşsa blok render edilmez. */
+  kayitId?: string;
+  /** `odemeLinkImzasi(kayitId, ODEME_LINK_SIR)`. Boşsa blok render edilmez. */
+  imza?: string;
+  /**
+   * YUVA MODU — markup basılır, kimlik BOŞ gelir ve JS reveal anında
+   * dataset'e yazar.
+   *
+   * Havale başarı ekranı için var: orada kayıt SSR sırasında henüz olmadığı
+   * için `kayitId` ve `imza` bilinmiyor; ikisi submit yanıtından geliyor.
+   * Yer tutucu DİZE geçmek (örn. `kayitId="yuva"`) yerine açık bir mod:
+   * tıklama koruması (`if (!kayitId || !imza) return`) o hâlde gerçekten
+   * boş değer görüyor, uydurma bir değer değil.
+   */
+  yuva?: boolean;
+}
+
+const { kayitId = '', imza = '', yuva = false } = Astro.props;
+const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0);
+---
+
+{gosterilir && (
+<aside class="mektup-kutusu" data-mektup-kutusu data-mektup-kayit={kayitId} data-mektup-imza={imza}>
+  <h3 class="mektup-kutusu__baslik">{MEKTUP_METIN.baslik}</h3>
+  <p class="mektup-kutusu__metin">{MEKTUP_METIN.govde}</p>
+  <button type="button" class="ocak-dugme" data-mektup-dugme>{MEKTUP_METIN.dugme}</button>
+  {/* Teyit/hata tek yerde. `role="status"` + `aria-live` — ekran okuyucu da
+      sonucu duysun; düğme kaybolduğunda sessiz kalmak erişilemez olurdu. */}
+  <p class="mektup-kutusu__teyit" data-mektup-teyit hidden role="status" aria-live="polite"></p>
+</aside>
+)}
+
+<style>
+  /* Paylaş kutusunun (`.davet-kutusu`) ritmini paylaşır: aynı dikey nefes,
+   * aynı gövde tipografisi, altın italik başlık. Yeni token YOK. */
+  .mektup-kutusu {
+    margin: var(--space-6) auto 0;
+    max-width: 42ch;
+    text-align: center;
+  }
+  .mektup-kutusu__baslik {
+    font-family: var(--font-display, var(--font-body));
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.05rem;
+    margin: 0 0 var(--space-3);
+  }
+  .mektup-kutusu__metin {
+    font-family: var(--font-body);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    font-size: 0.9rem;
+    margin: 0 0 var(--space-4);
+  }
+  .mektup-kutusu__teyit {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+    margin: var(--space-3) 0 0;
+    line-height: 1.6;
+  }
+</style>
+
+<script>
+  // ── Tek dokunuş ──
+  // Çift tıklama korumalı: düğme istek boyunca `disabled`. Başarıda düğme
+  // kaybolur ve yerine teyit gelir — ikinci kez katılmanın anlamı yok.
+  // Hatada düğme GERİ GELİR: "birazdan yeniden dene" diyorsak denenebilir
+  // olmalı.
+  const KUTULAR = document.querySelectorAll<HTMLElement>('[data-mektup-kutusu]');
+  for (const kutu of KUTULAR) {
+    const dugme = kutu.querySelector<HTMLButtonElement>('[data-mektup-dugme]');
+    const teyit = kutu.querySelector<HTMLElement>('[data-mektup-teyit]');
+    if (!dugme || !teyit) continue;
+
+    const BASARI = 'Hoş geldin. İlk mektubun yolda.';
+    const HATA = 'Şu an olmadı; birazdan yeniden dene.';
+
+    dugme.addEventListener('click', async () => {
+      const kayitId = (kutu.dataset.mektupKayit ?? '').trim();
+      const imza = (kutu.dataset.mektupImza ?? '').trim();
+      if (!kayitId || !imza) return;
+
+      dugme.disabled = true;
+      teyit.hidden = true;
+      teyit.textContent = '';
+
+      let ok = false;
+      try {
+        const res = await fetch('/api/mektup-katil', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          // ⚠ E-POSTA YOK. Sunucu adresi Notion'dan okuyor.
+          body: JSON.stringify({ kayitId, imza }),
+        });
+        const veri = (await res.json().catch(() => null)) as { ok?: boolean } | null;
+        ok = res.ok && veri?.ok === true;
+      } catch {
+        ok = false;
+      }
+
+      teyit.textContent = ok ? BASARI : HATA;
+      teyit.hidden = false;
+      if (ok) {
+        dugme.hidden = true;
+      } else {
+        // Sessiz kalmıyor ve yeniden denenebilir.
+        dugme.disabled = false;
+      }
+    });
+  }
+</script>
