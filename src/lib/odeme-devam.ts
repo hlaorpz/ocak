@@ -27,7 +27,21 @@ export type DevamDurumu = 'yerin-duruyor' | 'yerin-hazir' | 'suresi-doldu' | 'ba
 export type DevamGorunum = {
   durum: DevamDurumu;
   baslik: string;
-  /** Gövde satırları — sırayla basılır. Boş satır yazılmaz. */
+  /**
+   * DURUM KARTI satırları (İŞ 8) — buluşmanın adı · tarih-saat · katılım payı.
+   * Amber çerçeveli kartta basılır; `/odeme/tamam` ile aynı yapı.
+   */
+  kart: string[];
+  /**
+   * `ODEME_SON_AN` — `8 Ekim Perşembe, 14:30 (Türkiye saati)`.
+   *
+   * Gövde cümlesinin İÇİNE gömülmüyor, AYRI taşınıyor (İŞ 8): yüzey onu
+   * `white-space: nowrap` bir `<span>`'de basıyor, böylece satır ortasında
+   * kırılmıyor. Cümlenin kendisi ("Yerini şu ana kadar tutuyoruz:") normal
+   * sarılıyor — 360 px'te taşmamanın yolu bu, tümüne `nowrap` vermek değil.
+   */
+  sonAn: string;
+  /** Kart ve son an dışındaki gövde satırları. Boş satır yazılmaz. */
   govde: string[];
   /** `Kartla öde` düğmesinin gideceği adres. Boşsa düğme basılmaz. */
   odemeUrl: string;
@@ -68,6 +82,8 @@ export function devamGorunumu(g: DevamGirdi): DevamGorunum {
   const bos: DevamGorunum = {
     durum: 'baglanti-acilmadi',
     baslik: 'Bu bağlantı açılmadı.',
+    kart: [],
+    sonAn: '',
     govde: ['Maildeki bağlantıya yeniden dokun ya da bize yaz:'],
     odemeUrl: '',
     etkinlikUrl: '',
@@ -82,6 +98,8 @@ export function devamGorunumu(g: DevamGirdi): DevamGorunum {
     return {
       durum: 'yerin-hazir',
       baslik: 'Yerin hazır.',
+      kart: [],
+      sonAn: '',
       govde: ['Katılım payın bize ulaştı. Detayları e-postayla yolladık.'],
       odemeUrl: '',
       etkinlikUrl: '',
@@ -103,6 +121,8 @@ export function devamGorunumu(g: DevamGirdi): DevamGorunum {
     return {
       durum: 'suresi-doldu',
       baslik: 'Bu yerin süresi doldu.',
+      kart: [],
+      sonAn: '',
       govde: ['Buluşmada yer varsa yeniden kayıt olabilirsin.'],
       odemeUrl: '',
       etkinlikUrl: g.etkinlikUrl,
@@ -115,18 +135,20 @@ export function devamGorunumu(g: DevamGirdi): DevamGorunum {
     ? formatEtkinlikTarihi(g.tarihISO, g.tarihBitis, g.saat)
     : '';
   const tutar = tutarMetni(g.tutar, g.paraBirimi);
-  const govde = [
-    g.baslik.trim(),
-    tarihSatiri,
-    tutar ? `Katılım payı: ${tutar}` : '',
-    // 7 Eki düzeltmesi — cümle EKSİZ kuruldu (dosya başı).
-    g.yerTutmaBitisi ? `Yerini şu ana kadar tutuyoruz: ${sonAnMetni(g.yerTutmaBitisi)}` : '',
-  ].filter((s) => s.length > 0);
-
   return {
     durum: 'yerin-duruyor',
     baslik: 'Yerin duruyor.',
-    govde,
+    // İŞ 8 — durum kartı: `/odeme/tamam` ile aynı yapı (başlık · tarih-saat),
+    // artı bu ekrana özgü katılım payı satırı.
+    kart: [
+      g.baslik.trim(),
+      tarihSatiri,
+      tutar ? `Katılım payı: ${tutar}` : '',
+    ].filter((s) => s.length > 0),
+    // 7 Eki düzeltmesi — cümle EKSİZ kuruldu (dosya başı). Değer AYRI taşınıyor
+    // ki yüzey onu tek parça basabilsin.
+    sonAn: g.yerTutmaBitisi ? sonAnMetni(g.yerTutmaBitisi) : '',
+    govde: [],
     // ⚠ Mevcut N-Kolay başlatma yolu — yeni bir ödeme yolu YAZILMADI.
     // `/odeme/nkolay` `?ref=` ile bağımsız girilebiliyor ve kaydı Notion'dan
     // kendisi okuyor; her giriş yeni bir `clientRefCode` üretiyor.

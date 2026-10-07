@@ -104,7 +104,7 @@ const sayfaAciklamasi = gorunum.baslik;
         <div class="ocak-odeme-tamam__kart">
           {gorunum.kart.map((satir, i) => (
             <p class={i === 0 ? 'ocak-odeme-tamam__kart-baslik' : 'ocak-odeme-tamam__kart-tarih'}>
-              {satir}
+              {i === 0 ? satir : <span class="ocak-odeme-tamam__anlik">{satir}</span>}
             </p>
           ))}
         </div>
@@ -218,10 +218,12 @@ const sayfaAciklamasi = gorunum.baslik;
     color: var(--cream-soft);
     margin: 0.35rem 0 0;
     line-height: 1.5;
-    /* Tarih+saat TEK PARÇA: satır ortasında kırılmaz. `balance` yerine
-     * `nowrap` DEĞİL — 360 px'te "28 Kasım – 29 Kasım 2026 · 19:30" taşardı.
-     * Kelime bütünlüğü korunur, kırılma yalnız ayıraçlardan olur. */
-    text-wrap: balance;
+  }
+  /* Tarih-saat TEK PARÇA — satır ortasında kırılmaz (İŞ 8). `/odeme/devam`
+   * ile birebir aynı kural; iki ekran aynı şeyi aynı biçimde basıyor.
+   * Taşma olursa `break-word` devreye girer. */
+  .ocak-odeme-tamam__anlik {
+    white-space: nowrap;
     overflow-wrap: break-word;
   }
 

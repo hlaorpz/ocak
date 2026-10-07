@@ -31,29 +31,31 @@ const TEMEL: DevamGirdi = {
 };
 
 describe('DURUM 1 · Beklemede + bitiş gelmemiş → "Yerin duruyor."', () => {
-  it('başlık ve gövde brief metniyle birebir', () => {
+  it('başlık · DURUM KARTI · son an brief metniyle birebir', () => {
+    // İŞ 8 — kart ve son an AYRI taşınıyor: kart amber çerçevede basılıyor,
+    // son an `nowrap` bir span'de (satır ortasında kırılmasın).
     const g = devamGorunumu(TEMEL);
     expect(g.durum).toBe('yerin-duruyor');
     expect(g.baslik).toBe('Yerin duruyor.');
-    expect(g.govde).toEqual([
+    expect(g.kart).toEqual([
       'Elin Neyle Dolu?',
       '12 Ekim 2026 · 21:00',
       'Katılım payı: 225 TL',
-      // 7 Eki düzeltmesi — cümle EKSİZ: Türkçe ek saate göre değişiyor ('a/'e).
-      'Yerini şu ana kadar tutuyoruz: 2 Ekim Cuma, 18:00 (Türkiye saati)',
     ]);
+    expect(g.sonAn).toBe('2 Ekim Cuma, 18:00 (Türkiye saati)');
+    expect(g.govde).toEqual([]);
   });
 
   it('⚠ eski ekli biçim GERİ GELMEZ — regresyon kilidi', () => {
     const g = devamGorunumu(TEMEL);
-    const hepsi = g.govde.join(' | ');
+    const hepsi = [...g.kart, g.sonAn, ...g.govde].join(' | ');
     expect(hepsi).not.toMatch(/'a kadar yerini tutuyoruz/);
     expect(hepsi).not.toMatch(/'e kadar yerini tutuyoruz/);
   });
 
   it('`Katılım payı` birimi TUTAR biçiminden gelir (TL değil sabit)', () => {
     const usd = devamGorunumu({ ...TEMEL, tutar: 30, paraBirimi: 'USD' });
-    expect(usd.govde).toContain('Katılım payı: 30 USD');
+    expect(usd.kart).toContain('Katılım payı: 30 USD');
   });
 
   it('`Kartla öde` MEVCUT N-Kolay yolunu kullanır — yeni ödeme yolu yok', () => {
@@ -67,14 +69,14 @@ describe('DURUM 1 · Beklemede + bitiş gelmemiş → "Yerin duruyor."', () => {
     const g = devamGorunumu({ ...TEMEL, yerTutmaBitisi: null });
     expect(g.durum).toBe('yerin-duruyor');
     expect(g.odemeUrl).toBe('/odeme/nkolay?ref=OCAK-7K2M');
-    expect(g.govde.some((s) => s.includes('Yerini şu ana kadar'))).toBe(false);
+    // Son an söylenemiyorsa SÖYLENMEZ — uydurma yok.
+    expect(g.sonAn).toBe('');
   });
 
   it('tutar/tarih/başlık boşsa o satırlar hiç basılmaz', () => {
     const g = devamGorunumu({ ...TEMEL, tutar: 0, tarihISO: '', baslik: '' });
-    expect(g.govde).toEqual([
-      'Yerini şu ana kadar tutuyoruz: 2 Ekim Cuma, 18:00 (Türkiye saati)',
-    ]);
+    expect(g.kart).toEqual([]);
+    expect(g.sonAn).toBe('2 Ekim Cuma, 18:00 (Türkiye saati)');
   });
 });
 
@@ -160,8 +162,9 @@ describe('DURUM 4 · imza tutmuyor / kayıt yok → "Bu bağlantı açılmadı."
   it('⚠ imza geçersizken Ödendi bile olsa ödeme bilgisi SIZMAZ', () => {
     const g = devamGorunumu({ ...TEMEL, imzaGecerli: false, odemeDurumu: 'Ödendi' });
     expect(g.durum).toBe('baglanti-acilmadi');
-    expect(g.govde.join(' ')).not.toContain('225');
-    expect(g.govde.join(' ')).not.toContain('Elin Neyle Dolu?');
+    const hepsi = [...g.kart, g.sonAn, ...g.govde].join(' ');
+    expect(hepsi).not.toContain('225');
+    expect(hepsi).not.toContain('Elin Neyle Dolu?');
   });
 });
 
@@ -362,5 +365,73 @@ describe('ara geçiş — iki yüzey aynı görünümü basar (İŞ 3)', () => {
     const K = temiz(NKOLAY);
     expect(K).toMatch(/class="ocak-dugme"/);
     expect(K).not.toMatch(/class="ocak-btn"/);
+  });
+});
+
+/**
+ * İŞ 8 — üç ekran tek aile: `/odeme/devam` · havale başarı · `/odeme/tamam`.
+ *
+ * Ölçülen üç şey: (a) mevcut sınıf/token kullanılıyor, yeni token yok,
+ * (b) tarih-saat tek parça ve 360 px'te taşmıyor, (c) sıra aynı.
+ */
+describe('İŞ 8 — üç ekran tek aile', () => {
+  const DEVAM = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'devam.astro'), 'utf-8');
+  const TAMAM = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'tamam.astro'), 'utf-8');
+  const TOKENS = readFileSync(join(__dirname, '..', 'styles', 'tokens.css'), 'utf-8');
+
+  it('YENİ TOKEN YOK — iki sayfanın kullandığı her token tokens.css\'te tanımlı', () => {
+    const kullanilan = new Set(
+      [...DEVAM.matchAll(/var\((--[a-z0-9-]+)\)/g), ...TAMAM.matchAll(/var\((--[a-z0-9-]+)\)/g)]
+        .map((m) => m[1]),
+    );
+    expect(kullanilan.size).toBeGreaterThan(5);
+    for (const t of kullanilan) {
+      // `--font-display` fallback'li kullanılıyor; tanımlı olmak zorunda değil.
+      if (t === '--font-display') continue;
+      expect(TOKENS, `${t} tokens.css'te yok`).toContain(`${t}:`);
+    }
+  });
+
+  it('köz noktası · altın italik başlık · mevcut glow — aynı değerler', () => {
+    for (const k of [DEVAM, TAMAM]) {
+      expect(k).toMatch(/box-shadow: 0 0 20px var\(--ember\), 0 0 50px rgba\(196, 75, 47, 0\.35\)/);
+      expect(k).toMatch(/color: var\(--gold\)/);
+      expect(k).toMatch(/font-style: italic/);
+    }
+  });
+
+  it('DURUM KARTI iki sayfada BİREBİR aynı kural', () => {
+    const kural = (k: string) => k.match(/\.ocak-odeme-tamam__kart \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(kural(DEVAM)).toBeTruthy();
+    expect(kural(DEVAM)).toBe(kural(TAMAM));
+  });
+
+  it('TARİH-SAAT TEK PARÇA — `.ocak-odeme-tamam__anlik` iki sayfada aynı', () => {
+    const kural = (k: string) => k.match(/\.ocak-odeme-tamam__anlik \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(kural(DEVAM)).toBeTruthy();
+    expect(kural(DEVAM)).toBe(kural(TAMAM));
+    expect(kural(DEVAM)).toMatch(/white-space: nowrap;/);
+    // 360 px'te taşmaya karşı ikinci savunma.
+    expect(kural(DEVAM)).toMatch(/overflow-wrap: break-word;/);
+  });
+
+  it('son an cümlenin İÇİNDE değil, kendi span\'inde', () => {
+    // Tümüne `nowrap` vermek cümleyi 360 px'te taşırırdı.
+    expect(DEVAM).toMatch(/Yerini şu ana kadar tutuyoruz: <span class="ocak-odeme-tamam__anlik">\{gorunum\.sonAn\}<\/span>/);
+  });
+
+  it('SIRA aynı: başlık → durum kartı → açıklama → referans', () => {
+    const i = (p: string) => DEVAM.indexOf(p);
+    expect(i('<h1>{gorunum.baslik}</h1>')).toBeGreaterThan(-1);
+    expect(i('ocak-odeme-tamam__kart')).toBeGreaterThan(i('<h1>{gorunum.baslik}</h1>'));
+    expect(i('{gorunum.sonAn &&')).toBeGreaterThan(i('ocak-odeme-tamam__kart'));
+    expect(i('ocak-odeme-tamam__ref')).toBeGreaterThan(i('{gorunum.sonAn &&'));
+  });
+
+  it('⚠ `/odeme/devam`\'da paylaş ve Ateş Mektupları YOK', () => {
+    // İŞ 4/5 o iki bloğu havale başarı ekranı + `/odeme/tamam` için istedi.
+    // Ödeme BEKLEYEN bir ekranda "bir kız kardeşini de çağır" demek sırasız.
+    expect(DEVAM).not.toMatch(/DavetKutusu/);
+    expect(DEVAM).not.toMatch(/MektupKutusu/);
   });
 });

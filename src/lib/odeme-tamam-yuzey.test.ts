@@ -199,12 +199,14 @@ describe('tamam.astro — kaynak disiplini (İŞ 7)', () => {
     expect(kart).toMatch(/var\(--space-/);
   });
 
-  it('tarih+saat satırı 360 px\'te taşmaz — kelime bütünlüğü korunur', () => {
-    const tarih = KAYNAK.match(/\.ocak-odeme-tamam__kart-tarih \{[\s\S]*?\n  \}/)?.[0] ?? '';
-    expect(tarih).toMatch(/text-wrap: balance;/);
-    expect(tarih).toMatch(/overflow-wrap: break-word;/);
-    // `nowrap` DEĞİL: uzun aralık + saat 360 px'te taşardı.
-    expect(tarih).not.toMatch(/white-space: nowrap/);
+  it('tarih+saat TEK PARÇA — `nowrap` span, 360 px\'te taşmıyor (İŞ 8)', () => {
+    // Değer kendi span'inde `nowrap`; çevresindeki cümle normal sarılıyor.
+    // `8 Ekim Perşembe, 23:08 (Türkiye saati)` 0.9rem'de ~272 px, 360 px
+    // ekranda sayfa payından sonra ~328 px kalıyor.
+    const anlik = KAYNAK.match(/\.ocak-odeme-tamam__anlik \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(anlik).toMatch(/white-space: nowrap;/);
+    expect(anlik).toMatch(/overflow-wrap: break-word;/);
+    expect(KOD).toMatch(/<span class="ocak-odeme-tamam__anlik">\{satir\}<\/span>/);
   });
 
   it('mock uyarısında iç yol haritası jargonu yok', () => {

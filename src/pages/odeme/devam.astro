@@ -82,6 +82,27 @@ const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
       <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
       <h1>{gorunum.baslik}</h1>
 
+      {/* İŞ 8 — ÜÇ EKRAN AYNI SIRA: başlık → durum kartı → açıklama →
+          (paylaş · Ateş Mektupları yalnız başarı ekranlarında) → referans.
+          Kart `/odeme/tamam` ile aynı sınıflardan; yeni token yok. */}
+      {gorunum.kart.length > 0 && (
+        <div class="ocak-odeme-tamam__kart">
+          {gorunum.kart.map((satir, i) => (
+            <p class={i === 0 ? 'ocak-odeme-tamam__kart-baslik' : 'ocak-odeme-tamam__kart-tarih'}>
+              {i === 0 ? satir : <span class="ocak-odeme-tamam__anlik">{satir}</span>}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {/* Son an TEK PARÇA: değer `nowrap` bir `<span>`'de, cümle normal
+          sarılıyor. Tümüne `nowrap` vermek 360 px'te taşmaya yol açardı. */}
+      {gorunum.sonAn && (
+        <p class="ocak-odeme-tamam__gövde">
+          Yerini şu ana kadar tutuyoruz: <span class="ocak-odeme-tamam__anlik">{gorunum.sonAn}</span>
+        </p>
+      )}
+
       {gorunum.govde.map((satir) => (
         <p class="ocak-odeme-tamam__gövde">{satir}</p>
       ))}
@@ -142,6 +163,38 @@ const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
     color: var(--cream-soft);
   }
   .ocak-odeme-tamam__yardim a { color: var(--ember); }
+  /* İŞ 8 — durum kartı, `/odeme/tamam` ile birebir aynı değerler. */
+  .ocak-odeme-tamam__kart {
+    max-width: 42ch;
+    margin: 0 auto var(--space-5);
+    padding: var(--space-4);
+    border: 1px solid rgba(196, 75, 47, 0.28);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .ocak-odeme-tamam__kart-baslik {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--cream);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .ocak-odeme-tamam__kart-tarih {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--cream-soft);
+    margin: 0.35rem 0 0;
+    line-height: 1.5;
+  }
+  /* Tarih-saat ve son an TEK PARÇA — satır ortasında kırılmaz.
+   * `8 Ekim Perşembe, 23:08 (Türkiye saati)` 0.9rem'de ~272 px; 360 px
+   * ekranda sayfa payından sonra ~328 px kalıyor, yani taşmıyor.
+   * Taşma olursa `break-word` devreye girer: kırpılmış metin yerine
+   * kırılmış metin. */
+  .ocak-odeme-tamam__anlik {
+    white-space: nowrap;
+    overflow-wrap: break-word;
+  }
+
   .ocak-odeme-devam__eylem {
     margin: var(--space-5) 0 0;
   }
