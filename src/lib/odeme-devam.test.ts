@@ -305,3 +305,62 @@ describe('.ocak-dugme — paylaşılan birincil düğme', () => {
     expect(KURAL).toMatch(/transition: background var\(--duration-base\)/);
   });
 });
+
+/**
+ * İŞ 3 — ara geçiş: kartta sakin tek ekran, havalede ara durum yok.
+ *
+ * Asıl boşluk `/api/kayit` yanıtı DEĞİL, `window.location` sonrası
+ * `/odeme/nkolay`'ın SSR'ı: o aralıkta tarayıcı hâlâ form sayfasını gösteriyor
+ * ve kadın donmuş bir form + "Gönderiliyor…" düğmesi görüyordu.
+ */
+describe('ara geçiş — iki yüzey aynı görünümü basar (İŞ 3)', () => {
+  const FORM = readFileSync(join(__dirname, '..', 'components', 'KayitFormu.astro'), 'utf-8');
+  const NKOLAY = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'nkolay.astro'), 'utf-8');
+  const temiz = (k: string) => k
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('formda geçiş bloğu VAR — köz + tek satır', () => {
+    const K = temiz(FORM);
+    expect(K).toMatch(/data-kf-gecis hidden/);
+    expect(K).toMatch(/Ödeme ekranına geçiyoruz\./);
+    expect(K).toMatch(/kayit-formu__success-ember/);
+  });
+
+  it('`/odeme/nkolay` AYNI satırı basıyor', () => {
+    expect(temiz(NKOLAY)).toMatch(/Ödeme ekranına geçiyoruz\./);
+  });
+
+  it('⚠ geçiş YALNIZ kart yolunda — havalede ara ekran yok', () => {
+    const K = temiz(FORM);
+    expect(K).toMatch(/const kartYolu = direktAktif\(\) && yontem === 'kart' && gecisToplam > 0;/);
+    expect(K).toMatch(/if \(kartYolu\) \{\s*\n\s*form\.hidden = true;\s*\n\s*gecisEl\.hidden = false;/);
+  });
+
+  it('hata olursa geçiş GERİ ALINIR — kadın formu kaybetmez', () => {
+    expect(temiz(FORM)).toMatch(/gecisEl\.hidden = true;\s*\n\s*form\.hidden = false;/);
+  });
+
+  it('YAPAY BEKLEME YOK — iki yüzeyde de timer kurulmuyor', () => {
+    for (const k of [temiz(FORM), temiz(NKOLAY)]) {
+      expect(k).not.toMatch(/setTimeout\s*\([^)]*gecis/i);
+    }
+    expect(temiz(NKOLAY)).not.toMatch(/setTimeout/);
+  });
+
+  it('nkolay düğmesi script ÇALIŞMAZSA görünür — gizleme submit\'ten ÖNCE', () => {
+    const K = temiz(NKOLAY);
+    // HTML'de görünür basılıyor (hidden attribute YOK), betik gizliyor.
+    expect(K).toMatch(/<button type="submit" class="ocak-dugme" data-nkolay-dugme>/);
+    const betik = K.match(/var f = document\.getElementById[\s\S]*?\n    \}/)?.[0] ?? '';
+    expect(betik.indexOf('d.hidden = true')).toBeGreaterThan(-1);
+    expect(betik.indexOf('f.submit()')).toBeGreaterThan(betik.indexOf('d.hidden = true'));
+  });
+
+  it('nkolay düğmesi PAYLAŞILAN sınıfı kullanıyor — tanımsız `ocak-btn` kalktı', () => {
+    const K = temiz(NKOLAY);
+    expect(K).toMatch(/class="ocak-dugme"/);
+    expect(K).not.toMatch(/class="ocak-btn"/);
+  });
+});

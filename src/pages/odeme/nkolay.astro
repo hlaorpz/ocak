@@ -195,21 +195,36 @@ if (!kayit || kayit.durum !== 'bulundu') {
       </>
     ) : (
       <>
-        <h1>Ödemeye yönlendiriliyorsun</h1>
-        <p>
-          Kart bilgilerin bankanın güvenli sayfasında alınır; OCAK bu bilgileri
-          görmez ve saklamaz. Sayfa birkaç saniye içinde açılmazsa aşağıdaki
-          düğmeye dokun.
-        </p>
-        {/* Auto-submit form. JS kapalıysa düğme görünür kalır ve akış elle
-            sürer — JS'e bağlı tek ödeme yolu bırakmak, tarayıcı eklentisi
-            yüzünden ödeme yapamayan kadın demekti. */}
-        <form id="nkolay-form" method="POST" action={form!.actionUrl}>
-          {Object.entries(form!.alanlar).map(([ad, deger]) => (
-            <input type="hidden" name={ad} value={deger} />
-          ))}
-          <button type="submit" class="ocak-btn">Ödeme sayfasına git</button>
-        </form>
+        {/* ── KayitFormu'nun geçiş durumuyla AYNI GÖRÜNÜM (7 Eki) ──
+            Köz noktası + tek satır. Kadın Gönder'e bastığından beri aynı
+            ekranı görüyor; bu sayfanın gelişi bir kesinti değil, aynı sakin
+            anın devamı.
+
+            ⚠ ESKİ HÂLİNDE buraya bir `h1` ("Ödemeye yönlendiriliyorsun") ve
+            bir güven paragrafı ("Kart bilgilerin bankanın güvenli sayfasında
+            alınır; OCAK bu bilgileri görmez ve saklamaz.") basılıyordu. İkisi
+            de Kaan'ın verdiği görünümde yok ve KALDIRILDI — raporlandı; güven
+            cümlesi geri isteniyorsa metin kararı onun. */}
+        <div class="ocak-odeme-gecis">
+          <div class="ocak-odeme-gecis__ember" aria-hidden="true"></div>
+          <p class="ocak-odeme-gecis__metin">Ödeme ekranına geçiyoruz.</p>
+          {/* Auto-submit form. Düğme YALNIZ script çalışmazsa görünür: aşağıdaki
+              `is:inline` betik onu gizleyip submit ediyor. Betik engellenirse
+              (eklenti, CSP) düğme yerinde kalır ve akış elle sürer — JS'e bağlı
+              tek ödeme yolu bırakmak, tarayıcı eklentisi yüzünden ödeme
+              yapamayan kadın demekti.
+
+              Gizleme TİMER'LA DEĞİL: yapay bekleme yok (brief). Betik gövdenin
+              sonunda, gizleme submit'ten hemen önce. */}
+          <form id="nkolay-form" method="POST" action={form!.actionUrl}>
+            {Object.entries(form!.alanlar).map(([ad, deger]) => (
+              <input type="hidden" name={ad} value={deger} />
+            ))}
+            <button type="submit" class="ocak-dugme" data-nkolay-dugme>
+              Ödeme sayfasına git
+            </button>
+          </form>
+        </div>
       </>
     )}
   </article>
@@ -219,6 +234,38 @@ if (!kayit || kayit.durum !== 'bulundu') {
   <script is:inline>
     // Auto-submit — `is:inline` bilinçli: bu betiğin bundle'a girip
     // ertelenmesi, kadının boş ekrana bakması demek olurdu.
-    document.getElementById('nkolay-form')?.submit();
+    //
+    // Düğme submit'ten HEMEN ÖNCE gizlenir. Sıra önemli: önce gizle, sonra
+    // submit. Tersi olsaydı navigasyon başlar ve gizleme hiç koşmayabilirdi —
+    // düğme son karede görünür kalırdı.
+    var f = document.getElementById('nkolay-form');
+    if (f) {
+      var d = f.querySelector('[data-nkolay-dugme]');
+      if (d) d.hidden = true;
+      f.submit();
+    }
   </script>
 )}
+
+<style>
+  /* KayitFormu'nun `.kayit-formu__gecis` ritmiyle aynı: aynı köz, aynı gövde
+   * tipografisi, aynı dikey nefes. Yeni token yok. */
+  .ocak-odeme-gecis {
+    text-align: center;
+    padding: var(--space-7) 0;
+  }
+  .ocak-odeme-gecis__ember {
+    width: 14px;
+    height: 14px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--ember), 0 0 50px rgba(196, 75, 47, 0.35);
+    margin: 0 auto var(--space-6);
+  }
+  .ocak-odeme-gecis__metin {
+    font-family: var(--font-body);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0 0 var(--space-5);
+  }
+</style>

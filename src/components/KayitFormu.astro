@@ -539,6 +539,24 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     </form>
     )}
 
+    {/* ── ARA GEÇİŞ (kart) ──
+        Kart seçildiğinde Gönder'e basıldığı andan N-Kolay ekranına kadar iki
+        bekleme var: (a) `/api/kayit` yanıtı, (b) `window.location` sonrası
+        `/odeme/nkolay`'ın SSR'ı (iki Notion çağrısı). İkincisinde tarayıcı
+        hâlâ BU sayfayı gösteriyor — eski hâlde kadın donmuş bir form ve
+        "Gönderiliyor…" yazan bir düğme görüyordu.
+
+        Bu blok o boşluğu dolduruyor: köz noktası + tek satır. YAPAY BEKLEME
+        YOK — blok yalnız gerçek beklemeyi kaplıyor ve `/odeme/nkolay` aynı
+        görünümü basıyor, yani geçiş tek bir sakin ekran gibi okunuyor.
+
+        HAVALEDE GÖRÜNMEZ (Kaan kararı): o yolda yönlendirme yok, form
+        doğrudan başarı ekranına dönüyor. */}
+    <div class="kayit-formu__gecis" data-kf-gecis hidden>
+      <div class="kayit-formu__success-ember" aria-hidden="true"></div>
+      <p class="kayit-formu__gecis-metin">Ödeme ekranına geçiyoruz.</p>
+    </div>
+
     {/* Success copy — KARAR 205 onaylandı (Kaan, Brief 2B Adım 3). */}
     <div class="kayit-formu__success" hidden>
       <div class="kayit-formu__success-ember" aria-hidden="true"></div>
@@ -1027,6 +1045,19 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     box-shadow: 0 0 25px rgba(196, 75, 47, 0.3);
   }
   .kayit-formu__submit:disabled { opacity: 0.5; cursor: default; }
+
+  /* Geçiş bloğu — başarı ekranının ritmini paylaşır (aynı köz, aynı gövde
+   * tipografisi). Yeni token yok. */
+  .kayit-formu__gecis {
+    text-align: center;
+    padding: var(--space-7) 0;
+  }
+  .kayit-formu__gecis-metin {
+    font-family: var(--font-body);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    margin: 0;
+  }
 
   .kayit-formu__error {
     font-family: var(--font-body);
@@ -1618,6 +1649,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const submit = form.querySelector<HTMLButtonElement>('.kayit-formu__submit')!;
     const errorEl = section.querySelector<HTMLElement>('.kayit-formu__error')!;
     const successEl = section.querySelector<HTMLElement>('.kayit-formu__success')!;
+    const gecisEl = section.querySelector<HTMLElement>('[data-kf-gecis]')!;
     const odemeBlok = form.querySelector<HTMLElement>('.kayit-formu__odeme')!;
     const select = form.querySelector<HTMLSelectElement>('select[name="etkinlik_id"]')!;
     const format = form.dataset.format ?? '';
@@ -2104,6 +2136,10 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       errorEl.hidden = true;
 
       submit.disabled = true;
+      // Havale yolunda ara EKRAN yok (Kaan kararı): düğme etiketi tek geri
+      // bildirim ve çift gönderimi de o engelliyor. Kart yolunda aşağıda
+      // sakin duruma geçiliyor — yöntem gövdeden okunduktan sonra, çünkü
+      // `odeme_yontemi` radyo grubu SSR'da her zaman basılmıyor (KARAR 488).
       submit.textContent = 'Gönderiliyor…';
 
       const data = new FormData(form);
@@ -2199,6 +2235,22 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             if (d.querySelector(':invalid')) d.open = true;
           });
         return;
+      }
+
+      // ── Kart: sakin geçiş durumu, İSTEK BAŞLAMADAN ──
+      // Hem `/api/kayit` beklemesini hem `window.location` sonrası
+      // `/odeme/nkolay`'ın SSR beklemesini kaplıyor. Hata olursa aşağıda geri
+      // alınıyor — kadın formu kaybetmez.
+      // Ödenecek toplam `refreshOdemeBlok`'un aynı üçlüsüyle hesaplanıyor
+      // (katman A + askı − indirim). Ücretsiz/tam burs kayıtta checkout YOK,
+      // dolayısıyla geçiş de yok.
+      const { ucret: gecisKatmanA } = aktifUcret();
+      const gecisKatmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
+      const gecisToplam = uygulaIndirim(gecisKatmanA, gecisKatmanB, promoSonuc).toplam;
+      const kartYolu = direktAktif() && yontem === 'kart' && gecisToplam > 0;
+      if (kartYolu) {
+        form.hidden = true;
+        gecisEl.hidden = false;
       }
 
       try {
@@ -2427,6 +2479,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           scrollToSuccess(successEl);
         }
       } catch (err) {
+        // Geçiş durumu geri alınır: kadın formu ve girdiklerini kaybetmez.
+        if (kartYolu) {
+          gecisEl.hidden = true;
+          form.hidden = false;
+        }
         console.error('Kayıt error:', err);
         errorEl.textContent =
           'Bir sorun oluştu. Lütfen tekrar dene ya da selam@ocak.biz adresine yaz.';
