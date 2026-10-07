@@ -73,31 +73,88 @@ describe('blok — başlık · alt satır · iki düğme', () => {
     expect(KOD).not.toMatch(/\.davet-kutusu__btn/);
   });
 
-  it('Instagram akışı: kopyala → DM gelen kutusu, SIRA önemli', () => {
-    // `window.open` KOPYALAMADAN SONRA: tersi olsaydı sekme açılır, odak
-    // kaybolur ve `clipboard.writeText` "document is not focused" ile düşerdi.
+  it('SIRA: pano → görsel → canShare → share (İŞ 13)', () => {
     const dal = instagramDali();
     expect(dal).toBeTruthy();
-    expect(dal.indexOf('await kopyala(')).toBeGreaterThan(-1);
-    expect(dal.indexOf('window.open(')).toBeGreaterThan(dal.indexOf('await kopyala('));
-    expect(dal).toMatch(/https:\/\/www\.instagram\.com\/direct\/inbox\//);
+    const iPano = dal.indexOf('await kopyala(');
+    const iDosya = dal.indexOf('await hikayeDosyasi()');
+    const iCanShare = dal.indexOf('nav.canShare({ files: [dosya] })');
+    const iShare = dal.indexOf('await nav.share!({ files: [dosya!] })');
+    expect(iPano).toBeGreaterThan(-1);
+    expect(iDosya).toBeGreaterThan(iPano);
+    expect(iCanShare).toBeGreaterThan(iDosya);
+    expect(iShare).toBeGreaterThan(iCanShare);
   });
 
-  it('⚠ kopyalama BAŞARISIZSA sekme AÇILMAZ', () => {
-    // Yapıştıracak bir şeyi olmayan kadını Instagram'a göndermek, onu eli boş
-    // bırakmak olurdu.
+  it('⚠ `share` YALNIZ `files` ile çağrılıyor — text/url EKLENMİYOR', () => {
+    // Instagram dosya varken metni düşürüyor, bazı hedefler dosyayı atlıyor;
+    // ikisini birlikte vermek "ya biri ya öteki" kumarı olurdu.
     const dal = instagramDali();
-    const iRed = dal.indexOf('if (!ok)');
-    const iOpen = dal.indexOf('window.open(');
-    expect(iRed).toBeGreaterThan(-1);
-    expect(iOpen).toBeGreaterThan(iRed);
-    expect(dal).toMatch(/return;/);
+    expect(dal).toMatch(/nav\.share!\(\{ files: \[dosya!\] \}\)/);
+    expect(dal).not.toMatch(/share!\(\{ files[^)]*text/);
+    expect(dal).not.toMatch(/share!\(\{ files[^)]*url/);
   });
 
-  it('bilgi satırı birebir ve YALNIZ dokunulunca görünür', () => {
+  it('⚠ GÖRSEL İLK YÜKLEMEDE İSTENMEZ — yalnız tıklamayla', () => {
+    // 2,3 MB'lık bir PNG'yi hiç paylaşmayacak her kadına indirtmek olurdu.
+    //
+    // ⚠ Kriter dosyanın GERÇEK hâlinden: `fetch` `hikayeDosyasi()` içinde ve
+    // o fonksiyon seçiciden ÖNCE tanımlı, yani handler diliminde görünmüyor.
+    // İlk yazımda `dal` içinde fetch aradım ve boş döndü (CLAUDE.md §3 —
+    // bu turda beşinci kez; ders not edildi).
+    //
+    // Doğru ölçüt: fetch TEK yerde (o fonksiyonda) ve o fonksiyon YALNIZ
+    // handler'dan çağrılıyor.
+    expect(KOD).toMatch(/async function hikayeDosyasi\(\): Promise<File \| null> \{[\s\S]*?await fetch\(HIKAYE_YOLU\)/);
+    const cagrilar = KOD.match(/hikayeDosyasi\(\)/g) ?? [];
+    // Bir tanım + bir çağrı.
+    expect(cagrilar).toHaveLength(2);
+    expect(instagramDali()).toMatch(/const dosya = await hikayeDosyasi\(\);/);
+    // Görsel yolu başka hiçbir yerde istenmiyor; ön-yükleme yok.
+    const yollar = KOD.match(/ocak-hikaye-karti/g) ?? [];
+    expect(yollar).toHaveLength(2); // HIKAYE_YOLU + HIKAYE_ADI
+    expect(KOD).not.toMatch(/new Image\(/);
+    expect(KOD).not.toMatch(/rel="preload"/);
+  });
+
+  it('canShare YOKSA → DM gelen kutusu (İŞ 11 yolu korunuyor)', () => {
+    const dal = instagramDali();
+    expect(dal).toMatch(/if \(!dosyaPaylasilir\) \{/);
+    expect(dal).toMatch(/dmYolu\(panoOk\);/);
+    expect(KOD).toMatch(/https:\/\/www\.instagram\.com\/direct\/inbox\//);
+  });
+
+  it('⚠ AbortError SESSİZ — vazgeçme hata değil', () => {
+    const dal = instagramDali();
+    expect(dal).toMatch(/if \(ad !== 'AbortError'\)/);
+    // Kadına hiçbir hata metni gösterilmiyor.
+    const yakala = dal.match(/\} catch \(err\) \{[\s\S]*?\n          \}/)?.[0] ?? '';
+    expect(yakala).toBeTruthy();
+    expect(yakala).not.toMatch(/notGoster\(/);
+    expect(yakala).not.toMatch(/teyitGoster\(/);
+  });
+
+  it('⚠ pano REDDEDİLİRSE paylaşım SÜRER, bilgi satırı GÖSTERİLMEZ', () => {
+    const dal = instagramDali();
+    // Pano sonucu akışı durdurmuyor — `return` yok.
+    expect(dal).toMatch(/const panoOk = await kopyala\(metin, url\);/);
+    expect(dal).not.toMatch(/if \(!panoOk\) return/);
+    // Bilgi satırı iki dalda da panoOk'a bağlı.
+    expect(dal).toMatch(/if \(panoOk\) notGoster\(NOT_HIKAYE\);/);
+    expect(KOD).toMatch(/if \(panoOk\) notGoster\(NOT_DM\);/);
+  });
+
+  it('iki bilgi satırı birebir ve YALNIZ dokunulunca görünür', () => {
+    expect(KOD).toMatch(/Bağlantı kopyalandı; hikâyede bağlantı çıkartmasına yapıştır\./);
     expect(KOD).toMatch(/Metin kopyalandı; mesaja yapıştırman yeter\./);
     expect(KOD).toMatch(/data-davet-instagram-not hidden/);
     expect(KOD).toMatch(/instagramNot\.hidden = false;/);
+  });
+
+  it('görsel dosya adı ve tipi birebir', () => {
+    expect(KOD).toMatch(/const HIKAYE_YOLU = '\/paylas\/ocak-hikaye-karti\.png';/);
+    expect(KOD).toMatch(/const HIKAYE_ADI = 'ocak-hikaye-karti\.png';/);
+    expect(KOD).toMatch(/new File\(\[blob\], HIKAYE_ADI, \{ type: 'image\/png' \}\)/);
   });
 });
 

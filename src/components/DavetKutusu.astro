@@ -117,11 +117,10 @@ const {
       <button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da gönder</button>
     </div>
     {/* Instagram akışının ne yaptığını SÖYLEYEN satır — düğmenin altında,
-        küçük. İki sekmeli bir akışı önceden söylemek, kadını beklenmedik bir
-        sekmeyle karşılaştırmaktan iyi. Yalnız o düğmeye dokunulunca görünür. */}
-    <p class="davet-kutusu__instagram-not" data-davet-instagram-not hidden>
-      Metin kopyalandı; mesaja yapıştırman yeter.
-    </p>
+        küçük. Yalnız o düğmeye dokunulunca görünür ve metni AKIŞA GÖRE
+        değişiyor (İŞ 13): hikâye kartı paylaşıldıysa çıkartmadan, DM yoluna
+        düşüldüyse yapıştırmaktan söz ediyor. İki cümle betikte sabit. */}
+    <p class="davet-kutusu__instagram-not" data-davet-instagram-not hidden></p>
 
     {/* E-postayla davet — YALNIZ musluk açıkken. Gerekçe yukarıda. */}
     {DAVET_AKISI_ACIK && (
@@ -584,32 +583,101 @@ const {
           paylas(metin, url);
         });
 
-      // ── Instagram'da gönder (İŞ 11) ──
-      // Instagram'ın DM'e metin gönderen bir derin bağlantısı YOK, o yüzden
-      // iki adım: panoya kopyala → gelen kutusunu yeni sekmede aç.
+      // ── Instagram'da gönder (İŞ 11 + İŞ 13) ──
       //
-      // ⚠ SIRA: `window.open` KOPYALAMADAN SONRA. Tersi olsaydı sekme açılır,
-      // odak kaybolur ve `navigator.clipboard.writeText` bazı tarayıcılarda
-      // "document is not focused" ile düşerdi — kadın boş bir DM ekranında
-      // kalırdı.
+      // İki yol, sırayla DENENİYOR; düğme ve yeri değişmiyor.
       //
-      // Kopyalama BAŞARISIZSA sekme AÇILMAZ: yapıştıracak bir şeyi olmayan
-      // kadını Instagram'a göndermek, onu eli boş bırakmak olurdu.
+      //  (a) HİKÂYE KARTI — `navigator.canShare({ files })` destekliyorsa
+      //      görsel paylaşım sayfasına verilir ve kadın onu doğrudan hikâyeye
+      //      koyar. Bağlantı panoda duruyor; hikâyede "bağlantı çıkartması"na
+      //      yapıştırıyor.
+      //      ⚠ `share` çağrısında YALNIZ `files` var. `text`/`url` eklemek
+      //      Instagram'da metni düşürüyor, bazı hedefler ise dosyayı atlıyor —
+      //      ikisini birlikte vermek "ya biri ya öteki" kumarı olurdu.
+      //
+      //  (b) DESTEKLENMİYORSA (masaüstü, eski tarayıcı) → İŞ 11 davranışı:
+      //      pano + DM gelen kutusu yeni sekmede.
+      //
+      // ⚠ Görsel BASINCA fetch ediliyor, sayfa yüklenirken DEĞİL: 2,3 MB'lık
+      // bir PNG'yi hiç paylaşmayacak her kadına indirtmek olurdu.
+      //
+      // ⚠ Pano REDDEDİLİRSE paylaşıma yine devam edilir, ama bilgi satırı
+      // GÖSTERİLMEZ: "kopyalandı" demek yalan olurdu.
+      //
+      // ⚠ Kullanıcı paylaşımdan vazgeçerse (`AbortError`) SESSİZ kalınır —
+      // vazgeçme bir hata değil.
+      const HIKAYE_YOLU = '/paylas/ocak-hikaye-karti.png';
+      const HIKAYE_ADI = 'ocak-hikaye-karti.png';
+      const NOT_HIKAYE = 'Bağlantı kopyalandı; hikâyede bağlantı çıkartmasına yapıştır.';
+      const NOT_DM = 'Metin kopyalandı; mesaja yapıştırman yeter.';
+
+      function notGoster(metin: string): void {
+        if (!instagramNot) return;
+        instagramNot.textContent = metin;
+        instagramNot.hidden = false;
+      }
+
+      /** Hikâye kartını `File`'a çevirir. Fetch düşerse `null`. */
+      async function hikayeDosyasi(): Promise<File | null> {
+        try {
+          const res = await fetch(HIKAYE_YOLU);
+          if (!res.ok) return null;
+          const blob = await res.blob();
+          return new File([blob], HIKAYE_ADI, { type: 'image/png' });
+        } catch {
+          return null;
+        }
+      }
+
+      function dmYolu(panoOk: boolean): void {
+        if (panoOk) notGoster(NOT_DM);
+        window.open(
+          'https://www.instagram.com/direct/inbox/',
+          '_blank',
+          'noopener,noreferrer',
+        );
+      }
+
       kutu
         .querySelector<HTMLButtonElement>('[data-davet-instagram]')
         ?.addEventListener('click', async () => {
           const { url, metin } = getDavet();
-          const ok = await kopyala(metin, url);
-          if (!ok) {
-            teyitGoster('Kopyalanamadı, metni elle seçip kopyalamayı dene.');
+
+          // 1. Pano — reddedilse bile akış sürüyor.
+          const panoOk = await kopyala(metin, url);
+
+          // 2. Görsel, BASINCA.
+          const dosya = await hikayeDosyasi();
+
+          // 3. Dosya paylaşımı destekleniyor mu.
+          const nav = navigator as Navigator & {
+            canShare?: (data: ShareData) => boolean;
+            share?: (data: ShareData) => Promise<void>;
+          };
+          const dosyaPaylasilir =
+            !!dosya &&
+            typeof nav.canShare === 'function' &&
+            typeof nav.share === 'function' &&
+            nav.canShare({ files: [dosya] });
+
+          if (!dosyaPaylasilir) {
+            // 4. İŞ 11 yolu. Pano da düştüyse kadına yapıştıracak bir şey
+            // kalmadı; yine DM'i açıyoruz ama "kopyalandı" demiyoruz.
+            dmYolu(panoOk);
             return;
           }
-          if (instagramNot) instagramNot.hidden = false;
-          window.open(
-            'https://www.instagram.com/direct/inbox/',
-            '_blank',
-            'noopener,noreferrer',
-          );
+
+          if (panoOk) notGoster(NOT_HIKAYE);
+          try {
+            await nav.share!({ files: [dosya!] });
+          } catch (err) {
+            // Vazgeçme SESSİZ. Başka bir hata da kadına gösterilmez: görsel
+            // paylaşılamadıysa bağlantı hâlâ panosunda.
+            const ad = (err as { name?: string } | null)?.name ?? '';
+            if (ad !== 'AbortError') {
+              console.warn(`[davet] hikâye paylaşımı düştü: ${ad || 'bilinmeyen'}`);
+            }
+          }
         });
 
       mailForm?.addEventListener('submit', async (ev) => {
