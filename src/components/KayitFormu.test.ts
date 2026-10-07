@@ -235,3 +235,29 @@ describe('KayitFormu.astro — Katman B formdan kalktı (İŞ 6)', () => {
     expect(KOD).toMatch(/data-kf-toplam/);
   });
 });
+
+/**
+ * İŞ 9 — havale seçim notu (KARAR 274 metni) iki yüzeyi birlikte söyler.
+ *
+ * Eski hâli yalnız ekranı söylüyordu. Havale kaydı artık `yerini-tutuyoruz`
+ * mailini de alıyor (B211 İŞ 2) ve IBAN o mailde de duruyor; kadın ekranı
+ * kapatırsa bilgiyi nerede bulacağını bilmeliydi.
+ */
+describe('KayitFormu.astro — havale notu ekran + e-posta (İŞ 9)', () => {
+  const KOD = readFileSync(SOURCE_PATH, 'utf-8')
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('yeni metin birebir', () => {
+    expect(KOD).toMatch(/Hesap bilgileri kaydını gönderince ekranda ve e-postanda olacak\./);
+  });
+
+  it('eski metin KALMADI', () => {
+    expect(KOD).not.toMatch(/kaydını gönderdikten sonra ekranda görünecek/);
+  });
+
+  it('not yalnız HAVALE seçiliyken görünür — koşul bozulmadı', () => {
+    expect(KOD).toMatch(/havaleNotEl\.hidden = yontem !== 'havale';/);
+  });
+});

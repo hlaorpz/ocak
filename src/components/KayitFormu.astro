@@ -440,8 +440,14 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                   <span class="kayit-formu__yontem-text">Havale / EFT</span>
                 </label>
               </div>
+              {/* KARAR 274 metni — 7 Eki güncellendi. Eski hâli yalnız ekranı
+                  söylüyordu ("kaydını gönderdikten sonra ekranda görünecek");
+                  havale kaydı artık `yerini-tutuyoruz` mailini de alıyor (B211
+                  İŞ 2) ve IBAN o mailde de duruyor. Cümle iki yüzeyi birlikte
+                  söylüyor — kadın ekranı kapatırsa bilgiyi nerede bulacağını
+                  bilsin. */}
               <p class="kayit-formu__yontem-havale-not" data-kf-yontem-havale-not hidden>
-                Hesap bilgileri kaydını gönderdikten sonra ekranda görünecek.
+                Hesap bilgileri kaydını gönderince ekranda ve e-postanda olacak.
               </p>
             </div>
             )}
