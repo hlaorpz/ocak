@@ -960,6 +960,9 @@ export const POST: APIRoute = async ({ request }) => {
     // bakar. `mailerlite` alanı taşındı: artık abone yazımı değil GÖNDERİM
     // sonucu ölçülüyor. Kartta mail yok → `false`, cümle basılmaz.
     postaGitti: postaOk,
+    // İŞ 4 — paylaş bloğunun bağlantısı. `etkinlikUrlFormatla` zaten bu
+    // dosyada kullanılıyor (MailerLite `etkinlik_url`'ü); aynı kurucu.
+    etkinlikUrl: etkinlikUrlFormatla(etk.slug),
     mode: 'kayit',
     kayitTipi: direktAkis ? 'Direkt' : 'Başvuru',
     ...(promoResp ? { promo: promoResp } : {}),

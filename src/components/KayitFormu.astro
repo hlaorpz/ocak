@@ -2358,6 +2358,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             if (secAd) davetKutusu.dataset.davetAd = secAd;
             if (secTarih) davetKutusu.dataset.davetTarih = secTarih;
             davetKutusu.dataset.davetPath = `/${format}`;
+            // İŞ 4 — paylaşılan bağlantı etkinliğin kendi sayfası. Boş gelirse
+            // kutu eski format-sayfası bağlantısına düşer.
+            if (result.etkinlikUrl) davetKutusu.dataset.davetUrl = result.etkinlikUrl;
           }
           successEl.hidden = false;
           scrollToSuccess(successEl);

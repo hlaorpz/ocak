@@ -145,6 +145,15 @@ export type KayitResponse = {
    *    cümlesi seçimi.
    *  - `deger`: link veya adres string'i; var=false ise boş.
    */
+  /**
+   * İŞ 4 (7 Eki) — paylaş bloğunun bağlantısı: etkinliğin KENDİ sayfası
+   * (`etkinlikUrlFormatla(Slug)`). Havale başarı ekranı bunu `DavetKutusu`'nun
+   * dataset'ine yazıyor; `/odeme/tamam` aynı değeri Notion'dan kendi okuyor.
+   *
+   * Slug yoksa boş — kutu eski format-sayfası bağlantısına düşer, kırık adres
+   * üretmez.
+   */
+  etkinlikUrl?: string;
   katilim?: {
     var: boolean;
     tipi: 'link' | 'adres';

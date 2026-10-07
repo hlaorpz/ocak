@@ -54,6 +54,8 @@ export interface Props {
    * '/acik-kapi' fallback (WhatsApp paylaşımı yine çalışır).
    */
   landingPath?: string;
+  /** Etkinliğin kendi sayfası — `etkinlikUrlFormatla(Slug)`. Boş olabilir. */
+  etkinlikUrl?: string;
 }
 
 const {
@@ -63,10 +65,28 @@ const {
   etkinlikAdi = '',
   etkinlikTarihi = '',
   landingPath = '',
+  /**
+   * İŞ 4 (7 Eki) — paylaşılan bağlantı: ETKİNLİĞİN KENDİ SAYFASI
+   * (`etkinlikUrlFormatla(Slug)`). Boşsa eski format-sayfası bağlantısına
+   * düşülür, yani slug'ı olmayan etkinlikte paylaşım yine çalışır.
+   */
+  etkinlikUrl = '',
 } = Astro.props;
 ---
 
-{DAVET_AKISI_ACIK && (
+{/* ── MUSLUK YERİ DEĞİŞTİ (İŞ 4, 7 Eki) ──
+    Eski hâlde `DAVET_AKISI_ACIK` BÜTÜN bloğu sarıyordu: musluk kapanınca
+    paylaşım da kayboluyordu. Artık blok daima render ediliyor (başlık + alt
+    satır + Paylaş + Bağlantıyı kopyala) ve musluk YALNIZ e-postayla davet
+    formunu kapatıyor.
+
+    Kaan kararı (7 Eki): form arayüzden kalkar ama `/api/davet`, Davetler DB,
+    Resend şablonu ve `davet-*.ts` SİLİNMEZ — kod yolu muslukla kapalı, dosyalar
+    duruyor. `DAVET_AKISI` production'da `acik` OLMAMALI; varsayılan zaten
+    kapalı (fail-closed, `davet-akisi.ts:22`).
+
+    ÖLÇÜM (7 Eki): Davetler DB'de **0 satır** — bu hat bugüne kadar hiç satır
+    üretmemiş. */}
 <aside
   class="davet-kutusu"
   data-davet-kutusu
@@ -76,29 +96,28 @@ const {
   data-davet-ad={etkinlikAdi}
   data-davet-tarih={etkinlikTarihi}
   data-davet-path={landingPath}
+  data-davet-url={etkinlikUrl}
 >
   <h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır</h3>
-  <p class="davet-kutusu__metin">
-    Ateşin yanında onun da yeri var. Üç yol, hangi kanal kolaysa.
-  </p>
+  <p class="davet-kutusu__metin">Ateşin yanında onun da yeri var.</p>
 
   <div class="davet-kutusu__yollar">
-    <button
-      type="button"
-      class="davet-kutusu__btn davet-kutusu__btn--birincil"
-      data-davet-whatsapp
-    >
-      WhatsApp ile çağır
+    {/* ANA düğme — paylaşılan birincil sınıf (`.ocak-dugme`, global.css).
+        `navigator.share({ text, url })` varsa o; yoksa `wa.me/?text=…` yeni
+        sekmede. Eski etiketi "WhatsApp ile çağır"dı ve WhatsApp'ı tek kanal
+        gibi gösteriyordu; Web Share menüsü zaten kadının kendi kanallarını
+        açıyor. */}
+    <button type="button" class="ocak-dugme" data-davet-paylas>Paylaş</button>
+
+    {/* İKİNCİL — metin + bağlantıyı panoya. Eski etiketi "Instagram'dan
+        göndereceksen kopyala"ydı: tek bir uygulamayı adlandırmak, kopyalamanın
+        başka yüz kullanımını görünmez kılıyordu. */}
+    <button type="button" class="davet-kutusu__btn davet-kutusu__btn--ucuncu" data-davet-kopyala>
+      Bağlantıyı kopyala
     </button>
 
-    <button
-      type="button"
-      class="davet-kutusu__btn davet-kutusu__btn--ucuncu"
-      data-davet-kopyala
-    >
-      Instagram'dan göndereceksen kopyala
-    </button>
-
+    {/* E-postayla davet — YALNIZ musluk açıkken. Gerekçe yukarıda. */}
+    {DAVET_AKISI_ACIK && (
     <form class="davet-kutusu__mail" data-davet-mail novalidate>
       {/* KARAR 152/194 honeypot — bot doldurur, endpoint sessiz success.
           `.hp-field` (global.css) offscreen'dir, `display:none` DEĞİL: bazı
@@ -149,16 +168,22 @@ const {
       </p>
       <p class="davet-kutusu__mail-hata" data-davet-mail-hata hidden></p>
     </form>
+    )}
   </div>
 
   <p class="davet-kutusu__teyit" data-davet-teyit hidden role="status" aria-live="polite"></p>
 
+  {/* Bu söz E-POSTA davetine ait ("yalnızca tek bir mesaj ulaşır", "hiçbir
+      listeye eklemeyiz") — paylaş/kopyala yolunda biz kimseye mesaj
+      göndermiyoruz, kadın kendi kanalından paylaşıyor. Musluk kapalıyken
+      söylenecek bir şey yok. */}
+  {DAVET_AKISI_ACIK && (
   <p class="davet-kutusu__temizlik">
     Davet ettiğin kişiye yalnızca tek bir mesaj ulaşır. Onu hiçbir listeye
     eklemeyiz, biz aramayız. Gelmek tamamen ona kalmış.
   </p>
+  )}
 </aside>
-)}
 
 <style>
   /* Eyeball #4 tur-2 Fix 2: kutu ölçülü öne çıkar — soluk gri çerçeve
@@ -372,15 +397,35 @@ const {
    *     çalışır, geçmiş-etkinlik güvenlik ağı bu path'te aktif.
    *   - Tek metin, her kanal aynı (WhatsApp + kopyala + e-posta).
    */
-  function davetMetni(etkinlikAdi: string, etkinlikTarihi: string): string {
-    const ekler: string[] = [];
-    if (etkinlikAdi) ekler.push(etkinlikAdi);
-    if (etkinlikTarihi) ekler.push(etkinlikTarihi);
-    const detay = ekler.length ? `: ${ekler.join(', ')}` : '';
-    return `Selam! Ben OCAK'ta bir buluşmaya katılıyorum${detay}. Sen de aklıma geldin — bir bak, ateşin yanında sana da yer var:`;
+  // ── Paylaşım metni (İŞ 4, 7 Eki) — Kaan verdi, birebir ──
+  // Eski hâli etkinlik adını ve tarihi cümlenin içine katıyordu; yeni metin
+  // sabit ve etkinlik bilgisi BAĞLANTININ kendisinde yaşıyor. Parametreler
+  // KALDIRILMADI: imza iki tüketici tarafından paylaşılıyor (paylaş + kopyala)
+  // ve ileride metin yeniden kişiselleşebilir.
+  function davetMetni(_etkinlikAdi: string, _etkinlikTarihi: string): string {
+    return 'Ateşin yanında bir yer daha var. Ben geliyorum; sen de gelmek istersen:';
   }
 
-  function davetUrl(refKodu: string, etkinlikId: string, landingPath: string): string {
+  /**
+   * Paylaşılan bağlantı.
+   *
+   * ── İŞ 4 (7 Eki) — ETKİNLİĞİN KENDİ SAYFASI ──
+   * Birinci tercih `etkinlikUrl` = `etkinlikUrlFormatla(Slug)` →
+   * `https://www.ocak.biz/etkinlik/<slug>`. Kaan'ın kararı bu: paylaşılan şey
+   * bir takip bağlantısı değil, buluşmanın kendi sayfası.
+   *
+   * ⚠ BU DEĞİŞİKLİK `?ref=OCAK-XXXX` TAKİBİNİ DÜŞÜRÜR. Eski bağlantı
+   * `${origin}${landingPath}?etkinlik=<id>&ref=<kod>` idi ve `ref` parametresi
+   * KayitFormu'nun gizli alanına düşüp Kayıtlar `Davet Eden Ref` kolonunu
+   * besliyordu (davet eden kadının kredisi). Raporlandı; davet hattının
+   * kendisi bu turda muslukla kapatıldığı ve Davetler DB'de 0 satır olduğu
+   * için tutarlı — ama atıf kaybı bilinçli bir sonuç.
+   *
+   * `etkinlikUrl` boşsa (Slug yok) eski bağlantıya düşülür: paylaşım
+   * çalışmaya devam eder, kırık bir adres üretilmez.
+   */
+  function davetUrl(refKodu: string, etkinlikId: string, landingPath: string, etkinlikUrl: string): string {
+    if (etkinlikUrl) return etkinlikUrl;
     const origin = window.location.origin;
     const path = landingPath && landingPath.startsWith('/') ? landingPath : '/acik-kapi';
     const params = new URLSearchParams();
@@ -391,26 +436,28 @@ const {
   }
 
   function paylas(text: string, url: string): void {
-    // Web Share API → paylaş menüsü (WhatsApp/Mesajlar/Mail/Instagram).
-    // navigator.share senkron API çağrılacağı için kullanıcı jesti zincirine
-    // bağlı; click handler içinde olduğumuz için OK.
-    const shareData = { text: `${text} ${url}` };
+    // ── İŞ 4 — `navigator.share({ text, url })` ──
+    // `text` ve `url` AYRI geçiyor (eski hâl ikisini tek dizede birleştirip
+    // `text` olarak veriyordu). Ayrı geçmek platformun işini kolaylaştırıyor:
+    // iOS paylaş sayfası URL'i tanıyıp başlık/önizleme çıkarıyor, WhatsApp
+    // bağlantıyı link kartı olarak basıyor.
     const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
     if (typeof nav.share === 'function') {
-      nav
-        .share(shareData)
-        .catch(() => {
-          // Kullanıcı vazgeçti veya share fail → wa.me fallback'ine düş.
-          window.location.href = `https://wa.me/?text=${encodeURIComponent(
-            `${text} ${url}`,
-          )}`;
-        });
+      nav.share({ text, url }).catch(() => {
+        // Kullanıcı vazgeçmiş de olabilir; bir şey YAPMA. Eski hâl burada
+        // wa.me'ye düşüyordu, yani "paylaşmaktan vazgeçtim" jestini WhatsApp'a
+        // yönlendirmeye çeviriyordu.
+      });
       return;
     }
-    // Web Share API yok → wa.me fallback (masaüstü).
-    window.location.href = `https://wa.me/?text=${encodeURIComponent(
-      `${text} ${url}`,
-    )}`;
+    // Web Share API yok (masaüstü) → wa.me, YENİ SEKMEDE. Eski hâl
+    // `window.location.href` ile aynı sekmede açıyordu: kadın başarı
+    // ekranından (referans kodu, IBAN) çıkıp geri dönemiyordu.
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   }
 
   async function kopyala(text: string, url: string): Promise<boolean> {
@@ -519,13 +566,13 @@ const {
           ad,
           tarih,
           path,
-          url: davetUrl(ref, etkinlik, path),
+          url: davetUrl(ref, etkinlik, path, (kutu.dataset.davetUrl ?? '').trim()),
           metin: davetMetni(ad, tarih),
         };
       }
 
       kutu
-        .querySelector<HTMLButtonElement>('[data-davet-whatsapp]')
+        .querySelector<HTMLButtonElement>('[data-davet-paylas]')
         ?.addEventListener('click', () => {
           const { url, metin } = getDavet();
           paylas(metin, url);
@@ -536,11 +583,10 @@ const {
         ?.addEventListener('click', async () => {
           const { url, metin } = getDavet();
           const ok = await kopyala(metin, url);
-          teyitGoster(
-            ok
-              ? 'Davet kopyalandı — Instagram\'da DM\'ine yapıştır.'
-              : 'Kopyalanamadı, metni elle seçip kopyalamayı dene.',
-          );
+          // İŞ 4 — teyit tek kelime: "Kopyalandı". Eski metin Instagram'ı
+          // adlandırıyordu ve kopyalamanın başka yüz kullanımını görünmez
+          // kılıyordu.
+          teyitGoster(ok ? 'Kopyalandı' : 'Kopyalanamadı, metni elle seçip kopyalamayı dene.');
         });
 
       mailForm?.addEventListener('submit', async (ev) => {

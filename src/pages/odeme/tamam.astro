@@ -20,6 +20,7 @@ import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 // artık o dosyanın import'ları; burada tüketilmiyorlar.
 import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
 import { tamamGorunumu } from '../../lib/odeme-tamam.ts';
+import { etkinlikUrlFormatla } from '../../lib/kayit.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi.
 //
@@ -126,6 +127,7 @@ const sayfaAciklamasi = gorunum.baslik;
           alanlar boş geçer; DavetKutusu nötr metin + /acik-kapi fallback
           path'le yine WhatsApp paylaşımını kurar. */}
       <DavetKutusu
+        etkinlikUrl={etkinlikUrlFormatla(kayit.slugHam)}
         refKodu={ref}
         davetEdenAd={davetEdenAd}
         etkinlikId={etkinlikId}
