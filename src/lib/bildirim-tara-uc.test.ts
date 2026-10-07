@@ -545,3 +545,73 @@ describe('postalanamaz kayıtlar — (a)/(c) listesinden çıkarılır, log tekr
     expect(metin).not.toContain('p1');
   });
 });
+
+/**
+ * Ödeme bildirimi TEK otoritede (7 Eki borcu kapandı).
+ *
+ * (a) dalı maili kendi göndermiyordu artık — şablonu, değişkenleri, üç kapıyı
+ * ve `Mail Gitti` işaretini `odemeBildir` yönetiyor. Callback de aynı
+ * fonksiyonu çağırıyor. İki kod yolu olması, biri değişip öteki unutulduğunda
+ * aynı kayda iki farklı davranış demekti.
+ *
+ * Davranış ölçümü yukarıdaki suite'lerde (mail gider, `Mail Gitti` yazılır).
+ * Burada ölçülen şey YAPISAL: ikinci yolun geri sızmaması.
+ */
+describe('(a) dalı — ödeme bildirimi tek otoritede', () => {
+  const KOD = readFileSync(join(__dirname, '..', 'pages', 'api', 'bildirim-tara.ts'), 'utf-8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('`odemeBildir` çağrılıyor ve bildirim dalı ONA bağlı', () => {
+    expect(KOD).toMatch(/await odemeBildir\(girdi, \{/);
+    const dal = KOD.match(/if \(islem\.tip === 'bildirim'\) \{[\s\S]*?\n    \}/)?.[0] ?? '';
+    expect(dal).toContain('odemeBildir');
+  });
+
+  it('⚠ şablon seçimi uçta YAPILMIYOR — `yerinHazirSablonu` import\'ta bile yok', () => {
+    // Duran bir import "burada da seçim yapılıyor" izlenimi verirdi.
+    expect(KOD).not.toMatch(/yerinHazirSablonu/);
+    expect(KOD).not.toMatch(/yolTarifiLinki/);
+  });
+
+  it('⚠ `Mail Gitti` uçtaki genel işaret bloğunda YOK — `odemeBildir` yazıyor', () => {
+    // İki yazıcı olsaydı biri koşulu değiştirince öteki sessizce ayrışırdı.
+    const isaretBloku = KOD.match(/const properties: Record<string, any> = \{\};[\s\S]*?\n    try \{/)?.[0] ?? '';
+    expect(isaretBloku).toBeTruthy();
+    expect(isaretBloku).not.toContain('Mail Gitti');
+    // Tek `Mail Gitti` YAZIMI `odemeBildir`'in bağımlılığında.
+    //
+    // ⚠ Ölçüt yazımlara daraltıldı. İlk hâli `/'Mail Gitti'/g` sayıyordu ve
+    // iki eşleşme buluyordu — ikincisi `adaylariOku`'daki OKUMA
+    // (`p['Mail Gitti']?.checkbox`). Okuma meşru ve gerekli; kriter yazımla
+    // okumayı karıştırmıştı, yani beklentiden yazılmıştı (CLAUDE.md §3).
+    const yazimlar = KOD.match(/'Mail Gitti':\s*\{\s*checkbox/g) ?? [];
+    expect(yazimlar).toHaveLength(1);
+    // Okuma duruyor — `postalanabilir` ve (a) adaylığı ona bakıyor.
+    expect(KOD).toMatch(/mailGitti: p\['Mail Gitti'\]\?\.checkbox === true/);
+    expect(KOD).toMatch(/async function mailGittiIsaretle\(pageId: string\)/);
+  });
+
+  it('kuru koşu `odemeBildir`\'den ÖNCE kesiliyor', () => {
+    // O fonksiyon kuru koşuyu bilmiyor ve bilmemeli: bileceği şey "maili
+    // gönder", "gönderme" değil.
+    const dal = KOD.match(/if \(islem\.tip === 'bildirim'\) \{[\s\S]*?\n    \}/)?.[0] ?? '';
+    const iKuru = dal.indexOf('if (kuru)');
+    const iCagri = dal.indexOf('odemeBildir');
+    expect(iKuru).toBeGreaterThan(-1);
+    expect(iCagri).toBeGreaterThan(iKuru);
+  });
+
+  it('`bildirimDurumu` yanıt dizelerini KORUYOR — davranış değişmedi', () => {
+    // (a) maili kendi gönderirken de bu dizeleri üretiyordu.
+    expect(KOD).toMatch(/return 'mail-hata';/);
+    expect(KOD).toMatch(/return 'atlandi';/);
+    expect(KOD).toMatch(/return s\.mailGitti \? 'yazildi' : 'mail-gitti-isaret-yok';/);
+  });
+
+  it('(c) gün hatırlatması AYNI değişken kurucusunu paylaşıyor', () => {
+    // Katılım alanlarının eşlemesi tek yerde; ikinci bir kopya yok.
+    expect(KOD).toMatch(/bildirimDegiskenleri\(girdi\)/);
+    expect(KOD).toMatch(/GUN: islem\.gun/);
+  });
+});

@@ -27,18 +27,30 @@ import {
   type TaramaSatiri,
   type TaramaIslemi,
 } from '../../lib/tarama.ts';
+// `yerinHazirSablonu` ve `yolTarifiLinki` ARTIK BURADAN ÇAĞRILMIYOR: ikisi de
+// `odemeBildir`/`bildirimDegiskenleri` içinde yaşıyor. Import'tan düştüler —
+// duran bir import "burada da seçim yapılıyor" izlenimi verirdi.
 import {
   postaGonder,
   resendTasima,
-  yerinHazirSablonu,
   gunHatirlatmaSablonu,
-  yolTarifiLinki,
   tutarMetni,
   SABLON,
   type SablonAdi,
 } from '../../lib/posta.ts';
 import { odemeLinki, odemeLinkSirri } from '../../lib/odeme-link.ts';
-import { etkinlikUrlFormatla, isKayitFormat } from '../../lib/kayit.ts';
+// ⚠ (a) dalı ÖDEME BİLDİRİMİNİ KENDİ GÖNDERMEZ. Kapılar, şablon seçimi ve
+// `Mail Gitti` işareti TEK otoritede yaşıyor: `odemeBildir`. Callback de aynı
+// fonksiyonu çağırıyor; iki kod yolu olması, biri değişip öteki unutulduğunda
+// aynı kayda iki farklı davranış demekti (7 Eki borcu, bu turda kapandı).
+import {
+  odemeBildir,
+  bildirimDegiskenleri,
+  type OdemeBildirGirdi,
+} from '../../lib/odeme-bildir.ts';
+// `etkinlikUrlFormatla` da `bildirimDegiskenleri`'ne geçti; burada yalnız
+// format kapısının `isKayitFormat`'ı kaldı.
+import { isKayitFormat } from '../../lib/kayit.ts';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori.ts';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik.ts';
 import { ilkAd } from '../../lib/davet-baglam.ts';
@@ -57,6 +69,14 @@ function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8' },
+  });
+}
+
+/** `odemeBildir`'in Notion bağımlılığı — callback'teki ikizle aynı yazım. */
+async function mailGittiIsaretle(pageId: string): Promise<void> {
+  await notion.pages.update({
+    page_id: pageId,
+    properties: { 'Mail Gitti': { checkbox: true } },
   });
 }
 
@@ -230,73 +250,92 @@ async function adaylariOku(): Promise<Aday[]> {
   return adaylar;
 }
 
-/** Mail planı: şablon + değişkenler. `null` = gönderilemez (gerekçe log'da). */
-function mailPlani(
+/**
+ * `Aday` → `OdemeBildirGirdi`. İki tüketici var: `odemeBildir` (a dalı) ve
+ * `bildirimDegiskenleri` (c dalı, gün hatırlatması). Katılım alanlarının
+ * eşlemesi — online/fiziksel ayrımı, `YOL_TARIFI_LINKI`, trim'ler — o modülde
+ * TEK yerde yaşıyor; burada ikinci bir kopya yok.
+ */
+function bildirimGirdisi(a: Aday): OdemeBildirGirdi | null {
+  const e = a.etkinlik;
+  if (!e) return null;
+  return {
+    kayitId: a.satir.kayitId,
+    pageId: a.satir.pageId,
+    email: a.email,
+    ad: a.ad,
+    etkinlikSayisi: a.etkinlikSayisi,
+    formatHam: e.formatHam,
+    basligHam: e.baslik,
+    slugHam: e.slug,
+    tarihISOHam: e.tarihISO,
+    tarihBitisHam: e.tarihBitis,
+    saatHam: e.saat,
+    mekanHam: e.mekan,
+    katilimLinkiHam: e.katilimLinki,
+    zoomSifresiHam: e.zoomSifresi,
+    konumDetayHam: e.konumDetay,
+  };
+}
+
+/**
+ * `odemeBildir` sonucunu yanıt dizesine çevirir. Dizeler DEĞİŞMEDİ — (a) dalı
+ * maili kendi gönderirken de aynılarını üretiyordu.
+ */
+function bildirimDurumu(s: Awaited<ReturnType<typeof odemeBildir>>): string {
+  if (s.durum === 'hata') return 'mail-hata';
+  if (s.durum === 'atlandi') return 'atlandi';
+  // Mail gitti ama checkbox yazılamadı — `odemeBildir` bunu 'yazildi' +
+  // `mailGitti:false` olarak bildiriyor.
+  return s.mailGitti ? 'yazildi' : 'mail-gitti-isaret-yok';
+}
+
+/**
+ * Ödeme hatırlatma / ek süre maillerinin planı. (a) ve (c) BURADAN GEÇMEZ:
+ * (a) `odemeBildir`'e, (c) `bildirimDegiskenleri`'ne gidiyor.
+ *
+ * Bu iki mail katılım bilgisi TAŞIMAZ, ödeme bilgisi taşır — o yüzden ayrı
+ * kurucu: `bildirimDegiskenleri`'nin ürettiği küme buraya uymaz.
+ */
+function hatirlatmaPlani(
   islem: TaramaIslemi,
   a: Aday,
 ): { sablon: SablonAdi; degiskenler: Record<string, string> } | null {
   const e = a.etkinlik;
   if (!e) return null;
-  const ETKINLIK_URL = etkinlikUrlFormatla(e.slug);
-  const ETKINLIK_TARIHI = e.tarihISO
-    ? formatEtkinlikTarihi(e.tarihISO, e.tarihBitis, e.saat)
-    : '';
-  const AD = a.ad;
-  const ETKINLIK_BASLIGI = e.baslik;
-
-  // Katılım bilgisi taşıyan maillerin ortak gövdesi.
-  //
-  // Tip açıkça `Record<string, string>`: iki dalın birleşimini TS "MEKAN?:
-  // undefined" taşıyan bir birleşim sayıyor ve o `Record<string, string>`e
-  // oturmuyor. `postaGonder`'in değişken kümesi kontrolü anahtarların
-  // doğruluğunu zaten ağ çağrısından önce ölçüyor.
-  const katilimAlanlari: Record<string, string> = mekanOnlineMi(e.mekan)
-    ? { KATILIM_LINKI: e.katilimLinki, ZOOM_SIFRESI: e.zoomSifresi }
-    : {
-        MEKAN: e.mekan,
-        ADRES: e.konumDetay,
-        YOL_TARIFI_LINKI: yolTarifiLinki(e.konumDetay, ETKINLIK_URL),
-      };
-
-  if (islem.tip === 'bildirim') {
-    return {
-      sablon: yerinHazirSablonu(e.mekan),
-      degiskenler: { AD, ETKINLIK_BASLIGI, ETKINLIK_TARIHI, ETKINLIK_URL, ...katilimAlanlari },
-    };
-  }
-
-  if (islem.tip === 'gun-hatirlatma') {
-    return {
-      sablon: gunHatirlatmaSablonu(e.mekan),
-      degiskenler: {
-        AD,
-        GUN: islem.gun,
-        ETKINLIK_BASLIGI,
-        ETKINLIK_TARIHI,
-        ETKINLIK_URL,
-        ...katilimAlanlari,
-      },
-    };
-  }
-
-  // Hatırlatma / ek süre — ödeme bilgisi taşır, katılım bilgisi TAŞIMAZ.
+  if (islem.tip !== 'hatirlat-kart' && islem.tip !== 'uzat-havale') return null;
   // Son an: kartta mevcut bitiş, havalede YENİ bitiş (ek süre tanındı).
-  const sonAn =
-    islem.tip === 'uzat-havale' ? islem.yeniBitis : islem.satir.yerTutmaBitisi;
+  const sonAn = islem.tip === 'uzat-havale' ? islem.yeniBitis : islem.satir.yerTutmaBitisi;
   if (!sonAn) return null;
   return {
     // Kart 30 dk → `yerini-tutuyoruz` (ilk mailini henüz almadı).
     // Havale ek süre → `yerin-hala-bizde` (ikinci kez yazıyoruz; Ek 2).
     sablon: islem.tip === 'uzat-havale' ? SABLON.yerinHalaBizde : SABLON.yeriniTutuyoruz,
     degiskenler: {
-      AD,
-      ETKINLIK_BASLIGI,
-      ETKINLIK_TARIHI,
+      AD: a.ad,
+      ETKINLIK_BASLIGI: e.baslik,
+      ETKINLIK_TARIHI: e.tarihISO
+        ? formatEtkinlikTarihi(e.tarihISO, e.tarihBitis, e.saat)
+        : '',
       TUTAR: tutarMetni(a.tutar, e.paraBirimi),
       REFERANS_NO: a.satir.kayitId,
       ODEME_LINKI: odemeLinki(a.satir.kayitId, odemeLinkSirri()),
       ODEME_SON_AN: sonAnMetni(sonAn),
     },
+  };
+}
+
+/** (c) gün hatırlatması — `bildirimDegiskenleri` + `GUN`, şablon mekâna göre. */
+function gunPlani(
+  islem: Extract<TaramaIslemi, { tip: 'gun-hatirlatma' }>,
+  a: Aday,
+): { sablon: SablonAdi; degiskenler: Record<string, string> } | null {
+  const girdi = bildirimGirdisi(a);
+  if (!girdi) return null;
+  const { degiskenler } = bildirimDegiskenleri(girdi);
+  return {
+    sablon: gunHatirlatmaSablonu(girdi.mekanHam),
+    degiskenler: { ...degiskenler, GUN: islem.gun },
   };
 }
 
@@ -396,7 +435,39 @@ async function handle(request: Request): Promise<Response> {
       sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
       continue;
     }
-    const plan = mailPlani(islem, a);
+
+    // ── (a) ÖDEME BİLDİRİMİ — tek otorite `odemeBildir` ──
+    //
+    // Bu dal daha önce maili KENDİ gönderiyordu: şablonu kendi seçiyor,
+    // değişkenleri kendi kuruyor, `Mail Gitti`'yi kendi yazıyordu. Callback'in
+    // yolu ise `odemeBildir`'den geçiyordu — yani aynı mail iki yerde
+    // kuruluyordu ve üç kapı iki yerde tekrarlanıyordu. Biri değişip öteki
+    // unutulduğunda aynı kayda iki farklı davranış doğardı. Artık tek yol.
+    //
+    // ⚠ Kuru koşu `odemeBildir`'den ÖNCE kesilir: o fonksiyon kuru koşuyu
+    // bilmiyor ve bilmemeli — bileceği şey "maili gönder", "gönderme" değil.
+    if (islem.tip === 'bildirim') {
+      if (kuru) {
+        sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'kuru' });
+        continue;
+      }
+      const girdi = bildirimGirdisi(a);
+      if (!girdi) {
+        // `postalanabilir` bunu zaten garanti ediyor; defansif.
+        console.warn(`[bildirim-tara] atlandı — kayitId=${kayitId} sebep=etkinlik-cozulemedi`);
+        sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
+        continue;
+      }
+      const sonuc = await odemeBildir(girdi, {
+        tasima: resendTasima(),
+        mailGittiIsaretle,
+      });
+      sonuclar.push({ kayitId, islem: islemAdi(islem), durum: bildirimDurumu(sonuc) });
+      continue;
+    }
+
+    const plan =
+      islem.tip === 'gun-hatirlatma' ? gunPlani(islem, a) : hatirlatmaPlani(islem, a);
     if (!plan) {
       console.warn(`[bildirim-tara] atlandı — kayitId=${kayitId} sebep=mail-plani-kurulamadi islem=${islem.tip}`);
       sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
@@ -409,7 +480,8 @@ async function handle(request: Request): Promise<Response> {
     }
 
     // ⚠ SIRA: önce mail, başarılıysa Notion işareti. Tersi sıra bir kez düşen
-    // maili sonsuza kadar kaybettirirdi.
+    // maili sonsuza kadar kaybettirirdi. (a) dalı bu kuralı `odemeBildir`
+    // içinde uyguluyor — orada da mail önce, `Mail Gitti` sonra.
     const gonderim = await postaGonder(
       { sablon: plan.sablon, alici: a.email, degiskenler: plan.degiskenler, kayitId },
       resendTasima(),
@@ -420,9 +492,9 @@ async function handle(request: Request): Promise<Response> {
     }
 
     // İşaret(ler). Uzatmada `Yer Tutma Bitişi` de yazılır — mail yeni son anı
-    // söyledi, satır onu doğrulamalı.
+    // söyledi, satır onu doğrulamalı. `Mail Gitti` BURADA YOK: o işaret (a)
+    // dalına ait ve `odemeBildir` yazıyor.
     const properties: Record<string, any> = {};
-    if (islem.tip === 'bildirim') properties['Mail Gitti'] = { checkbox: true };
     if (islem.tip === 'hatirlat-kart') properties['Hatırlatma Gitti'] = { checkbox: true };
     if (islem.tip === 'uzat-havale') {
       properties['Hatırlatma Gitti'] = { checkbox: true };
