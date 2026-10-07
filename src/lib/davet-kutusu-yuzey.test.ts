@@ -25,6 +25,21 @@ const KOD = KAYNAK
   .replace(/\/\*[\s\S]*?\*\//g, '')
   .replace(/(^|[^:])\/\/.*$/gm, '$1');
 
+/**
+ * Instagram düğmesinin click handler'ı.
+ *
+ * ⚠ Çapa dosyanın GERÇEK hâlinden alındı (CLAUDE.md §3): seçici
+ * `'[data-davet-instagram]'` — köşeli parantez dahil. İlk yazımda
+ * `data-davet-instagram')` aradım, parantezi atladım ve eşleşme boş döndü.
+ * Üç turda dördüncü kez: kriteri yazmadan önce deseni dosyada gör.
+ */
+function instagramDali(): string {
+  const bas = KOD.indexOf("'[data-davet-instagram]'");
+  if (bas < 0) return '';
+  const son = KOD.indexOf('mailForm?.addEventListener', bas);
+  return KOD.slice(bas, son > bas ? son : undefined);
+}
+
 describe('blok — başlık · alt satır · iki düğme', () => {
   it('başlık ve alt satır brief metniyle birebir', () => {
     expect(KOD).toMatch(/<h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır<\/h3>/);
@@ -40,14 +55,49 @@ describe('blok — başlık · alt satır · iki düğme', () => {
     expect(KOD).not.toMatch(/data-davet-whatsapp/);
   });
 
-  it('İKİNCİL düğme "Bağlantıyı kopyala" — Instagram etiketi KALKTI', () => {
-    expect(KOD).toMatch(/data-davet-kopyala>\s*\n?\s*Bağlantıyı kopyala/);
+  it('İKİ EŞİT düğme, ikisi de `.ocak-dugme` (İŞ 11)', () => {
+    // Instagram OCAK'ın gerçek trafiğinde WhatsApp kadar ağır; "ikincil"
+    // saymak kadını kendi kanalına ikinci sınıf bir yoldan geçirmek olurdu.
+    expect(KOD).toMatch(/<button type="button" class="ocak-dugme" data-davet-paylas>Paylaş<\/button>/);
+    expect(KOD).toMatch(/<button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da gönder<\/button>/);
+    // "Bağlantıyı kopyala" ve eski Instagram etiketi KALKTI.
+    expect(KOD).not.toMatch(/Bağlantıyı kopyala/);
     expect(KOD).not.toMatch(/Instagram'dan göndereceksen kopyala/);
+    expect(KOD).not.toMatch(/data-davet-kopyala/);
   });
 
-  it('kopyalama teyidi tek kelime: "Kopyalandı"', () => {
-    expect(KOD).toMatch(/teyitGoster\(ok \? 'Kopyalandı'/);
-    expect(KOD).not.toMatch(/DM'ine yapıştır/);
+  it('yerel düğme ailesi ölü CSS bırakmadı', () => {
+    // `.davet-kutusu__btn*` `.ocak-dugme`'den üç yerde ayrışmıştı: metin
+    // `--cream` (kardeşler `--coal`), `border-radius: 3px` (sitenin hiçbir
+    // düğmesinde yok), `--duration-fast` (ötekiler `--duration-base`).
+    expect(KOD).not.toMatch(/\.davet-kutusu__btn/);
+  });
+
+  it('Instagram akışı: kopyala → DM gelen kutusu, SIRA önemli', () => {
+    // `window.open` KOPYALAMADAN SONRA: tersi olsaydı sekme açılır, odak
+    // kaybolur ve `clipboard.writeText` "document is not focused" ile düşerdi.
+    const dal = instagramDali();
+    expect(dal).toBeTruthy();
+    expect(dal.indexOf('await kopyala(')).toBeGreaterThan(-1);
+    expect(dal.indexOf('window.open(')).toBeGreaterThan(dal.indexOf('await kopyala('));
+    expect(dal).toMatch(/https:\/\/www\.instagram\.com\/direct\/inbox\//);
+  });
+
+  it('⚠ kopyalama BAŞARISIZSA sekme AÇILMAZ', () => {
+    // Yapıştıracak bir şeyi olmayan kadını Instagram'a göndermek, onu eli boş
+    // bırakmak olurdu.
+    const dal = instagramDali();
+    const iRed = dal.indexOf('if (!ok)');
+    const iOpen = dal.indexOf('window.open(');
+    expect(iRed).toBeGreaterThan(-1);
+    expect(iOpen).toBeGreaterThan(iRed);
+    expect(dal).toMatch(/return;/);
+  });
+
+  it('bilgi satırı birebir ve YALNIZ dokunulunca görünür', () => {
+    expect(KOD).toMatch(/Metin kopyalandı; mesaja yapıştırman yeter\./);
+    expect(KOD).toMatch(/data-davet-instagram-not hidden/);
+    expect(KOD).toMatch(/instagramNot\.hidden = false;/);
   });
 });
 
@@ -58,10 +108,12 @@ describe('paylaşım — navigator.share({ text, url }) / wa.me yeni sekmede', (
     expect(KOD).toMatch(/nav\.share\(\{ text, url \}\)/);
   });
 
-  it('paylaş metni brief\'ten birebir', () => {
+  it('paylaş metni brief\'ten birebir (İŞ 11)', () => {
     expect(KOD).toMatch(
-      /return 'Ateşin yanında bir yer daha var\. Ben geliyorum; sen de gelmek istersen:';/,
+      /return 'Ateşin başında olacağım\. Sen de gelmek istersen yanımda yer var:';/,
     );
+    // İŞ 4'ün metni kalktı.
+    expect(KOD).not.toMatch(/Ateşin yanında bir yer daha var/);
   });
 
   it('Web Share yoksa wa.me — YENİ SEKMEDE', () => {

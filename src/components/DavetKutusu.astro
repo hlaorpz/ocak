@@ -102,19 +102,26 @@ const {
   <p class="davet-kutusu__metin">Ateşin yanında onun da yeri var.</p>
 
   <div class="davet-kutusu__yollar">
-    {/* ANA düğme — paylaşılan birincil sınıf (`.ocak-dugme`, global.css).
-        `navigator.share({ text, url })` varsa o; yoksa `wa.me/?text=…` yeni
-        sekmede. Eski etiketi "WhatsApp ile çağır"dı ve WhatsApp'ı tek kanal
-        gibi gösteriyordu; Web Share menüsü zaten kadının kendi kanallarını
-        açıyor. */}
-    <button type="button" class="ocak-dugme" data-davet-paylas>Paylaş</button>
+    {/* ── İKİ EŞİT DÜĞME (İŞ 11, 7 Eki) ──
+        İkisi de `.ocak-dugme` ailesinden ve aynı ağırlıkta: Instagram
+        OCAK'ın gerçek trafiğinde WhatsApp kadar ağır bir kanal, "ikincil"
+        saymak kadını kendi kanalına ulaşmak için ikinci sınıf bir yoldan
+        geçirmek olurdu.
 
-    {/* İKİNCİL — metin + bağlantıyı panoya. Eski etiketi "Instagram'dan
-        göndereceksen kopyala"ydı: tek bir uygulamayı adlandırmak, kopyalamanın
-        başka yüz kullanımını görünmez kılıyordu. */}
-    <button type="button" class="davet-kutusu__btn davet-kutusu__btn--ucuncu" data-davet-kopyala>
-      Bağlantıyı kopyala
-    </button>
+        Paylaş: `navigator.share({ text, url })`; yoksa `wa.me/?text=…`.
+        Instagram: Instagram'ın bir paylaşım derin bağlantısı YOK (DM'e metin
+        gönderen bir uç yayınlamıyor), o yüzden iki adım — panoya kopyala,
+        sonra DM gelen kutusunu aç. Kadın yalnız yapıştırıyor. */}
+    <div class="davet-kutusu__ikili">
+      <button type="button" class="ocak-dugme" data-davet-paylas>Paylaş</button>
+      <button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da gönder</button>
+    </div>
+    {/* Instagram akışının ne yaptığını SÖYLEYEN satır — düğmenin altında,
+        küçük. İki sekmeli bir akışı önceden söylemek, kadını beklenmedik bir
+        sekmeyle karşılaştırmaktan iyi. Yalnız o düğmeye dokunulunca görünür. */}
+    <p class="davet-kutusu__instagram-not" data-davet-instagram-not hidden>
+      Metin kopyalandı; mesaja yapıştırman yeter.
+    </p>
 
     {/* E-postayla davet — YALNIZ musluk açıkken. Gerekçe yukarıda. */}
     {DAVET_AKISI_ACIK && (
@@ -225,40 +232,16 @@ const {
     margin-bottom: var(--space-5);
   }
 
-  .davet-kutusu__btn {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    line-height: 1.2;
-    padding: 0.85rem 1.25rem;
-    border-radius: 3px;
-    border: 1px solid transparent;
-    cursor: pointer;
-    transition:
-      background var(--duration-fast) var(--ease-out),
-      color var(--duration-fast) var(--ease-out),
-      border-color var(--duration-fast) var(--ease-out);
-  }
-
-  .davet-kutusu__btn--birincil {
-    background: var(--ember);
-    color: var(--cream);
-  }
-  .davet-kutusu__btn--birincil:hover,
-  .davet-kutusu__btn--birincil:focus-visible {
-    background: var(--ember-soft, #b04428);
-  }
-
-  .davet-kutusu__btn--ucuncu {
-    background: transparent;
-    color: var(--cream-soft);
-    border-color: var(--ash);
-    font-size: 0.88rem;
-  }
-  .davet-kutusu__btn--ucuncu:hover,
-  .davet-kutusu__btn--ucuncu:focus-visible {
-    color: var(--cream);
-    border-color: var(--smoke);
-  }
+  /* ── `.davet-kutusu__btn*` KURALLARI KALKTI (İŞ 11, 7 Eki) ──
+   * İki düğme artık `.ocak-dugme` (global.css) kullanıyor ve bu yerel aile
+   * tüketicisiz kaldı. Ölü CSS bırakılmadı.
+   *
+   * Bu aile `.ocak-dugme`'den üç yerde ayrışmıştı ve ayrışma bir ders:
+   * `--birincil` metin rengi `--cream`'di (paylaşılan sınıf `--coal` —
+   * kardeşlerin ember üstünde kullandığı koyu metin), `border-radius: 3px`
+   * vardı (sitenin hiçbir düğmesinde yok) ve `--duration-fast` kullanıyordu
+   * (öteki düğmeler `--duration-base`). Dört ayrı yerel düğme kopyasının
+   * dördü de farklı ayrışmıştı; `.ocak-dugme` bu yüzden var (İŞ 1). */
 
   /* Eyeball #4 tasarım toparlama: e-posta bloğu dikey ritme alındı, ardından
      tur-2 Fix 3 ile input+Gönder tek çerçeve içinde bütünleşik yol.
@@ -281,6 +264,27 @@ const {
     white-space: nowrap;
     border: 0;
   }
+
+  /* İŞ 11 — iki EŞİT düğme. Dar ekranda alt alta, geniş ekranda yan yana ve
+   * eşit genişlikte: ağırlık eşitliği görsel olarak da okunmalı. */
+  .davet-kutusu__ikili {
+    display: grid;
+    gap: var(--space-3);
+  }
+  @media (min-width: 480px) {
+    .davet-kutusu__ikili {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  /* Instagram akışının bilgi satırı — havale/kart notlarıyla aynı ağırlıkta. */
+  .davet-kutusu__instagram-not {
+    margin: var(--space-3) 0 0;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    line-height: 1.5;
+  }
+  .davet-kutusu__instagram-not[hidden] { display: none; }
 
   /* Tek dış çerçeve — Instagram ("ucuncu") kutusunun kardeşi (transparent
      zemin + ash border + focus-within'de ember). İçeride sol geniş input +
@@ -403,7 +407,7 @@ const {
   // KALDIRILMADI: imza iki tüketici tarafından paylaşılıyor (paylaş + kopyala)
   // ve ileride metin yeniden kişiselleşebilir.
   function davetMetni(_etkinlikAdi: string, _etkinlikTarihi: string): string {
-    return 'Ateşin yanında bir yer daha var. Ben geliyorum; sen de gelmek istersen:';
+    return 'Ateşin başında olacağım. Sen de gelmek istersen yanımda yer var:';
   }
 
   /**
@@ -571,6 +575,8 @@ const {
         };
       }
 
+      const instagramNot = kutu.querySelector<HTMLElement>('[data-davet-instagram-not]');
+
       kutu
         .querySelector<HTMLButtonElement>('[data-davet-paylas]')
         ?.addEventListener('click', () => {
@@ -578,15 +584,32 @@ const {
           paylas(metin, url);
         });
 
+      // ── Instagram'da gönder (İŞ 11) ──
+      // Instagram'ın DM'e metin gönderen bir derin bağlantısı YOK, o yüzden
+      // iki adım: panoya kopyala → gelen kutusunu yeni sekmede aç.
+      //
+      // ⚠ SIRA: `window.open` KOPYALAMADAN SONRA. Tersi olsaydı sekme açılır,
+      // odak kaybolur ve `navigator.clipboard.writeText` bazı tarayıcılarda
+      // "document is not focused" ile düşerdi — kadın boş bir DM ekranında
+      // kalırdı.
+      //
+      // Kopyalama BAŞARISIZSA sekme AÇILMAZ: yapıştıracak bir şeyi olmayan
+      // kadını Instagram'a göndermek, onu eli boş bırakmak olurdu.
       kutu
-        .querySelector<HTMLButtonElement>('[data-davet-kopyala]')
+        .querySelector<HTMLButtonElement>('[data-davet-instagram]')
         ?.addEventListener('click', async () => {
           const { url, metin } = getDavet();
           const ok = await kopyala(metin, url);
-          // İŞ 4 — teyit tek kelime: "Kopyalandı". Eski metin Instagram'ı
-          // adlandırıyordu ve kopyalamanın başka yüz kullanımını görünmez
-          // kılıyordu.
-          teyitGoster(ok ? 'Kopyalandı' : 'Kopyalanamadı, metni elle seçip kopyalamayı dene.');
+          if (!ok) {
+            teyitGoster('Kopyalanamadı, metni elle seçip kopyalamayı dene.');
+            return;
+          }
+          if (instagramNot) instagramNot.hidden = false;
+          window.open(
+            'https://www.instagram.com/direct/inbox/',
+            '_blank',
+            'noopener,noreferrer',
+          );
         });
 
       mailForm?.addEventListener('submit', async (ev) => {
