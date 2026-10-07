@@ -72,6 +72,10 @@ function notionSahtesi(satirlar: SahteSatir[], etkinlik?: Record<string, any>) {
           etkinlik ?? {
             'Başlık': { title: [{ plain_text: 'Elin Neyle Dolu?' }] },
             Slug: { rich_text: [{ plain_text: 'elin-neyle-dolu' }] },
+            // ⚠ `Format` ŞART: `postalanabilir` kapısı bunu çözüyor. İlk
+            // yazımda fixture'da yoktu ve beş test kırmızı yandı — kapı doğru
+            // çalışıyordu, eksik olan fixture'dı.
+            Format: { select: { name: 'Açık Kapı' } },
             Tarih: { date: { start: '2026-10-20' } },
             'Mekân/Platform': { select: { name: 'Online' } },
             'Zoom Başlangıç Saati': { rich_text: [{ plain_text: '21:00' }] },
@@ -234,6 +238,7 @@ describe('kuru koşu — mail SIFIR, Notion yazımı SIFIR', () => {
         etkinlik: {
           'Başlık': { title: [{ plain_text: 'Bugünkü Çember' }] },
           Slug: { rich_text: [{ plain_text: 'bugunku-cember' }] },
+          Format: { select: { name: 'Çember' } },
           // Geçmiş bir tarih vermiyoruz; testin "bugün"ü sabitlemek için
           // uzak gelecekteki bir günün saati kullanılıyor ve gün hatırlatması
           // penceresi açılmıyor — bu yüzden burada yalnız bildirim beklenir.
@@ -409,5 +414,134 @@ describe('kaynak disiplini', () => {
     for (const l of loglar) {
       expect(l).not.toMatch(/taramaSirri\(\)|TARAMA_SIR|beklenen/);
     }
+  });
+});
+
+/**
+ * `postalanabilir` kapısı — uçta (7 Eki, Kaan talimatı).
+ *
+ * Ölçülen şey: (a)/(c) alacak ama maili gönderilemeyen satır her taramada
+ * aynı log'u YAZMIYOR; bir kez, özet olarak bildiriliyor ve yanıtta görünüyor.
+ */
+describe('postalanamaz kayıtlar — (a)/(c) listesinden çıkarılır, log tekrarlanmaz', () => {
+  /** Ödendi + `Mail Gitti` boş + relation 2 → (a) alacaktı, gönderilemez. */
+  const BILDIRIM_ADAYI_BOZUK: SahteSatir = {
+    id: 'p1',
+    kayitId: 'OCAK-7K2M',
+    odemeDurumu: 'Ödendi',
+    mailGitti: false,
+    yerTutmaBitisi: null,
+    relation: 2,
+  };
+
+  it('(a) adayı postalanamaz → işlem SIFIR, `postalanamaz` listesinde', async () => {
+    const { POST, guncellenen, resendCagrilari } = await ucYukle([BILDIRIM_ADAYI_BOZUK]);
+    const g = await (await POST({ request: istek() })).json();
+    expect(g.islem).toBe(0);
+    expect(g.postalanamaz).toEqual(['OCAK-7K2M']);
+    expect(g.kayitlar).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
+    expect(guncellenen).toEqual([]);
+  });
+
+  it('⚠ TEK özet log satırı — satır başına warn YOK', async () => {
+    const satirlar: string[] = [];
+    for (const m of ['log', 'warn', 'error'] as const) {
+      vi.spyOn(console, m).mockImplementation((...a: unknown[]) => void satirlar.push(a.join(' ')));
+    }
+    // Üç bozuk aday → üç warn DEĞİL, bir özet satırı.
+    const { POST } = await ucYukle([
+      { ...BILDIRIM_ADAYI_BOZUK, id: 'p1', kayitId: 'OCAK-A' },
+      { ...BILDIRIM_ADAYI_BOZUK, id: 'p2', kayitId: 'OCAK-B' },
+      { ...BILDIRIM_ADAYI_BOZUK, id: 'p3', kayitId: 'OCAK-C' },
+    ]);
+    await POST({ request: istek() });
+    const postaLoglari = satirlar.filter((l) => l.includes('postalanamaz'));
+    expect(postaLoglari).toHaveLength(1);
+    // Özet üç kaydı birlikte taşıyor.
+    expect(postaLoglari[0]).toContain('3 kayıt');
+    expect(postaLoglari[0]).toContain('OCAK-A');
+    expect(postaLoglari[0]).toContain('OCAK-C');
+    // `atlandi` warn'i hiç yazılmadı — satır aday listesine girmedi.
+    expect(satirlar.filter((l) => l.includes('atlandı'))).toHaveLength(0);
+  });
+
+  it('e-postası olmayan (a) adayı da listeye düşer', async () => {
+    const { POST } = await ucYukle([{ ...BILDIRIM_ADAYI_BOZUK, relation: 1, email: '' }]);
+    const g = await (await POST({ request: istek() })).json();
+    expect(g.islem).toBe(0);
+    expect(g.postalanamaz).toEqual(['OCAK-7K2M']);
+  });
+
+  it('⚠ Format çözülmeyen (a) adayı listeye düşer — mail sessizce kaybolmaz', async () => {
+    const { POST } = await ucYukle([{ ...BILDIRIM_ADAYI_BOZUK, relation: 1 }], {
+      etkinlik: {
+        'Başlık': { title: [{ plain_text: 'Bilinmeyen Format' }] },
+        Slug: { rich_text: [{ plain_text: 'x' }] },
+        // Notion'a eklenmiş ama `FORMAT_KATEGORI`'ye eklenmemiş bir seçenek.
+        Format: { select: { name: 'Kahve Sohbeti' } },
+        Tarih: { date: { start: '2026-10-20' } },
+        'Mekân/Platform': { select: { name: 'Online' } },
+        'Zoom Başlangıç Saati': { rich_text: [{ plain_text: '21:00' }] },
+        Saat: { rich_text: [] },
+        'Katılım Linki': { rich_text: [{ plain_text: 'https://zoom.us/j/1' }] },
+        'Zoom Şifresi': { rich_text: [] },
+        'Konum Detay': { rich_text: [] },
+        'Para Birimi': { select: { name: 'TRY' } },
+      },
+    });
+    const g = await (await POST({ request: istek() })).json();
+    expect(g.islem).toBe(0);
+    expect(g.postalanamaz).toEqual(['OCAK-7K2M']);
+  });
+
+  it('`Yolculuk` formatlı satır NORMAL işlenir — bildirim gider', async () => {
+    // Online Yolculuk durakları (İNİŞ, UYANIŞ…) normal program gibi bildirim
+    // alır (Kaan, 7 Eki). Ölçüldü: canlı veride 6 Yolculuk satırı var.
+    const { POST, resendCagrilari } = await ucYukle(
+      [{ ...BILDIRIM_ADAYI_BOZUK, relation: 1 }],
+      {
+        etkinlik: {
+          'Başlık': { title: [{ plain_text: 'İNİŞ' }] },
+          Slug: { rich_text: [{ plain_text: 'inis' }] },
+          Format: { select: { name: 'Yolculuk' } },
+          Tarih: { date: { start: '2026-10-20' } },
+          'Mekân/Platform': { select: { name: 'Online' } },
+          'Zoom Başlangıç Saati': { rich_text: [{ plain_text: '21:00' }] },
+          Saat: { rich_text: [] },
+          'Katılım Linki': { rich_text: [{ plain_text: 'https://zoom.us/j/7' }] },
+          'Zoom Şifresi': { rich_text: [{ plain_text: 'inis42' }] },
+          'Konum Detay': { rich_text: [] },
+          'Para Birimi': { select: { name: 'TRY' } },
+        },
+      },
+    );
+    const g = await (await POST({ request: istek() })).json();
+    expect(g.postalanamaz).toEqual([]);
+    expect(g.islem).toBe(1);
+    expect(resendCagrilari[0].govde.template.id).toBe('yerin-hazir-online');
+    expect(resendCagrilari[0].govde.template.variables.ETKINLIK_BASLIGI).toBe('İNİŞ');
+  });
+
+  it('⚠ (b) DEĞİŞMEDİ — postalanamaz satır yine İPTAL edilir', async () => {
+    // Kapıyı (b)'ye de uygulamak düzeltilemeyen satırları sonsuza kadar
+    // Beklemede bırakırdı.
+    const { POST, guncellenen, resendCagrilari } = await ucYukle([
+      { ...HATIRLATMA_ADAYI, relation: 2, yerTutmaBitisi: '2020-01-01T00:00:00.000Z' },
+    ]);
+    const g = await (await POST({ request: istek() })).json();
+    expect(resendCagrilari).toEqual([]);
+    expect(guncellenen).toHaveLength(1);
+    expect(guncellenen[0].properties['Ödeme Durumu'].select.name).toBe('İptal');
+    expect(g.postalanamaz).toEqual([]);
+  });
+
+  it('postalanamaz listesi yanıtta kişi verisi taşımaz — yalnız Kayıt ID', async () => {
+    const { POST } = await ucYukle([BILDIRIM_ADAYI_BOZUK]);
+    const metin = await (await POST({ request: istek() })).text();
+    expect(metin).toContain('postalanamaz');
+    expect(metin).not.toContain('@');
+    expect(metin).not.toContain('Deniz');
+    expect(metin).not.toContain('p1');
   });
 });

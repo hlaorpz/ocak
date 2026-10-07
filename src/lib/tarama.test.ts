@@ -8,6 +8,8 @@ import {
   KART_HATIRLATMA_DK,
   type TaramaSatiri,
 } from './tarama.ts';
+import { FORMAT_KATEGORI } from './etkinlik-kategori.ts';
+import { isKayitFormat } from './kayit.ts';
 
 /**
  * `lib/tarama.ts` — tarama ucunun karar motoru.
@@ -36,6 +38,7 @@ const KART: TaramaSatiri = {
   etkinlikBaslangici: new Date('2026-10-20T21:00:00+03:00'),
   saatOkunabildi: true,
   mekan: 'Online',
+  postalanabilir: true,
 };
 
 const HAVALE: TaramaSatiri = { ...KART, pageId: 'p2', kayitId: 'OCAK-9ZQ1', odemeYontemi: 'Havale' };
@@ -259,6 +262,71 @@ describe('(c) · Buluşma günü hatırlatması (Ek 2)', () => {
   });
 });
 
+describe('postalanabilir — (a) ve (c) adaylığı KAPIYA bağlı (7 Eki, Kaan)', () => {
+  it('(a) · postalanamaz satır ADAY DEĞİL — işlem üretilmez', () => {
+    // Önceki hâlde işlem üretilir, sonra uygulama sırasında atlanırdı: satır
+    // her taramada bir `atlandi` ve bir warn yazardı. (a) dalı kendi kendine
+    // çözülmüyor (Ödendi + `Mail Gitti` boş sonsuza kadar kalır), yani gürültü
+    // de sonsuz olurdu.
+    const s = { ...HAVALE, odemeDurumu: 'Ödendi', postalanabilir: false };
+    expect(satirIslemi(s, SIMDI)).toBeNull();
+  });
+
+  it('(c) · postalanamaz satır ADAY DEĞİL', () => {
+    const s: TaramaSatiri = {
+      ...HAVALE,
+      odemeDurumu: 'Ödendi',
+      mailGitti: true,
+      yerTutmaBitisi: null,
+      etkinlikBaslangici: new Date('2026-10-02T21:00:00+03:00'),
+      kayitAni: new Date('2026-09-28T10:00:00+03:00'),
+      postalanabilir: false,
+    };
+    expect(satirIslemi(s, new Date('2026-10-02T16:00:00+03:00'))).toBeNull();
+  });
+
+  it('⚠ (b) DEĞİŞMEDİ — postalanamaz satır da iptal EDİLİR', () => {
+    // İptal mail istemiyor ve süresi dolan bir kaydın kapanması gerekiyor.
+    // Kapıyı (b)'ye de uygulamak, düzeltilemeyen satırları sonsuza kadar
+    // Beklemede bırakırdı.
+    const s = { ...KART, postalanabilir: false, yerTutmaBitisi: new Date(SIMDI.getTime() - dk(1)) };
+    expect(satirIslemi(s, SIMDI)).toMatchObject({ tip: 'iptal', neden: 'Kart — süre doldu' });
+  });
+
+  it('(b) mail dalları postalanamaz satırda da işlem üretir — uygulama atlar', () => {
+    // Bilinçli: o satır bitişte iptal olup kuyruktan düşüyor, gürültü sınırlı.
+    const s = { ...KART, postalanabilir: false };
+    expect(satirIslemi(s, SIMDI)?.tip).toBe('hatirlat-kart');
+  });
+
+  it('`postalanamaz` listesi — (a)/(c) alacaktı ama gönderilemeyenler', () => {
+    const a = { ...HAVALE, kayitId: 'OCAK-A', odemeDurumu: 'Ödendi', postalanabilir: false };
+    const b = { ...KART, kayitId: 'OCAK-B', postalanabilir: false };
+    const c = { ...HAVALE, kayitId: 'OCAK-C', odemeDurumu: 'Ödendi', postalanabilir: true };
+    const { islemler, postalanamaz } = taramaPlani([a, b, c], SIMDI, 25);
+    // Yalnız (a)/(c) adayı olan satır listede; (b) adayı DEĞİL.
+    expect(postalanamaz).toEqual(['OCAK-A']);
+    // `c` postalanabilir → işlem üretti; `b` (b) dalında işlem üretti.
+    expect(islemler.map((i) => i.satir.kayitId).sort()).toEqual(['OCAK-B', 'OCAK-C']);
+  });
+
+  it('postalanabilir satırlar listeye GİRMEZ — liste yalnız sorunlu kayıtlar', () => {
+    const { postalanamaz } = taramaPlani([KART, HAVALE], SIMDI, 25);
+    expect(postalanamaz).toEqual([]);
+  });
+
+  it('hiçbir işlem almayacak postalanamaz satır listeye girmez', () => {
+    // `Yer Tutma Bitişi` boş + Beklemede → hiçbir dal onu almıyor; postalanamaz
+    // olması onu "sorunlu kayıt" yapmaz.
+    const { postalanamaz } = taramaPlani(
+      [{ ...KART, postalanabilir: false, yerTutmaBitisi: null }],
+      SIMDI,
+      25,
+    );
+    expect(postalanamaz).toEqual([]);
+  });
+});
+
 describe('sıra ve tavan', () => {
   it('(a) (b)den ÖNCE — ödenmiş satır iptal edilmez', () => {
     // Ödendi satır (b) dalına hiç girmiyor ama sıranın kilitlenmesi önemli:
@@ -308,5 +376,62 @@ describe('sıra ve tavan', () => {
     expect(mailGonderirMi({ tip: 'hatirlat-kart', satir: KART })).toBe(true);
     expect(mailGonderirMi({ tip: 'uzat-havale', satir: KART, yeniBitis: SIMDI })).toBe(true);
     expect(mailGonderirMi({ tip: 'gun-hatirlatma', satir: KART, gun: 'Bugün' })).toBe(true);
+  });
+});
+
+/**
+ * Format kapısı — ÖLÇÜLMÜŞ seçenek listesine karşı (7 Eki 2026, Kaan talimatı).
+ *
+ * Etkinlikler DB'sinin `Format` select'i `databases.retrieve` ile okundu ve
+ * canlı 100 satırda kullanılan değerler sayıldı:
+ *
+ *   9 × "Açık Kapı" · 6 × "Yolculuk" · 4 × "Çember" · 3 × "Atölye" ·
+ *   3 × "Seremoni" · 1 × "Şehir Akşamı"   (+ seçenek olarak "Mini Retreat")
+ *
+ * `Anadolu Yolculuğu` bu select'te **YOK** — kendi başvuru yolunda yaşıyor ve
+ * bu akışa hiç girmiyor. Dolayısıyla kapı bugünkü veride hiç kapanmıyor.
+ *
+ * ⚠ Liste ÖLÇÜLMÜŞ BİR ANLIK GÖRÜNTÜ, canlı okuma değil (test ağa çıkmaz).
+ * Notion'a sekizinci bir seçenek eklenirse bu dosya onu bilmez — ama o seçenek
+ * `FORMAT_KATEGORI`'ye de eklenmediyse `odemeBildir` ve tarama o etkinliğin
+ * mailini sessizce göndermez. Sayı kilidi aşağıda, ekleme anında kırmızı
+ * yanması için.
+ */
+describe('format kapısı — yedi Notion seçeneğinin yedisi de GEÇER', () => {
+  const NOTION_FORMAT_SECENEKLERI = [
+    'Yolculuk', 'Mini Retreat', 'Açık Kapı', 'Çember', 'Atölye',
+    'Şehir Akşamı', 'Seremoni',
+  ] as const;
+
+  it('`Yolculuk` kapıdan GEÇİYOR — düzeltme gerekmedi', () => {
+    // Kaan'ın ölçüm isteği: online Yolculuk durakları (İNİŞ, UYANIŞ…) normal
+    // program gibi bildirim almalı. `FORMAT_KATEGORI['Yolculuk'] = 'yolculuk'`
+    // ve `FORMAT_TIP` o anahtarı taşıyor.
+    expect(FORMAT_KATEGORI['Yolculuk']).toBe('yolculuk');
+    expect(isKayitFormat('yolculuk')).toBe(true);
+  });
+
+  it('yedi seçeneğin YEDİSİ de bir KayitFormat\'a çözülüyor', () => {
+    for (const ham of NOTION_FORMAT_SECENEKLERI) {
+      const slug = FORMAT_KATEGORI[ham];
+      expect(slug, `"${ham}" slug'a çözülmedi`).toBeTruthy();
+      expect(isKayitFormat(slug), `"${ham}" → "${slug}" bir KayitFormat değil`).toBe(true);
+    }
+  });
+
+  it('SAYI KİLİDİ — yedi seçenek; sekizincisi eklenirse burası kırmızı yanar', () => {
+    // `FORMAT_KATEGORI` sekiz anahtar taşıyor: yedi Notion seçeneği +
+    // `Anadolu Yolculuğu`. Sekizincisi Etkinlikler Format select'inde YOK.
+    expect(NOTION_FORMAT_SECENEKLERI).toHaveLength(7);
+    expect(Object.keys(FORMAT_KATEGORI)).toHaveLength(8);
+  });
+
+  it('`Anadolu Yolculuğu` Etkinlikler Format\'ında YOK — bu akışa girmez', () => {
+    // Ölçüldü: select yedi seçenek taşıyor ve bu onlardan biri değil. Haritada
+    // duruyor (başvuru yolu ve /takvim onu kullanıyor) ama bir `KayitFormat`
+    // değil, dolayısıyla kapıdan geçmez. Kapsam dışı, dokunulmadı.
+    expect(NOTION_FORMAT_SECENEKLERI).not.toContain('Anadolu Yolculuğu');
+    expect(FORMAT_KATEGORI['Anadolu Yolculuğu']).toBe('anadolu');
+    expect(isKayitFormat('anadolu')).toBe(false);
   });
 });

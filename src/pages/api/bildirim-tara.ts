@@ -38,7 +38,8 @@ import {
   type SablonAdi,
 } from '../../lib/posta.ts';
 import { odemeLinki, odemeLinkSirri } from '../../lib/odeme-link.ts';
-import { etkinlikUrlFormatla } from '../../lib/kayit.ts';
+import { etkinlikUrlFormatla, isKayitFormat } from '../../lib/kayit.ts';
+import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori.ts';
 import { formatEtkinlikTarihi } from '../../lib/format-etkinlik.ts';
 import { ilkAd } from '../../lib/davet-baglam.ts';
 
@@ -101,6 +102,23 @@ type EtkinlikBilgi = {
   zoomSifresi: string;
   konumDetay: string;
   paraBirimi: string;
+  /** `Format` select ham değeri ("Yolculuk"). Kapı bunu çözüyor. */
+  formatHam: string;
+  /**
+   * `Format` bir `KayitFormat`'a çözülüyor mu.
+   *
+   * ── Ölçüm (7 Eki 2026) ──
+   * Etkinlikler DB'sinin `Format` select'i YEDİ seçenek taşıyor — `Yolculuk` ·
+   * `Mini Retreat` · `Açık Kapı` · `Çember` · `Atölye` · `Şehir Akşamı` ·
+   * `Seremoni` — ve yedisi de kapıdan GEÇİYOR. `Anadolu Yolculuğu` o listede
+   * YOK (kendi başvuru yolunda yaşıyor, bu akışa hiç girmiyor).
+   *
+   * Yani kapı bugünkü veride hiç kapanmıyor. Yine de duruyor: Notion'a yeni
+   * bir `Format` seçeneği eklenip `FORMAT_KATEGORI`/`KayitFormat` güncellenmezse
+   * mail yanlış doldurulmak yerine hiç gitmez. `kart-akisi.test.ts` desenindeki
+   * sayı kilidi o günü kırmızı yakar.
+   */
+  formatGecer: boolean;
   /** Saat herhangi bir alandan okunabildi mi — gün hatırlatması buna bakıyor. */
   saatOkunabildi: boolean;
   baslangic: Date | null;
@@ -117,6 +135,8 @@ async function etkinlikOku(pageId: string): Promise<EtkinlikBilgi | null> {
     // ⚠ MEKÂNA BAĞLI eşleme — cross-fallback YOK (`api/kayit.ts:191-198`'in
     // canlı veriyle çürüttüğü kusur).
     const saat = mekanOnlineMi(mekan) ? zoomSaat : klasikSaat;
+    const formatHam = p['Format']?.select?.name ?? '';
+    const slug = FORMAT_KATEGORI[formatHam];
     const tarihISO = p['Tarih']?.date?.start ?? '';
     const baslangic = etkinlikBaslangicAni({ tarihISO, mekan, zoomSaat, klasikSaat });
     // Saat "okunabildi" mi: `Tarih` zaten saat taşıyor ya da mekâna bağlı alan
@@ -134,6 +154,8 @@ async function etkinlikOku(pageId: string): Promise<EtkinlikBilgi | null> {
       zoomSifresi: rich(p, 'Zoom Şifresi'),
       konumDetay: rich(p, 'Konum Detay'),
       paraBirimi: p['Para Birimi']?.select?.name ?? '',
+      formatHam,
+      formatGecer: !!slug && isKayitFormat(slug),
       saatOkunabildi,
       baslangic,
     };
@@ -191,6 +213,12 @@ async function adaylariOku(): Promise<Aday[]> {
         etkinlikBaslangici: etkinlik?.baslangic ?? null,
         saatOkunabildi: etkinlik?.saatOkunabildi ?? false,
         mekan: etkinlik?.mekan ?? '',
+        // ⚠ ÜÇ KAPI, aday kurulum anında (7 Eki, Kaan). İşlem üretildikten
+        // sonra bakılsaydı (a) ve (c) adayları her turda aynı log'u yazardı —
+        // o iki dal kendi kendine çözülmüyor. Gerekçenin tamamı
+        // `TaramaSatiri.postalanabilir` başlığında.
+        postalanabilir:
+          rel.length === 1 && !!etkinlik?.formatGecer && (p['Email']?.email ?? '').trim().length > 0,
       },
       ad: ilkAd(rich(p, 'Kadın')),
       email: p['Email']?.email ?? '',
@@ -304,11 +332,21 @@ async function handle(request: Request): Promise<Response> {
   }
 
   const esleme = new Map(adaylar.map((a) => [a.satir.pageId, a]));
-  const { islemler, atlanan } = taramaPlani(
+  const { islemler, atlanan, postalanamaz } = taramaPlani(
     adaylar.map((a) => a.satir),
     simdi,
     TAVAN,
   );
+
+  // ⚠ TEK özet satırı, satır başına warn DEĞİL. Bu kayıtlar (a) ya da (c)
+  // alacaktı ama maili gönderilemiyor (relation ≠ 1 · format çözülmüyor ·
+  // e-posta yok) ve o iki dal kendi kendine çözülmediği için her turda yeniden
+  // aday olurlar. Görünür kalmaları gerekiyor, gürültü yapmamaları da.
+  if (postalanamaz.length > 0) {
+    console.warn(
+      `[bildirim-tara] postalanamaz ${postalanamaz.length} kayıt (a)/(c) listesinden çıkarıldı — ${postalanamaz.join(' ')}`,
+    );
+  }
 
   if (atlanan > 0) {
     // Sessiz kırpma "her şey tarandı" diye okunurdu (CLAUDE.md §4).
@@ -344,18 +382,17 @@ async function handle(request: Request): Promise<Response> {
     }
 
     // ── MAILLİ İŞLEMLER ──
-    if (islem.satir.mekan === '' && !a.etkinlik) {
-      console.warn(`[bildirim-tara] atlandı — kayitId=${kayitId} sebep=etkinlik-cozulemedi (relation=${a.etkinlikSayisi})`);
-      sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
-      continue;
-    }
-    if (a.etkinlikSayisi !== 1) {
-      console.warn(`[bildirim-tara] atlandı — kayitId=${kayitId} sebep=relation-tek-degil (öğe=${a.etkinlikSayisi})`);
-      sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
-      continue;
-    }
-    if (!a.email.trim()) {
-      console.warn(`[bildirim-tara] atlandı — kayitId=${kayitId} sebep=email-yok`);
+    //
+    // (a) ve (c) buraya YALNIZ `postalanabilir` satırlarla gelir — kapı aday
+    // kurulumunda kapandı. Aşağıdaki denetim (b)'nin mail dalları için
+    // duruyor (`hatirlat-kart` · `uzat-havale`): o satırlar postalanamaz olsa
+    // bile kuyrukta kalır, çünkü süresi dolduğunda İPTAL edilmeleri gerekiyor
+    // ve iptal mail istemiyor. Gürültüsü sınırlı: satır bitişte çözülür.
+    if (!a.satir.postalanabilir) {
+      console.warn(
+        `[bildirim-tara] atlandı — kayitId=${kayitId} islem=${islem.tip} ` +
+          `sebep=postalanamaz (relation=${a.etkinlikSayisi} formatGecer=${a.etkinlik?.formatGecer ?? false} emailVar=${a.email.trim().length > 0})`,
+      );
       sonuclar.push({ kayitId, islem: islemAdi(islem), durum: 'atlandi' });
       continue;
     }
@@ -418,6 +455,9 @@ async function handle(request: Request): Promise<Response> {
     aday: adaylar.length,
     islem: islemler.length,
     tavanaTakilan: atlanan,
+    // (a)/(c) alacaktı ama maili gönderilemeyen kayıtlar. Sessiz düşmüyorlar:
+    // Kaan bu listeyi Notion'da elle düzeltebilir (relation · e-posta · Format).
+    postalanamaz,
     sayim,
     kayitlar: sonuclar,
   });

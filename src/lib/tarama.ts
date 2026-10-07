@@ -45,6 +45,25 @@ export type TaramaSatiri = {
    */
   saatOkunabildi: boolean;
   mekan: string;
+  /**
+   * Bu satıra mail GÖNDERİLEBİLİR mi — üç kapının birleşimi: `Etkinlikler`
+   * relation tek öğeli · e-posta dolu · etkinliğin `Format`ı bir `KayitFormat`.
+   * Route hesaplar (`lib/kayit.ts`'in haritaları orada çözülüyor).
+   *
+   * ── Neden KARAR motorunda, uygulama anında değil (7 Eki, Kaan) ──
+   * Önceki hâlde kapılar işlem ÜRETİLDİKTEN sonra, uygulama sırasında
+   * bakılıyordu: satır her taramada bir `atlandi` sonucu ve bir `console.warn`
+   * üretiyordu. (b) dalında bu sınırlı bir gürültü — satır bitişi geçince
+   * iptal olup kuyruktan düşüyor. Ama (a) ve (c) dalları KENDİ KENDİNE
+   * ÇÖZÜLMÜYOR: `Ödendi` + `Mail Gitti` boş bir satır, maili hiç
+   * gönderilemiyorsa sonsuza kadar aday kalır ve her tarama turunda aynı
+   * log satırını yazar. Gürültü teşhisi öldürür.
+   *
+   * Artık (a) ve (c) adaylığı bu alana bağlı; satır baştan listeye girmiyor.
+   * (b) DEĞİŞMEDİ — `iptal` mail istemiyor ve postalanamayan bir kaydın da
+   * süresi dolduğunda iptal edilmesi gerekiyor.
+   */
+  postalanabilir: boolean;
 };
 
 /** Taramanın bir satır için verdiği karar. */
@@ -129,6 +148,9 @@ export function gunHatirlatmaAni(etkinlikBaslangici: Date): Date {
  * göndermek kadına bir şey vermez, yalnız kafa karıştırır.
  */
 function bildirimGerekli(s: TaramaSatiri, simdi: Date): boolean {
+  // Mail gönderilemiyorsa aday DEĞİL — bu dal kendi kendine çözülmüyor ve
+  // her turda aynı log'u yazardı (`postalanabilir` başlığı).
+  if (!s.postalanabilir) return false;
   if (s.odemeDurumu !== 'Ödendi') return false;
   if (s.mailGitti) return false;
   if (s.etkinlikBaslangici && s.etkinlikBaslangici.getTime() <= simdi.getTime()) return false;
@@ -182,6 +204,7 @@ function bekleyenIslemi(s: TaramaSatiri, simdi: Date): TaramaIslemi | null {
  * buluşuyoruz" demek, beş dakika önce okuduğu şeyi tekrarlamak olurdu.
  */
 function gunHatirlatmasi(s: TaramaSatiri, simdi: Date): TaramaIslemi | null {
+  if (!s.postalanabilir) return null;
   if (!s.mailGitti) return null;
   if (s.odemeDurumu === 'İptal') return null;
   if (s.gunHatirlatmasiGitti) return null;
@@ -226,13 +249,39 @@ export function taramaPlani(
   satirlar: TaramaSatiri[],
   simdi: Date,
   tavan: number,
-): { islemler: TaramaIslemi[]; atlanan: number } {
+): { islemler: TaramaIslemi[]; atlanan: number; postalanamaz: string[] } {
   const hepsi: TaramaIslemi[] = [];
+  const postalanamaz: string[] = [];
   for (const s of satirlar) {
     const i = satirIslemi(s, simdi);
-    if (i) hepsi.push(i);
+    if (i) {
+      hepsi.push(i);
+      continue;
+    }
+    // ⚠ SESSİZ DÜŞME DEĞİL. Satır (a) ya da (c) alacaktı ama maili
+    // gönderilemiyor: kuyruktan çıkarıldı, kimliği çağırana TAŞINIYOR.
+    // Route onu yanıtta ve TEK bir özet log satırında bildiriyor — her satır
+    // için ayrı warn yazmak tam da kaçındığımız gürültü.
+    if (!s.postalanabilir && postalanamazAdayiydi(s, simdi)) {
+      postalanamaz.push(s.kayitId);
+    }
   }
-  return { islemler: hepsi.slice(0, tavan), atlanan: Math.max(0, hepsi.length - tavan) };
+  return {
+    islemler: hepsi.slice(0, tavan),
+    atlanan: Math.max(0, hepsi.length - tavan),
+    postalanamaz,
+  };
+}
+
+/**
+ * "Kapı açık olsaydı (a) ya da (c) alacak mıydı?" — `postalanamaz` listesinin
+ * tanımı. Tanım dar tutuldu: e-postası olmayan her Beklemede satırı listeye
+ * düşürmek, listeyi okunmaz yapardı.
+ */
+function postalanamazAdayiydi(s: TaramaSatiri, simdi: Date): boolean {
+  const varsayimsal = { ...s, postalanabilir: true };
+  const i = satirIslemi(varsayimsal, simdi);
+  return i?.tip === 'bildirim' || i?.tip === 'gun-hatirlatma';
 }
 
 /** Hangi işlem mail gönderir — kuru koşu özeti ve sayımlar için. */
