@@ -261,3 +261,41 @@ describe('KayitFormu.astro — havale notu ekran + e-posta (İŞ 9)', () => {
     expect(KOD).toMatch(/havaleNotEl\.hidden = yontem !== 'havale';/);
   });
 });
+
+/**
+ * İŞ 10 — kart güven cümlesi formda, kart seçeneğinin altında.
+ *
+ * Cümle `/odeme/nkolay`'da yaşıyordu ve o sayfa sakin geçiş ekranına dönüşünce
+ * düştü (İŞ 3). Söylediği şey hâlâ doğru ama okunacak yeri BURASI: o sayfa
+ * milisaniyeler içinde kendini submit ediyor, orada basılan cümle okunamıyordu.
+ */
+describe('KayitFormu.astro — kart güven cümlesi (İŞ 10)', () => {
+  const KOD = readFileSync(SOURCE_PATH, 'utf-8')
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('cümle birebir ve sağlayıcı adını taşıyor', () => {
+    // Kadın bankanın 3D ekranında o markayı görecek; adı önceden görmemek
+    // tereddüt yaratır.
+    expect(KOD).toMatch(
+      /Kart bilgilerin N-Kolay'da alınır; OCAK bu bilgileri görmez ve\s*\n?\s*saklamaz\./,
+    );
+  });
+
+  it('YALNIZ kart seçiliyken görünür', () => {
+    expect(KOD).toMatch(/data-kf-yontem-kart-not hidden/);
+    expect(KOD).toMatch(/kartNotEl\.hidden = yontem !== 'kart';/);
+  });
+
+  it('iki not AYNI sınıfı paylaşıyor — ayrışamazlar', () => {
+    const notlar = KOD.match(/class="kayit-formu__yontem-not"/g) ?? [];
+    expect(notlar).toHaveLength(2);
+    expect(KOD).not.toMatch(/kayit-formu__yontem-havale-not/);
+  });
+
+  it('aynı anda yalnız biri görünür — iki koşul birbirinin tersi', () => {
+    expect(KOD).toMatch(/havaleNotEl\.hidden = yontem !== 'havale';/);
+    expect(KOD).toMatch(/kartNotEl\.hidden = yontem !== 'kart';/);
+  });
+});

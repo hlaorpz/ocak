@@ -440,13 +440,31 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                   <span class="kayit-formu__yontem-text">Havale / EFT</span>
                 </label>
               </div>
+              {/* ── KART GÜVEN CÜMLESİ (İŞ 10, 7 Eki) ──
+                  Bu cümle `/odeme/nkolay`'da yaşıyordu ve o sayfa sakin geçiş
+                  ekranına dönüşünce düştü (İŞ 3). Ama söylediği şey hâlâ doğru
+                  ve kadının onu OKUYACAK ZAMANI olduğu yer BURASI: ödeme
+                  yöntemini seçtiği an. `/odeme/nkolay`'da sayfa milisaniyeler
+                  içinde kendini submit ediyor — orada basılan güven cümlesi
+                  okunamıyordu.
+
+                  Sağlayıcı ADI yazılıyor ("N-Kolay"): kadın bankanın 3D
+                  ekranında başka bir marka görecek ve o adı önceden görmemiş
+                  olmak tereddüt yaratır.
+
+                  Yalnız KART seçiliyken görünür — havale seçende kart bilgisi
+                  hiç alınmıyor. */}
+              <p class="kayit-formu__yontem-not" data-kf-yontem-kart-not hidden>
+                Kart bilgilerin N-Kolay'da alınır; OCAK bu bilgileri görmez ve
+                saklamaz.
+              </p>
               {/* KARAR 274 metni — 7 Eki güncellendi. Eski hâli yalnız ekranı
                   söylüyordu ("kaydını gönderdikten sonra ekranda görünecek");
                   havale kaydı artık `yerini-tutuyoruz` mailini de alıyor (B211
                   İŞ 2) ve IBAN o mailde de duruyor. Cümle iki yüzeyi birlikte
                   söylüyor — kadın ekranı kapatırsa bilgiyi nerede bulacağını
                   bilsin. */}
-              <p class="kayit-formu__yontem-havale-not" data-kf-yontem-havale-not hidden>
+              <p class="kayit-formu__yontem-not" data-kf-yontem-havale-not hidden>
                 Hesap bilgileri kaydını gönderince ekranda ve e-postanda olacak.
               </p>
             </div>
@@ -1482,16 +1500,19 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   }
   .kayit-formu__odeme-bilgi[hidden] { display: none; }
 
-  /* Tasarım turu 3 (ADIM 2) — havale seçilince form altında küçük not
-   * (IBAN bloğu artık form'da değil, sadece success'te). */
-  .kayit-formu__yontem-havale-not {
+  /* Yöntem seçiminin altındaki küçük not — İKİ dal paylaşıyor (İŞ 10, 7 Eki):
+   * havalede "hesap bilgileri…", kartta güven cümlesi. Sınıf adı
+   * `--havale-not`tan `--not`a geçti: iki not aynı ağırlıkta, aynı yerde ve
+   * aynı anda yalnız biri görünüyor; ayrı iki kural tutmak ikisinin zamanla
+   * ayrışması demekti. */
+  .kayit-formu__yontem-not {
     margin: var(--space-3) 0 0;
     font-family: var(--font-body);
     font-size: 0.78rem;
     color: var(--smoke);
     line-height: 1.5;
   }
-  .kayit-formu__yontem-havale-not[hidden] { display: none; }
+  .kayit-formu__yontem-not[hidden] { display: none; }
 
   /* Mirror (Aşama 2.6 Madde 5) Aşama 3b'de kaldırıldı — Kaan "küçük, kafa
    * karıştırıyor, iki toplam" dedi. Tek toplam üstteki esas blokta. */
@@ -1965,6 +1986,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // IBAN görünür. Submit metni `syncSubmitMetni` ile tek yerde yönetilir.
     const yontemRadios = form!.querySelectorAll<HTMLInputElement>('[data-kf-yontem]');
     const havaleNotEl = form!.querySelector<HTMLElement>('[data-kf-yontem-havale-not]');
+    const kartNotEl = form!.querySelector<HTMLElement>('[data-kf-yontem-kart-not]');
     function seciliYontem(): 'kart' | 'havale' {
       // KARAR 488 — grup SSR'da hiç basılmadıysa yöntem havaledir. Eski hâli
       // seçili radyo YOKKEN de 'kart' dönüyordu; grup kalkınca CTA "Karta
@@ -1979,6 +2001,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const yontem = seciliYontem();
       // ADIM 2 — IBAN bloğu artık form'da yok; havale seçilince küçük not gösterilir.
       if (havaleNotEl) havaleNotEl.hidden = yontem !== 'havale';
+      // İŞ 10 — kart güven cümlesi; yalnız kart seçiliyken.
+      if (kartNotEl) kartNotEl.hidden = yontem !== 'kart';
       syncSubmitMetni();
     }
     yontemRadios.forEach((r) => r.addEventListener('change', syncYontem));
