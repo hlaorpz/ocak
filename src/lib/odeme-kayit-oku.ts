@@ -152,6 +152,12 @@ export type KayitOkumaSonuc = {
   /** Etkinlikler `Tarih` date.start (ISO) — `Seçilen Tarih` boşsa yedek. */
   tarihISOHam: string;
   /**
+   * Etkinlikler `Tarih` date.end — çok günlü buluşmalarda dolu (Mini Retreat).
+   * Mailin `ETKINLIK_TARIHI` değişkeni aralığı göstermeli; yalnız başlangıcı
+   * yazmak iki günlük bir buluşmayı tek güne indirirdi.
+   */
+  tarihBitisHam: string;
+  /**
    * Etkinlik saati, **mekâna bağlı eşlemeyle**: online → `Zoom Başlangıç
    * Saati`, fiziksel → `Saat`.
    *
@@ -215,6 +221,7 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     basligHam: '',
     slugHam: '',
     tarihISOHam: '',
+    tarihBitisHam: '',
     saatHam: '',
     konumDetayHam: '',
     paraBirimiHam: '',
@@ -352,6 +359,7 @@ export async function kayitOku(
       basligHam: etkinlikAdi,
       slugHam: rich('Slug'),
       tarihISOHam: tarihBaslangic,
+      tarihBitisHam: tarihBitis,
       // ⚠ Yukarıdaki `saat` DEĞİL — o cross-fallback yapıyor. Eşleme mekâna
       // bağlı, `api/kayit.ts:198` ile birebir. Gerekçe `saatHam` başlığında.
       saatHam: katilimTipiCoz(mekan) === 'link' ? rich('Zoom Başlangıç Saati') : rich('Saat'),

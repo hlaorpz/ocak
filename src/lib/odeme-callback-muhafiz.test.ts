@@ -123,6 +123,8 @@ function notionSahtesi(
                       rich_text: satir.islemNo ? [{ plain_text: satir.islemNo }] : [],
                     },
                     Email: { email: b?.email ?? '' },
+                    // Mailin `AD` değişkeni buradan: `ilkAd(Kadın)`.
+                    'Kadın': { rich_text: [{ plain_text: 'Deniz Yıldırım' }] },
                     'Seçilen Tarih': { rich_text: [{ plain_text: '12 Ekim 2026' }] },
                     Etkinlikler: { relation },
                   },
@@ -169,12 +171,13 @@ async function routeYukle(
     /** `PaymentList` HTTP durumu. */
     paymentListStatus?: number;
     /**
-     * B211 — MailerLite anahtarı. Verilmezse transport `no-api-key` ile
-     * başarısız olur ve ağa HİÇ çıkmaz; eski testler bu yüzden değişmedi.
+     * B211 — Resend anahtarı. Verilmezse `resendTasima` `no-api-key` ile
+     * başarısız olur ve ağa HİÇ çıkmaz; bildirimsiz eski testler bu yüzden
+     * değişmedi.
      */
-    mailerLiteKey?: string;
-    /** MailerLite HTTP durumu. `undefined` → 200. */
-    mailerLiteStatus?: number;
+    resendKey?: string;
+    /** Resend HTTP durumu. `undefined` → 200. */
+    resendStatus?: number;
   } = {},
 ) {
   vi.resetModules();
@@ -186,24 +189,31 @@ async function routeYukle(
   vi.stubEnv('NKOLAY_SX_LIST', 'sx-list-test');
   vi.stubEnv('NKOLAY_BASE_URL', 'https://paynkolaytest.ornek.invalid/Vpos');
 
-  if (opts.mailerLiteKey) vi.stubEnv('MAILERLITE_API_KEY', opts.mailerLiteKey);
+  if (opts.resendKey) vi.stubEnv('RESEND_API_KEY', opts.resendKey);
 
   // ⚠ `fetch` STUB — testler gerçek ağa çıkmaz. Köprünün çağrıldığını ve NE
   // gönderdiğini de bu casus ölçer (hash alan adı, kodlama, tarih biçimi).
   //
-  // B211: artık İKİ ayrı uç çağrılabiliyor (mutabakat `PaymentList` ve
-  // MailerLite). Casus URL'e bakıp ayırıyor — tek yanıt döndürmek MailerLite
-  // yazımını "başarılı" göstermez, çağrılıp çağrılmadığını da ölçemezdi.
-  const mailerLiteCagrilari: Array<{ url: string; govde: any }> = [];
+  // B211: artık İKİ ayrı uç çağrılabiliyor (mutabakat `PaymentList` ve Resend).
+  // Casus URL'e bakıp ayırıyor — tek yanıt döndürmek mail gönderimini
+  // "başarılı" göstermez, çağrılıp çağrılmadığını da ölçemezdi.
+  //
+  // ⚠ Resend SDK'sı kendi `fetch`ini kullanıyor; casus global olduğu için
+  // `api.resend.com` çağrısı buraya düşüyor. Gövde SDK'nın ürettiği JSON —
+  // yani ölçülen şey "bizim `postaGonder`'imiz ne üretti"den bir adım daha
+  // ileride: tel üstünde ne gidiyor.
+  const resendCagrilari: Array<{ url: string; govde: any }> = [];
   const fetchCasus = vi.fn(async (girdi: any, init?: any) => {
     const url = typeof girdi === 'string' ? girdi : String(girdi?.url ?? girdi);
-    if (url.includes('connect.mailerlite.com')) {
-      mailerLiteCagrilari.push({ url, govde: JSON.parse(String(init?.body ?? '{}')) });
-      const st = opts.mailerLiteStatus ?? 200;
-      return new Response(st === 200 ? '{"data":{}}' : '{"message":"sunucu hatası"}', {
-        status: st,
-        headers: { 'content-type': 'application/json' },
-      });
+    if (url.includes('api.resend.com')) {
+      resendCagrilari.push({ url, govde: JSON.parse(String(init?.body ?? '{}')) });
+      const st = opts.resendStatus ?? 200;
+      return new Response(
+        st === 200
+          ? '{"id":"email-id-1"}'
+          : '{"name":"application_error","message":"sunucu hatası"}',
+        { status: st, headers: { 'content-type': 'application/json' } },
+      );
     }
     if (opts.paymentList === null) throw new Error('ağ düştü');
     return new Response(opts.paymentList ?? paymentListYanit(), {
@@ -221,7 +231,7 @@ async function routeYukle(
   const mod = (await import('../pages/api/odeme-callback.ts')) as unknown as {
     POST: (ctx: { request: Request }) => Promise<Response>;
   };
-  return { ...sahte, POST: mod.POST, fetchCasus, mailerLiteCagrilari };
+  return { ...sahte, POST: mod.POST, fetchCasus, resendCagrilari };
 }
 
 function istek(govde: URLSearchParams): Request {
@@ -483,7 +493,7 @@ describe('odeme-callback — bildirim halkası kapıların ARDINDA (B211)', () =
     tutar: BEKLENEN_TUTAR,
     bildirim: { email: 'test@ornek.invalid', etkinlikSayisi: 1 },
   };
-  const KEY = { mailerLiteKey: 'ml-test-key' };
+  const KEY = { resendKey: 're-test-key' };
 
   beforeEach(() => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -497,85 +507,85 @@ describe('odeme-callback — bildirim halkası kapıların ARDINDA (B211)', () =
     vi.doUnmock('../lib/notion.ts');
   });
 
-  it('KONTROL — başarılı callback MailerLite\'a on iki alan yazar, `Mail Gitti` işaretlenir', async () => {
-    const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, KEY);
+  it('KONTROL — başarılı callback "yerin hazır" maili gönderir, `Mail Gitti` işaretlenir', async () => {
+    const { POST, guncellenen, resendCagrilari } = await routeYukle(BILDIRIMLI, KEY);
     const res = await POST({ request: istek(imzaliGovde()) });
     expect(res.status).toBe(302);
-    expect(mailerLiteCagrilari).toHaveLength(1);
-    // `groups` GÖNDERİLMEZ — mevcut üyeliklere dokunulmaz (7 Eki ölçümü).
-    expect(mailerLiteCagrilari[0].govde).not.toHaveProperty('groups');
-    expect(mailerLiteCagrilari[0].govde.email).toBe('test@ornek.invalid');
-    // `name`/`last_name` de yok: abonenin adını ödeme anında yeniden yazmıyoruz.
-    expect(mailerLiteCagrilari[0].govde.fields).not.toHaveProperty('name');
-    expect(mailerLiteCagrilari[0].govde.fields).not.toHaveProperty('last_name');
-    // Uçtan uca küme: `kayitOku` → `odemeBildir` → `fetch` gövdesi. Tek bir
-    // halkada alan düşerse burası kırmızı yanar.
-    expect(mailerLiteCagrilari[0].govde.fields).toEqual({
-      odeme_durumu: 'alindi',
-      etkinlik_adi: 'Açık Kapı — 12 Ekim 2026 · ödeme alındı',
-      etkinlik_basligi: 'Elin Neyle Dolu?',
-      etkinlik_url: 'https://www.ocak.biz/etkinlik/elin-neyle-dolu',
-      etkinlik_tarihi: '12 Ekim 2026',
+    expect(resendCagrilari).toHaveLength(1);
+    const g = resendCagrilari[0].govde;
+    expect(resendCagrilari[0].url).toContain('api.resend.com');
+    expect(g.from).toBe('OCAK <selam@mail.ocak.biz>');
+    expect(g.reply_to ?? g.replyTo).toBe('selam@ocak.biz');
+    // Alıcı tek adres; SDK dizi ya da dize gönderebilir.
+    expect(JSON.stringify(g.to)).toContain('test@ornek.invalid');
+    // Konu kodda YAZILMIYOR (Kaan kararı 5) ve gövde alanı da yok — Resend
+    // `template` ile birlikte `html`/`text` gönderimini reddediyor.
+    expect(g.subject).toBeUndefined();
+    expect(g.html).toBeUndefined();
+    expect(g.text).toBeUndefined();
+    expect(g.template.id).toBe('yerin-hazir-online');
+    // Uçtan uca küme: `kayitOku` → `odemeBildir` → `postaGonder` → tel.
+    expect(g.template.variables).toEqual({
+      AD: 'Deniz',
+      ETKINLIK_BASLIGI: 'Elin Neyle Dolu?',
       // Online → `Zoom Başlangıç Saati`. Fixture'daki `Saat` tuzağı sızmadı.
-      etkinlik_saati: '20:00',
-      etkinlik_mekan: '',
-      etkinlik_adres: '',
-      katilim_linki: 'https://zoom.us/j/123',
-      zoom_link: 'https://zoom.us/j/123',
-      zoom_sifresi: 'sifre42',
-      referans_no: REF,
+      ETKINLIK_TARIHI: '12 Ekim 2026 · 20:00',
+      KATILIM_LINKI: 'https://zoom.us/j/123',
+      ZOOM_SIFRESI: 'sifre42',
+      ETKINLIK_URL: 'https://www.ocak.biz/etkinlik/elin-neyle-dolu',
     });
-    // İKİ Notion yazımı: ödeme onayı + `Mail Gitti`. Sıra önemli — bildirim
-    // ödemeden SONRA gelir.
+    // İKİ Notion yazımı sırayla: ödeme onayı → `Mail Gitti`.
     expect(guncellenen).toHaveLength(2);
     expect(guncellenen[0].properties['Ödeme Durumu'].select.name).toBe('Ödendi');
+    // Kaan kararı 3 — ödeme onaylandıktan sonra yöntem kart olarak yazılır.
+    expect(guncellenen[0].properties['Ödeme Yöntemi'].select.name).toBe('Kredi Kartı');
     expect(guncellenen[1].properties['Mail Gitti'].checkbox).toBe(true);
   });
 
   it('6 · hash tutmazsa bildirim ÇAĞRILMAZ', async () => {
-    const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, KEY);
+    const { POST, guncellenen, resendCagrilari } = await routeYukle(BILDIRIMLI, KEY);
     const g = imzaliGovde();
     g.set('hashDataV2', sha512b64('uydurma'));
     expect((await POST({ request: istek(g) })).status).toBe(401);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
     expect(guncellenen).toHaveLength(0);
   });
 
   it('6b · REPLAY reddinde bildirim ÇAĞRILMAZ', async () => {
-    const { POST, mailerLiteCagrilari } = await routeYukle(
+    const { POST, resendCagrilari } = await routeYukle(
       { ...BILDIRIMLI, islemNo: 'ONCEKI-ISLEM' },
       KEY,
     );
     expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
   });
 
   it('6c · DÜŞÜK TUTAR reddinde bildirim ÇAĞRILMAZ', async () => {
-    const { POST, mailerLiteCagrilari } = await routeYukle(
+    const { POST, resendCagrilari } = await routeYukle(
       { ...BILDIRIMLI, tutar: BEKLENEN_TUTAR * 2 },
       KEY,
     );
     expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
   });
 
   it('6d · MUTABAKAT reddinde bildirim ÇAĞRILMAZ', async () => {
-    const { POST, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, {
+    const { POST, resendCagrilari } = await routeYukle(BILDIRIMLI, {
       ...KEY,
       paymentList: paymentListYanit([{ client: 'BASKA-KOD-999' }]),
     });
     expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
   });
 
   it('6e · kayıt bulunamazsa bildirim ÇAĞRILMAZ', async () => {
-    const { POST, mailerLiteCagrilari } = await routeYukle(null, KEY);
+    const { POST, resendCagrilari } = await routeYukle(null, KEY);
     expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(401);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
   });
 
   it('6f · `sonuc=iptal` → /odeme/iptal ve bildirim ÇAĞRILMAZ', async () => {
-    const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, KEY);
+    const { POST, guncellenen, resendCagrilari } = await routeYukle(BILDIRIMLI, KEY);
     const req = new Request('https://www.ocak.biz/api/odeme-callback?sonuc=iptal', {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -584,33 +594,33 @@ describe('odeme-callback — bildirim halkası kapıların ARDINDA (B211)', () =
     const res = await POST({ request: req });
     expect(res.headers.get('location')).toContain('/odeme/iptal');
     expect(guncellenen).toHaveLength(0);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
   });
 
-  it('relation ÇOK öğeliyse MailerLite ÇAĞRILMAZ ama ödeme onayı DURUR', async () => {
+  it('relation ÇOK öğeliyse mail GÖNDERİLMEZ ama ödeme onayı DURUR', async () => {
     // Bildirimin atlanması tahsilatı geri almaz: `Ödendi` yazılmış kalır,
     // yalnız mail halkası sessizce atlanır ve log gerekçeyi taşır.
-    const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(
+    const { POST, guncellenen, resendCagrilari } = await routeYukle(
       { ...BILDIRIMLI, bildirim: { email: 'test@ornek.invalid', etkinlikSayisi: 2 } },
       KEY,
     );
     expect((await POST({ request: istek(imzaliGovde()) })).status).toBe(302);
-    expect(mailerLiteCagrilari).toEqual([]);
+    expect(resendCagrilari).toEqual([]);
     expect(guncellenen).toHaveLength(1);
     expect(guncellenen[0].properties['Ödeme Durumu'].select.name).toBe('Ödendi');
   });
 
-  it('3 · MailerLite 500 verirse callback DÜŞMEZ — 302, `Mail Gitti` YAZILMAZ', async () => {
-    const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, {
+  it('3 · Resend 500 verirse callback DÜŞMEZ — 302, `Mail Gitti` YAZILMAZ', async () => {
+    const { POST, guncellenen, resendCagrilari } = await routeYukle(BILDIRIMLI, {
       ...KEY,
-      mailerLiteStatus: 500,
+      resendStatus: 500,
     });
     const res = await POST({ request: istek(imzaliGovde()) });
     // Ödeme onayı ve yanıt kodu DEĞİŞMEZ — para çekildi, MailerLite'ın 500'ü
     // o gerçeği geri alamaz.
     expect(res.status).toBe(302);
     expect(res.headers.get('location')).toContain('/odeme/tamam');
-    expect(mailerLiteCagrilari).toHaveLength(1);
+    expect(resendCagrilari).toHaveLength(1);
     // TEK Notion yazımı: ödeme onayı. `Mail Gitti` yok.
     expect(guncellenen).toHaveLength(1);
     expect(guncellenen[0].properties['Ödeme Durumu'].select.name).toBe('Ödendi');

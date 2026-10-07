@@ -22,9 +22,10 @@ import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 // Tutar + replay muhafızı kaydı imza kapsamındaki referanstan çözer (11 Eyl).
 import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
 import { kodKullanimArtir } from '../../lib/kodlar.ts';
-// B211 — ödeme bildirimi. Saf mantık lib'de (testlenebilir), `fetch` ve Notion
-// yazımı burada: `mailerLiteEkle`'nin `api/kayit.ts`'teki ayrımıyla aynı patern.
+// B211 — ödeme bildirimi. Saf mantık lib'de (testlenebilir); Notion yazımı
+// burada, Resend taşıması `lib/posta.ts`'te (anahtar orada okunuyor).
 import { odemeBildir } from '../../lib/odeme-bildir.ts';
+import { resendTasima } from '../../lib/posta.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
@@ -37,44 +38,8 @@ import {
 
 export const prerender = false;
 
-// Anahtar `api/kayit.ts:117` ile AYNI env değişkeninden, aynı yoldan okunur —
-// ikinci bir ad uydurulmadı. Boşsa yazım `no-api-key` ile başarısız olur ve
-// callback yine düşmez (yerel build'de MailerLite'a istek çıkmaz).
-const MAILERLITE_API_KEY = import.meta.env.MAILERLITE_API_KEY ?? '';
-
 function redirect(url: string): Response {
   return new Response(null, { status: 302, headers: { Location: url } });
-}
-
-/**
- * B211 taşıma katmanı — MailerLite abone upsert'i, on iki custom field.
- *
- * Uç ve kimlik `api/kayit.ts`'in `mailerLiteEkle`'siyle birebir aynı; fark
- * iki: (a) `groups` gönderilmez — abone kayıt anında grubuna girdi ve kısmi
- * alanlı POST üyeliklere dokunmuyor (ölçüldü, 7 Eki 2026); (b) gövde
- * `fields`'i `mailerLiteFieldsPayload`'tan GEÇMEZ — o helper `name`/
- * `last_name` ekler, burada isim yazmak istemiyoruz (abone zaten var, adını
- * ödeme anında yeniden yazmak gereksiz yazım).
- */
-async function mailerLiteAlanYaz(
-  email: string,
-  alanlar: Record<string, string>,
-): Promise<{ ok: boolean; hata?: string }> {
-  if (!MAILERLITE_API_KEY) return { ok: false, hata: 'no-api-key' };
-  const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${MAILERLITE_API_KEY}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify({ email, fields: alanlar }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    return { ok: false, hata: `HTTP ${res.status} ${text.slice(0, 200)}` };
-  }
-  return { ok: true };
 }
 
 /** Notion Kayıtlar `Mail Gitti` (checkbox) — 10 Eyl'de açıldı, ilk yazıcısı bu. */
@@ -116,6 +81,17 @@ async function odemeyiOnayla(args: {
     'Ödeme Durumu': { select: { name: 'Ödendi' } },
     'Ödenen Tutar': { number: tutar },
     'Ödeme Tarihi': { date: { start: new Date().toISOString().slice(0, 10) } },
+    // B211 (Kaan kararı 3) — ödeme ONAYLANDIKTAN sonra yöntem kart olarak
+    // yazılır. Alan kayıt anında seçime göre yazılıyor (`api/kayit.ts:293`) ve
+    // o ana kadar doğru; ama havale seçip devam linkinden kartla ödeyen kadının
+    // satırı `Havale` kalırsa ileride otomatik havale eşleştirmesi gelmeyecek
+    // bir havaleyi bekler görünür.
+    //
+    // ⚠ Yalnız BAŞARIDA. Ödenmemiş satırın yöntemine dokunulmuyor: `Yer Tutma
+    // Bitişi` kayıt anında o yönteme göre hesaplandı (kart 3 sa · havale 24 sa)
+    // ve yöntemi sonradan değiştirmek bitişi yalanlardı — tarama da yanlış dala
+    // düşerdi.
+    'Ödeme Yöntemi': { select: { name: 'Kredi Kartı' } },
   };
   if (mockMu) {
     properties['Notlar'] = {
@@ -404,17 +380,22 @@ async function handle(request: Request): Promise<Response> {
         email: kayit.email,
         etkinlikSayisi: kayit.etkinlikSayisi,
         formatHam: kayit.formatHam,
-        seciliTarih: kayit.seciliTarih,
+        // `seciliTarih` ARTIK GEÇİLMİYOR: `etkinlik_adi`'yı yeniden üretmek
+        // için gerekiyordu, o alan Resend'e geçişle kalktı. `ETKINLIK_TARIHI`
+        // etkinliğin kendi `Tarih`inden kuruluyor.
         mekanHam: kayit.mekanHam,
         katilimLinkiHam: kayit.katilimLinkiHam,
         zoomSifresiHam: kayit.zoomSifresiHam,
         basligHam: kayit.basligHam,
         slugHam: kayit.slugHam,
         tarihISOHam: kayit.tarihISOHam,
+        tarihBitisHam: kayit.tarihBitisHam,
         saatHam: kayit.saatHam,
         konumDetayHam: kayit.konumDetayHam,
+        // Mailin `AD` değişkeni — Kayıtlar `Kadın` alanından ilk ad.
+        ad: kayit.davetEdenAd,
       },
-      { mailerLiteYaz: mailerLiteAlanYaz, mailGittiIsaretle },
+      { tasima: resendTasima(), mailGittiIsaretle },
     );
   } catch (err) {
     console.error(
