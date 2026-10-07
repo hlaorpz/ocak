@@ -56,6 +56,8 @@ function notionSahte(opts: {
   satirlar?: any[];
   sorguPatlat?: boolean;
   retrievePatlat?: boolean;
+  /** Etkinlik sayfası — verilmezse varsayılan online Çember. */
+  etkinlik?: any;
 }): { client: NotionOkuyucu; sorguArgs: any[] } {
   const sorguArgs: any[] = [];
   const client: NotionOkuyucu = {
@@ -77,7 +79,7 @@ function notionSahte(opts: {
     pages: {
       async retrieve() {
         if (opts.retrievePatlat) throw new Error('Notion 500 — retrieve failed');
-        return etkinlikSayfasi();
+        return opts.etkinlik ?? etkinlikSayfasi();
       },
     },
   };
@@ -185,6 +187,81 @@ describe('kayitOku — üç senaryo (İŞ 1)', () => {
 
       expect(s.durum).toBe('hata');
       expect(sorguArgs).toHaveLength(0);
+    });
+  });
+
+  describe('B211 — bildirim girdileri: relation SAYISI, ham alanlar', () => {
+    /** Kayıtlar satırı, N öğeli relation + Email + Seçilen Tarih. */
+    function cokluSatir(ogeSayisi: number) {
+      const s = kayitSatiri();
+      s.properties.Etkinlikler = {
+        relation: Array.from({ length: ogeSayisi }, (_, i) => ({ id: `etk-${i + 1}` })),
+      };
+      (s.properties as any).Email = { email: 'deniz@ornek.invalid' };
+      (s.properties as any)['Seçilen Tarih'] = { rich_text: [{ plain_text: '12 Ekim 2026' }] };
+      return s;
+    }
+
+    it('tek öğeli relation → etkinlikSayisi 1, ham alanlar dolu', async () => {
+      const { client } = notionSahte({ satirlar: [cokluSatir(1)] });
+      const s = await kayitOku(client, KAYITLAR_DB, REF);
+      expect(s.etkinlikSayisi).toBe(1);
+      expect(s.email).toBe('deniz@ornek.invalid');
+      expect(s.seciliTarih).toBe('12 Ekim 2026');
+      expect(s.formatHam).toBe('Çember');
+      expect(s.mekanHam).toBe('Online');
+      expect(s.katilimLinkiHam).toBe('https://zoom.us/j/123');
+      expect(s.zoomSifresiHam).toBe('ocak2026');
+    });
+
+    it('⚠ İKİ öğeli relation → etkinlikSayisi 2, `[0]` tekliği GİZLEMEZ', async () => {
+      // Canlı vaka `OCAK-3HX6` (7 Eki 2026): iki Açık Kapı taşıyor,
+      // `Seçilen Tarih` yalnız birini anlatıyor. `etkinlikId` eskisi gibi
+      // ilk öğeyi veriyor — ama artık sayı da taşınıyor ve `odemeBildir`
+      // onu okuyor. Bu ayrım olmasa bildirim yanlış linki gönderebilirdi.
+      const { client } = notionSahte({ satirlar: [cokluSatir(2)] });
+      const s = await kayitOku(client, KAYITLAR_DB, REF);
+      expect(s.etkinlikSayisi).toBe(2);
+      // Mevcut davranış KORUNDU — `/odeme/tamam` hâlâ ilk öğeyi gösteriyor.
+      expect(s.etkinlikId).toBe('etk-1');
+      expect(s.durum).toBe('bulundu');
+    });
+
+    it('relation BOŞ → etkinlikSayisi 0, ham alanlar boş, durum "bulundu"', async () => {
+      const { client } = notionSahte({ satirlar: [cokluSatir(0)] });
+      const s = await kayitOku(client, KAYITLAR_DB, REF);
+      expect(s.etkinlikSayisi).toBe(0);
+      expect(s.formatHam).toBe('');
+      expect(s.katilimLinkiHam).toBe('');
+      // Kayıt GERÇEKTEN bulundu; eksik olan yalnız etkinlik.
+      expect(s.durum).toBe('bulundu');
+      expect(s.email).toBe('deniz@ornek.invalid');
+    });
+
+    it('ham alanlar `katilim`in KATLAMASINDAN bağımsız — fiziksel dal', async () => {
+      // `katilim` fiziksel dalda `Konum Detay`ı değer yapıyor (:242). Ham
+      // alanlar o katlamayı GÖRMEZ: `mailerLiteCustomFields` kendi
+      // boşaltmasını kendi yapıyor. İkisi karışsa adres `zoom_link`
+      // alanına yazılırdı.
+      const { client } = notionSahte({
+        satirlar: [cokluSatir(1)],
+        etkinlik: {
+          properties: {
+            'Başlık': { title: [{ plain_text: 'Kadıköy Açık Kapı' }] },
+            'Mekân/Platform': { select: { name: 'İstanbul' } },
+            'Katılım Linki': { rich_text: [] },
+            'Konum Detay': { rich_text: [{ plain_text: 'Kadıköy, sokak 5' }] },
+            Tarih: { date: { start: '2026-10-12' } },
+            Format: { select: { name: 'Açık Kapı' } },
+          },
+        },
+      });
+      const s = await kayitOku(client, KAYITLAR_DB, REF);
+      expect(s.katilim).toEqual({ tipi: 'adres', deger: 'Kadıköy, sokak 5' });
+      // Ham: link BOŞ, mekân şehir adı. Adres ham alanlara SIZMADI.
+      expect(s.katilimLinkiHam).toBe('');
+      expect(s.mekanHam).toBe('İstanbul');
+      expect(s.formatHam).toBe('Açık Kapı');
     });
   });
 

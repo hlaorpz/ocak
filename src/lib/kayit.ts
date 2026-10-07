@@ -505,7 +505,13 @@ export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, 
     etkinlik_mekan: online ? '' : t(g.mekan),
     etkinlik_adres: !online && kapiAcik ? t(g.mekanAdres) : '',
     referans_no: t(g.referansNo),
-    // `alindi` bu turda kod tarafından yazılmaz — n8n işi (ödeme onayı).
+    // Bu fonksiyon KAYIT ANININ otoritesi — iki değer üretir. Üçüncü değer
+    // `alindi` burada yazılmaz, ödeme anına ait.
+    //
+    // Notun önceki hâli "n8n işi (ödeme onayı)" diyordu; 7 Eki 2026'da kart
+    // yolu için yazıcısı koda geldi: `lib/odeme-bildir.ts`, callback'in bütün
+    // kapılarından sonra. Havale yolu HÂLÂ n8n'in işi — yani cümlenin yarısı
+    // geçerliliğini koruyor, bu yüzden silinmedi, daraltıldı.
     odeme_durumu: g.odemeGerekli ? 'bekliyor' : 'muaf',
   };
 }

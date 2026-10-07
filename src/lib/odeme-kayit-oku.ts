@@ -97,6 +97,47 @@ export type KayitOkumaSonuc = {
    * kabul edilmez. Boş dize = henüz ödenmemiş.
    */
   islemNo: string;
+  /**
+   * `Etkinlikler` relation'ındaki öğe SAYISI. `etkinlikId` ilk öğeyi alır
+   * (aşağıdaki `relation?.[0]`), ama **"bir tane var" demek değildir** —
+   * canlı veride iki sayfa taşıyan satır ölçüldü (`OCAK-3HX6`, 7 Eki 2026:
+   * 12 Ekim + 15 Ekim Açık Kapı; `Seçilen Tarih` ve MailerLite alanları
+   * yalnız 12 Ekim'i anlatıyor). Site kodu relation'a daima TEK eleman
+   * yazıyor (`api/kayit.ts:283`), yani çokluluk Notion tarafından gelmiş.
+   *
+   * `odemeBildir` bu sayıyı okur: 1 değilse MailerLite'a yazmaz — hangi
+   * etkinliğin linkinin gideceğini kod tahmin etmez.
+   */
+  etkinlikSayisi: number;
+  /**
+   * Kayıtlar `Email`. `odemeBildir`'in MailerLite upsert'i bu adrese gider;
+   * başka hiçbir yerde tüketilmez ve **log'a yazılmaz.**
+   */
+  email: string;
+  /**
+   * Kayıtlar `Seçilen Tarih` (rich_text) — kayıt anında formun gönderdiği
+   * değer, zaten Türkçe. `etkinlik_adi`'nın yeniden üretilmesi bunu ister:
+   * MailerLite'tan okunmaz, kayıt anındaki kurucuyla aynı girdiyle kurulur.
+   */
+  seciliTarih: string;
+  /**
+   * Etkinlikler `Format` select'in HAM Notion değeri ("Çember").
+   * `FORMAT_KATEGORI` ile slug'a çözülür; `odemeBildir` orada
+   * `isKayitFormat` ile doğrular. `Anadolu Yolculuğu` bir `KayitFormat`
+   * değil — o etkinlikte `etkinlik_adi` yeniden üretilemez ve yazım atlanır.
+   */
+  formatHam: string;
+  /**
+   * Etkinlikler `Mekân/Platform` · `Katılım Linki` · `Zoom Şifresi` —
+   * **ham hâlleriyle.** `katilim` alanı bu üçünü yüzey için katlıyor
+   * (fiziksel dalda `Konum Detay` linkin yerine geçiyor, `:242`); MailerLite
+   * eşlemesi ham değeri ister, çünkü `mailerLiteCustomFields` kendi
+   * katlamasını kendi yapar (`kayit.ts:501-503`). İkisini karıştırmak
+   * fiziksel etkinlikte adresi `zoom_link` alanına yazardı.
+   */
+  mekanHam: string;
+  katilimLinkiHam: string;
+  zoomSifresiHam: string;
 };
 
 /**
@@ -124,6 +165,16 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     // `0` seçildi ki tip sayı kalsın ve karşılaştırma dallanması gerekmesin.
     tutar: 0,
     islemNo: '',
+    // Relation okunamadıysa sayı `0` — `odemeBildir` bunu "tam bir etkinlik
+    // taşımıyor" sayar ve yazmaz. `1` varsayılan olsaydı eksik veri, geçerli
+    // veri gibi davranırdı.
+    etkinlikSayisi: 0,
+    email: '',
+    seciliTarih: '',
+    formatHam: '',
+    mekanHam: '',
+    katilimLinkiHam: '',
+    zoomSifresiHam: '',
   };
 }
 
@@ -184,13 +235,33 @@ export async function kayitOku(
       .join('')
       .trim();
 
-    const bulundu = { ...bosSonuc('bulundu'), davetEdenAd, pageId, tutar, islemNo };
+    // `odemeBildir` girdileri — Kayıtlar tarafı. Email MailerLite upsert'i
+    // için, `Seçilen Tarih` `etkinlik_adi`'nın yeniden kurulması için.
+    const email: string = props['Email']?.email ?? '';
+    const seciliTarih: string = (props['Seçilen Tarih']?.rich_text ?? [])
+      .map((t: any) => t.plain_text ?? '')
+      .join('')
+      .trim();
 
-    const etkRel: string = props['Etkinlikler']?.relation?.[0]?.id ?? '';
-    if (!etkRel) return bulundu;
+    const bulundu = {
+      ...bosSonuc('bulundu'),
+      davetEdenAd,
+      pageId,
+      tutar,
+      islemNo,
+      email,
+      seciliTarih,
+    };
+
+    // ⚠ Relation ÖĞE SAYISI ayrıca taşınır — `[0]` "tek öğe var" demek değil.
+    // Canlı vakası `etkinlikSayisi` alanının başlığında.
+    const etkRelListe: unknown[] = props['Etkinlikler']?.relation ?? [];
+    const etkinlikSayisi = etkRelListe.length;
+    const etkRel: string = (etkRelListe[0] as { id?: string } | undefined)?.id ?? '';
+    if (!etkRel) return { ...bulundu, etkinlikSayisi };
 
     const etk = await client.pages.retrieve({ page_id: etkRel });
-    if (!('properties' in etk)) return { ...bulundu, etkinlikId: etkRel };
+    if (!('properties' in etk)) return { ...bulundu, etkinlikSayisi, etkinlikId: etkRel };
     const etkProps = etk.properties as Record<string, any>;
 
     const rich = (name: string): string =>
@@ -222,7 +293,20 @@ export async function kayitOku(
     const kategori = FORMAT_KATEGORI[formatSelect];
     const landingPath = kategori ? `/${kategori}` : '';
 
-    const meta = { etkinlikId: etkRel, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd };
+    // `odemeBildir` girdileri — Etkinlikler tarafı, HAM. `katilim` katlamadan
+    // önceki değerler; gerekçe `mekanHam` alanının başlığında.
+    const meta = {
+      etkinlikId: etkRel,
+      etkinlikAdi,
+      etkinlikTarihi,
+      landingPath,
+      davetEdenAd,
+      etkinlikSayisi,
+      formatHam: formatSelect,
+      mekanHam: mekan,
+      katilimLinkiHam: katilimLinki,
+      zoomSifresiHam: zoomSifresi,
+    };
 
     const tipi = katilimTipiCoz(mekan);
     if (tipi === 'link') {
