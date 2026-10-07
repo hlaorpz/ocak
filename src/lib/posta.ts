@@ -43,8 +43,19 @@ export const POSTA_REPLY_TO = 'selam@ocak.biz';
  */
 export const SABLON = {
   yeriniTutuyoruz: 'yerini-tutuyoruz',
+  /**
+   * Havale süresi dolup EK SÜRE tanındığında (Ek 2, Claude.ai 7 Eki).
+   * Değişken kümesi `yerini-tutuyoruz` ile BİREBİR aynı; ayrı şablon olmasının
+   * sebebi metin: ikinci kez yazıyoruz ve "yerini tutuyoruz" demek ilk mailin
+   * tekrarı gibi okunurdu. Kartın 30 dakika hatırlatması `yerini-tutuyoruz`'da
+   * KALIR — o kadın ilk mailini henüz almadı.
+   */
+  yerinHalaBizde: 'yerin-hala-bizde',
   yerinHazirOnline: 'yerin-hazir-online',
   yerinHazirYuzyuze: 'yerin-hazir-yuzyuze',
+  /** Buluşma günü hatırlatması (İŞ 8). `GUN` değişkeni "Bugün"/"Bu akşam". */
+  gunHatirlatmaOnline: 'gun-hatirlatma-online',
+  gunHatirlatmaYuzyuze: 'gun-hatirlatma-yuzyuze',
 } as const;
 
 export type SablonAdi = (typeof SABLON)[keyof typeof SABLON];
@@ -63,9 +74,24 @@ export const SABLON_DEGISKENLERI: Record<SablonAdi, readonly string[]> = {
     'AD', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'TUTAR', 'REFERANS_NO',
     'ODEME_LINKI', 'ODEME_SON_AN',
   ],
+  // Ek süre maili — küme `yerini-tutuyoruz` ile BİREBİR. Tek kaynak olsun diye
+  // kopyalanmadı, aşağıda `SABLON_DEGISKENLERI` kurulduktan sonra atanıyor.
+  [SABLON.yerinHalaBizde]: [
+    'AD', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'TUTAR', 'REFERANS_NO',
+    'ODEME_LINKI', 'ODEME_SON_AN',
+  ],
   [SABLON.yerinHazirOnline]: [
     'AD', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'KATILIM_LINKI', 'ZOOM_SIFRESI',
     'ETKINLIK_URL',
+  ],
+  // Gün hatırlatması — `yerin-hazir-*` kümesi + `GUN`.
+  [SABLON.gunHatirlatmaOnline]: [
+    'AD', 'GUN', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'KATILIM_LINKI',
+    'ZOOM_SIFRESI', 'ETKINLIK_URL',
+  ],
+  [SABLON.gunHatirlatmaYuzyuze]: [
+    'AD', 'GUN', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'MEKAN', 'ADRES',
+    'ETKINLIK_URL', 'YOL_TARIFI_LINKI',
   ],
   [SABLON.yerinHazirYuzyuze]: [
     'AD', 'ETKINLIK_BASLIGI', 'ETKINLIK_TARIHI', 'MEKAN', 'ADRES', 'ETKINLIK_URL',
@@ -215,10 +241,25 @@ export function yolTarifiLinki(konumDetay: string, etkinlikUrl: string): string 
 }
 
 /**
+ * Mekân online mı. `Online` ve `Zoom` ikisi de şemada var.
+ *
+ * ⚠ Bilinmeyen/boş mekân **fiziksel** sayılır. Online varsayılsaydı mekânı boş
+ * bir kayıtta kadına Zoom linki olmayan bir "online" mail giderdi; yüz yüze
+ * şablonu en kötü hâlde adresi soruyor.
+ */
+export function mekanOnlineMi(mekan: string): boolean {
+  return mekan === 'Online' || mekan === 'Zoom';
+}
+
+/**
  * `yerin-hazir-*` şablonunun mekâna göre seçimi. Dal artık KODDA — eskiden
  * otomasyon `zoom_link` boş mu diye bakıp seçiyordu.
  */
 export function yerinHazirSablonu(mekan: string): SablonAdi {
-  const online = mekan === 'Online' || mekan === 'Zoom';
-  return online ? SABLON.yerinHazirOnline : SABLON.yerinHazirYuzyuze;
+  return mekanOnlineMi(mekan) ? SABLON.yerinHazirOnline : SABLON.yerinHazirYuzyuze;
+}
+
+/** `gun-hatirlatma-*` şablonunun mekâna göre seçimi (İŞ 8). */
+export function gunHatirlatmaSablonu(mekan: string): SablonAdi {
+  return mekanOnlineMi(mekan) ? SABLON.gunHatirlatmaOnline : SABLON.gunHatirlatmaYuzyuze;
 }
