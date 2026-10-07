@@ -123,6 +123,48 @@ describe('tamam.astro — başlık duruma bağlı (commit 6)', () => {
     expect(KOD).not.toMatch(/<h1>\s*Ödemen alındı[^<{]*<\/h1>/);
   });
 
+  it('B211 — "Mail kutuna da düştü." KALKTI, İKİ dalda birden', () => {
+    // Cümle yanlıştı: sayfa yalnız callback'in 302'si üzerinden açılıyor,
+    // yani ödeme onayından milisaniyeler sonra. Otomasyon maili yazımdan
+    // 5 sn sonra kuruyor (7 Eki ölçümü) — kadın bu ekranı gördüğü anda mail
+    // kutusunda DEĞİL. "düştü" varmış olmayı iddia ediyordu.
+    //
+    // ⚠ Ölçüt yorumları ELEYEN `KOD` üzerinde: kaldırmanın gerekçesi
+    // sayfada bir `{/* */}` bloğu olarak YAŞIYOR ve cümleyi alıntılıyor.
+    // Ham `KAYNAK` üzerinde ölçmek kendi anlatısına takılırdı — bu dosyanın
+    // başındaki uyarının tam vakası.
+    expect(KOD).not.toMatch(/Mail kutuna/);
+    // Gerekçe gerçekten yorumda duruyor (kaldırma sessiz değil).
+    expect(KAYNAK).toMatch(/Mail kutuna da düştü\." KALKTI/);
+    // Cümlenin DOĞRU yarısı iki dalda da DURUYOR — altındaki değere giriş
+    // yapıyor ve zamana bağlı bir iddia taşımıyor.
+    const notlar = KOD.match(
+      /<p class="ocak-odeme-tamam__katilim-not">[\s\S]*?<\/p>/g,
+    ) ?? [];
+    expect(notlar).toHaveLength(2);
+    expect(notlar.some((n) => /Buluşma linkin burada\./.test(n))).toBe(true);
+    expect(notlar.some((n) => /Buluşacağımız yer burada\./.test(n))).toBe(true);
+    for (const n of notlar) expect(n).not.toMatch(/düştü/);
+  });
+
+  it('B211 — sayfa `Mail Gitti`\'yi OKUMAZ, yerine yeni cümle de yazılmadı', () => {
+    // Bayrağa bağlanmadı: anlamı "MailerLite yazımı başarılı", teslim
+    // garantisi değil — ayrıca `databases.query` okuma-sonrası-yazma tutarlı
+    // olmadığı için 200 ms önce basılmış checkbox bayat gelip cümleyi
+    // rastgele kaybettirirdi. Alan havale/n8n ağının sorusuna cevap verir.
+    expect(KOD).not.toMatch(/Mail Gitti/);
+    expect(KOD).not.toMatch(/mailGitti/);
+    // Yerine yeni kamu metni yazılmadı: `__katilim-not` iki paragraf, tek
+    // cümle. Üçüncü bir cümle sızarsa burası kırmızı yanar.
+    const notlar = KOD.match(
+      /<p class="ocak-odeme-tamam__katilim-not">([\s\S]*?)<\/p>/g,
+    ) ?? [];
+    for (const n of notlar) {
+      const metin = n.replace(/<[^>]+>/g, '').trim();
+      expect(metin.split('.').filter((s) => s.trim()).length).toBe(1);
+    }
+  });
+
   it('mock uyarısında iç yol haritası jargonu yok', () => {
     // "Aşama 6" bizim iç fazlandırmamız; sayfayı N-Kolay denetçisi görecek.
     expect(KOD).not.toMatch(/Aşama \d/);

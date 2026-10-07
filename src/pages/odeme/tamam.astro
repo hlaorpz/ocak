@@ -97,10 +97,33 @@ const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'K
         </>
       )}
 
+      {/* ── "Mail kutuna da düştü." KALKTI (7 Eki 2026, B211) ──
+          İki dalda birden (bu ve aşağıdaki fiziksel dal) aynı cümlenin aynı
+          yarısı duruyordu ve ikisi de yanlıştı.
+
+          Neden yanlış: bu sayfa YALNIZ kart ödemesi callback'inin 302'si
+          üzerinden açılıyor, yani ödeme onayından milisaniyeler sonra.
+          Bildirim halkası (`lib/odeme-bildir.ts`) MailerLite'a o anda yazıyor;
+          mailin kendisini otomasyon kuruyor ve ölçüm (7 Eki, test abonesi)
+          yazımdan **5 sn sonra** koştuğunu söylüyor — üstüne teslim süresi.
+          Kadın bu ekranı gördüğü anda mail kutusunda DEĞİL. "düştü" geçmiş
+          zaman, varmış olmayı iddia ediyor.
+
+          Neden `Mail Gitti`'ye bağlanmadı: o alanın anlamı "MailerLite yazımı
+          başarılı", teslim garantisi değil — bayrak işaretli olsa da cümle
+          yukarıdaki sebeple hâlâ yanlış olurdu. İkinci ve bağımsız sebep:
+          bayrak `databases.query` ile okunurdu ve o yüzey okuma-sonrası-yazma
+          tutarlı değil; 200 ms önce basılmış bir checkbox sorgu indeksinde
+          bayat gelip cümleyi rastgele kaybettirirdi. Sayfa `Mail Gitti`'yi
+          OKUMUYOR; alan havale/n8n ağının sorusuna cevap veriyor.
+
+          Yerine yeni cümle YAZILMADI (Kaan kararı). Cümlenin doğru yarısı
+          duruyor: altındaki linke giriş yapıyor ve zamana bağlı bir iddia
+          taşımıyor. */}
       {katilim && katilim.tipi === 'link' && (
         <div class="ocak-odeme-tamam__katilim">
           <p class="ocak-odeme-tamam__katilim-not">
-            Buluşma linkin burada. Mail kutuna da düştü.
+            Buluşma linkin burada.
           </p>
           <p class="ocak-odeme-tamam__katilim-deger">
             <a href={katilim.deger} target="_blank" rel="noopener noreferrer">{katilim.deger}</a>
@@ -112,10 +135,11 @@ const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'K
           )}
         </div>
       )}
+      {/* Yukarıdaki dalla aynı kaldırma — gerekçe orada, tek yerde. */}
       {katilim && katilim.tipi === 'adres' && (
         <div class="ocak-odeme-tamam__katilim">
           <p class="ocak-odeme-tamam__katilim-not">
-            Buluşacağımız yer burada. Mail kutuna da düştü.
+            Buluşacağımız yer burada.
           </p>
           <p class="ocak-odeme-tamam__katilim-deger">{katilim.deger}</p>
         </div>
