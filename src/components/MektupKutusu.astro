@@ -53,33 +53,54 @@ const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0)
 )}
 
 <style>
-  /* Paylaş kutusunun (`.davet-kutusu`) ritmini paylaşır: aynı dikey nefes,
-   * aynı gövde tipografisi, altın italik başlık. Yeni token YOK. */
+  /* ── Ana sayfadaki `AtesMektuplari` bileşeninin GÖRSEL DİLİ (İŞ 12) ──
+   *
+   * Değerler o bileşenden ÖLÇÜLDÜ, yeni token yok:
+   *   başlık  `.ates-mektuplari__heading` → `--font-display` · italic ·
+   *           `--text-h2` · `--cream` · `font-weight: 400`
+   *   metin   `.ates-mektuplari__desc`    → `--text-base` · `--cream-soft` ·
+   *           `max-width: 40ch`
+   *   teyit   `.ates-mektuplari__success-text` → `--font-display` · italic ·
+   *           `1.15rem` · `--gold`
+   *   düğme   `.ocak-dugme` — `.ates-mektuplari__button`'ın biçimi (İŞ 1'de o
+   *           aileden türetildi; padding birebir aynı)
+   *
+   * ⚠ SINIF ADLARI YENİDEN KULLANILAMIYOR, değerler kopyalandı. Astro'nun
+   * `<style>`ı bileşen-kapsamlı: `.ates-mektuplari__heading` başka bir
+   * bileşende hiçbir şey yapmaz. İŞ 1'in `.ocak-dugme` için çözdüğü sorunun
+   * aynısı; başlık/metin için paylaşılan bir sınıf çıkarmak ana sayfanın
+   * görünür yüzeyini de değiştireceği için ayrı bir iş ve ayrı bir eyeball.
+   * Raporlandı.
+   *
+   * Başlık `<h3>`: sayfada `<h1>` var ve bu blok onun altında — `<h2>`
+   * (AtesMektuplari'nın etiketi) başlık sırasını bozardı. Biçim aynı, düzey
+   * doğru. */
   .mektup-kutusu {
     margin: var(--space-6) auto 0;
-    max-width: 42ch;
+    max-width: 40ch;
     text-align: center;
   }
   .mektup-kutusu__baslik {
-    font-family: var(--font-display, var(--font-body));
+    font-family: var(--font-display);
     font-style: italic;
-    color: var(--gold);
-    font-size: 1.05rem;
+    font-size: var(--text-h2);
+    color: var(--cream);
+    font-weight: 400;
     margin: 0 0 var(--space-3);
   }
   .mektup-kutusu__metin {
     font-family: var(--font-body);
+    font-size: var(--text-base);
     color: var(--cream-soft);
-    line-height: 1.7;
-    font-size: 0.9rem;
-    margin: 0 0 var(--space-4);
+    margin: 0 auto var(--space-6);
+    max-width: 40ch;
   }
   .mektup-kutusu__teyit {
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--cream-soft);
-    margin: var(--space-3) 0 0;
-    line-height: 1.6;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin: var(--space-4) 0 0;
   }
 </style>
 
@@ -95,7 +116,7 @@ const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0)
     const teyit = kutu.querySelector<HTMLElement>('[data-mektup-teyit]');
     if (!dugme || !teyit) continue;
 
-    const BASARI = 'Hoş geldin. İlk mektubun yolda.';
+    const BASARI = 'Hoş geldin. Bir sonraki mektup sana da gelecek.';
     const HATA = 'Şu an olmadı; birazdan yeniden dene.';
 
     dugme.addEventListener('click', async () => {

@@ -28,13 +28,26 @@
  */
 export const ATES_MEKTUPLARI_GROUP_ID = '187372384318130052';
 
-/** Blok metinleri — Kaan verdi (İŞ 5), kod yeni kamu metni yazmaz. */
+/**
+ * Blok metinleri — Kaan verdi, kod yeni kamu metni yazmaz.
+ *
+ * ── İŞ 12 (7 Eki) güncellemesi ──
+ * Başlık "Ritmi dinle." → "Ateş Mektupları": blok artık ana sayfadaki
+ * `AtesMektuplari` bileşeninin görsel diliyle basılıyor ve o bileşenin başlığı
+ * da bültenin ADI. İki yüzeyde iki farklı ad, aynı şeyi iki şey gibi
+ * gösteriyordu.
+ *
+ * Başarı metni "İlk mektubun yolda." → "Bir sonraki mektup sana da gelecek.":
+ * eski cümle bir söz veriyordu ki tutulamaz — bülten ayda bir çıkıyor
+ * (`AtesMektuplari`: "Ayda bir, doğrudan kutuna"), yani "ilk mektup" haftalar
+ * sonra gelebilir. Yeni cümle doğru olanı söylüyor.
+ */
 export const MEKTUP_METIN = {
-  baslik: 'Ritmi dinle.',
+  baslik: 'Ateş Mektupları',
   govde:
-    "Ateş Mektupları, OCAK'ın ritmiyle temas kurmanın yolu. Bu e-postayla katılmak için bir dokunuş yeter.",
-  dugme: "Ateş Mektupları'na katıl",
-  basari: 'Hoş geldin. İlk mektubun yolda.',
+    "OCAK'ın ritmi, ara ara posta kutunda. Bu e-postayla katılmak için bir dokunuş yeter.",
+  dugme: 'KATIL',
+  basari: 'Hoş geldin. Bir sonraki mektup sana da gelecek.',
   hata: 'Şu an olmadı; birazdan yeniden dene.',
 } as const;
 

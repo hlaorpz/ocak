@@ -22,14 +22,28 @@ const temiz = (k: string) => k
   .replace(/(^|[^:])\/\/.*$/gm, '$1');
 
 describe('metinler — Kaan verdi, birebir', () => {
-  it('başlık · gövde · düğme · başarı · hata', () => {
-    expect(MEKTUP_METIN.baslik).toBe('Ritmi dinle.');
+  it('başlık · gövde · düğme · başarı · hata (İŞ 12)', () => {
+    expect(MEKTUP_METIN.baslik).toBe('Ateş Mektupları');
     expect(MEKTUP_METIN.govde).toBe(
-      "Ateş Mektupları, OCAK'ın ritmiyle temas kurmanın yolu. Bu e-postayla katılmak için bir dokunuş yeter.",
+      "OCAK'ın ritmi, ara ara posta kutunda. Bu e-postayla katılmak için bir dokunuş yeter.",
     );
-    expect(MEKTUP_METIN.dugme).toBe("Ateş Mektupları'na katıl");
-    expect(MEKTUP_METIN.basari).toBe('Hoş geldin. İlk mektubun yolda.');
+    expect(MEKTUP_METIN.dugme).toBe('KATIL');
+    expect(MEKTUP_METIN.basari).toBe('Hoş geldin. Bir sonraki mektup sana da gelecek.');
     expect(MEKTUP_METIN.hata).toBe('Şu an olmadı; birazdan yeniden dene.');
+  });
+
+  it('İŞ 5 metinleri KALKTI — regresyon kilidi', () => {
+    const hepsi = Object.values(MEKTUP_METIN).join(' | ');
+    expect(hepsi).not.toContain('Ritmi dinle.');
+    expect(hepsi).not.toContain('İlk mektubun yolda.');
+    expect(hepsi).not.toContain("Ateş Mektupları'na katıl");
+  });
+
+  it('başarı cümlesi TUTULABİLİR bir söz veriyor', () => {
+    // Eski hâl "İlk mektubun yolda." diyordu ve bülten ayda bir çıkıyor
+    // (`AtesMektuplari`: "Ayda bir, doğrudan kutuna") — "yolda" haftalar sonra
+    // demek olurdu.
+    expect(MEKTUP_METIN.basari).toMatch(/Bir sonraki mektup/);
   });
 
   it('⚠ hata SESSİZ DEĞİL — her başarısızlık aynı cümleye düşer', () => {
@@ -143,8 +157,43 @@ describe('MektupKutusu — yalnız tıklamayla, kimliksizse no-op', () => {
     expect(KOD).toMatch(/role="status" aria-live="polite"/);
   });
 
-  it('düğme PAYLAŞILAN birincil sınıfı kullanıyor', () => {
+  it('düğme PAYLAŞILAN birincil sınıfı kullanıyor (KATIL biçimi)', () => {
+    // `.ocak-dugme` İŞ 1'de `.ates-mektuplari__button` ailesinden türetildi;
+    // padding birebir aynı.
     expect(KOD).toMatch(/class="ocak-dugme" data-mektup-dugme/);
+  });
+
+  it('⚠ E-POSTA ALANI YOK — tek dokunuş (İŞ 12)', () => {
+    expect(KOD).not.toMatch(/<input/);
+    expect(KOD).not.toMatch(/type="email"/);
+  });
+
+  it('görsel dil `AtesMektuplari`\'ndan ÖLÇÜLDÜ — yeni token yok', () => {
+    const AM = readFileSync(join(__dirname, '..', 'components', 'AtesMektuplari.astro'), 'utf-8');
+    const amBaslik = AM.match(/\.ates-mektuplari__heading \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    const amMetin = AM.match(/\.ates-mektuplari__desc \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    const amTeyit = AM.match(/\.ates-mektuplari__success-text \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(amBaslik && amMetin && amTeyit).toBeTruthy();
+    // Başlık: display font · italic · --text-h2 · --cream · 400
+    for (const d of ['var(--font-display)', 'font-style: italic', 'var(--text-h2)', 'color: var(--cream)', 'font-weight: 400']) {
+      expect(amBaslik, `AtesMektuplari başlığında ${d} yok`).toContain(d);
+      expect(BILESEN, `MektupKutusu başlığında ${d} yok`).toContain(d);
+    }
+    // Metin: --text-base · --cream-soft · 40ch
+    for (const d of ['var(--text-base)', 'var(--cream-soft)', 'max-width: 40ch']) {
+      expect(amMetin).toContain(d);
+      expect(BILESEN).toContain(d);
+    }
+    // Teyit: display font · italic · 1.15rem · --gold
+    for (const d of ['1.15rem', 'color: var(--gold)']) {
+      expect(amTeyit).toContain(d);
+      expect(BILESEN).toContain(d);
+    }
+  });
+
+  it('başlık `<h3>` — sayfada `<h1>` var, sıra bozulmuyor', () => {
+    expect(KOD).toMatch(/<h3 class="mektup-kutusu__baslik">/);
+    expect(KOD).not.toMatch(/<h2/);
   });
 });
 
