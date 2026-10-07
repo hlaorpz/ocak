@@ -19,6 +19,11 @@
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { havaleVadeMetni } from '../../lib/havale-vade.ts';
+// B211 — kayıt maili Resend'den. Plan saf lib'de, taşıma `posta.ts`'te.
+import { kayitPostaPlani } from '../../lib/kayit-posta.ts';
+import { postaGonder, resendTasima } from '../../lib/posta.ts';
+import { etkinlikBaslangicAni, yerTutmaBitisi } from '../../lib/yer-tutma.ts';
+import { odemeLinki, odemeLinkSirri } from '../../lib/odeme-link.ts';
 import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
@@ -169,6 +174,15 @@ type EtkinlikOkuma = {
   konumDetay: string;
   /** Aşama 3b-fix — etkinlik bazlı Kayıt Tipi. Boş → 'Direkt' (eski etkinlikler için güvenli default). */
   kayitTipi: KayitTipi;
+  /**
+   * B211 — `Tarih` date.end (çok günlü buluşma) ve iki saat alanının HAM
+   * hâlleri. `saat` yukarıda mekâna göre ZATEN seçilmiş; `etkinlikBaslangicAni`
+   * seçimi kendi yapsın diye ikisi ayrıca taşınıyor. Tek bir "seçilmiş saat"
+   * geçirmek o fonksiyonun mekân dalını ölü koda çevirirdi.
+   */
+  tarihBitisISO: string;
+  zoomSaatHam: string;
+  klasikSaatHam: string;
 };
 
 function richTextStr(props: Record<string, any>, name: string): string {
@@ -206,7 +220,12 @@ async function etkinlikOku(etkinlikId: string): Promise<EtkinlikOkuma> {
   // Aşama 3b-fix — Kayıt Tipi okuma; default 'Direkt' (eski etkinlikler).
   const kayitTipiRaw = props['Kayıt Tipi']?.select?.name;
   const kayitTipi: KayitTipi = kayitTipiRaw === 'Başvuru' ? 'Başvuru' : 'Direkt';
-  return { tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat, baslik, slug, konumDetay, kayitTipi };
+  const tarihBitisISO = props['Tarih']?.date?.end ?? '';
+  return {
+    tutar: ucret, paraBirimi, katilimLinki, mekan, zoomSifresi, tarihISO, saat,
+    baslik, slug, konumDetay, kayitTipi,
+    tarihBitisISO, zoomSaatHam: zoomSaat, klasikSaatHam: klasikSaat,
+  };
 }
 
 function formatKayitCevaplari(ekSorular: Record<string, string> | undefined): string {
@@ -254,8 +273,18 @@ async function notionKayitlaraYaz(args: {
    * `Ödenen Tutar` ödeme SONRASI callback'in yazdığı ayrı alandır.
    */
   beklenenTutar?: number;
+  /**
+   * B211 — `Yer Tutma Bitişi` (date, saatli). Ödenmemiş kaydın yerinin ne
+   * zamana kadar tutulduğu; tarama ucu bu alana bakıp hatırlatır ya da iptal
+   * eder. Ücretsiz kayıtta `null` — tutulacak bir süre yok.
+   *
+   * ⚠ `null` ile `undefined` AYNI sonucu veriyor (property yazılmaz) ve bu
+   * bilinçli: tarama `Yer Tutma Bitişi` BOŞ satırlara dokunmuyor, yani
+   * ücretsiz kayıtlar ve bu brief öncesi satırlar aynı güvenli kümede.
+   */
+  yerTutmaBitisi?: Date | null;
 }): Promise<string> {
-  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod, beklenenTutar } = args;
+  const { body, ucretliMi, referansNo, kademe, yontem, askiTutar, askiNiyet, kullanilanKod, beklenenTutar, yerTutmaBitisi } = args;
   const KADEME_AD: Record<Kademe, string> = { ust: 'Üst', orta: 'Orta', alt: 'Alt' };
   const properties: Record<string, any> = {
     'Kayıt ID': { title: [{ text: { content: referansNo } }] },
@@ -314,6 +343,13 @@ async function notionKayitlaraYaz(args: {
   // Davetler DB satırını "Geldi" yapar. Boş gelirse property atlanır.
   if (body.ref) {
     properties['Davet Eden Ref'] = { rich_text: [{ text: { content: body.ref } }] };
+  }
+  // B211 — yer tutma bitişi. Notion `date` SAAT taşır; `toISOString()` UTC
+  // yazar ve Notion onu kendi görüntüleme diliminde gösterir. Gün damgası
+  // (`slice(0,10)`) YETMEZ: üç saatlik bir kart süresi gün damgasına
+  // sığmaz.
+  if (yerTutmaBitisi) {
+    properties['Yer Tutma Bitişi'] = { date: { start: yerTutmaBitisi.toISOString() } };
   }
   // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
   // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
@@ -580,7 +616,8 @@ export const POST: APIRoute = async ({ request }) => {
       status: 'success',
       basvuruId,
       referansNo,
-      mailerlite: null,
+      // Sadece-askı dalında kayıt maili yok (katılım yeri tutulmuyor).
+      postaGitti: false,
       mode: 'sadece-aski',
       aski: { tutar: askiTutar, ...(body.askiNiyet ? { niyet: body.askiNiyet } : {}) },
       odeme: {
@@ -680,6 +717,24 @@ export const POST: APIRoute = async ({ request }) => {
   // `Kullanılan Kod` da yazılır (kayıt anında, çünkü checkout/callback
   // hiç olmayacak). Sayaç +1 aşağıda.
   const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
+
+  // ── B211 — yer tutma bitişi, Notion yazımından ÖNCE ──
+  // Aynı `pages.create` çağrısında yazılmalı: ayrı bir update olsaydı iki
+  // yazım arasında tarama ucu koşup `Yer Tutma Bitişi` boş bir Beklemede satır
+  // görürdü (ve ona dokunmadığı için kayıt sessizce kapsam dışına düşerdi).
+  const kayitAni = new Date();
+  const etkinlikBaslangici = etkinlikBaslangicAni({
+    tarihISO: etk.tarihISO,
+    mekan: etk.mekan,
+    zoomSaat: etk.zoomSaatHam,
+    klasikSaat: etk.klasikSaatHam,
+  });
+  const yerTutmaBitisiAni = yerTutmaBitisi({
+    yontem,
+    ucretliMi: odemeGerekli,
+    kayitAni,
+    etkinlikBaslangici,
+  });
   const kullanilanKodAdi =
     tamBurs && body.promoKod ? body.promoKod.trim().toUpperCase() : undefined;
   let basvuruId: string;
@@ -696,6 +751,7 @@ export const POST: APIRoute = async ({ request }) => {
           kullanilanKod: kullanilanKodAdi,
           // `/odeme/nkolay` sağlayıcıya gidecek tutarı BURADAN okur.
           beklenenTutar: odemeGerekli ? hesap.toplam : undefined,
+          yerTutmaBitisi: yerTutmaBitisiAni,
         })
       : await notionBasvuruYaz({ format, body, odemeDurumu, referansNo });
   } catch (err) {
@@ -761,19 +817,72 @@ export const POST: APIRoute = async ({ request }) => {
     etkinlikUrl: etkinlikUrlFormatla(etk.slug),
   });
 
-  // MailerLite — Brief 3 (KARAR 206) 6 format grup map'i tam.
-  // Aşama 3b-fix: Başvuru tipinde MailerLite çağrılmaz (mail tetiklenmez;
-  // Zoom linki / katılım bilgisi henüz yok, davet eden Notlar/Kaan elle yazar).
-  const groupId = FORMAT_MAILERLITE_GROUP[format];
-  let mailerlite: { ok: boolean; status: number; error?: string } | null = null;
-  if (direktAkis && groupId) {
-    mailerlite = await mailerLiteEkle({
-      email: body.email,
+  // ── B211 — MailerLite AKIŞTAN ÇIKTI ──
+  //
+  // Buradaki çağrı `mailerLiteEkle({ email, ad, soyad, groupId, ekFields })`
+  // idi ve maili MailerLite otomasyonunun `field_updated → etkinlik_adi` tetiği
+  // gönderiyordu. Artık mail doğrudan Resend'den çıkıyor (aşağıda); aboneye
+  // alan yazmanın bir sebebi kalmadı ve yazmaya devam etmek iki yerden iki mail
+  // riski demekti.
+  //
+  // `mailerLiteEkle`, `mailerLiteCustomFields`, `MAILERLITE_ALANLAR`,
+  // `FORMAT_MAILERLITE_GROUP` ve yukarıdaki `ekFields` kurulumu SİLİNMEDİ
+  // (CLAUDE.md §5) — yalnız çağrılmıyorlar. Bülten formu (Ateş Mektupları) bu
+  // brief'in kapsamı dışında ve kendi yolundan MailerLite'a yazmaya devam eder.
+  //
+  // ⚠ Kaan MailerLite otomasyonunu ayrıca durduracak. Kod o alana hiç
+  // yazmadığı için tetik kendiliğinden susar, ama "susar" ile "kapalı" aynı
+  // şey değil.
+
+  // ── B211 — kayıt maili ──
+  // Plan saf lib'de (`kayitPostaPlani`): ücretsiz → yerin hazır · havale →
+  // yerini tutuyoruz · kart → mail YOK. Başvuru akışında mail gönderilmez;
+  // MailerLite çağrısının `direktAkis` koşulu neydiyse o korunuyor.
+  let postaOk = false;
+  if (direktAkis) {
+    const plan = kayitPostaPlani({
+      referansNo,
       ad: body.ad,
-      soyad: body.soyad,
-      groupId,
-      ekFields,
+      ucretliMi: odemeGerekli,
+      yontem,
+      tutar: hesap.toplam,
+      paraBirimi: etk.paraBirimi,
+      baslik: etk.baslik,
+      slug: etk.slug,
+      tarihISO: etk.tarihISO,
+      tarihBitis: etk.tarihBitisISO,
+      saat: etk.saat,
+      mekan: etk.mekan,
+      katilimLinki: etk.katilimLinki,
+      zoomSifresi: etk.zoomSifresi,
+      konumDetay: etk.konumDetay,
+      yerTutmaBitisi: yerTutmaBitisiAni,
+      odemeLinki: odemeLinki(referansNo, odemeLinkSirri()),
     });
+    if (plan) {
+      const sonuc = await postaGonder(
+        { sablon: plan.sablon, alici: body.email, degiskenler: plan.degiskenler, kayitId: referansNo },
+        resendTasima(),
+      );
+      postaOk = sonuc.ok;
+      // ÜCRETSİZ kayıtta mail "yerin hazır" demek, yani bildirim halkası
+      // kapandı → `Mail Gitti`. Havalede İŞARETLENMEZ: o mail yalnız yerin
+      // tutulduğunu söylüyor, katılım bilgisini taşımıyor; işaretlenirse
+      // tarama (a) dalı ödeme geldiğinde "maili zaten gitmiş" sanardı.
+      if (sonuc.ok && !odemeGerekli) {
+        try {
+          await notion.pages.update({
+            page_id: basvuruId,
+            properties: { 'Mail Gitti': { checkbox: true } },
+          });
+        } catch (err) {
+          // Mail gitti, iz yazılamadı. Kaydı düşürmüyoruz.
+          console.error(
+            `[api/kayit] Mail Gitti yazılamadı — ref=${referansNo} ${String(err).slice(0, 200)}`,
+          );
+        }
+      }
+    }
   }
 
   // Aşama 3b eyeball Bulgu 2 + 3b-fix tasarım: havale açıklama insan-okur
@@ -844,7 +953,10 @@ export const POST: APIRoute = async ({ request }) => {
     status: 'success',
     basvuruId,
     referansNo,
-    mailerlite,
+    // B211 İŞ 6 — form success'indeki "Mail kutuna da düştü." cümlesi BU alana
+    // bakar. `mailerlite` alanı taşındı: artık abone yazımı değil GÖNDERİM
+    // sonucu ölçülüyor. Kartta mail yok → `false`, cümle basılmaz.
+    postaGitti: postaOk,
     mode: 'kayit',
     kayitTipi: direktAkis ? 'Direkt' : 'Başvuru',
     ...(promoResp ? { promo: promoResp } : {}),
