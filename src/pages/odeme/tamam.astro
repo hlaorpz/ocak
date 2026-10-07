@@ -19,6 +19,7 @@ import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 // `katilimTipiCoz` · `ilkAd` · `FORMAT_KATEGORI` · `formatEtkinlikTarihi`
 // artık o dosyanın import'ları; burada tüketilmiyorlar.
 import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
+import { tamamGorunumu } from '../../lib/odeme-tamam.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi.
 //
@@ -43,109 +44,81 @@ const mockMu = Astro.url.searchParams.get('mock') === '1';
 // Yüzey bağlantısı: 'bulundu' → jenerik metin (kayıt var, detay henüz yok)
 // · 'bulunamadi'/'hata' → arama metni. İki hâl KARIŞTIRILMAZ; "kaydını
 // bulamadık" ile "detayları yakında paylaşacağız" aynı ekranda duramaz.
-const { durum, katilim, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd } =
-  await kayitOku(notion, NOTION_KAYITLAR_DB, ref);
-const kayitBulundu = durum === 'bulundu';
+const kayit = await kayitOku(notion, NOTION_KAYITLAR_DB, ref);
+const { durum, etkinlikId, etkinlikAdi, etkinlikTarihi, landingPath, davetEdenAd } = kayit;
+
+// ── İŞ 7 (7 Eki) — KATILIM BİLGİSİ SAYFADAN KALKTI ──
+// `katilim` ARTIK OKUNMUYOR: Zoom bağlantısı, şifre, mekân ve adres bu sayfada
+// gösterilmiyor. Sayfa `?ref=OCAK-XXXX` ile açılıyor ve referans maillerde,
+// banka açıklamasında, WhatsApp'ta dolaşıyor — tahmin edilebilir bir adres.
+// Katılım bilgisini oraya basmak, bağlantıyı referansı bilen herkese açmak
+// demekti. Bilgi e-postada duruyor; e-posta kadının kendi kutusu.
+//
+// Görünüm `lib/odeme-tamam.ts`'te (frontmatter test edilemiyor ve bu sayfanın
+// NE GÖSTERMEDİĞİ bir karar).
+//
+// ⚠ Saat `saatHam`dan geliyor, `etkinlikTarihi`'nden DEĞİL: o alan
+// cross-fallback'li saati taşıyor (`api/kayit.ts:191-198`'in çürüttüğü
+// eşleme). Sayfa ve mail aynı kurucuyu kullanıyor.
+const gorunum = tamamGorunumu({
+  kayitDurumu: durum,
+  baslik: kayit.basligHam,
+  tarihISO: kayit.tarihISOHam,
+  tarihBitis: kayit.tarihBitisHam,
+  saat: kayit.saatHam,
+  mekan: kayit.mekanHam,
+});
+const kayitBulundu = gorunum.bulundu;
 
 // Sekme başlığı ve meta açıklama da AYNI `kayitBulundu` koşuluna bağlı —
 // üçüncü bir koşul yazılmadı (KARAR 395). h1 duruma bağlanmış olsa bile
 // sabit bir `title` sekmede, paylaşım kartında ve tarayıcı geçmişinde
 // "Ödemen alındı" demeye devam ederdi; sayfa `noindex` ama bu üç yüzeyin
 // hiçbirini `noindex` kapatmıyor.
-const sayfaBasligi = kayitBulundu ? 'Ödemen alındı · OCAK' : 'Kaydını bulamadık · OCAK';
-const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'Kaydını arıyoruz.';
+// Sekme başlığı ve açıklama gövdeyle AYNI kaynaktan (KARAR 395) — artık
+// `gorunum.baslik`'tan türüyor, ikinci bir koşul yok.
+const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
+const sayfaAciklamasi = gorunum.baslik;
 ---
 <Layout title={sayfaBasligi} description={sayfaAciklamasi} oda="OCAK" noindex>
   <article class="ocak-yasal">
     <div class="ocak-odeme-tamam">
       <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
-      {/* h1 gövdeyle AYNI koşulu paylaşır — `kayitBulundu`. İkinci bir
-          koşul yazılmadı (KARAR 395): iki kod yolunu elle eşit tutmak
-          sonsuz döngü, biri güncellenip öteki unutulur ve başlık gövdeyi
-          yalanlar. Tek değişken, tek gerçek.
+      {/* Başlık ve gövdenin TAMAMI `gorunum`dan — tek kaynak, tek gerçek
+          (KARAR 395). İki kod yolunu elle eşit tutmak sonsuz döngüydü.
 
-          Neden gerekli: sayfa doğrudan URL ile, referanssız açılabilir
-          (`/odeme/tamam` — `ref` zorunlu değil). O hâlde sabit bir
-          "Ödemen alındı" başlığı, hiç ödeme yapmamış birine ödeme
-          yapmış olduğunu söylerdi. */}
-      <h1>{kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'Kaydını bulamadık.'}</h1>
-      {kayitBulundu && (
-        <p class="ocak-odeme-tamam__gövde">
-          Buluşma detaylarını yakında e-postayla paylaşacağız. İstersen
-          WhatsApp'tan da bize yazıp öğrenebilirsin. Hoş geldin.
+          Neden koşullu: sayfa `ref` olmadan doğrudan açılabiliyor. Sabit bir
+          "Yerin hazır" başlığı hiç ödeme yapmamış birine ödeme yaptığını
+          söylerdi. */}
+      <h1>{gorunum.baslik}</h1>
+
+      <p class="ocak-odeme-tamam__gövde">{gorunum.giris}</p>
+
+      {/* Durum kartı — buluşmanın adı + tarih-saat. Amber çerçeve sitenin
+          mevcut dili (`.ocak-odeme-tamam__kart`); yeni token yok. Tarih+saat
+          TEK PARÇA basılır ve satır ortasında kırılmaz. */}
+      {gorunum.kart.length > 0 && (
+        <div class="ocak-odeme-tamam__kart">
+          {gorunum.kart.map((satir, i) => (
+            <p class={i === 0 ? 'ocak-odeme-tamam__kart-baslik' : 'ocak-odeme-tamam__kart-tarih'}>
+              {satir}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {/* ⚠ Katılım bilgisinin KENDİSİ DEĞİL, yeri söyleniyor. Zoom bağlantısı,
+          şifre, mekân ve adres bu sayfadan KALKTI (İŞ 7) — gerekçe
+          frontmatter'da. */}
+      {gorunum.nerede && <p class="ocak-odeme-tamam__gövde">{gorunum.nerede}</p>}
+      {gorunum.gecikme && <p class="ocak-odeme-tamam__gövde">{gorunum.gecikme}</p>}
+      {gorunum.kapanis && <p class="ocak-odeme-tamam__gövde">{gorunum.kapanis}</p>}
+
+      {gorunum.yardimEposta && (
+        <p class="ocak-odeme-tamam__yardim">
+          <a href={`mailto:${gorunum.yardimEposta}`}>{gorunum.yardimEposta}</a>
         </p>
       )}
-
-      {/* 'bulunamadi' ve 'hata' — kadın artık boş ekran görmüyor. İki durum
-          tek metinle karşılanıyor: kadın açısından fark yok (kaydı görünmüyor),
-          ayrım teşhis içindir ve Vercel log'unda `[odeme/tamam]` satırında
-          yaşar. Adres `/odeme/iptal.astro:32` ile aynı — ödeme akışının
-          kardeş sayfası zaten `selam@ocak.biz` kullanıyor, yeni adres
-          uydurulmadı. */}
-      {!kayitBulundu && (
-        <>
-          {/* "Kaydını bulamadık." h1'de duruyor — gövde onu TEKRARLAMAZ.
-              Aynı cümlenin üst üste iki kez çıkması commit 6'da h1 duruma
-              bağlanınca oluştu; metin bir yerde söylenir. */}
-          <p class="ocak-odeme-tamam__gövde">
-            Ödemen alındıysa birkaç dakika içinde görünecektir. Görünmezse
-            bize yaz — birlikte bakarız.
-          </p>
-          <p class="ocak-odeme-tamam__yardim">
-            <a href="mailto:selam@ocak.biz">selam@ocak.biz</a>
-          </p>
-        </>
-      )}
-
-      {/* ── "Mail kutuna da düştü." KALKTI (7 Eki 2026, B211) ──
-          İki dalda birden (bu ve aşağıdaki fiziksel dal) aynı cümlenin aynı
-          yarısı duruyordu ve ikisi de yanlıştı.
-
-          Neden yanlış: bu sayfa YALNIZ kart ödemesi callback'inin 302'si
-          üzerinden açılıyor, yani ödeme onayından milisaniyeler sonra.
-          Bildirim halkası (`lib/odeme-bildir.ts`) MailerLite'a o anda yazıyor;
-          mailin kendisini otomasyon kuruyor ve ölçüm (7 Eki, test abonesi)
-          yazımdan **5 sn sonra** koştuğunu söylüyor — üstüne teslim süresi.
-          Kadın bu ekranı gördüğü anda mail kutusunda DEĞİL. "düştü" geçmiş
-          zaman, varmış olmayı iddia ediyor.
-
-          Neden `Mail Gitti`'ye bağlanmadı: o alanın anlamı "MailerLite yazımı
-          başarılı", teslim garantisi değil — bayrak işaretli olsa da cümle
-          yukarıdaki sebeple hâlâ yanlış olurdu. İkinci ve bağımsız sebep:
-          bayrak `databases.query` ile okunurdu ve o yüzey okuma-sonrası-yazma
-          tutarlı değil; 200 ms önce basılmış bir checkbox sorgu indeksinde
-          bayat gelip cümleyi rastgele kaybettirirdi. Sayfa `Mail Gitti`'yi
-          OKUMUYOR; alan havale/n8n ağının sorusuna cevap veriyor.
-
-          Yerine yeni cümle YAZILMADI (Kaan kararı). Cümlenin doğru yarısı
-          duruyor: altındaki linke giriş yapıyor ve zamana bağlı bir iddia
-          taşımıyor. */}
-      {katilim && katilim.tipi === 'link' && (
-        <div class="ocak-odeme-tamam__katilim">
-          <p class="ocak-odeme-tamam__katilim-not">
-            Buluşma linkin burada.
-          </p>
-          <p class="ocak-odeme-tamam__katilim-deger">
-            <a href={katilim.deger} target="_blank" rel="noopener noreferrer">{katilim.deger}</a>
-          </p>
-          {katilim.zoomSifresi && (
-            <p class="ocak-odeme-tamam__katilim-sifre">
-              Zoom şifresi: <code>{katilim.zoomSifresi}</code>
-            </p>
-          )}
-        </div>
-      )}
-      {/* Yukarıdaki dalla aynı kaldırma — gerekçe orada, tek yerde. */}
-      {katilim && katilim.tipi === 'adres' && (
-        <div class="ocak-odeme-tamam__katilim">
-          <p class="ocak-odeme-tamam__katilim-not">
-            Buluşacağımız yer burada.
-          </p>
-          <p class="ocak-odeme-tamam__katilim-deger">{katilim.deger}</p>
-        </div>
-      )}
-
-      {ref && <p class="ocak-odeme-tamam__ref">({ref})</p>}
 
       {/* brief-davet-sistemi: kart-ödeme sonrası ikinci mount.
           Eyeball #4 Fix 2c: davet metni + link format-özel. Meta Notion
@@ -160,6 +133,10 @@ const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'K
         etkinlikTarihi={etkinlikTarihi}
         landingPath={landingPath}
       />
+
+      {/* İŞ 8 sırası: başlık → durum kartı → açıklama → paylaş → Ateş
+          Mektupları → referans. Referans kodu EN ALTTA ve küçük. */}
+      {ref && <p class="ocak-odeme-tamam__ref">({ref})</p>}
 
       {mockMu && (
         <p class="ocak-mock-uyari">
@@ -204,42 +181,41 @@ const sayfaAciklamasi = kayitBulundu ? 'Ödemen alındı, yerin ayrıldı.' : 'K
     color: var(--cream-soft);
   }
   .ocak-odeme-tamam__yardim a { color: var(--ember); }
-  .ocak-odeme-tamam__katilim {
-    margin: 0 auto var(--space-5);
+  /* ── Durum kartı (İŞ 7/8) ──
+   * Sitenin mevcut dili: amber çerçeve + sönük zemin. `.kayit-formu__kor-
+   * opsiyon`un kullandığı aynı desendi (1px dashed + düşük alfa beyaz); burada
+   * kesik çizgi yerine düz ember-alfa, çünkü bu bir seçim değil bir TEYİT.
+   * Yeni token yok: `--ember` · `--cream` · `--cream-soft` · `--space-*`.
+   *
+   * ⚠ `.ocak-odeme-tamam__katilim*` kuralları KALKTI — Zoom bağlantısı, şifre
+   * ve adres bu sayfada gösterilmiyor (İŞ 7), tüketicileri kalmadı. */
+  .ocak-odeme-tamam__kart {
     max-width: 42ch;
+    margin: 0 auto var(--space-5);
+    padding: var(--space-4);
+    border: 1px solid rgba(196, 75, 47, 0.28);
+    background: rgba(255, 255, 255, 0.02);
   }
-  .ocak-odeme-tamam__katilim-not {
+  .ocak-odeme-tamam__kart-baslik {
     font-family: var(--font-body);
-    color: var(--cream-soft);
-    line-height: 1.7;
-    margin: 0 0 var(--space-3);
-  }
-  .ocak-odeme-tamam__katilim-deger {
-    font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-size: 1rem;
     color: var(--cream);
     margin: 0;
-    word-break: break-all;
+    line-height: 1.5;
   }
-  .ocak-odeme-tamam__katilim-deger a {
-    color: var(--ember);
-    text-decoration: underline;
-    text-decoration-color: rgba(196, 75, 47, 0.4);
-    text-underline-offset: 0.2em;
-  }
-  .ocak-odeme-tamam__katilim-sifre {
-    margin: var(--space-2) 0 0;
+  .ocak-odeme-tamam__kart-tarih {
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--cream-soft);
+    margin: 0.35rem 0 0;
+    line-height: 1.5;
+    /* Tarih+saat TEK PARÇA: satır ortasında kırılmaz. `balance` yerine
+     * `nowrap` DEĞİL — 360 px'te "28 Kasım – 29 Kasım 2026 · 19:30" taşardı.
+     * Kelime bütünlüğü korunur, kırılma yalnız ayıraçlardan olur. */
+    text-wrap: balance;
+    overflow-wrap: break-word;
   }
-  .ocak-odeme-tamam__katilim-sifre code {
-    font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
-    color: var(--cream);
-    background: rgba(255, 255, 255, 0.04);
-    padding: 0.15rem 0.45rem;
-    letter-spacing: 0.05em;
-  }
+
   /* Tasarım turu 3 (ADIM 1) — referans dipnot KayitFormu success'iyle aynı
    * stil: küçük, smoke, parantez içinde sade. */
   .ocak-odeme-tamam__ref {

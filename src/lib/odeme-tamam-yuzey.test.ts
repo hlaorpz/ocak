@@ -1,174 +1,214 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { tamamGorunumu, type TamamGirdi } from './odeme-tamam.ts';
 
 /**
  * `/odeme/tamam` — yüzeyin bugünün gerçeğini söylemesi.
  *
- * Sayfanın Notion okuması `lib/odeme-kayit-oku.ts`'te davranış testiyle
- * ölçülüyor. Burada ölçülen şey farklı ve `.astro` üzerinde ancak
- * kaynak-grep'iyle ölçülebilir (frontmatter çağrılamıyor — `KayitFormu.test.ts`
- * deseni): **başlığın hangi koşula bağlandığı.**
+ * ── Bu dosya 7 Eki'de YENİDEN YAZILDI (İŞ 7) ──
+ * Eski hâli sayfanın markup'ını grep'liyordu: h1'in `kayitBulundu` üçlüsüne
+ * bağlı olması, `durum ===` karşılaştırmasının tam bir kez geçmesi, gövde
+ * paragraflarının içeriği. İŞ 7 ile metinlerin TAMAMI `lib/odeme-tamam.ts`'e
+ * taşındı ve sayfa yalnız basıyor — yani o ölçütlerin baktığı şeyler sayfada
+ * artık yok.
  *
- * Kusur: h1 sabitti — "Ödemen alındı, yerin ayrıldı." Sayfa `ref` olmadan
- * doğrudan URL ile açılabiliyor, dolayısıyla hiç ödeme yapmamış birine
- * ödeme yapmış olduğu söyleniyordu. Gövde metni zaten `kayitBulundu`'ya
- * bağlıydı; başlık onu yalanlıyordu.
+ * **Hiçbir ölçüt DÜŞÜRÜLMEDİ, niyetleri taşındı:** "h1 sabit değil", "iki
+ * durumda iki farklı metin", "gövde h1'i tekrarlamaz", "tek koşul" — hepsi
+ * aşağıda, artık davranış testi olarak (lib çağrılabiliyor, markup grep'inden
+ * güçlü). Sayfa tarafında kalan ölçütler yapısal: metin sayfada YAŞAMIYOR,
+ * katılım bilgisi BASILMIYOR, sıra doğru.
  *
- * ⚠ Ölçütler yorumları ELEYEREK çalışır. Bu dosyanın ilk sürümünde aynı
- * tuzağa iki kez düşüldü (bkz. `payment-provider.test.ts`): route'un
- * açıklama yorumu yasaklanan deseni taşıdığı için kriter kendi prozasına
- * takılmıştı. Kriter kodu ölçer, anlatıyı değil.
+ * Dosya `src/lib/` altında (KARAR 574).
  */
 
-/**
- * ⚠ Bu dosya `src/lib/` altında, ölçtüğü sayfanın yanında DEĞİL.
- * Sebep build'den öğrenildi: `src/pages/` altındaki HER dosya Astro için
- * bir route'tur. `src/pages/odeme/tamam.test.ts` sessizce bir route'a
- * derlendi (`tamam.test.astro.mjs`) ve `__dirname is not defined in ES
- * module scope` ile build'i düşürdü — vitest 322/322 YEŞİLKEN.
- * Repoda `src/pages/` altında hiç test olmamasının sebebi buymuş
- * (`components/` ve `lib/` route dizini değil, orada sorun yok).
- */
-const KAYNAK = readFileSync(
-  join(__dirname, '..', 'pages', 'odeme', 'tamam.astro'),
-  'utf-8',
-);
+const ONLINE: TamamGirdi = {
+  kayitDurumu: 'bulundu',
+  baslik: 'Elin Neyle Dolu?',
+  tarihISO: '2026-10-12',
+  tarihBitis: '',
+  saat: '21:00',
+  mekan: 'Online',
+};
+const YUZYUZE: TamamGirdi = { ...ONLINE, mekan: 'İstanbul', saat: '19:30' };
 
-function kodu(s: string): string {
-  return s
+describe('tamamGorunumu — bulundu dalı, brief metinleri birebir (İŞ 7)', () => {
+  it('başlık ve giriş', () => {
+    const g = tamamGorunumu(ONLINE);
+    expect(g.baslik).toBe('Yerin hazır.');
+    expect(g.giris).toBe('Ödemen bize ulaştı.');
+  });
+
+  it('durum kartı: etkinlik başlığı + tarih-saat', () => {
+    expect(tamamGorunumu(ONLINE).kart).toEqual(['Elin Neyle Dolu?', '12 Ekim 2026 · 21:00']);
+  });
+
+  it('⚠ saat `saatHam`dan — cross-fallback saati SIZMAZ', () => {
+    // `kayitOku.etkinlikTarihi` düz OR'lu saati taşıyor
+    // (`api/kayit.ts:191-198`'in çürüttüğü eşleme). Sayfa ve mail AYNI
+    // kurucuyu kullanıyor, yoksa iki yüzey farklı saat söyler.
+    expect(tamamGorunumu(YUZYUZE).kart[1]).toBe('12 Ekim 2026 · 19:30');
+  });
+
+  it('çok günlü buluşmada kart ARALIK gösterir', () => {
+    const g = tamamGorunumu({ ...ONLINE, tarihBitis: '2026-10-14' });
+    expect(g.kart[1]).toBe('12 Ekim – 14 Ekim 2026');
+  });
+
+  it('başlık/tarih boşsa o satır basılmaz — uydurma yok', () => {
+    expect(tamamGorunumu({ ...ONLINE, tarihISO: '' }).kart).toEqual(['Elin Neyle Dolu?']);
+    expect(tamamGorunumu({ ...ONLINE, baslik: '', tarihISO: '' }).kart).toEqual([]);
+  });
+
+  it('ONLINE: katılım bilgisinin YERİ söyleniyor, kendisi değil', () => {
+    const g = tamamGorunumu(ONLINE);
+    expect(g.nerede).toBe('Bağlantı ve şifre e-postanda.');
+    expect(g.kapanis).toBe('Ateşi biz yakıyoruz. Sen kendi mumunu yakarsın, yeter.');
+  });
+
+  it('YÜZ YÜZE: ayrı iki cümle', () => {
+    const g = tamamGorunumu(YUZYUZE);
+    expect(g.nerede).toBe('Mekân ve adres e-postanda.');
+    expect(g.kapanis).toBe('Ateşi biz yakıyoruz. Sen kendini getir, yeter.');
+  });
+
+  it('`Zoom` mekânı da online sayılır', () => {
+    expect(tamamGorunumu({ ...ONLINE, mekan: 'Zoom' }).nerede).toBe('Bağlantı ve şifre e-postanda.');
+  });
+
+  it('bilinmeyen/boş mekân YÜZ YÜZE sayılır — Zoom linki olmayan "online" demiyoruz', () => {
+    expect(tamamGorunumu({ ...ONLINE, mekan: '' }).nerede).toBe('Mekân ve adres e-postanda.');
+  });
+
+  it('gecikme cümlesi birebir', () => {
+    expect(tamamGorunumu(ONLINE).gecikme).toBe(
+      'Birkaç dakika içinde görmezsen gereksiz klasörüne bak ya da WhatsApp\'tan yaz, hemen iletelim.',
+    );
+  });
+
+  it('⚠ KALKAN metinler hiçbir alanda GEÇMİYOR', () => {
+    const hepsi = Object.values(tamamGorunumu(ONLINE)).flat().join(' | ');
+    for (const kalkan of [
+      'Buluşma detaylarını yakında',
+      'Buluşma linkin burada',
+      'Buluşacağımız yer burada',
+      'Zoom şifresi',
+      'Mail kutuna da düştü',
+      'Ödemen alındı, yerin ayrıldı',
+    ]) {
+      expect(hepsi, `"${kalkan}" hâlâ var`).not.toContain(kalkan);
+    }
+  });
+});
+
+describe('tamamGorunumu — bulunamadı dalı DEĞİŞMEDİ (eski ölçütlerin niyeti)', () => {
+  it('başlık SABİT DEĞİL — iki durumda İKİ FARKLI metin', () => {
+    // Eski ölçüt: "h1 SABİT DEĞİL, `kayitBulundu` koşuluna bağlı". Artık
+    // davranış testi: aynı fonksiyon iki girdiye iki farklı başlık veriyor.
+    const bulundu = tamamGorunumu(ONLINE);
+    const yok = tamamGorunumu({ ...ONLINE, kayitDurumu: 'bulunamadi' });
+    expect(bulundu.baslik).not.toBe(yok.baslik);
+    expect(yok.baslik).toBe('Kaydını bulamadık.');
+    expect(yok.bulundu).toBe(false);
+  });
+
+  it('`hata` da `bulunamadi` gibi davranır — kadın açısından fark yok', () => {
+    expect(tamamGorunumu({ ...ONLINE, kayitDurumu: 'hata' }).baslik).toBe('Kaydını bulamadık.');
+  });
+
+  it('gövde başlığı TEKRARLAMAZ', () => {
+    // Eski ölçüt aynen: cümle bir yerde söylenir.
+    const yok = tamamGorunumu({ ...ONLINE, kayitDurumu: 'bulunamadi' });
+    expect(yok.giris).not.toContain('Kaydını bulamadık');
+    expect(yok.giris).toMatch(/^Ödemen alındıysa birkaç dakika/);
+  });
+
+  it('bulunamadı dalında ETKİNLİK BİLGİSİ SIZMAZ', () => {
+    const yok = tamamGorunumu({ ...ONLINE, kayitDurumu: 'bulunamadi' });
+    expect(yok.kart).toEqual([]);
+    expect(yok.nerede).toBe('');
+    expect(yok.kapanis).toBe('');
+    expect(JSON.stringify(yok)).not.toContain('Elin Neyle Dolu?');
+  });
+
+  it('yardım adresi YALNIZ bulunamadı dalında', () => {
+    expect(tamamGorunumu({ ...ONLINE, kayitDurumu: 'bulunamadi' }).yardimEposta).toBe('selam@ocak.biz');
+    expect(tamamGorunumu(ONLINE).yardimEposta).toBe('');
+  });
+});
+
+describe('tamam.astro — kaynak disiplini (İŞ 7)', () => {
+  const KAYNAK = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'tamam.astro'), 'utf-8');
+  const KOD = KAYNAK
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
     .replace(/\/\*[\s\S]*?\*\//g, '')
     .replace(/(^|[^:])\/\/.*$/gm, '$1');
-}
 
-const KOD = kodu(KAYNAK);
-
-describe('tamam.astro — başlık duruma bağlı (commit 6)', () => {
-  it('h1 SABİT DEĞİL — `kayitBulundu` koşuluna bağlı', () => {
-    const h1 = KOD.match(/<h1>[\s\S]*?<\/h1>/);
-    expect(h1).toBeTruthy();
-    expect(h1![0]).toMatch(/kayitBulundu/);
+  it('⚠ KATILIM BİLGİSİ BASILMIYOR — `katilim` okunmuyor', () => {
+    // Sayfa `?ref=OCAK-XXXX` ile açılıyor ve referans maillerde, banka
+    // açıklamasında, WhatsApp'ta dolaşıyor. Zoom bağlantısını oraya basmak,
+    // bağlantıyı referansı bilen herkese açmak demekti.
+    expect(KOD).not.toMatch(/\bkatilim\b/);
+    expect(KOD).not.toMatch(/zoomSifresi/);
+    expect(KOD).not.toMatch(/Zoom şifresi/);
+    expect(KOD).not.toMatch(/Buluşma linkin burada/);
+    expect(KOD).not.toMatch(/Buluşacağımız yer burada/);
+    expect(KOD).not.toMatch(/ocak-odeme-tamam__katilim/);
   });
 
-  it('h1 iki durumda İKİ FARKLI metin gösterir', () => {
-    const h1 = KOD.match(/<h1>[\s\S]*?<\/h1>/)![0];
-    expect(h1).toMatch(/Ödemen alındı/);
-    expect(h1).toMatch(/Kaydını bulamadık/);
-    // Aynı dizeyi iki dala koymak testi geçerdi ama kusuru düzeltmezdi.
-    const dallar = h1.match(/'([^']+)'/g) ?? [];
-    expect(dallar).toHaveLength(2);
-    expect(dallar[0]).not.toBe(dallar[1]);
+  it('metinler sayfada DEĞİL — lib\'den geliyor (tek kaynak)', () => {
+    expect(KOD).toMatch(/tamamGorunumu\(\{/);
+    expect(KOD).not.toMatch(/Yerin hazır/);
+    expect(KOD).not.toMatch(/Ödemen bize ulaştı/);
+    expect(KOD).not.toMatch(/Kaydını bulamadık/);
+    expect(KOD).not.toMatch(/Ateşi biz yakıyoruz/);
   });
 
-  it('KARAR 395 — h1, gövde ve sayfa başlığı TEK koşulu paylaşır', () => {
-    // ⚠ KOŞUL DÜZEYİ ÖLÇÜM (KARAR adayı: muhafızın varlığı değil koşulu
-    // ölçülür). `durum` dosyada TAM BİR KEZ karşılaştırılır —
-    // `kayitBulundu`nun tanımında. Dördüncü bir yüzey eklenip kendi
-    // `durum === …`ini yazarsa bu sayı 2 olur ve burası kırmızı yanar.
-    // Sayı kilidi, "her yüzey ayrı koşul yazsın" sızmasının tek kapısı.
-    const karsilastirma = KOD.match(/durum\s*===/g) ?? [];
-    expect(karsilastirma).toHaveLength(1);
-    expect(KOD).toMatch(/const kayitBulundu = durum === 'bulundu';/);
-    // Dört tüketicinin dördü de aynı değişkeni okur.
-    expect(KOD).toMatch(/\{kayitBulundu && \(/);
-    expect(KOD).toMatch(/\{!kayitBulundu && \(/);
-    expect(KOD).toMatch(/<h1>\{kayitBulundu \?/);
-    expect(KOD).toMatch(/const sayfaBasligi = kayitBulundu \?/);
-    expect(KOD).toMatch(/const sayfaAciklamasi = kayitBulundu \?/);
+  it('KARAR 395 — tek koşul: sayfa `durum`u KENDİ karşılaştırmıyor', () => {
+    // Eski ölçüt "`durum ===` tam bir kez geçsin" idi; karşılaştırma artık
+    // lib'de, sayfada HİÇ olmamalı. Dördüncü bir yüzey kendi koşulunu yazarsa
+    // burası kırmızı yanar.
+    expect(KOD).not.toMatch(/durum\s*===/);
+    expect(KOD).toMatch(/const kayitBulundu = gorunum\.bulundu;/);
   });
 
-  it('sayfa başlığı ve açıklaması SABİT DEĞİL — duruma bağlı', () => {
-    // Kusur: h1 duruma bağlanmıştı ama `<Layout title="…">` koşulsuzdu.
-    // Sekme başlığı, tarayıcı geçmişi ve paylaşım kartı hâlâ "Ödemen
-    // alındı" diyordu; `noindex` bu üç yüzeyin hiçbirini kapatmıyor.
+  it('sekme başlığı ve açıklama gövdeyle AYNI kaynaktan', () => {
+    expect(KOD).toMatch(/const sayfaBasligi = `\$\{gorunum\.baslik/);
+    expect(KOD).toMatch(/const sayfaAciklamasi = gorunum\.baslik;/);
     const layout = KOD.match(/<Layout[^>]*>/)![0];
     expect(layout).toMatch(/title=\{sayfaBasligi\}/);
     expect(layout).toMatch(/description=\{sayfaAciklamasi\}/);
-    // Sabit dizeye geri dönüş regresyon kilidi.
     expect(layout).not.toMatch(/title="/);
-    expect(layout).not.toMatch(/description="/);
   });
 
-  it('başlık ve açıklama iki durumda İKİ FARKLI değer alır', () => {
-    for (const ad of ['sayfaBasligi', 'sayfaAciklamasi']) {
-      const satir = KOD.match(new RegExp(`const ${ad} = kayitBulundu \\?[^;]+;`))![0];
-      const dallar = satir.match(/'([^']*)'/g) ?? [];
-      expect(dallar).toHaveLength(2);
-      // Aynı dizeyi iki dala koymak testi geçerdi ama kusuru düzeltmezdi.
-      expect(dallar[0]).not.toBe(dallar[1]);
-    }
+  it('SIRA: başlık → durum kartı → açıklama → paylaş → referans (İŞ 8)', () => {
+    const i = (p: string) => KOD.indexOf(p);
+    expect(i('<h1>{gorunum.baslik}</h1>')).toBeGreaterThan(-1);
+    expect(i('ocak-odeme-tamam__kart')).toBeGreaterThan(i('<h1>{gorunum.baslik}</h1>'));
+    expect(i('{gorunum.nerede &&')).toBeGreaterThan(i('ocak-odeme-tamam__kart'));
+    expect(i('<DavetKutusu')).toBeGreaterThan(i('{gorunum.kapanis &&'));
+    // Referans kodu EN ALTTA ve küçük.
+    expect(i('ocak-odeme-tamam__ref')).toBeGreaterThan(i('<DavetKutusu'));
   });
 
-  it('gövde h1\'i TEKRARLAMAZ — "Kaydını bulamadık" tek yerde', () => {
-    // Commit 6'da h1 duruma bağlanınca aynı cümle üst üste iki kez çıktı:
-    // başlıkta ve gövdenin ilk cümlesinde. Metin bir yerde söylenir.
-    //
-    // ⚠ İlk yazımda ölçüt "toplam 1 geçiş" idi ve YANLIŞTI: cümle artık
-    // MEŞRU olarak iki yerde geçiyor — sekme başlığı (`sayfaBasligi`) ve
-    // h1. Sayı kilidi doğru şeyi değil, kolay ölçüleni ölçüyordu. Kural
-    // "bir kez geçsin" değil, "GÖVDEDE geçmesin".
-    expect(KOD).toMatch(/<h1>[^<]*Kaydını bulamadık/);
-    const govdeler = KOD.match(
-      /<p class="ocak-odeme-tamam__gövde">[\s\S]*?<\/p>/g,
-    ) ?? [];
-    expect(govdeler.length).toBeGreaterThan(0);
-    for (const g of govdeler) expect(g).not.toMatch(/Kaydını bulamadık/);
-    // Bulunamadı gövdesi doğru cümleyle başlar.
-    expect(govdeler.some((g) => /Ödemen alındıysa birkaç dakika/.test(g))).toBe(true);
+  it('durum kartı sitenin mevcut dilinden — yeni token yok', () => {
+    const kart = KAYNAK.match(/\.ocak-odeme-tamam__kart \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(kart).toBeTruthy();
+    // Amber çerçeve + sönük zemin; token uydurulmadı.
+    expect(kart).toMatch(/rgba\(196, 75, 47, 0\.28\)/);
+    expect(kart).toMatch(/var\(--space-/);
   });
 
-  it('ödeme yapılmamış hâlde "Ödemen alındı" KOŞULSUZ geçmez', () => {
-    // Regresyon kilidi: h1 sabit bir dizeye geri dönerse burası kırmızı yanar.
-    expect(KOD).not.toMatch(/<h1>\s*Ödemen alındı[^<{]*<\/h1>/);
-  });
-
-  it('B211 — "Mail kutuna da düştü." KALKTI, İKİ dalda birden', () => {
-    // Cümle yanlıştı: sayfa yalnız callback'in 302'si üzerinden açılıyor,
-    // yani ödeme onayından milisaniyeler sonra. Otomasyon maili yazımdan
-    // 5 sn sonra kuruyor (7 Eki ölçümü) — kadın bu ekranı gördüğü anda mail
-    // kutusunda DEĞİL. "düştü" varmış olmayı iddia ediyordu.
-    //
-    // ⚠ Ölçüt yorumları ELEYEN `KOD` üzerinde: kaldırmanın gerekçesi
-    // sayfada bir `{/* */}` bloğu olarak YAŞIYOR ve cümleyi alıntılıyor.
-    // Ham `KAYNAK` üzerinde ölçmek kendi anlatısına takılırdı — bu dosyanın
-    // başındaki uyarının tam vakası.
-    expect(KOD).not.toMatch(/Mail kutuna/);
-    // Gerekçe gerçekten yorumda duruyor (kaldırma sessiz değil).
-    expect(KAYNAK).toMatch(/Mail kutuna da düştü\." KALKTI/);
-    // Cümlenin DOĞRU yarısı iki dalda da DURUYOR — altındaki değere giriş
-    // yapıyor ve zamana bağlı bir iddia taşımıyor.
-    const notlar = KOD.match(
-      /<p class="ocak-odeme-tamam__katilim-not">[\s\S]*?<\/p>/g,
-    ) ?? [];
-    expect(notlar).toHaveLength(2);
-    expect(notlar.some((n) => /Buluşma linkin burada\./.test(n))).toBe(true);
-    expect(notlar.some((n) => /Buluşacağımız yer burada\./.test(n))).toBe(true);
-    for (const n of notlar) expect(n).not.toMatch(/düştü/);
-  });
-
-  it('B211 — sayfa `Mail Gitti`\'yi OKUMAZ, yerine yeni cümle de yazılmadı', () => {
-    // Bayrağa bağlanmadı: anlamı "MailerLite yazımı başarılı", teslim
-    // garantisi değil — ayrıca `databases.query` okuma-sonrası-yazma tutarlı
-    // olmadığı için 200 ms önce basılmış checkbox bayat gelip cümleyi
-    // rastgele kaybettirirdi. Alan havale/n8n ağının sorusuna cevap verir.
-    expect(KOD).not.toMatch(/Mail Gitti/);
-    expect(KOD).not.toMatch(/mailGitti/);
-    // Yerine yeni kamu metni yazılmadı: `__katilim-not` iki paragraf, tek
-    // cümle. Üçüncü bir cümle sızarsa burası kırmızı yanar.
-    const notlar = KOD.match(
-      /<p class="ocak-odeme-tamam__katilim-not">([\s\S]*?)<\/p>/g,
-    ) ?? [];
-    for (const n of notlar) {
-      const metin = n.replace(/<[^>]+>/g, '').trim();
-      expect(metin.split('.').filter((s) => s.trim()).length).toBe(1);
-    }
+  it('tarih+saat satırı 360 px\'te taşmaz — kelime bütünlüğü korunur', () => {
+    const tarih = KAYNAK.match(/\.ocak-odeme-tamam__kart-tarih \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(tarih).toMatch(/text-wrap: balance;/);
+    expect(tarih).toMatch(/overflow-wrap: break-word;/);
+    // `nowrap` DEĞİL: uzun aralık + saat 360 px'te taşardı.
+    expect(tarih).not.toMatch(/white-space: nowrap/);
   });
 
   it('mock uyarısında iç yol haritası jargonu yok', () => {
-    // "Aşama 6" bizim iç fazlandırmamız; sayfayı N-Kolay denetçisi görecek.
     expect(KOD).not.toMatch(/Aşama \d/);
-    // Uyarının kendisi DURUYOR — silinen yalnız jargon cümlesiydi.
     expect(KOD).toMatch(/Bu ödeme simülasyondu/);
   });
 });
