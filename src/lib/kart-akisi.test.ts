@@ -44,10 +44,16 @@ describe('kartAkisiAcikMi (KARAR 488)', () => {
     expect(kartAkisiAcikMi('\tacik\n')).toBe(true);
   });
 
-  it('kapatılan dört route eksiksiz', () => {
+  it('kapatılan BEŞ route eksiksiz', () => {
     // Bu liste iki tüketicinin ortak kaynağı: `oda-map` eleme + sitemap filtresi.
     // Biri eklenip öteki unutulursa kapalı akışın sayfası Google'a düşer.
+    //
+    // 7 Eki 2026 — `/odeme/devam` katıldı (B211 İŞ 5). Sayı kilidi bilinçli:
+    // yeni bir `/odeme/*` sayfası eklenip buraya katılmazsa burası kırmızı
+    // yanar. Sayfanın kendi `KART_AKISI_ACIK` kapısı 404 veriyor olsa da
+    // `ODA_MAP`'te kalması onu kapalı akışta çözülebilir kılardı.
     expect([...KART_ROUTELARI].sort()).toEqual([
+      '/odeme/devam',
       '/odeme/iptal',
       '/odeme/mock',
       '/odeme/nkolay',

@@ -1,0 +1,174 @@
+---
+// /odeme/devam — kart devam sayfası (B211 İŞ 5).
+//
+// ── Bu sayfa neden var ──
+// Ödenmemiş bir kayıt için kadına maille gönderilen tek giriş noktası. Mail
+// `yerini-tutuyoruz` (havale ve kart hatırlatması) içinde iki ödeme yolu
+// birlikte duruyor: IBAN ve bu sayfanın linki. Kadın seçtiği yöntemle bağlı
+// değil — havale seçip kartla ödeyebilir.
+//
+// ── Kimlik ──
+//   /odeme/devam?k=<Kayıt ID>&i=<HMAC-SHA256(Kayıt ID, ODEME_LINK_SIR)>
+// Sır URL'e GİRMEZ; giren şey imza. Doğrulama sabit-zamanlı ve fail-closed
+// (`lib/odeme-link.ts`). İmzaya süre gömülmedi: geçerlilik SATIRDAN okunur,
+// yoksa havale uzatması kadının elindeki maili öldürürdü.
+//
+// ── Dört durum ──
+// Karar `lib/odeme-devam.ts`'te (frontmatter test edilemiyor; hangi metnin
+// basıldığı güvenlik sonucu olan bir karar). Metinler brief'te verildi; bu
+// dosya yeni kamu metni yazmaz.
+//
+// ── Görsel dil ──
+// `/odeme/tamam` ile aynı sınıflardan kuruldu (`ocak-odeme-tamam__*`), yeni
+// tasarım icat edilmedi. İki sayfa aynı akışta, aynı ağırlıkta durmalı.
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
+import { odemeLinkiGecerli, odemeLinkSirri } from '../../lib/odeme-link.ts';
+import { devamGorunumu } from '../../lib/odeme-devam.ts';
+import { etkinlikUrlFormatla } from '../../lib/kayit.ts';
+// KARAR 488 — kart akışı kapalıyken bu sayfa 404, `/odeme/tamam` ve
+// `/odeme/nkolay` ile aynı desen. Dosya silinmez.
+import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+
+if (!KART_AKISI_ACIK) return new Response(null, { status: 404 });
+
+const kayitId = (Astro.url.searchParams.get('k') ?? '').trim();
+const imza = (Astro.url.searchParams.get('i') ?? '').trim();
+
+const imzaGecerli = odemeLinkiGecerli(kayitId, imza, odemeLinkSirri());
+
+// ⚠ İmza tutmazsa Notion'a HİÇ DOKUNULMAZ. Tersi kurgu — önce kaydı oku, sonra
+// imzaya bak — doğrulanmamış bir isteğe bizim adımıza sorgu yaptırmak olurdu
+// (callback'in `dogrulaCallback` sonrası mutabakat çağrısıyla aynı refleks).
+const kayit = imzaGecerli
+  ? await kayitOku(notion, NOTION_KAYITLAR_DB, kayitId)
+  : null;
+
+if (!imzaGecerli) {
+  // Sessiz kalmaz ama sebebi gövdeye yazmaz: deneyen birine hangi yönde
+  // ilerleyeceğini söylemek olurdu. Log'da yalnız Kayıt ID.
+  console.warn(`[odeme/devam] imza tutmadı — k="${kayitId}" imzaVar=${imza.length > 0}`);
+} else if (kayit && kayit.durum !== 'bulundu') {
+  console.warn(`[odeme/devam] kayıt çözülemedi — k="${kayitId}" durum=${kayit.durum}`);
+}
+
+const gorunum = devamGorunumu({
+  imzaGecerli,
+  kayitDurumu: kayit?.durum ?? 'bulunamadi',
+  kayitId,
+  odemeDurumu: kayit?.odemeDurumu ?? '',
+  yerTutmaBitisi: kayit?.yerTutmaBitisi ?? null,
+  tutar: kayit?.tutar ?? 0,
+  paraBirimi: kayit?.paraBirimiHam ?? '',
+  baslik: kayit?.basligHam ?? '',
+  tarihISO: kayit?.tarihISOHam ?? '',
+  tarihBitis: kayit?.tarihBitisHam ?? '',
+  saat: kayit?.saatHam ?? '',
+  etkinlikUrl: etkinlikUrlFormatla(kayit?.slugHam ?? ''),
+  simdi: new Date(),
+});
+
+// Sekme başlığı gövdeyle AYNI kaynaktan — ikinci bir koşul yazılmadı
+// (KARAR 395). `/odeme/tamam`'ın öğrendiği ders: sabit bir `title` sekmede ve
+// paylaşım kartında gövdeyi yalanlar, `noindex` o yüzeyleri kapatmıyor.
+const sayfaBasligi = `${gorunum.baslik.replace(/\.$/, '')} · OCAK`;
+---
+<Layout title={sayfaBasligi} description={gorunum.baslik} oda="OCAK" noindex>
+  <article class="ocak-yasal">
+    <div class="ocak-odeme-tamam">
+      <div class="ocak-odeme-tamam__ember" aria-hidden="true"></div>
+      <h1>{gorunum.baslik}</h1>
+
+      {gorunum.govde.map((satir) => (
+        <p class="ocak-odeme-tamam__gövde">{satir}</p>
+      ))}
+
+      {gorunum.yardimEposta && (
+        <p class="ocak-odeme-tamam__yardim">
+          <a href={`mailto:${gorunum.yardimEposta}`}>{gorunum.yardimEposta}</a>
+        </p>
+      )}
+
+      {gorunum.odemeUrl && (
+        <p class="ocak-odeme-devam__eylem">
+          <a class="ocak-odeme-devam__dugme" href={gorunum.odemeUrl}>Kartla öde</a>
+        </p>
+      )}
+
+      {gorunum.etkinlikUrl && (
+        <p class="ocak-odeme-devam__eylem">
+          <a class="ocak-odeme-devam__link" href={gorunum.etkinlikUrl}>Buluşma sayfası</a>
+        </p>
+      )}
+
+      {kayitId && <p class="ocak-odeme-tamam__ref">({kayitId})</p>}
+    </div>
+  </article>
+</Layout>
+
+<style>
+  /* `/odeme/tamam` ile ortak sınıflar oradan geliyor; burada yalnız bu sayfaya
+   * özgü iki eylem stili var. Düğme KayitFormu submit düğmesinin ağırlığında. */
+  .ocak-odeme-tamam {
+    text-align: center;
+    padding: var(--space-7) 0;
+  }
+  .ocak-odeme-tamam__ember {
+    width: 14px;
+    height: 14px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--ember), 0 0 50px rgba(196, 75, 47, 0.35);
+    margin: 0 auto var(--space-6);
+  }
+  .ocak-odeme-tamam h1 {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .ocak-odeme-tamam__gövde {
+    font-family: var(--font-body);
+    color: var(--cream-soft);
+    line-height: 1.7;
+    max-width: 42ch;
+    margin: 0 auto var(--space-3);
+  }
+  .ocak-odeme-tamam__yardim {
+    margin: var(--space-2) auto var(--space-5);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--cream-soft);
+  }
+  .ocak-odeme-tamam__yardim a { color: var(--ember); }
+  .ocak-odeme-devam__eylem {
+    margin: var(--space-5) 0 0;
+  }
+  .ocak-odeme-devam__dugme {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    background: var(--ember);
+    color: var(--cream);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+  .ocak-odeme-devam__link {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--ember);
+    text-decoration: underline;
+    text-decoration-color: rgba(196, 75, 47, 0.4);
+    text-underline-offset: 0.2em;
+  }
+  .ocak-odeme-tamam__ref {
+    margin: var(--space-5) 0 0;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--smoke);
+    letter-spacing: 0.05em;
+  }
+</style>

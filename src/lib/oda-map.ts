@@ -33,13 +33,15 @@ const ODA_MAP_HAM: Record<string, Oda> = {
   '/mesafeli-satis': 'OCAK',
   '/teslimat-iade': 'OCAK',
   // Ödeme akışı (statik .astro, Notion DIŞI — Aşama 3b mock; N-Kolay 11 Eyl)
-  // KARAR 488 — kart akışı kapalıyken dört entry aşağıda listeden DÜŞER.
+  // KARAR 488 — kart akışı kapalıyken beş entry aşağıda listeden DÜŞER.
   // B193 — `/odeme/mock` ayrıca sağlayıcı `nkolay` iken tek başına düşer.
   // Girdiler burada duruyor (silinmedi); eleme `ODA_MAP`'in kurulumunda.
   '/odeme/mock': 'OCAK',
   '/odeme/nkolay': 'OCAK',
   '/odeme/tamam': 'OCAK',
   '/odeme/iptal': 'OCAK',
+  // B211 İŞ 5 — kart devam linkinin indiği sayfa (7 Eki).
+  '/odeme/devam': 'OCAK',
   // Yol
   '/sen-neredesin': 'Yol',
   // Buluşmalar

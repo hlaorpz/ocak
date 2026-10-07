@@ -81,12 +81,20 @@ export function kartAkisiAcikMi(ham: string | undefined | null): boolean {
 /** `src/` tarafının okuduğu tek değer. Config tarafı `kartAkisiAcikMi`'yi kendi okur. */
 export const KART_AKISI_ACIK = kartAkisiAcikMi(import.meta.env.KART_AKISI);
 
-/** Kapalıyken elenen dört ödeme route'u — sitemap filtresi ve `oda-map` ortak kaynağı. */
+/**
+ * Kapalıyken elenen ödeme route'ları — sitemap filtresi ve `oda-map` ortak
+ * kaynağı. **BEŞ üye** (7 Eki 2026: `/odeme/devam` katıldı, B211 İŞ 5).
+ *
+ * Yeni bir `/odeme/*` sayfası eklerken buraya katmak ŞART: listede olmayan bir
+ * route kart akışı kapalıyken `ODA_MAP`'te kalır ve odası çözülebildiği için
+ * 404 yerine boş bir sayfa olarak yayında durur.
+ */
 export const KART_ROUTELARI = [
   '/odeme/mock',
   '/odeme/nkolay',
   '/odeme/tamam',
   '/odeme/iptal',
+  '/odeme/devam',
 ] as const;
 
 /**

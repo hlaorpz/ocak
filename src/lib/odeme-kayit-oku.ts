@@ -181,6 +181,22 @@ export type KayitOkumaSonuc = {
    * `TRY`ye düşmesi `tutarMetni`'de, `api/kayit.ts:185` ile aynı varsayılan.
    */
   paraBirimiHam: string;
+  /**
+   * Kayıtlar `Ödeme Durumu` select adı — `Beklemede` · `Ödendi` · `İptal` ·
+   * `Bedava` · `İade`. Boş olabilir (eski satır).
+   *
+   * ⚠ Callback bu alanı OKUMAZ ve okumamalı: geç gelen bir callback İptal
+   * satırını da Ödendi'ye çeker (para kazanır, brief §1). Alan `/odeme/devam`
+   * ve `/odeme/nkolay`'ın ödeme BAŞLATMA kapısı için var.
+   */
+  odemeDurumu: string;
+  /**
+   * Kayıtlar `Yer Tutma Bitişi` (date, saatli) — `null` = alan boş.
+   *
+   * Boş olmak "süresi geçti" DEĞİL: bu brief öncesi açılmış kayıtlarda alan
+   * hiç yok ve ücretsiz kayıtta da yazılmıyor. Kapı boş değeri geçirir.
+   */
+  yerTutmaBitisi: Date | null;
 };
 
 /**
@@ -225,6 +241,8 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     saatHam: '',
     konumDetayHam: '',
     paraBirimiHam: '',
+    odemeDurumu: '',
+    yerTutmaBitisi: null,
   };
 }
 
@@ -293,6 +311,15 @@ export async function kayitOku(
       .join('')
       .trim();
 
+    const odemeDurumu: string = props['Ödeme Durumu']?.select?.name ?? '';
+    const ytbISO: string = props['Yer Tutma Bitişi']?.date?.start ?? '';
+    // Bozuk bir tarih `Invalid Date` üretir ve karşılaştırmalarda sessizce
+    // `false` döndürürdü — kapı "süre dolmamış" sanıp ödeme başlatırdı. `null`
+    // doğru: alan okunamadıysa yok sayılır, bu brief öncesi satırlarla aynı
+    // güvenli kümeye düşer.
+    const ytb = ytbISO ? new Date(ytbISO) : null;
+    const yerTutmaBitisi = ytb && !Number.isNaN(ytb.getTime()) ? ytb : null;
+
     const bulundu = {
       ...bosSonuc('bulundu'),
       davetEdenAd,
@@ -301,6 +328,8 @@ export async function kayitOku(
       islemNo,
       email,
       seciliTarih,
+      odemeDurumu,
+      yerTutmaBitisi,
     };
 
     // ⚠ Relation ÖĞE SAYISI ayrıca taşınır — `[0]` "tek öğe var" demek değil.

@@ -29,6 +29,8 @@ import Layout from '../../layouts/Layout.astro';
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
 import { kayitOku } from '../../lib/odeme-kayit-oku.ts';
+// B211 — ödeme başlatma kapısı; TEK fonksiyon, iki çağrı yeri (karar 2).
+import { odemeBaslatilabilir } from '../../lib/odeme-link.ts';
 import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 import { istemciIp } from '../../lib/istemci-ip.ts';
@@ -48,6 +50,19 @@ const kayit = ref
   ? await kayitOku(notion, NOTION_KAYITLAR_DB, ref)
   : null;
 
+/**
+ * Kapı çağrısının tek yeri — `simdi` bir kez okunur. İki ayrı `new Date()`
+ * ile çağırmak, aynı istek içinde iki farklı "şimdi" demekti; bitişe saniyeler
+ * kalmış bir kayıt koşulla log arasında taraf değiştirebilirdi.
+ */
+const simdiAni = new Date();
+const odemeKapisi = (k: NonNullable<typeof kayit>) =>
+  odemeBaslatilabilir({
+    odemeDurumu: k.odemeDurumu,
+    yerTutmaBitisi: k.yerTutmaBitisi,
+    simdi: simdiAni,
+  });
+
 /** Kullanıcıya gösterilecek hata — sağlayıcı/altyapı ayrıntısı SIZMAZ. */
 let hata = '';
 let form: { actionUrl: string; alanlar: Record<string, string> } | null = null;
@@ -57,6 +72,24 @@ if (!kayit || kayit.durum !== 'bulundu') {
   // teşhisi Kaan'ın, kadının değil.
   console.error(`[odeme/nkolay] kayıt okunamadı — ref="${ref}" durum=${kayit?.durum ?? 'ref-yok'}`);
   hata = 'Kaydın bulunamadı.';
+} else if (!odemeKapisi(kayit).baslatilabilir) {
+  // ── B211 (Kaan kararı 2) — ÖDEME BAŞLATMA KAPISI, İKİNCİ ÇAĞRI YERİ ──
+  //
+  // Kapı `/odeme/devam`'da da var ama orada kalması YETMEZ: referans
+  // (`OCAK-XXXX`) maillerde yazılı ve bu sayfa `?ref=` ile bağımsız
+  // girilebiliyor — kaydı Notion'dan kendisi okuyor, `/api/kayit`'ten gelmek
+  // zorunda değil. Kapı yalnız devam sayfasında olsaydı iptal edilmiş ya da
+  // süresi geçmiş bir satır için buradan ödeme başlatılabilirdi.
+  //
+  // ⚠ Bu kapı CALLBACK'İ İLGİLENDİRMEZ. Başlamış bir ödemenin dönüşü geç
+  // gelirse kabul edilir — para kazanır (brief §1). Callback kapıları
+  // DEĞİŞMEDİ (KARAR 593 · 594 · 595 · 601 · 602).
+  const kapi = odemeKapisi(kayit);
+  console.warn(
+    `[odeme/nkolay] ödeme başlatılmadı — ref="${ref}" sebep=${'sebep' in kapi ? kapi.sebep : '?'}`,
+  );
+  // Kadına tek mesaj; hangi kapının kapandığı teşhis bilgisi ve log'da yaşıyor.
+  hata = 'Bu ödemenin süresi doldu.';
 } else if (!(kayit.tutar > 0)) {
   // `Beklenen Tutar` boş → ödeme başlatılamaz. Sıfır tutarlı bir form
   // basmaktansa durmak doğru: sağlayıcıya anlamsız istek gitmez.
