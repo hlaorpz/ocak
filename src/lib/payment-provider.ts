@@ -32,7 +32,9 @@
  * bir sağlayıcı nesnesi eklenir, route'a dokunulmaz.
  */
 
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash } from 'node:crypto';
+// Sır karşılaştırması paylaşılan lib'de (aşağıdaki taşıma notu).
+import { sabitZamanliEsit } from './sabit-zamanli';
 // ⚠ `PaymentList` yanıtının AYRIŞTIRILMASI bilerek ayrı modülde yaşıyor —
 // gerekçesi o dosyanın başında (muhafız grep'i + "callback gövdesini görmez"
 // tip güvencesi). Buradan yalnız iki saf fonksiyon çağrılıyor.
@@ -246,20 +248,11 @@ export function callbackSirri(): string {
   return (import.meta.env.ODEME_CALLBACK_SIR ?? '').trim();
 }
 
-/**
- * Sabit-zamanlı dize karşılaştırması. Uzunluk farkının bile sızmaması için
- * ham dizeler değil SHA-256 özetleri karşılaştırılır — özetler daima aynı
- * uzunlukta olduğundan `timingSafeEqual` atmadan çalışır.
- *
- * Mock için fazla titiz görünebilir; bilinçli. Bu metot N-Kolay sağlayıcısına
- * DEVRALINACAK ve orada gerçek para var. Doğru deseni mock'ta kurmak, gerçek
- * sağlayıcı yazılırken "sonra düzeltiriz" borcu bırakmaktan ucuz.
- */
-function sabitZamanliEsit(a: string, b: string): boolean {
-  const ozetA = createHash('sha256').update(a, 'utf8').digest();
-  const ozetB = createHash('sha256').update(b, 'utf8').digest();
-  return timingSafeEqual(ozetA, ozetB);
-}
+// `sabitZamanliEsit` 7 Eki 2026'da `lib/sabit-zamanli.ts`'ye TAŞINDI
+// (kırpılmadı — CLAUDE.md §5; gövde birebir, davranış aynı). Sebep: B211'in
+// tarama ucu ve kart devam linki aynı karşılaştırmayı istiyor ve o iki yüzeyin
+// ödeme modülünü import etmesi için hiçbir sebep yok. Gerekçenin tamamı ve
+// boş-dize tuzağının uyarısı yeni dosyanın başında.
 
 /**
  * Sırrı istekten çıkarır: önce ayrıştırılmış gövde, sonra URL query.
