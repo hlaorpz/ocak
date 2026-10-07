@@ -181,3 +181,57 @@ describe('KayitFormu.astro — havale süresi kayıttan gelir, "üç gün" yok (
     expect(KOD).toMatch(/Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz\./);
   });
 });
+
+/**
+ * İŞ 6 — "Bir kor daha bırak" (Katman B, KARAR 240) FORMDAN KALKTI.
+ *
+ * Opt-in kutusu, katkı tutarı input'u, Toplam'daki "Bir kor" satırı ve bunların
+ * JS'i + CSS'i gitti. Toplam artık yalnız kademe tutarı (− indirim).
+ *
+ * ⚠ Notion alanları (`Askı Tutarı` · `Tip: Askı Katkısı`) ve `uygulaIndirim`'in
+ * `katmanB` parametresi DURUYOR — yalnız formdan beslenmiyorlar.
+ */
+describe('KayitFormu.astro — Katman B formdan kalktı (İŞ 6)', () => {
+  const KAYNAK = readFileSync(SOURCE_PATH, 'utf-8');
+  const KOD = KAYNAK
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('opt-in kutusu ve tutar input\'u YOK', () => {
+    expect(KOD).not.toMatch(/data-kf-kor/);
+    expect(KOD).not.toMatch(/data-kf-aski-tutar/);
+    expect(KOD).not.toMatch(/name="aski_tutar"/);
+    expect(KOD).not.toMatch(/Bir kor daha bırak/);
+  });
+
+  it('Toplam\'da "Bir kor" satırı YOK', () => {
+    expect(KOD).not.toMatch(/data-kf-katmanB/);
+    expect(KOD).not.toMatch(/<span>Bir kor<\/span>/);
+  });
+
+  it('`aski_tutar` FormData\'dan OKUNMUYOR, payload\'a girmiyor', () => {
+    expect(KOD).not.toMatch(/data\.get\('aski_tutar'\)/);
+    expect(KOD).not.toMatch(/askiTutar \}/);
+  });
+
+  it('toplam = kademe − indirim; katmanB sabit 0', () => {
+    // `uygulaIndirim` imzası DARALTILMADI — başka bir yüzey onu besleyebilir.
+    expect(KOD).toMatch(/uygulaIndirim\(katmanA, 0, promoSonuc\)/);
+    expect(KOD).toMatch(/uygulaIndirim\(gecisKatmanA, 0, promoSonuc\)/);
+  });
+
+  it('ölü JS ve CSS kalmadı', () => {
+    for (const ad of ['korToggleEl', 'syncKorToggle', 'korBolum', 'katmanBSlot', 'korAcik']) {
+      expect(KOD, `${ad} hâlâ var`).not.toMatch(new RegExp(`\\b${ad}\\b`));
+    }
+    expect(KOD).not.toMatch(/kayit-formu__kor-/);
+    expect(KOD).not.toMatch(/kayit-formu__tutar-satir--katmanB/);
+  });
+
+  it('kademe seçimi ve indirim satırı DOKUNULMADI', () => {
+    expect(KOD).toMatch(/data-kf-kademe/);
+    expect(KOD).toMatch(/data-kf-indirim-slot/);
+    expect(KOD).toMatch(/data-kf-toplam/);
+  });
+});

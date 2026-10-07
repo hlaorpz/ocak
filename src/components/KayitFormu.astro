@@ -352,37 +352,16 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             </p>
           </div>
 
-          {/* ADIM 3 askı sadeleştirme — Kor küçük opt-in: checkbox + opsiyonel
-              tutar input. Default kapalı; check → tutar input açılır +
-              Toplam'a Bir kor satırı eklenir. Niyet textarea + referans
-              liste KALDIRILDI (lansman sonrası ayrı dayanışma sayfası).
-              `data-kf-kor` opt-in container — JS checkbox state'i izler. */}
-          <div class="kayit-formu__kor-opsiyon" data-kf-kor>
-            <label class="kayit-formu__kor-toggle">
-              <input type="checkbox" data-kf-kor-toggle />
-              <span class="kayit-formu__kor-toggle-baslik">Bir kor daha bırak</span>
-              <span class="kayit-formu__kor-toggle-aciklama">
-                Katkın dayanışma havuzuna eklenir; ödemekte zorlanan bir kadının
-                yolunu açar.
-              </span>
-            </label>
-            <div class="kayit-formu__kor-tutar" data-kf-kor-tutar-wrap hidden>
-              <label for="kf-aski-tutar" class="kayit-formu__kor-tutar-label">
-                Katkın <span class="kayit-formu__optional">(TL)</span>
-              </label>
-              <input
-                id="kf-aski-tutar"
-                name="aski_tutar"
-                type="number"
-                min="0"
-                step="50"
-                class="kayit-formu__input"
-                placeholder="örn. 250"
-                inputmode="numeric"
-                data-kf-aski-tutar
-              />
-            </div>
-          </div>
+          {/* ── "Bir kor daha bırak" (Katman B, KARAR 240) KALKTI — 7 Eki ──
+              Opt-in kutusu, katkı tutarı input'u ve Toplam'daki "Bir kor"
+              satırı formdan çıktı. Toplam artık yalnız kademe tutarı
+              (− indirim).
+
+              ⚠ Notion alanları (`Askı Tutarı` · `Tip: Askı Katkısı`) ve
+              `uygulaIndirim`'in `katmanB` parametresi DURUYOR (CLAUDE.md §5) —
+              yalnız formdan beslenmiyorlar. `katmanB` her çağrıda 0 geçiyor;
+              ileride başka bir yüzey (dayanışma sayfası) onu yeniden
+              besleyebilir. */}
 
           {/* Tutar display + ödeme yönergesi (ADIM 1 fix: Katılım payı BRÜT
               gösterilir, kalemler = Toplam KARAR 61). */}
@@ -403,10 +382,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
               <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--indirim" data-kf-indirim-slot hidden>
                 <span>İndirim</span>
                 <span>− <span data-kf-indirim>0</span> TL</span>
-              </li>
-              <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--katmanB" data-kf-katmanB-slot hidden>
-                <span>Bir kor</span>
-                <span>+ <span data-kf-katmanB>0</span> TL</span>
               </li>
               <li class="kayit-formu__tutar-satir kayit-formu__tutar-satir--toplam">
                 <span>Toplam</span>
@@ -1391,12 +1366,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__tutar-satir:last-child { border-bottom: none; }
   .kayit-formu__tutar-satir--indirim { color: var(--gold); }
   /* Aşama 3b-fix tasarım (Kaan eyeball 2026-06-09) — indirim sadece katılım
-   * payına ait; satır sırası Katılım payı → İndirim (bağlı blok) → Bir kor
-   * (ayrı, üst margin görsel ayrım) → Toplam. */
-  .kayit-formu__tutar-satir--katmanB {
-    color: var(--cream-soft);
-    margin-top: 0.45rem;
-  }
+   * payına ait; satır sırası Katılım payı → İndirim (bağlı blok) → Toplam.
+   * "Bir kor" satırı ve `--katmanB` stili 7 Eki'de formdan kalktı. */
   .kayit-formu__tutar-satir--toplam {
     padding-top: 0.7rem;
     margin-top: 0.35rem;
@@ -1412,56 +1383,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     font-weight: 400;
   }
 
-  /* === ADIM 3 — Kor opsiyon (küçük opt-in checkbox + opsiyonel tutar) ====
-   * Eski büyük "Bir kor daha taşı" sub-section'ın yerine geçti. Yumuşak,
-   * sönük çerçeve; checkbox checked → tutar input açılır. Niyet textarea
-   * + referans liste KALDIRILDI (lansman sonrası ayrı dayanışma sayfası). */
-  .kayit-formu__kor-opsiyon {
-    margin: var(--space-5) 0;
-    padding: var(--space-4) var(--space-4);
-    border: 1px dashed var(--ash);
-    background: rgba(255, 255, 255, 0.015);
-  }
-  .kayit-formu__kor-toggle {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    column-gap: var(--space-3);
-    row-gap: 0.25rem;
-    cursor: pointer;
-    font-family: var(--font-body);
-    line-height: 1.5;
-  }
-  .kayit-formu__kor-toggle input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
-    margin-top: 0.2rem;
-    accent-color: var(--ember);
-    cursor: pointer;
-    grid-row: 1 / span 2;
-  }
-  .kayit-formu__kor-toggle-baslik {
-    font-size: 0.9rem;
-    color: var(--cream);
-    font-weight: 500;
-  }
-  .kayit-formu__kor-toggle-aciklama {
-    font-size: 0.8rem;
-    color: var(--smoke);
-    grid-column: 2;
-  }
-  .kayit-formu__kor-tutar {
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px dashed rgba(255, 255, 255, 0.06);
-  }
-  .kayit-formu__kor-tutar[hidden] { display: none; }
-  .kayit-formu__kor-tutar-label {
-    display: block;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--cream-soft);
-    margin-bottom: 0.55rem;
-  }
+  /* === "Bir kor daha bırak" (Katman B) STİLLERİ KALKTI — 7 Eki ===
+   * Opt-in kutusu formdan çıktı; `.kayit-formu__kor-*` kurallarının tüketicisi
+   * kalmadı ve ölü CSS bırakılmadı (Kaan). Blok Notion alanlarına dokunmadı:
+   * `Askı Tutarı` ve `Tip: Askı Katkısı` duruyor, yalnız bu akıştan
+   * beslenmiyorlar. */
 
   .kayit-formu__group--promo {
     margin-top: var(--space-4);
@@ -1655,16 +1581,15 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     const format = form.dataset.format ?? '';
     const oldText = submit.textContent ?? 'Kaydımı Gönder';
 
-    // Aşama 3b tasarım turu 2 — canlı tutar (kuruş, formatTutarTr). Indirim
-    // SADECE Katman A'ya uygulanır (uygulaIndirim'de tanım); kor (B) tam kalır.
-    // ADIM 3: sadece-askı modu KALDIRILDI. Kor küçük opt-in (checkbox +
-    // opsiyonel tutar). Default kapalı.
-    const askiTutarEl = form.querySelector<HTMLInputElement>('[data-kf-aski-tutar]');
-    const korToggleEl = form.querySelector<HTMLInputElement>('[data-kf-kor-toggle]');
-    const korTutarWrap = form.querySelector<HTMLElement>('[data-kf-kor-tutar-wrap]');
+    // Aşama 3b tasarım turu 2 — canlı tutar (kuruş, formatTutarTr). İndirim
+    // SADECE Katman A'ya uygulanır (`uygulaIndirim`'de tanım).
+    //
+    // 7 Eki — Katman B ("Bir kor daha bırak") FORMDAN KALKTI: opt-in kutusu,
+    // tutar input'u, Toplam satırı ve bunların JS'i gitti. `uygulaIndirim`'in
+    // `katmanB` parametresi DURUYOR ve her çağrıda `0` geçiyor — fonksiyon
+    // başka bir yüzeyden beslenebilir, imzası daraltılmadı.
     const odemeDetails = form.querySelector<HTMLDetailsElement>('[data-kf-odeme]');
     const indirimSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-indirim-slot]');
-    const katmanBSlot = odemeBlok.querySelector<HTMLElement>('[data-kf-katmanB-slot]');
     const niyetDetails = form.querySelector<HTMLDetailsElement>('[data-kf-niyet]');
     const niyetIcerik = form.querySelector<HTMLElement>('[data-kf-niyet-icerik]');
     const niyetTemplate = form.querySelector<HTMLTemplateElement>('[data-kf-niyet-template]');
@@ -1776,16 +1701,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       }
     }
 
-    // Kor opt-in toggle (ADIM 3) — checkbox açık → tutar input görünür;
-    // kapalı → tutar 0'a düşer, tutar bloğunda kor satırı gizli. Tam-burs
-    // halinde container `data-kf-kor` hidden (syncAskiBolumGorunum).
-    function syncKorToggle() {
-      const acik = !!korToggleEl?.checked;
-      if (korTutarWrap) korTutarWrap.hidden = !acik;
-      if (!acik && askiTutarEl) askiTutarEl.value = '';
-      refreshOdemeBlok();
-    }
-
     // Aşama 3a — promo durumu (state). Boşsa null; geçerli/geçersiz KodSonuc
     // backend'ten döner ve refreshOdemeBlok'a beslenir.
     let promoSonuc: KodSonuc | null = null;
@@ -1795,8 +1710,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
 
     function refreshOdemeBlok() {
       const { ucret: katmanA, para } = aktifUcret();
-      const katmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
-      const hesap = uygulaIndirim(katmanA, katmanB, promoSonuc);
+      // Katman B formdan kalktı (7 Eki) — sabit 0. `uygulaIndirim` üç
+      // parametreli kaldı; imzayı daraltmak onu tek yüzeye kilitlerdi.
+      const hesap = uygulaIndirim(katmanA, 0, promoSonuc);
 
       // Tasarım turu 3 regresyon fix (2026-06-14): tüm tutar slot yazıları
       // null-safe. ADIM 2'de IBAN dl form'dan kaldırıldı; eski `[data-kf-
@@ -1812,12 +1728,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       setTxt('[data-kf-para]', para);
       setTxt('[data-kf-toplam]', formatTutarTr(hesap.toplam));
       setTxt('[data-kf-para-toplam]', para);
-
-      // Katman B slot: askı > 0 ise göster.
-      if (katmanBSlot) {
-        katmanBSlot.hidden = katmanB <= 0;
-        setTxt('[data-kf-katmanB]', formatTutarTr(katmanB));
-      }
 
       // İndirim slot: hesap.indirim > 0 ise göster.
       if (indirimSlot) {
@@ -1880,18 +1790,12 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       promoMesajEl.classList.toggle('kayit-formu__promo-mesaj--hata', tip === 'hata');
     }
 
-    // Tam-burs ile kor opt-in + yöntem seçimi çakışır (ödeyemeyen aynı anda
-    // kor bırakmaya/kart seçmeye davet edilmez). Helper:
-    //  - Kor opt-in container gizli (tutar boşa düşürülür).
-    //  - Yöntem grubu gizli; havale otomatik.
-    const korBolum = form!.querySelector<HTMLElement>('[data-kf-kor]');
+    // Tam-burs ile yöntem seçimi çakışır (ödeyemeyen kart seçmeye davet
+    // edilmez): yöntem grubu gizlenir, havale otomatik.
+    //
+    // 7 Eki — kor opt-in bu helper'dan da kalktı; gizlenecek bir şey yok.
     function syncAskiBolumGorunum() {
       const tamBurs = !!(promoSonuc?.gecerli && promoSonuc.tip === 'tam-burs');
-      if (korBolum) korBolum.hidden = tamBurs;
-      if (tamBurs && korToggleEl?.checked) {
-        korToggleEl.checked = false;
-        syncKorToggle();
-      }
       const yontemGrup = form!.querySelector<HTMLElement>('[data-kf-yontem-grup]');
       if (yontemGrup) yontemGrup.hidden = tamBurs;
       if (tamBurs) {
@@ -2027,10 +1931,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       promoYenidenDogrula(0); // tutar değişti → promo'yu hemen yeniden doğrula
       syncSubmitMetni();
     });
-    askiTutarEl?.addEventListener('input', () => {
-      refreshOdemeBlok();
-      promoYenidenDogrula();
-    });
     // Kademe radio change: katmanA değişti, canlı tutar + promo yenile.
     form!
       .querySelectorAll<HTMLInputElement>('[data-kf-kademe]')
@@ -2040,9 +1940,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           promoYenidenDogrula(0);
         }),
       );
-
-    // ADIM 3 — kor opt-in toggle; check → tutar input açılır + refresh.
-    korToggleEl?.addEventListener('change', syncKorToggle);
 
     // Son tur — KVKK toggle: submit metnini akışa göre yeniden senkronize et
     // (savunmacı; submit fail/catch zaten syncSubmitMetni çağırıyor, ama
@@ -2105,10 +2002,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     // Aşama 3b tasarım turu 2 initial — Kayıt Tipi initial state (ilk
     // etkinliğe göre); required + direktAkis + submit metni sync. Niyet +
     // Ödeme initial hidden (tarih seçilmedi); kullanıcı tarih seçince
-    // renderNiyetSorulari + syncTarihSecili çalışır. Kor opt-in default kapalı.
+    // renderNiyetSorulari + syncTarihSecili çalışır.
     syncDirektAkis();
     syncTarihSecili(); // odemeDetails hidden = !(tarih && direkt) — direkt sync sonrası
-    syncKorToggle();
     refreshKademeTutarlari();
     refreshOdemeBlok();
     renderNiyetSorulari([]);
@@ -2155,13 +2051,11 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           if (cevap) ekSorular[soru] = cevap;
         });
 
-      // Askı + promo alanları. ADIM 3 sonrası askıNiyet input KALDIRILDI;
-      // sadece askıTutar (opt-in checkbox açtıysa).
+      // Promo alanları. Askı (Katman B) 7 Eki'de formdan kalktı — `aski_tutar`
+      // artık okunmuyor ve payload'a girmiyor, dolayısıyla Notion `Askı Tutarı`
+      // bu akıştan YAZILMIYOR (alan Notion'da duruyor, yalnız beslenmiyor).
       const promoKodRaw = (data.get('promo_kod') ?? '').toString().trim();
       const promoKodIdRaw = (data.get('promo_kod_id') ?? '').toString().trim();
-      const askiTutarRaw = (data.get('aski_tutar') ?? '').toString().trim();
-      const askiTutar = Number(askiTutarRaw);
-      const korAcik = !!korToggleEl?.checked;
       // Kapı 1 kademe seçimi (Kapı 2/Başvuru'da yok).
       const kademeRaw = (data.get('kademe') ?? '').toString();
       const kademeOk = kademeRaw === 'ust' || kademeRaw === 'orta' || kademeRaw === 'alt';
@@ -2196,7 +2090,6 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         })()),
         ...(promoKodRaw ? { promoKod: promoKodRaw } : {}),
         ...(promoKodIdRaw ? { kodId: promoKodIdRaw } : {}),
-        ...(korAcik && askiTutarRaw && askiTutar > 0 ? { askiTutar } : {}),
         ...(direktAktif() && kademeOk ? { kademe: kademeRaw as 'ust' | 'orta' | 'alt' } : {}),
         ...(direktAktif() ? { odemeYontemi: yontem } : {}),
       };
@@ -2245,8 +2138,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       // (katman A + askı − indirim). Ücretsiz/tam burs kayıtta checkout YOK,
       // dolayısıyla geçiş de yok.
       const { ucret: gecisKatmanA } = aktifUcret();
-      const gecisKatmanB = Math.max(0, Number(askiTutarEl?.value ?? '0') || 0);
-      const gecisToplam = uygulaIndirim(gecisKatmanA, gecisKatmanB, promoSonuc).toplam;
+      const gecisToplam = uygulaIndirim(gecisKatmanA, 0, promoSonuc).toplam;
       const kartYolu = direktAktif() && yontem === 'kart' && gecisToplam > 0;
       if (kartYolu) {
         form.hidden = true;
