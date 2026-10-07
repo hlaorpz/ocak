@@ -212,6 +212,43 @@ describe('kayitOku — üç senaryo (İŞ 1)', () => {
       expect(s.mekanHam).toBe('Online');
       expect(s.katilimLinkiHam).toBe('https://zoom.us/j/123');
       expect(s.zoomSifresiHam).toBe('ocak2026');
+      expect(s.basligHam).toBe('Perşembe Çemberi');
+      expect(s.tarihISOHam).toBe('2026-10-01');
+    });
+
+    it('⚠ `saatHam` MEKÂNA BAĞLI — `saat`in cross-fallback\'ini TÜKETMEZ', async () => {
+      // `odeme-kayit-oku.ts`'in `saat` değişkeni düz OR yapıyor:
+      // `rich('Saat') || rich('Zoom Başlangıç Saati')`. `api/kayit.ts:191-198`
+      // o eşlemeyi canlı veriyle ÇÜRÜTTÜ — iki alan da doluyken yanlış saat
+      // maile gidiyordu. O satır bu turda değişmedi (`DavetKutusu`'nu
+      // besliyor), ama MailerLite alanı ondan beslenmiyor.
+      //
+      // Fixture iki alanı da DOLU veriyor: canlı verinin şekli.
+      const online = {
+        properties: {
+          'Başlık': { title: [{ plain_text: 'Perşembe Çemberi' }] },
+          'Mekân/Platform': { select: { name: 'Online' } },
+          'Katılım Linki': { rich_text: [{ plain_text: 'https://zoom.us/j/123' }] },
+          Slug: { rich_text: [{ plain_text: 'persembe-cemberi' }] },
+          Tarih: { date: { start: '2026-10-01' } },
+          Format: { select: { name: 'Çember' } },
+          'Zoom Başlangıç Saati': { rich_text: [{ plain_text: '20:00' }] },
+          Saat: { rich_text: [{ plain_text: '13:00' }] },
+        },
+      };
+      const { client } = notionSahte({ satirlar: [cokluSatir(1)], etkinlik: online });
+      const s = await kayitOku(client, KAYITLAR_DB, REF);
+      expect(s.saatHam).toBe('20:00');
+      expect(s.slugHam).toBe('persembe-cemberi');
+
+      // Fiziksel: `Saat` kazanır, Zoom saati sızmaz.
+      const fiziksel = {
+        ...online,
+        properties: { ...online.properties, 'Mekân/Platform': { select: { name: 'İstanbul' } } },
+      };
+      const { client: c2 } = notionSahte({ satirlar: [cokluSatir(1)], etkinlik: fiziksel });
+      const s2 = await kayitOku(c2, KAYITLAR_DB, REF);
+      expect(s2.saatHam).toBe('13:00');
     });
 
     it('⚠ İKİ öğeli relation → etkinlikSayisi 2, `[0]` tekliği GİZLEMEZ', async () => {
@@ -262,6 +299,9 @@ describe('kayitOku — üç senaryo (İŞ 1)', () => {
       expect(s.katilimLinkiHam).toBe('');
       expect(s.mekanHam).toBe('İstanbul');
       expect(s.formatHam).toBe('Açık Kapı');
+      // Adres kendi alanında taşınıyor — `mailerLiteCustomFields` onu
+      // `etkinlik_adres`'e yazacak, `zoom_link`'e değil.
+      expect(s.konumDetayHam).toBe('Kadıköy, sokak 5');
     });
   });
 

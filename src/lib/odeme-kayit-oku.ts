@@ -138,6 +138,35 @@ export type KayitOkumaSonuc = {
   mekanHam: string;
   katilimLinkiHam: string;
   zoomSifresiHam: string;
+  /**
+   * Etkinlikler `Başlık` (title) — buluşmanın KENDİ adı ("Elin Neyle Dolu?").
+   * `etkinlikAdi` alanı da aynı değeri taşıyor; bu ikinci ad bilinçli, çünkü
+   * MailerLite tarafında alanın karşılığı `etkinlik_basligi` ve o alan
+   * `etkinlik_adi`'dan (format+tarih) AYRI yaşıyor. İki adı tek alana
+   * bağlamak, `mailerLiteCustomFields`'in ayırdığı iki şeyi geri karıştırmak
+   * olurdu (bkz. `MailerLiteFieldGirdi.etkinlikBasligi` başlığı).
+   */
+  basligHam: string;
+  /** Etkinlikler `Slug` — `etkinlikUrlFormatla` ile `etkinlik_url`'e döner. */
+  slugHam: string;
+  /** Etkinlikler `Tarih` date.start (ISO) — `Seçilen Tarih` boşsa yedek. */
+  tarihISOHam: string;
+  /**
+   * Etkinlik saati, **mekâna bağlı eşlemeyle**: online → `Zoom Başlangıç
+   * Saati`, fiziksel → `Saat`.
+   *
+   * ⚠ Aşağıdaki `saat` değişkeniyle AYNI DEĞİL ve olmamalı. O satır
+   * (`rich('Saat') || rich('Zoom Başlangıç Saati')`) düz bir OR ve
+   * cross-fallback yapıyor — `api/kayit.ts:191-198`'in canlı veriyle
+   * ÇÜRÜTTÜĞÜ eşlemenin ta kendisi: iki alan da doluyken Zoom saati her
+   * zaman kazanıyor, fiziksel buluşmanın saati yanlış yazılıyor. O satır bu
+   * turda DEĞİŞTİRİLMEDİ (kapsam dışı, `DavetKutusu` metnini besliyor ve
+   * davranışı sabit kalmalı) — ama MailerLite alanı onu TÜKETMEZ. Kusurlu
+   * eşlemeyi maile taşımak, düzeltilmiş bir hatayı geri getirmek olurdu.
+   */
+  saatHam: string;
+  /** Etkinlikler `Konum Detay` — fiziksel adres, `etkinlik_adres`'e döner. */
+  konumDetayHam: string;
 };
 
 /**
@@ -175,6 +204,11 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     mekanHam: '',
     katilimLinkiHam: '',
     zoomSifresiHam: '',
+    basligHam: '',
+    slugHam: '',
+    tarihISOHam: '',
+    saatHam: '',
+    konumDetayHam: '',
   };
 }
 
@@ -306,6 +340,13 @@ export async function kayitOku(
       mekanHam: mekan,
       katilimLinkiHam: katilimLinki,
       zoomSifresiHam: zoomSifresi,
+      basligHam: etkinlikAdi,
+      slugHam: rich('Slug'),
+      tarihISOHam: tarihBaslangic,
+      // ⚠ Yukarıdaki `saat` DEĞİL — o cross-fallback yapıyor. Eşleme mekâna
+      // bağlı, `api/kayit.ts:198` ile birebir. Gerekçe `saatHam` başlığında.
+      saatHam: katilimTipiCoz(mekan) === 'link' ? rich('Zoom Başlangıç Saati') : rich('Saat'),
+      konumDetayHam: konumDetay,
     };
 
     const tipi = katilimTipiCoz(mekan);

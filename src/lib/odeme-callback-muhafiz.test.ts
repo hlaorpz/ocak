@@ -131,13 +131,21 @@ function notionSahtesi(
             },
     },
     pages: {
-      // Online Açık Kapı — bildirimin beş alanını doldurmaya yeten şekil.
+      // Online Açık Kapı — bildirimin ON İKİ alanını doldurmaya yeten şekil.
       retrieve: async () => ({
         properties: {
           Format: { select: { name: 'Açık Kapı' } },
           'Mekân/Platform': { select: { name: 'Online' } },
           'Katılım Linki': { rich_text: [{ plain_text: 'https://zoom.us/j/123' }] },
           'Zoom Şifresi': { rich_text: [{ plain_text: 'sifre42' }] },
+          'Başlık': { title: [{ plain_text: 'Elin Neyle Dolu?' }] },
+          Slug: { rich_text: [{ plain_text: 'elin-neyle-dolu' }] },
+          Tarih: { date: { start: '2026-10-12' } },
+          // ⚠ İKİ saat alanı da DOLU — canlı verinin şekli. Online olduğu için
+          // `Zoom Başlangıç Saati` kazanmalı; `Saat` sızarsa aşağıdaki ölçüt
+          // kırmızı yanar (cross-fallback regresyon kilidi).
+          'Zoom Başlangıç Saati': { rich_text: [{ plain_text: '20:00' }] },
+          Saat: { rich_text: [{ plain_text: '13:00 (yanlış alan)' }] },
         },
       }),
       update: async (args: any) => {
@@ -489,7 +497,7 @@ describe('odeme-callback — bildirim halkası kapıların ARDINDA (B211)', () =
     vi.doUnmock('../lib/notion.ts');
   });
 
-  it('KONTROL — başarılı callback MailerLite\'a beş alan yazar, `Mail Gitti` işaretlenir', async () => {
+  it('KONTROL — başarılı callback MailerLite\'a on iki alan yazar, `Mail Gitti` işaretlenir', async () => {
     const { POST, guncellenen, mailerLiteCagrilari } = await routeYukle(BILDIRIMLI, KEY);
     const res = await POST({ request: istek(imzaliGovde()) });
     expect(res.status).toBe(302);
@@ -497,13 +505,26 @@ describe('odeme-callback — bildirim halkası kapıların ARDINDA (B211)', () =
     // `groups` GÖNDERİLMEZ — mevcut üyeliklere dokunulmaz (7 Eki ölçümü).
     expect(mailerLiteCagrilari[0].govde).not.toHaveProperty('groups');
     expect(mailerLiteCagrilari[0].govde.email).toBe('test@ornek.invalid');
-    expect(Object.keys(mailerLiteCagrilari[0].govde.fields).sort()).toEqual(
-      ['etkinlik_adi', 'katilim_linki', 'odeme_durumu', 'zoom_link', 'zoom_sifresi'],
-    );
-    expect(mailerLiteCagrilari[0].govde.fields.odeme_durumu).toBe('alindi');
-    expect(mailerLiteCagrilari[0].govde.fields.etkinlik_adi).toBe(
-      'Açık Kapı — 12 Ekim 2026 · ödeme alındı',
-    );
+    // `name`/`last_name` de yok: abonenin adını ödeme anında yeniden yazmıyoruz.
+    expect(mailerLiteCagrilari[0].govde.fields).not.toHaveProperty('name');
+    expect(mailerLiteCagrilari[0].govde.fields).not.toHaveProperty('last_name');
+    // Uçtan uca küme: `kayitOku` → `odemeBildir` → `fetch` gövdesi. Tek bir
+    // halkada alan düşerse burası kırmızı yanar.
+    expect(mailerLiteCagrilari[0].govde.fields).toEqual({
+      odeme_durumu: 'alindi',
+      etkinlik_adi: 'Açık Kapı — 12 Ekim 2026 · ödeme alındı',
+      etkinlik_basligi: 'Elin Neyle Dolu?',
+      etkinlik_url: 'https://www.ocak.biz/etkinlik/elin-neyle-dolu',
+      etkinlik_tarihi: '12 Ekim 2026',
+      // Online → `Zoom Başlangıç Saati`. Fixture'daki `Saat` tuzağı sızmadı.
+      etkinlik_saati: '20:00',
+      etkinlik_mekan: '',
+      etkinlik_adres: '',
+      katilim_linki: 'https://zoom.us/j/123',
+      zoom_link: 'https://zoom.us/j/123',
+      zoom_sifresi: 'sifre42',
+      referans_no: REF,
+    });
     // İKİ Notion yazımı: ödeme onayı + `Mail Gitti`. Sıra önemli — bildirim
     // ödemeden SONRA gelir.
     expect(guncellenen).toHaveLength(2);

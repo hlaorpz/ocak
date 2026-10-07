@@ -47,7 +47,7 @@ function redirect(url: string): Response {
 }
 
 /**
- * B211 taşıma katmanı — MailerLite abone upsert'i, YALNIZ beş alan.
+ * B211 taşıma katmanı — MailerLite abone upsert'i, on iki custom field.
  *
  * Uç ve kimlik `api/kayit.ts`'in `mailerLiteEkle`'siyle birebir aynı; fark
  * iki: (a) `groups` gönderilmez — abone kayıt anında grubuna girdi ve kısmi
@@ -408,6 +408,11 @@ async function handle(request: Request): Promise<Response> {
         mekanHam: kayit.mekanHam,
         katilimLinkiHam: kayit.katilimLinkiHam,
         zoomSifresiHam: kayit.zoomSifresiHam,
+        basligHam: kayit.basligHam,
+        slugHam: kayit.slugHam,
+        tarihISOHam: kayit.tarihISOHam,
+        saatHam: kayit.saatHam,
+        konumDetayHam: kayit.konumDetayHam,
       },
       { mailerLiteYaz: mailerLiteAlanYaz, mailGittiIsaretle },
     );

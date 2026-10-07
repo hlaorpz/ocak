@@ -7,6 +7,7 @@ import {
   ODEME_BILDIR_ALANLARI,
   type OdemeBildirGirdi,
 } from './odeme-bildir.ts';
+import { MAILERLITE_ALANLAR } from './kayit.ts';
 
 /**
  * `lib/odeme-bildir.ts` — B211 kart ayağı.
@@ -37,6 +38,32 @@ const GIRDI: OdemeBildirGirdi = {
   mekanHam: 'Online',
   katilimLinkiHam: 'https://zoom.us/j/123',
   zoomSifresiHam: 'sifre42',
+  basligHam: 'Elin Neyle Dolu?',
+  slugHam: 'elin-neyle-dolu',
+  tarihISOHam: '2026-10-12',
+  saatHam: '20:00',
+  konumDetayHam: '',
+};
+
+/**
+ * İKİNCİ etkinlik — hiçbir alanı birinciyle çakışmaz. "Abonede birinciden
+ * kalan değer var mı" sorusunu ölçebilmek için her alan ayırt edici.
+ */
+const IKINCI: OdemeBildirGirdi = {
+  kayitId: 'OCAK-9ZQ1',
+  pageId: 'page-uuid-2',
+  email: 'test@ornek.invalid',
+  etkinlikSayisi: 1,
+  formatHam: 'Çember',
+  seciliTarih: '28 Kasım 2026',
+  mekanHam: 'İstanbul',
+  katilimLinkiHam: '',
+  zoomSifresiHam: '',
+  basligHam: 'Ekmeden Önce',
+  slugHam: 'ekmeden-once',
+  tarihISOHam: '2026-11-28',
+  saatHam: '19:30',
+  konumDetayHam: 'Kadıköy, sokak 5',
 };
 
 function deps(opts: { yazimOk?: boolean; yazimHata?: string; yazimThrow?: boolean; mailGittiThrow?: boolean } = {}) {
@@ -93,45 +120,73 @@ describe('odemeAlindiEkle — tetiği uyandıran ek, çift eklenmez', () => {
   });
 });
 
-describe('odemeBildirAlanlari — beş alan, `muaf` yolunun eşlemesi', () => {
-  it('anahtar kümesi TAM OLARAK beş alan — fazlası yok, eksiği yok', () => {
-    const r = odemeBildirAlanlari(GIRDI);
-    expect('alanlar' in r).toBe(true);
-    const anahtarlar = Object.keys((r as { alanlar: Record<string, string> }).alanlar).sort();
+const alanlariniAl = (g: OdemeBildirGirdi) =>
+  (odemeBildirAlanlari(g) as { alanlar: Record<string, string> }).alanlar;
+
+describe('odemeBildirAlanlari — on iki alan, `muaf` yolunun eşlemesi', () => {
+  it('anahtar kümesi TAM OLARAK `MAILERLITE_ALANLAR` — fazlası yok, eksiği yok', () => {
+    const anahtarlar = Object.keys(alanlariniAl(GIRDI)).sort();
     expect(anahtarlar).toEqual([...ODEME_BILDIR_ALANLARI].sort());
-    // Kayıt anının on iki alanından yedisi BİLEREK dışarıda: kayıt anında
-    // doğru yazıldılar, yeniden üretmek bayat veri yazma riskidir.
-    expect(anahtarlar).toHaveLength(5);
-    for (const yasak of ['etkinlik_basligi', 'etkinlik_url', 'etkinlik_tarihi', 'etkinlik_saati', 'etkinlik_mekan', 'etkinlik_adres', 'referans_no']) {
-      expect(anahtarlar).not.toContain(yasak);
+    expect(anahtarlar).toEqual([...MAILERLITE_ALANLAR].sort());
+    expect(anahtarlar).toHaveLength(12);
+    // Kayıt anının HİÇBİR etkinlik alanı dışarıda bırakılmadı — beş alanlık
+    // ilk hâlin kusuru buydu (dosya başı: abone tek, alanlar ikinci kayıtta
+    // ezilmiş olabilir).
+    for (const alan of ['etkinlik_basligi', 'etkinlik_url', 'etkinlik_tarihi', 'etkinlik_saati', 'etkinlik_mekan', 'etkinlik_adres', 'referans_no']) {
+      expect(anahtarlar).toContain(alan);
     }
+    // `name`/`last_name` custom field DEĞİL — payload'a girmez.
+    expect(anahtarlar).not.toContain('name');
+    expect(anahtarlar).not.toContain('last_name');
   });
 
-  it('online: üç Zoom alanı `muaf` yolunun değerleriyle dolu', () => {
-    const { alanlar } = odemeBildirAlanlari(GIRDI) as { alanlar: Record<string, string> };
-    expect(alanlar.odeme_durumu).toBe('alindi');
-    expect(alanlar.zoom_link).toBe('https://zoom.us/j/123');
+  it('online: on iki alanın hepsi kaydın KENDİ etkinliğinden', () => {
+    const a = alanlariniAl(GIRDI);
+    expect(a.odeme_durumu).toBe('alindi');
+    expect(a.zoom_link).toBe('https://zoom.us/j/123');
     // C-1 geriye uyum: `katilim_linki` AYNI değeri taşır (kayit.ts:500-502).
-    expect(alanlar.katilim_linki).toBe('https://zoom.us/j/123');
-    expect(alanlar.zoom_sifresi).toBe('sifre42');
-    expect(alanlar.etkinlik_adi).toBe('Açık Kapı — 12 Ekim 2026 · ödeme alındı');
+    expect(a.katilim_linki).toBe('https://zoom.us/j/123');
+    expect(a.zoom_sifresi).toBe('sifre42');
+    expect(a.etkinlik_adi).toBe('Açık Kapı — 12 Ekim 2026 · ödeme alındı');
+    expect(a.etkinlik_basligi).toBe('Elin Neyle Dolu?');
+    expect(a.etkinlik_url).toBe('https://www.ocak.biz/etkinlik/elin-neyle-dolu');
+    expect(a.etkinlik_tarihi).toBe('12 Ekim 2026');
+    expect(a.etkinlik_saati).toBe('20:00');
+    expect(a.referans_no).toBe('OCAK-7K2M');
+    // Online'da mekân ve adres BOŞ — `mailerLiteCustomFields`'in kuralı.
+    expect(a.etkinlik_mekan).toBe('');
+    expect(a.etkinlik_adres).toBe('');
   });
 
-  it('yüz yüze: üç Zoom alanı BOŞ — dal seçimi otomasyonun işi', () => {
+  it('yüz yüze: üç Zoom alanı BOŞ, mekân + adres DOLU', () => {
     // Otomasyon `zoom_link` boş mu diye bakıp Mail 2 ile Mail 3 arasında
     // seçiyor. Kod dal seçmez; `muaf` yolunda ne ise o yazılır.
-    const { alanlar } = odemeBildirAlanlari({
-      ...GIRDI,
-      mekanHam: 'İstanbul',
-      katilimLinkiHam: 'Kadıköy, sokak 5',
-      zoomSifresiHam: '',
-    }) as { alanlar: Record<string, string> };
-    expect(alanlar.zoom_link).toBe('');
-    expect(alanlar.katilim_linki).toBe('');
-    expect(alanlar.zoom_sifresi).toBe('');
-    // Ama ek ve durum yine gider — tetik yüz yüzede de koşmalı.
-    expect(alanlar.odeme_durumu).toBe('alindi');
-    expect(alanlar.etkinlik_adi).toBe('Açık Kapı — 12 Ekim 2026 · ödeme alındı');
+    const a = alanlariniAl(IKINCI);
+    expect(a.zoom_link).toBe('');
+    expect(a.katilim_linki).toBe('');
+    expect(a.zoom_sifresi).toBe('');
+    expect(a.etkinlik_mekan).toBe('İstanbul');
+    expect(a.etkinlik_adres).toBe('Kadıköy, sokak 5');
+    expect(a.etkinlik_saati).toBe('19:30');
+    // Ek ve durum yine gider — tetik yüz yüzede de koşmalı.
+    expect(a.odeme_durumu).toBe('alindi');
+    expect(a.etkinlik_adi).toBe('Çember — 28 Kasım 2026 · ödeme alındı');
+  });
+
+  it('`Seçilen Tarih` boşsa `etkinlik_tarihi` Notion ISO\'sundan Türkçe\'ye çevrilir', () => {
+    // `api/kayit.ts:746` ile birebir aynı yedek. Uydurma YOK: ISO da boşsa
+    // alan boş gider.
+    const a = alanlariniAl({ ...GIRDI, seciliTarih: '   ' });
+    expect(a.etkinlik_tarihi).toBe('12 Ekim 2026');
+    // `etkinlik_adi` ise tarihsiz kalır — kurucunun kuralı (sadece TIP).
+    expect(a.etkinlik_adi).toBe('Açık Kapı · ödeme alındı');
+    const bos = alanlariniAl({ ...GIRDI, seciliTarih: '', tarihISOHam: '' });
+    expect(bos.etkinlik_tarihi).toBe('');
+  });
+
+  it('Slug boşsa `etkinlik_url` BOŞ — kırık taban URL üretilmez', () => {
+    const a = alanlariniAl({ ...GIRDI, slugHam: '' });
+    expect(a.etkinlik_url).toBe('');
   });
 
   it('`etkinlik_adi` kayıt anındaki kurucuyla üretilir — yedi format', () => {
@@ -165,7 +220,7 @@ describe('odemeBildirAlanlari — beş alan, `muaf` yolunun eşlemesi', () => {
 });
 
 describe('odemeBildir — yazım · Mail Gitti · hata yalıtımı', () => {
-  it('4 · başarılıysa MailerLite beş alanı alır ve `Mail Gitti` YAZILIR', async () => {
+  it('4 · başarılıysa MailerLite on iki alanı alır ve `Mail Gitti` YAZILIR', async () => {
     const { deps: d, yazimlar, isaretlenen } = deps();
     const sonuc = await odemeBildir(GIRDI, d);
     expect(sonuc).toEqual({ durum: 'yazildi', mailGitti: true });
@@ -173,6 +228,67 @@ describe('odemeBildir — yazım · Mail Gitti · hata yalıtımı', () => {
     expect(yazimlar[0].email).toBe('test@ornek.invalid');
     expect(Object.keys(yazimlar[0].alanlar).sort()).toEqual([...ODEME_BILDIR_ALANLARI].sort());
     expect(isaretlenen).toEqual(['page-uuid-1']);
+  });
+
+  it('⚠ İKİNCİ etkinlik: payload YALNIZ kendi etkinliğini taşır, birinciden kalan YOK', async () => {
+    // Kusurun tam şekli (7 Eki düzeltmesi): MailerLite'ta kişi başına TEK
+    // abone var. Kadın ilk etkinliğe kayıt olup ödemeden, ikinci etkinliğe
+    // kayıt olursa `/api/kayit` etkinlik alanlarını İKİNCİ'ye göre ezer.
+    // Beş alanlık yazım o hâlde ikinci etkinliğin başlığı/tarihi altında
+    // BİRİNCİnin Zoom linkini gönderirdi.
+    //
+    // Burada ardışık iki çağrı aynı aboneye gidiyor; ölçülen şey ikinci
+    // payload'ın birinciden HİÇBİR değer taşımaması.
+    const { deps: d, yazimlar } = deps();
+    await odemeBildir(GIRDI, d);
+    await odemeBildir(IKINCI, d);
+    expect(yazimlar).toHaveLength(2);
+    const ikinci = yazimlar[1].alanlar;
+
+    // İkinci etkinliğin KENDİ değerleri — on iki alanın hepsi.
+    expect(ikinci).toEqual({
+      odeme_durumu: 'alindi',
+      etkinlik_adi: 'Çember — 28 Kasım 2026 · ödeme alındı',
+      etkinlik_basligi: 'Ekmeden Önce',
+      etkinlik_url: 'https://www.ocak.biz/etkinlik/ekmeden-once',
+      etkinlik_tarihi: '28 Kasım 2026',
+      etkinlik_saati: '19:30',
+      etkinlik_mekan: 'İstanbul',
+      etkinlik_adres: 'Kadıköy, sokak 5',
+      katilim_linki: '',
+      zoom_link: '',
+      zoom_sifresi: '',
+      referans_no: 'OCAK-9ZQ1',
+    });
+
+    // Birincinin HİÇBİR ayırt edici değeri ikinci payload'da geçmiyor.
+    // ⚠ Boş string ARANMAZ: ikinci payload'da meşru boş alanlar var ve
+    // `''` her yerde "bulunur". Yalnız dolu, ayırt edici değerler.
+    const birinciDegerleri = Object.values(yazimlar[0].alanlar).filter(
+      (v) => v && v !== 'alindi',
+    );
+    expect(birinciDegerleri.length).toBeGreaterThan(5);
+    for (const v of birinciDegerleri) {
+      expect(Object.values(ikinci)).not.toContain(v);
+    }
+    // Özellikle: birincinin Zoom linki ikinci payload'da BOŞLANIYOR —
+    // "yazılmadı" değil, aboneden SİLİNİYOR (alan hijyeni, kayit.ts).
+    expect(ikinci.zoom_link).toBe('');
+    expect(ikinci.katilim_linki).toBe('');
+    expect(ikinci.zoom_sifresi).toBe('');
+    expect('zoom_link' in ikinci).toBe(true);
+  });
+
+  it('ters sıra da tutar — yüz yüze sonra online, adres aboneden silinir', async () => {
+    // Simetri: fiziksel etkinliğin adresi online bir ödemede yerinde kalmaz.
+    const { deps: d, yazimlar } = deps();
+    await odemeBildir(IKINCI, d);
+    await odemeBildir(GIRDI, d);
+    const ikinci = yazimlar[1].alanlar;
+    expect(ikinci.etkinlik_adres).toBe('');
+    expect(ikinci.etkinlik_mekan).toBe('');
+    expect(ikinci.etkinlik_basligi).toBe('Elin Neyle Dolu?');
+    expect(ikinci.zoom_link).toBe('https://zoom.us/j/123');
   });
 
   it('3 · MailerLite hata verirse `Mail Gitti` YAZILMAZ ve throw EDİLMEZ', async () => {

@@ -35,8 +35,11 @@
 import {
   mailerLiteCustomFields,
   etkinlikAdiFormatla,
+  etkinlikUrlFormatla,
+  tarihTrFormat,
   katilimTipiCoz,
   isKayitFormat,
+  MAILERLITE_ALANLAR,
 } from './kayit.ts';
 import { FORMAT_KATEGORI } from './etkinlik-kategori.ts';
 
@@ -47,18 +50,31 @@ import { FORMAT_KATEGORI } from './etkinlik-kategori.ts';
 export const ODEME_ALINDI_EKI = ' · ödeme alındı';
 
 /**
- * MailerLite'a giden alanların TAM kümesi — beş alan, fazlası değil.
- * `MAILERLITE_ALANLAR` (on iki) kayıt anındaki envanter; ödeme bildirimi
- * onun bir alt kümesini yazar. Kalan yedi alana dokunmamak bilinçli: kayıt
- * anında doğru yazıldılar, yeniden üretmek bayat veri yazma riskidir.
+ * MailerLite'a giden alanların TAM kümesi = `MAILERLITE_ALANLAR`, on iki alan.
+ *
+ * ── Neden beş değil on iki (7 Eki 2026, Claude.ai düzeltmesi) ──
+ * İlk hâli beş alanla sınırlıydı: `odeme_durumu` + üç Zoom alanı +
+ * `etkinlik_adi`. Gerekçe "kalan yedi alan kayıt anında doğru yazıldı, yeniden
+ * üretmek bayat veri riski" idi ve **tersi doğruydu.**
+ *
+ * MailerLite'ta kişi başına TEK abone var ve etkinlik alanları o abonenin
+ * üstünde yaşıyor. Aynı kadın ödemeden önce başka bir etkinliğe kayıt olursa
+ * `/api/kayit` o alanları İKİNCİ etkinliğe göre ezer. Beş alanlık yazım o
+ * hâlde şunu üretirdi: ikinci etkinliğin başlığı, tarihi, saati ve adresi
+ * altında **birincinin Zoom linki.** Yani "dokunmamak" bayat veriyi korumak,
+ * yazmak ise onu düzeltmekti.
+ *
+ * Kural artık şu: ödenen kaydın KENDİ etkinliğinden yeniden üretilebilen her
+ * alan yazılır. On ikisi de üretilebiliyor (ölçüm raporda) — yani küme tam
+ * olarak kayıt anının kümesi. Üretilemeyen bir alan ÇIKARSA uydurulmaz;
+ * `mailerLiteCustomFields`'in dönüşü otorite olduğu için böyle bir alan
+ * payload'a kendiliğinden girmez.
+ *
+ * `name` · `last_name` · `groups` GÖNDERİLMEZ: ilk ikisi custom field değil
+ * (`mailerLiteFieldsPayload` ekliyor, biz o helper'dan geçmiyoruz), üçüncüsü
+ * abone zaten grubunda olduğu için gereksiz.
  */
-export const ODEME_BILDIR_ALANLARI = [
-  'odeme_durumu',
-  'zoom_link',
-  'zoom_sifresi',
-  'katilim_linki',
-  'etkinlik_adi',
-] as const;
+export const ODEME_BILDIR_ALANLARI = MAILERLITE_ALANLAR;
 
 /**
  * Ek'i idempotent ekler. Değer zaten ekle bitiyorsa **aynen döner** — iki kez
@@ -93,6 +109,16 @@ export type OdemeBildirGirdi = {
   mekanHam: string;
   katilimLinkiHam: string;
   zoomSifresiHam: string;
+  /** Etkinlikler `Başlık` — `etkinlik_basligi`. `etkinlik_adi`'dan AYRI alan. */
+  basligHam: string;
+  /** Etkinlikler `Slug` — `etkinlikUrlFormatla` ile `etkinlik_url`'e döner. */
+  slugHam: string;
+  /** Etkinlikler `Tarih` date.start — `Seçilen Tarih` boşsa yedek kaynak. */
+  tarihISOHam: string;
+  /** Etkinlik saati, MEKÂNA BAĞLI eşlemeyle çözülmüş (cross-fallback yok). */
+  saatHam: string;
+  /** Etkinlikler `Konum Detay` — `etkinlik_adres`. */
+  konumDetayHam: string;
 };
 
 export type OdemeBildirSonuc = {
@@ -109,23 +135,27 @@ export type OdemeBildirSonuc = {
 };
 
 /**
- * Beş alanı kurar. Dönen `alanlar`ın anahtar kümesi **tam olarak**
- * `ODEME_BILDIR_ALANLARI`.
+ * Alanları kurar. Dönen `alanlar`ın anahtar kümesi **tam olarak**
+ * `ODEME_BILDIR_ALANLARI` (= `MAILERLITE_ALANLAR`, on iki alan).
  *
- * Üç Zoom alanı `mailerLiteCustomFields`'ten geliyor, `odemeGerekli: false`
- * ile — yani `muaf` kaydın yürüdüğü dalın ta kendisi (`kayit.ts:501-503`).
- * Yeni eşleme YAZILMADI: online/fiziksel ayrımı, `zoom_link` ile
- * `katilim_linki`'nin aynı değeri taşıması (C-1 geriye uyum) ve boşaltma
- * kuralı orada tek yerde yaşıyor. İkinci bir kopya, iki eşlemenin zamanla
- * ayrışması demekti.
+ * Bütün eşleme `mailerLiteCustomFields`'ten geliyor, `odemeGerekli: false`
+ * ile — yani `muaf` kaydın yürüdüğü dalın ta kendisi. Yeni eşleme YAZILMADI:
+ * online/fiziksel ayrımı, `zoom_link` ile `katilim_linki`'nin aynı değeri
+ * taşıması (C-1 geriye uyum), `etkinlik_mekan`'ın kapıya tabi OLMAMASI ve
+ * boşaltma kuralı orada tek yerde yaşıyor. İkinci bir kopya, iki eşlemenin
+ * zamanla ayrışması demekti. Çıktı o fonksiyonun dönüşü, iki ezmeyle:
  *
- * `odeme_durumu` ezilir: o fonksiyon iki değer üretiyor (`bekliyor`/`muaf`),
- * üçüncüsünü (`alindi`) bilmiyor. İmzasını değiştirmek yerine burada
- * yazılıyor — `mailerLiteCustomFields` kayıt anının otoritesi, ödeme anının
- * değil.
+ *   `odeme_durumu` → 'alindi'. O fonksiyon iki değer üretiyor
+ *   (`bekliyor`/`muaf`), üçüncüsünü bilmiyor; imzasını değiştirmek yerine
+ *   burada yazılıyor — kayıt anının otoritesi ödeme anının otoritesi değil.
+ *
+ *   `etkinlik_adi` → ekli hâli. Tetiği uyandıran şey bu (dosya başı).
+ *
+ * ⚠ Dönüşü `{ ...ham }` ile kopyalamak ŞART: `ham`ı doğrudan döndürüp üstüne
+ * yazmak aynı nesneyi paylaşan bir çağırana sızabilirdi.
  */
 export function odemeBildirAlanlari(
-  g: Pick<OdemeBildirGirdi, 'kayitId' | 'formatHam' | 'seciliTarih' | 'mekanHam' | 'katilimLinkiHam' | 'zoomSifresiHam'>,
+  g: Omit<OdemeBildirGirdi, 'pageId' | 'email' | 'etkinlikSayisi'>,
 ): { alanlar: Record<string, string> } | { hata: string } {
   // Format, Etkinlikler sayfasının `Format` select'inden türetilir — Kayıtlar
   // satırında format alanı yok. `FORMAT_KATEGORI` `FORMAT_NOTION_FORMAT`'ın
@@ -147,21 +177,28 @@ export function odemeBildirAlanlari(
 
   const ham = mailerLiteCustomFields({
     etkinlikAdi,
+    // `api/kayit.ts:746` ile birebir: form değeri varsa o (zaten Türkçe),
+    // yoksa Notion ISO'su Türkçe'ye çevrilir.
+    etkinlikTarihi: g.seciliTarih.trim() || tarihTrFormat(g.tarihISOHam),
+    etkinlikSaati: g.saatHam,
     katilimTipi: katilimTipiCoz(g.mekanHam),
     katilimLinki: g.katilimLinkiHam,
     zoomSifresi: g.zoomSifresiHam,
-    // `muaf` yolu — kapı AÇIK, üç Zoom alanı bu dalda dolar.
+    mekan: g.mekanHam,
+    mekanAdres: g.konumDetayHam,
+    // `muaf` yolu — kapı AÇIK, katılım alanları bu dalda dolar.
     odemeGerekli: false,
-    // Zorunlu alan; ürettiği `referans_no` payload'a GİRMEZ (beş alan kuralı).
+    // Ödeme anında `referansKodu` = kayıt anındaki `referansNo`: `Kayıt ID`
+    // title'ı onunla sorgulandı, sonek `soyEpochSoneki` ile soyuldu.
     referansNo: g.kayitId,
+    etkinlikBasligi: g.basligHam,
+    etkinlikUrl: etkinlikUrlFormatla(g.slugHam),
   });
 
   return {
     alanlar: {
+      ...ham,
       odeme_durumu: 'alindi',
-      zoom_link: ham.zoom_link,
-      zoom_sifresi: ham.zoom_sifresi,
-      katilim_linki: ham.katilim_linki,
       etkinlik_adi: odemeAlindiEkle(ham.etkinlik_adi),
     },
   };
