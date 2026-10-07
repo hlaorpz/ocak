@@ -580,8 +580,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           arıyor. */}
       <div class="kayit-formu__success-odemeli" data-kf-success-odemeli hidden>
         <p class="kayit-formu__success-text" data-kf-success-odemeli-metin>
-          {/* JS doldurur: "Referans kodun OCAK-XXXX. Katılım payını üç gün
-              içinde aşağıdaki hesaba iletebilirsin." */}
+          {/* JS doldurur: "Referans kodun OCAK-XXXX. Yerini şu ana kadar
+              tutuyoruz: 8 Ekim Perşembe, 14:30 (Türkiye saati)." */}
         </p>
         <dl class="kayit-formu__success-odeme">
           <dt>Tutar</dt>
@@ -595,12 +595,18 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         </dl>
         {/* Faz 1 §4.2 — tablodan sonra iki satır. Birincisi işlevsel (kod
             açıklamaya yazılmazsa eşleştirme elde kalır), ikincisi ahlaki:
-            üç gün bir eşik değil, konuşulabilir bir aralık. */}
+            süre bir eşik değil, konuşulabilir bir aralık.
+
+            7 Eki: "Üç gün dar geliyorsa" → "Süre dar geliyorsa". Cümle sabit
+            bir sayı söylüyordu ama gerçek süre artık kaydın `Yer Tutma
+            Bitişi`'nden geliyor ve kayda göre değişiyor (kart 3 sa · havale
+            24 sa · etkinliğe ≤72 saat kaldıysa 12 sa). "Üç gün" demek üstteki
+            cümlenin söylediği anı yalanlamak olurdu. */}
         <p class="kayit-formu__success-odeme-not">
           Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz.
         </p>
         <p class="kayit-formu__success-odeme-not">
-          Payın ulaştığında sana yazarız. Üç gün dar geliyorsa haber ver, yerini tutarız.
+          Payın ulaştığında sana yazarız. Süre dar geliyorsa haber ver, birlikte bakarız.
         </p>
       </div>
 
@@ -2237,8 +2243,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           const odemesizDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemesiz]')!;
           const odemeliDiv = successEl.querySelector<HTMLElement>('[data-kf-success-odemeli]')!;
           if (!isBasvuru && result.odeme?.gerekli) {
-            // Tasarım turu 3 (ADIM 1) — havale success: tek cümle yapısı
-            // "{refCumle} {vadeMetni}" (vadeMetni backend'den, tarihe göre dinamik).
+            // Havale success: tek cümle yapısı "{refCumle}{sureCumlesi}" —
+            // ikincisi backend'den, kaydın `Yer Tutma Bitişi`'ne göre.
             //
             // Faz 1 §4.2 — "referans numarası" → "referans kodu". Kod artık
             // rakamsal değil (KARAR 488 turu, OCAK-XXXX harf+rakam alfabesi);
@@ -2250,14 +2256,24 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
             const refCumle = result.referansNo
               ? `Referans kodun ${result.referansNo}.`
               : 'Kaydını aldık.';
-            const vade =
-              result.odeme.vadeMetni ??
-              'Katılım payını üç gün içinde aşağıdaki hesaba iletebilirsin.';
+            // ── 7 Eki — süre kaydın `Yer Tutma Bitişi`'nden ──
+            // Eski hâl `result.odeme.vadeMetni` okuyordu ve o cümle
+            // `havaleVadeMetni`'nin ürettiği kaba gün farkıydı ("üç gün
+            // içinde…"), kaydın gerçek yer tutma süresiyle ilgisi yoktu.
+            // `sonAn` mailin `ODEME_SON_AN`'ıyla AYNI kaynak ve AYNI biçim:
+            // ekran ve mail aynı anı söylüyor.
+            //
+            // Boşsa süre cümlesi HİÇ BASILMAZ — uydurmak kadına yanlış bir
+            // son an vermek olurdu. Fallback dize de bırakılmadı: gömülü bir
+            // "üç gün" kopyası tam da kaldırdığımız şeydi.
+            const sureCumlesi = result.odeme.sonAn
+              ? ` Yerini şu ana kadar tutuyoruz: ${result.odeme.sonAn}.`
+              : '';
             const odemeliMetinEl = successEl.querySelector<HTMLElement>(
               '[data-kf-success-odemeli-metin]',
             );
             if (odemeliMetinEl) {
-              odemeliMetinEl.textContent = `${refCumle} ${vade}`;
+              odemeliMetinEl.textContent = `${refCumle}${sureCumlesi}`;
             }
             successEl.querySelector('[data-kf-success-tutar]')!.textContent = formatTutarTr(
               result.odeme.tutar ?? 0,

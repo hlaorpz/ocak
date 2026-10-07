@@ -233,8 +233,8 @@ describe('sonAnMetni — `8 Ekim Perşembe, 14:30 (Türkiye saati)`', () => {
 
   it('TR dilimine göre okunur — UTC gün sınırı günü KAYDIRMAZ', () => {
     // `2026-10-08T22:30:00Z` = TR'de 9 Ekim 01:30. Sunucu dilimiyle (UTC)
-    // okunsaydı "8 Ekim … 22:30" derdi — `havale-vade.ts`'nin KARAR 385'te
-    // öğrendiği hata. 9 Ekim 2026 Cuma.
+    // okunsaydı "8 Ekim … 22:30" derdi — KARAR 385'in hatası (artık
+    // kaldırılmış `havale-vade.ts`'de öğrenilmişti). 9 Ekim 2026 Cuma.
     expect(sonAnMetni(an('2026-10-08T22:30:00Z'))).toBe(
       '9 Ekim Cuma, 01:30 (Türkiye saati)',
     );

@@ -523,7 +523,7 @@ export function mailerLiteCustomFields(g: MailerLiteFieldGirdi): Record<string, 
  * ── Neden ayrı bir helper ──
  * `mailerLiteEkle` bir route dosyasında (`src/pages/api/kayit.ts`) yaşıyor ve
  * `src/pages/` altına test konamıyor (her dosya route sayılır — bkz.
- * `havale-vade.ts` başlığı). Payload kurulumu bu yüzden lib'e alındı: saf
+ * `yer-tutma.ts` başlığı). Payload kurulumu bu yüzden lib'e alındı: saf
  * mantık lib'de yaşar, test lib'de koşar. `fetch` route'ta kalır.
  *
  * ── Alan hijyeni: boş string GİDER ──

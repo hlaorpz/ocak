@@ -3,7 +3,7 @@
 //
 // ── Neden lib'de ──
 // Mantık `KayitFormu.astro`nun inline script'indeydi; `src/pages/` ve `.astro`
-// script'lerine test konamıyor (repo deseni: `havale-vade.ts`,
+// script'lerine test konamıyor (repo deseni: `yer-tutma.ts`,
 // `scroll-to-success.ts`, `mailerLiteFieldsPayload` hepsi aynı sebeple taşındı).
 // Buradaki asıl neden test değil, TESTİN KORUDUĞU ŞEY: hata bugün patlamıyor
 // ama Notion'a zorunlu bir niyet sorusu eklendiği gün canlıya çıkar (aşağıya bak).

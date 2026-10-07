@@ -3,8 +3,10 @@
  *
  * ── Neden an, neden metin değil ──
  * Repoda tarih/saat yardımcıları vardı ama hepsi **gösterim** içindi:
- * `formatEtkinlikTarihi` insan okur dize üretiyor, `havaleVadeMetni` gün farkı
- * sayıyor, `trGun` gün damgası veriyor. Hiçbiri **an** (`Date`) üretmiyordu.
+ * `formatEtkinlikTarihi` insan okur dize üretiyor, `trGun` gün damgası
+ * veriyor. Hiçbiri **an** (`Date`) üretmiyordu. (Üçüncüsü `havaleVadeMetni`
+ * gün farkı sayıyordu; 7 Eki'de kaldırıldı — süre artık `Yer Tutma
+ * Bitişi`'nden geliyor ve bu dosya onu üretiyor.)
  * B211 ilk kez karşılaştırma yapıyor ("bitiş geçti mi", "etkinlik başladı mı"),
  * ve karşılaştırma dizeyle değil anla yapılır.
  *
@@ -206,7 +208,8 @@ const TR_AYLAR = [
  *
  * Parçalar `Europe/Istanbul`'da okunur: `Date` UTC taşır, yerel okumak Vercel
  * sunucusunun dilimine (UTC) düşerdi ve 00:00-03:00 penceresinde günü bir
- * geriye kaydırırdı — `havale-vade.ts`'nin KARAR 385'te öğrendiği ders.
+ * geriye kaydırırdı. Ders KARAR 385'te `havale-vade.ts`'de öğrenilmişti; o
+ * dosya 7 Eki'de kaldırıldı ve dersi BURAYA taşındı — kaybolmadı.
  */
 export function sonAnMetni(an: Date): string {
   const p = new Intl.DateTimeFormat('en-CA', {

@@ -18,11 +18,10 @@
 // farklı mail atar veya elle yönetir.
 import type { APIRoute } from 'astro';
 import { notion, NOTION_BASVURULAR_DB, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
-import { havaleVadeMetni } from '../../lib/havale-vade.ts';
 // B211 — kayıt maili Resend'den. Plan saf lib'de, taşıma `posta.ts`'te.
 import { kayitPostaPlani } from '../../lib/kayit-posta.ts';
 import { postaGonder, resendTasima } from '../../lib/posta.ts';
-import { etkinlikBaslangicAni, yerTutmaBitisi } from '../../lib/yer-tutma.ts';
+import { etkinlikBaslangicAni, yerTutmaBitisi, sonAnMetni } from '../../lib/yer-tutma.ts';
 import { odemeLinki, odemeLinkSirri } from '../../lib/odeme-link.ts';
 import { kodDogrula, kodKullanimArtir, type KodSonuc } from '../../lib/kodlar.ts';
 import { getPaymentProvider } from '../../lib/payment-provider.ts';
@@ -58,7 +57,10 @@ const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 // route'a test konamıyor ve brief bu çıktının saf ASCII olduğunu assert
 // etmeyi istedi. İsim de o turda çıktı; gerekçe fonksiyonun başlığında.
 
-// havaleVadeMetni → src/lib/havale-vade.ts (B23). Saf mantık lib'de yaşar;
+// `havaleVadeMetni` KALDIRILDI (7 Eki): havale success'inin süresi artık
+// kaydın `Yer Tutma Bitişi`'nden geliyor, etkinlik tarihine bakan kaba gün
+// farkından değil. Tek tüketicisi bu dosyaydı, ölü kod bırakılmadı (Kaan).
+// Saf mantık lib'de yaşar;
 // `src/pages/` altındaki her dosya route olduğu için test dosyası buraya konamaz.
 
 export const prerender = false;
@@ -890,9 +892,10 @@ export const POST: APIRoute = async ({ request }) => {
   // Tasarım turu 3 (ADIM 3) — havale açıklama "Ad — OCAK-XXXX". Format+tarih
   // gerekmez (referans no banka açıklamasında eşleştirme için yeterli).
   const aciklamaSablonu = havaleAciklamasi(referansNo);
-  // ADIM 1 — havale vade metni (Direkt+havale success'inde gösterilecek):
-  // 3+ gün varsa "3 gün içinde", yakınsa "ilettiğinde döneceğiz".
-  const vadeMetni = havaleVadeMetni(etk.tarihISO);
+  // Havale success'inin SON AN'ı — mailin `ODEME_SON_AN`'ıyla AYNI kaynak ve
+  // AYNI biçim. İki yüzeyin farklı süre söylemesi, kadının hangisine
+  // inanacağını bilememesi demekti.
+  const sonAn = yerTutmaBitisiAni ? sonAnMetni(yerTutmaBitisiAni) : '';
 
   // Promo bilgisini response'a koy — frontend kullanıcıya teyit gösterebilir.
   const promoResp = promoSonuc
@@ -971,8 +974,9 @@ export const POST: APIRoute = async ({ request }) => {
       ad: havaleyiKullan ? HAVALE_AD : '',
       aciklama: havaleyiKullan ? aciklamaSablonu : '',
       ...(direktAkis && odemeGerekli ? { yontem } : {}),
-      // ADIM 1 — vade metni Direkt+havale success'inde gösterilir.
-      ...(havaleyiKullan ? { vadeMetni } : {}),
+      // Son an Direkt+havale success'inde gösterilir. Boşsa alan hiç
+      // gönderilmez; istemci süre cümlesini basmaz.
+      ...(havaleyiKullan && sonAn ? { sonAn } : {}),
     },
     // Aşama 3b-fix tasarım — Başvuru'da katilim gönderilmez (Zoom/adres
     // henüz yok). Direkt'te: link + (Online + dolu Notion alanı ise) Zoom

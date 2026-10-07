@@ -136,3 +136,48 @@ describe('KayitFormu.astro — "Mail kutuna da düştü." koşula bağlı (B211 
     expect(KOD).not.toMatch(/result\.mailerlite/);
   });
 });
+
+/**
+ * İŞ 2 — havale başarı ekranında "üç gün" KALKTI.
+ *
+ * Süre artık kaydın `Yer Tutma Bitişi`'nden geliyor (`/api/kayit` yanıtında
+ * `odeme.sonAn`, `ODEME_SON_AN` biçiminde) ve mailin söylediği anla AYNI.
+ * Eski hâl üç yerde sabit "üç gün" diyordu: `havale-vade.ts` (kaldırıldı),
+ * bu dosyadaki yedek dize ve statik satır.
+ */
+describe('KayitFormu.astro — havale süresi kayıttan gelir, "üç gün" yok (İŞ 2)', () => {
+  const KAYNAK = readFileSync(SOURCE_PATH, 'utf-8');
+  const KOD = KAYNAK
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+  it('"üç gün" hiçbir biçimde KALMADI', () => {
+    expect(KOD).not.toMatch(/üç gün/i);
+    expect(KOD).not.toMatch(/Üç gün/);
+  });
+
+  it('`vadeMetni` okunmuyor — yerine `sonAn`', () => {
+    expect(KOD).not.toMatch(/vadeMetni/);
+    expect(KOD).toMatch(/result\.odeme\.sonAn/);
+  });
+
+  it('süre cümlesi brief metniyle birebir ve KOŞULLU', () => {
+    expect(KOD).toMatch(/Yerini şu ana kadar tutuyoruz: \$\{result\.odeme\.sonAn\}\./);
+    // `sonAn` boşsa cümle HİÇ basılmaz; gömülü yedek dize de yok.
+    expect(KOD).toMatch(/const sureCumlesi = result\.odeme\.sonAn\s*\n?\s*\?/);
+    expect(KOD).toMatch(/: '';/);
+  });
+
+  it('ikinci satır brief metniyle birebir', () => {
+    expect(KOD).toMatch(/Payın ulaştığında sana yazarız\. Süre dar geliyorsa haber ver, birlikte bakarız\./);
+    expect(KOD).not.toMatch(/yerini tutarız\./);
+  });
+
+  it('IBAN tablosu AYNEN duruyor', () => {
+    for (const alan of ['data-kf-success-tutar', 'data-kf-success-iban', 'data-kf-success-ad', 'data-kf-success-aciklama']) {
+      expect(KOD).toContain(alan);
+    }
+    expect(KOD).toMatch(/Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz\./);
+  });
+});

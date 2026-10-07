@@ -117,12 +117,20 @@ export type KayitResponse = {
     /** Aşama 3b — frontend success'te göstermek için (havale/kart). */
     yontem?: 'kart' | 'havale';
     /**
-     * Tasarım turu 3 ADIM 1 — Direkt+havale success'inde gösterilen vade
-     * metni; etkinlik tarihine göre dinamik:
-     *  - 3+ gün: "Katılım payını en geç 3 gün içinde aşağıdaki hesaba iletebilirsin."
-     *  - <3 gün: "Katılım payını ilettiğinde biz kontrol edip sana döneceğiz."
+     * Direkt+havale success ekranında gösterilen SON AN — `ODEME_SON_AN`
+     * biçiminde (`8 Ekim Perşembe, 14:30 (Türkiye saati)`).
+     *
+     * ── `vadeMetni`'nin yerini aldı ──
+     * Eski alan `havaleVadeMetni`'nin ürettiği cümleyi taşıyordu ("üç gün
+     * içinde…") ve süre ETKİNLİK TARİHİNE bakan kaba bir gün farkıydı —
+     * kaydın gerçek yer tutma süresiyle ilgisi yoktu. Artık süre kaydın
+     * `Yer Tutma Bitişi` alanından geliyor, yani ekran ve mail AYNI anı
+     * söylüyor. Sunucuda biçimlenir; istemci saat dilimi matematiği yapmaz.
+     *
+     * Boş olabilir: `Yer Tutma Bitişi` yoksa süre söylenemez ve
+     * söylenmez — uydurmak kadına yanlış bir son an vermek olurdu.
      */
-    vadeMetni?: string;
+    sonAn?: string;
   };
   /**
    * Aşama 3b — kart yöntemi seçilirse backend sağlayıcının checkout URL'ini
