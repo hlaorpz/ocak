@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 08.10.2026 23:00 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 08.10.2026 23:04 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `a56488d` | `git log -1` |
+| canlı HEAD | `652b094` | `git log -1` |
 | HEAD tarihi | 2026-10-08 | `git log -1 --date=short` |
-| HEAD konusu | zoom(host): meeting host'u ZOOM_HOST_EMAIL env'inden, boşsa `me` + warn | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: Zoom host turu — KARAR 616, B78'e üç not, B205'e üçüncü ölçüm | `git log -1 --format=%s` |
+| çalışma ağacı | **temiz** | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **72** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **73** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
