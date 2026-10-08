@@ -40,43 +40,119 @@ function instagramDali(): string {
   return KOD.slice(bas, son > bas ? son : undefined);
 }
 
-describe('blok — başlık · alt satır · iki düğme', () => {
+describe('blok — başlık · alt satır · ÜÇ düğme (İŞ 15)', () => {
   it('başlık ve alt satır brief metniyle birebir', () => {
     expect(KOD).toMatch(/<h3 class="davet-kutusu__baslik">Bir kız kardeşini de çağır<\/h3>/);
     expect(KOD).toMatch(/Ateşin yanında onun da yeri var\./);
-    // Eski alt satır "Üç yol, hangi kanal kolaysa." KALKTI — üç yol kalmadı.
     expect(KOD).not.toMatch(/Üç yol/);
   });
 
-  it('ANA düğme "Paylaş" ve paylaşılan birincil sınıfı kullanıyor', () => {
-    expect(KOD).toMatch(/<button type="button" class="ocak-dugme" data-davet-paylas>Paylaş<\/button>/);
-    // Eski etiket WhatsApp'ı tek kanal gibi gösteriyordu.
-    expect(KOD).not.toMatch(/WhatsApp ile çağır/);
-    expect(KOD).not.toMatch(/data-davet-whatsapp/);
+  it('ÜÇ EŞİT düğme, üçü de `.ocak-dugme`', () => {
+    // Kanal seçimi kadının; biri "birincil" olsaydı ötekiler ikinci sınıf bir
+    // yoldan geçmiş olurdu.
+    expect(KOD).toMatch(/class="ocak-dugme" data-davet-whatsapp>WhatsApp'ta paylaş<\/button>/);
+    expect(KOD).toMatch(/class="ocak-dugme" data-davet-instagram>Instagram'da paylaş<\/button>/);
+    expect(KOD).toMatch(/class="ocak-dugme" data-davet-eposta>E-postayla paylaş<\/button>/);
+    const dugmeler = KOD.match(/class="ocak-dugme" data-davet-/g) ?? [];
+    expect(dugmeler).toHaveLength(3);
   });
 
-  it('İKİ EŞİT düğme, ikisi de `.ocak-dugme` (İŞ 11)', () => {
-    // Instagram OCAK'ın gerçek trafiğinde WhatsApp kadar ağır; "ikincil"
-    // saymak kadını kendi kanalına ikinci sınıf bir yoldan geçirmek olurdu.
-    expect(KOD).toMatch(/<button type="button" class="ocak-dugme" data-davet-paylas>Paylaş<\/button>/);
-    expect(KOD).toMatch(/<button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da gönder<\/button>/);
-    // "Bağlantıyı kopyala" ve eski Instagram etiketi KALKTI.
-    expect(KOD).not.toMatch(/Bağlantıyı kopyala/);
-    expect(KOD).not.toMatch(/Instagram'dan göndereceksen kopyala/);
+  it('mobilde alt alta, 480 px\'ten sonra yan yana ve EŞİT', () => {
+    const kural = KAYNAK.match(/\.davet-kutusu__ucluk \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(kural).toMatch(/display: grid;/);
+    const medya = KAYNAK.match(/@media \(min-width: 480px\) \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(medya).toMatch(/grid-template-columns: repeat\(3, 1fr\);/);
+  });
+
+  it('eski düğmeler ve DİNAMİK bilgi satırları KALKTI', () => {
+    expect(KOD).not.toMatch(/data-davet-paylas/);
     expect(KOD).not.toMatch(/data-davet-kopyala/);
+    expect(KOD).not.toMatch(/Bağlantıyı kopyala/);
+    expect(KOD).not.toMatch(/data-davet-instagram-not/);
+    expect(KOD).not.toMatch(/Bağlantı kopyalandı; hikâyede/);
+    expect(KOD).not.toMatch(/Metin kopyalandı; mesaja yapıştırman yeter/);
+  });
+
+  it('SABİT talimat — her zaman görünür, koşulsuz', () => {
+    // Eski hâlde bilgi yalnız dokunulduktan SONRA çıkıyordu; kadın akışı
+    // öğrendiğinde zaten içindeydi.
+    const talimat = KOD.match(/<p class="davet-kutusu__talimat">([\s\S]*?)<\/p>/)?.[1] ?? '';
+    expect(talimat.replace(/\s+/g, ' ').trim()).toBe(
+      "Instagram'ı seçince kartımız açılır, bağlantı da kopyalanır. Hikâyende çıkartmalardan «Bağlantı»ya dokunup yapıştırman yeter.",
+    );
+    // `hidden` YOK ve JS onu göstermiyor/gizlemiyor.
+    //
+    // ⚠ Ölçüt AÇILIŞ ETİKETİNİ izole ediyor. İlk yazımda
+    // `/davet-kutusu__talimat[^>]*hidden/` kullandım; `[^>]*` satır atlayıp
+    // stil bloğundaki `[hidden]` kuralına kadar uzandı ve doğru kodu kırmızı
+    // yaktı. Bu turda altıncı kez aynı ders — kriter deseni dosyada
+    // görülmeden yazılmaz (CLAUDE.md §3).
+    const etiket = KOD.match(/<p class="davet-kutusu__talimat"[^>]*>/)?.[0] ?? '';
+    expect(etiket).toBeTruthy();
+    expect(etiket).not.toMatch(/hidden/);
+    expect(KOD).not.toMatch(/talimat\.hidden/);
   });
 
   it('yerel düğme ailesi ölü CSS bırakmadı', () => {
-    // `.davet-kutusu__btn*` `.ocak-dugme`'den üç yerde ayrışmıştı: metin
-    // `--cream` (kardeşler `--coal`), `border-radius: 3px` (sitenin hiçbir
-    // düğmesinde yok), `--duration-fast` (ötekiler `--duration-base`).
     expect(KOD).not.toMatch(/\.davet-kutusu__btn/);
+    expect(KOD).not.toMatch(/\.davet-kutusu__ikili/);
+  });
+});
+
+describe('WhatsApp — her cihazda wa.me, navigator.share YOK (İŞ 15)', () => {
+  it('`wa.me` doğrudan, yeni sekmede', () => {
+    const fn = KOD.match(/function whatsappPaylas[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(fn).toBeTruthy();
+    expect(fn).toMatch(/https:\/\/wa\.me\/\?text=\$\{encodeURIComponent\(`\$\{text\} \$\{url\}`\)\}/);
+    expect(fn).toMatch(/'noopener,noreferrer'/);
   });
 
-  it('SIRA: pano → görsel → canShare → share (İŞ 13)', () => {
+  it('⚠ `navigator.share` WhatsApp yolunda KULLANILMIYOR', () => {
+    // O menü hedefi kadına seçtirir; düğmede "WhatsApp" yazarken Mesajlar
+    // açılması sözü tutmamak olurdu.
+    const fn = KOD.match(/function whatsappPaylas[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(fn).not.toMatch(/share/);
+    // Eski birleşik `paylas()` tamamen kalktı.
+    expect(KOD).not.toMatch(/function paylas\(/);
+  });
+
+  it('`navigator.share` YALNIZ hikâye kartı dosyası için', () => {
+    const paylasimlar = KOD.match(/nav\.share/g) ?? [];
+    // Bir tip kontrolü + bir çağrı.
+    expect(paylasimlar.length).toBeLessThanOrEqual(2);
+    expect(KOD).toMatch(/nav\.share!\(\{ files: \[dosya!\] \}\)/);
+  });
+});
+
+describe('E-posta — mailto, konu ve gövde dolu (İŞ 15)', () => {
+  it('konu ve gövde birebir', () => {
+    const fn = KOD.match(/function epostaPaylas[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(fn).toMatch(/encodeURIComponent\('Ateşin başında olacağım'\)/);
+    expect(fn).toMatch(/encodeURIComponent\(`\$\{text\}\\n\\n\$\{url\}`\)/);
+    expect(fn).toMatch(/mailto:\?subject=\$\{konu\}&body=\$\{govde\}/);
+  });
+
+  it('`location.href` — `window.open` DEĞİL', () => {
+    // `mailto:` yeni sekmede açıldığında bazı tarayıcılar boş sekme bırakıyor.
+    const fn = KOD.match(/function epostaPaylas[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(fn).toMatch(/window\.location\.href = `mailto:/);
+    expect(fn).not.toMatch(/window\.open/);
+  });
+});
+
+describe('Instagram — pano YALNIZ url, sonra İŞ 13 akışı (İŞ 15)', () => {
+  it('⚠ panoya YALNIZ `url` gidiyor', () => {
+    // Hikâyedeki "Bağlantı" çıkartması bir URL bekliyor; metinle birlikte
+    // kopyalamak onu bozardı.
     const dal = instagramDali();
-    expect(dal).toBeTruthy();
-    const iPano = dal.indexOf('await kopyala(');
+    expect(dal).toMatch(/const \{ url \} = getDavet\(\);/);
+    expect(dal).toMatch(/await kopyalaMetin\(url\);/);
+    expect(dal).not.toMatch(/kopyalaMetin\(`\$\{metin\}/);
+  });
+
+  it('SIRA: pano → görsel → canShare → share', () => {
+    const dal = instagramDali();
+    const iPano = dal.indexOf('await kopyalaMetin(url)');
     const iDosya = dal.indexOf('await hikayeDosyasi()');
     const iCanShare = dal.indexOf('nav.canShare({ files: [dosya] })');
     const iShare = dal.indexOf('await nav.share!({ files: [dosya!] })');
@@ -86,9 +162,7 @@ describe('blok — başlık · alt satır · iki düğme', () => {
     expect(iShare).toBeGreaterThan(iCanShare);
   });
 
-  it('⚠ `share` YALNIZ `files` ile çağrılıyor — text/url EKLENMİYOR', () => {
-    // Instagram dosya varken metni düşürüyor, bazı hedefler dosyayı atlıyor;
-    // ikisini birlikte vermek "ya biri ya öteki" kumarı olurdu.
+  it('⚠ `share` YALNIZ `files` ile — text/url EKLENMİYOR', () => {
     const dal = instagramDali();
     expect(dal).toMatch(/nav\.share!\(\{ files: \[dosya!\] \}\)/);
     expect(dal).not.toMatch(/share!\(\{ files[^)]*text/);
@@ -96,104 +170,49 @@ describe('blok — başlık · alt satır · iki düğme', () => {
   });
 
   it('⚠ GÖRSEL İLK YÜKLEMEDE İSTENMEZ — yalnız tıklamayla', () => {
-    // 2,3 MB'lık bir PNG'yi hiç paylaşmayacak her kadına indirtmek olurdu.
-    //
-    // ⚠ Kriter dosyanın GERÇEK hâlinden: `fetch` `hikayeDosyasi()` içinde ve
-    // o fonksiyon seçiciden ÖNCE tanımlı, yani handler diliminde görünmüyor.
-    // İlk yazımda `dal` içinde fetch aradım ve boş döndü (CLAUDE.md §3 —
-    // bu turda beşinci kez; ders not edildi).
-    //
-    // Doğru ölçüt: fetch TEK yerde (o fonksiyonda) ve o fonksiyon YALNIZ
-    // handler'dan çağrılıyor.
     expect(KOD).toMatch(/async function hikayeDosyasi\(\): Promise<File \| null> \{[\s\S]*?await fetch\(HIKAYE_YOLU\)/);
     const cagrilar = KOD.match(/hikayeDosyasi\(\)/g) ?? [];
-    // Bir tanım + bir çağrı.
     expect(cagrilar).toHaveLength(2);
     expect(instagramDali()).toMatch(/const dosya = await hikayeDosyasi\(\);/);
-    // Görsel yolu başka hiçbir yerde istenmiyor; ön-yükleme yok.
     const yollar = KOD.match(/ocak-hikaye-karti/g) ?? [];
-    expect(yollar).toHaveLength(2); // HIKAYE_YOLU + HIKAYE_ADI
+    expect(yollar).toHaveLength(2);
     expect(KOD).not.toMatch(/new Image\(/);
     expect(KOD).not.toMatch(/rel="preload"/);
   });
 
-  it('canShare YOKSA → DM gelen kutusu (İŞ 11 yolu korunuyor)', () => {
+  it('canShare YOKSA → DM gelen kutusu', () => {
     const dal = instagramDali();
     expect(dal).toMatch(/if \(!dosyaPaylasilir\) \{/);
-    expect(dal).toMatch(/dmYolu\(panoOk\);/);
+    expect(dal).toMatch(/dmYolu\(\);/);
     expect(KOD).toMatch(/https:\/\/www\.instagram\.com\/direct\/inbox\//);
   });
 
   it('⚠ AbortError SESSİZ — vazgeçme hata değil', () => {
     const dal = instagramDali();
     expect(dal).toMatch(/if \(ad !== 'AbortError'\)/);
-    // Kadına hiçbir hata metni gösterilmiyor.
     const yakala = dal.match(/\} catch \(err\) \{[\s\S]*?\n          \}/)?.[0] ?? '';
     expect(yakala).toBeTruthy();
-    expect(yakala).not.toMatch(/notGoster\(/);
     expect(yakala).not.toMatch(/teyitGoster\(/);
   });
 
-  it('⚠ pano REDDEDİLİRSE paylaşım SÜRER, bilgi satırı GÖSTERİLMEZ', () => {
+  it('⚠ pano REDDEDİLİRSE paylaşım SÜRER', () => {
     const dal = instagramDali();
-    // Pano sonucu akışı durdurmuyor — `return` yok.
-    expect(dal).toMatch(/const panoOk = await kopyala\(metin, url\);/);
-    expect(dal).not.toMatch(/if \(!panoOk\) return/);
-    // Bilgi satırı iki dalda da panoOk'a bağlı.
-    expect(dal).toMatch(/if \(panoOk\) notGoster\(NOT_HIKAYE\);/);
-    expect(KOD).toMatch(/if \(panoOk\) notGoster\(NOT_DM\);/);
+    // Pano sonucu akışı durdurmuyor: dönüş değeri okunmuyor bile.
+    expect(dal).toMatch(/await kopyalaMetin\(url\);/);
+    expect(dal).not.toMatch(/if \(!.*kopyalaMetin/);
+    expect(dal).not.toMatch(/const panoOk/);
   });
 
-  it('iki bilgi satırı birebir ve YALNIZ dokunulunca görünür', () => {
-    expect(KOD).toMatch(/Bağlantı kopyalandı; hikâyede bağlantı çıkartmasına yapıştır\./);
-    expect(KOD).toMatch(/Metin kopyalandı; mesaja yapıştırman yeter\./);
-    expect(KOD).toMatch(/data-davet-instagram-not hidden/);
-    expect(KOD).toMatch(/instagramNot\.hidden = false;/);
+  it('paylaş metni brief\'ten birebir', () => {
+    expect(KOD).toMatch(
+      /return 'Ateşin başında olacağım\. Sen de gelmek istersen yanımda yer var:';/,
+    );
   });
 
   it('görsel dosya adı ve tipi birebir', () => {
     expect(KOD).toMatch(/const HIKAYE_YOLU = '\/paylas\/ocak-hikaye-karti\.png';/);
     expect(KOD).toMatch(/const HIKAYE_ADI = 'ocak-hikaye-karti\.png';/);
     expect(KOD).toMatch(/new File\(\[blob\], HIKAYE_ADI, \{ type: 'image\/png' \}\)/);
-  });
-});
-
-describe('paylaşım — navigator.share({ text, url }) / wa.me yeni sekmede', () => {
-  it('`text` ve `url` AYRI geçiyor', () => {
-    // Ayrı geçmek platformun işini kolaylaştırıyor: iOS paylaş sayfası URL'i
-    // tanıyıp önizleme çıkarıyor, WhatsApp link kartı basıyor.
-    expect(KOD).toMatch(/nav\.share\(\{ text, url \}\)/);
-  });
-
-  it('paylaş metni brief\'ten birebir (İŞ 11)', () => {
-    expect(KOD).toMatch(
-      /return 'Ateşin başında olacağım\. Sen de gelmek istersen yanımda yer var:';/,
-    );
-    // İŞ 4'ün metni kalktı.
-    expect(KOD).not.toMatch(/Ateşin yanında bir yer daha var/);
-  });
-
-  it('Web Share yoksa wa.me — YENİ SEKMEDE', () => {
-    // Eski hâl `window.location.href` ile aynı sekmede açıyordu: kadın başarı
-    // ekranından (referans kodu, IBAN) çıkıp geri dönemiyordu.
-    expect(KOD).toMatch(/window\.open\(\s*\n?\s*`https:\/\/wa\.me\/\?text=\$\{encodeURIComponent/);
-    expect(KOD).toMatch(/'noopener,noreferrer'/);
-    expect(KOD).not.toMatch(/window\.location\.href = `https:\/\/wa\.me/);
-  });
-
-  it('⚠ share iptalinde wa.me\'ye DÜŞMÜYOR', () => {
-    // "Paylaşmaktan vazgeçtim" jestini WhatsApp'a yönlendirmeye çevirmek
-    // kadının kararını yok saymaktı.
-    const dal = KOD.match(/nav\.share\(\{ text, url \}\)\.catch\([\s\S]*?\}\);/)?.[0] ?? '';
-    expect(dal).toBeTruthy();
-    expect(dal).not.toMatch(/wa\.me/);
-  });
-
-  it('bağlantı ETKİNLİĞİN KENDİ SAYFASI; slug yoksa eskiye düşer', () => {
-    expect(KOD).toMatch(/if \(etkinlikUrl\) return etkinlikUrl;/);
-    expect(KOD).toMatch(/data-davet-url=\{etkinlikUrl\}/);
-    // Yedek yol duruyor — kırık adres üretilmez.
-    expect(KOD).toMatch(/\/acik-kapi/);
   });
 });
 

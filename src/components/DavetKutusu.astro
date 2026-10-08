@@ -102,25 +102,37 @@ const {
   <p class="davet-kutusu__metin">Ateşin yanında onun da yeri var.</p>
 
   <div class="davet-kutusu__yollar">
-    {/* ── İKİ EŞİT DÜĞME (İŞ 11, 7 Eki) ──
-        İkisi de `.ocak-dugme` ailesinden ve aynı ağırlıkta: Instagram
-        OCAK'ın gerçek trafiğinde WhatsApp kadar ağır bir kanal, "ikincil"
-        saymak kadını kendi kanalına ulaşmak için ikinci sınıf bir yoldan
-        geçirmek olurdu.
+    {/* ── ÜÇ EŞİT DÜĞME (İŞ 15, 8 Eki) ──
+        Üçü de `.ocak-dugme` ve aynı ağırlıkta; mobilde alt alta, 480 px'ten
+        sonra yan yana. Kanal seçimi kadının, bizim değil — biri "birincil"
+        olsaydı ötekiler ikinci sınıf bir yoldan geçmiş olurdu.
 
-        Paylaş: `navigator.share({ text, url })`; yoksa `wa.me/?text=…`.
-        Instagram: Instagram'ın bir paylaşım derin bağlantısı YOK (DM'e metin
-        gönderen bir uç yayınlamıyor), o yüzden iki adım — panoya kopyala,
-        sonra DM gelen kutusunu aç. Kadın yalnız yapıştırıyor. */}
-    <div class="davet-kutusu__ikili">
-      <button type="button" class="ocak-dugme" data-davet-paylas>Paylaş</button>
-      <button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da gönder</button>
+        WhatsApp: HER CİHAZDA `wa.me` (İŞ 15 kararı). `navigator.share`
+        KULLANILMIYOR — o menü hedefi kadına seçtirir ve düğmenin üstünde
+        "WhatsApp" yazarken Mesajlar'ı açması sözü tutmamak olurdu.
+
+        Instagram: panoya YALNIZ url, sonra İŞ 13 akışı (hikâye kartı
+        paylaşımı; desteklenmiyorsa DM gelen kutusu).
+
+        E-posta: `mailto:` — konu ve gövde önceden dolu. */}
+    <div class="davet-kutusu__ucluk">
+      <button type="button" class="ocak-dugme" data-davet-whatsapp>WhatsApp'ta paylaş</button>
+      <button type="button" class="ocak-dugme" data-davet-instagram>Instagram'da paylaş</button>
+      <button type="button" class="ocak-dugme" data-davet-eposta>E-postayla paylaş</button>
     </div>
-    {/* Instagram akışının ne yaptığını SÖYLEYEN satır — düğmenin altında,
-        küçük. Yalnız o düğmeye dokunulunca görünür ve metni AKIŞA GÖRE
-        değişiyor (İŞ 13): hikâye kartı paylaşıldıysa çıkartmadan, DM yoluna
-        düşüldüyse yapıştırmaktan söz ediyor. İki cümle betikte sabit. */}
-    <p class="davet-kutusu__instagram-not" data-davet-instagram-not hidden></p>
+
+    {/* ── SABİT TALİMAT (İŞ 15) ──
+        Düğmelerin altında HER ZAMAN görünür. Eski hâlde bu bilgi yalnız
+        Instagram'a dokunulduktan SONRA çıkıyordu — yani kadın akışı
+        öğrendiğinde zaten içindeydi. Önceden söylemek, iki sekmeli bir akışı
+        beklenmedik kılmaktan iyi.
+
+        Dinamik bilgi satırları KALKTI: tek sabit cümle, duruma göre değişen
+        iki varyant yerine. */}
+    <p class="davet-kutusu__talimat">
+      Instagram'ı seçince kartımız açılır, bağlantı da kopyalanır. Hikâyende
+      çıkartmalardan «Bağlantı»ya dokunup yapıştırman yeter.
+    </p>
 
     {/* E-postayla davet — YALNIZ musluk açıkken. Gerekçe yukarıda. */}
     {DAVET_AKISI_ACIK && (
@@ -264,26 +276,27 @@ const {
     border: 0;
   }
 
-  /* İŞ 11 — iki EŞİT düğme. Dar ekranda alt alta, geniş ekranda yan yana ve
+  /* İŞ 15 — ÜÇ EŞİT düğme. Mobilde alt alta, 480 px'ten sonra yan yana ve
    * eşit genişlikte: ağırlık eşitliği görsel olarak da okunmalı. */
-  .davet-kutusu__ikili {
+  .davet-kutusu__ucluk {
     display: grid;
     gap: var(--space-3);
   }
   @media (min-width: 480px) {
-    .davet-kutusu__ikili {
-      grid-template-columns: 1fr 1fr;
+    .davet-kutusu__ucluk {
+      grid-template-columns: repeat(3, 1fr);
     }
   }
-  /* Instagram akışının bilgi satırı — havale/kart notlarıyla aynı ağırlıkta. */
-  .davet-kutusu__instagram-not {
-    margin: var(--space-3) 0 0;
+  /* Sabit talimat — havale/kart notlarıyla aynı ağırlıkta (küçük, smoke).
+   * DİNAMİK DEĞİL: her zaman görünür, duruma göre değişmez (İŞ 15). */
+  .davet-kutusu__talimat {
+    margin: var(--space-3) auto 0;
+    max-width: 42ch;
     font-family: var(--font-body);
-    font-size: 0.78rem;
+    font-size: var(--text-xs);
     color: var(--smoke);
     line-height: 1.5;
   }
-  .davet-kutusu__instagram-not[hidden] { display: none; }
 
   /* Tek dış çerçeve — Instagram ("ucuncu") kutusunun kardeşi (transparent
      zemin + ash border + focus-within'de ember). İçeride sol geniş input +
@@ -438,24 +451,17 @@ const {
     return `${origin}${path}${qs ? `?${qs}` : ''}`;
   }
 
-  function paylas(text: string, url: string): void {
-    // ── İŞ 4 — `navigator.share({ text, url })` ──
-    // `text` ve `url` AYRI geçiyor (eski hâl ikisini tek dizede birleştirip
-    // `text` olarak veriyordu). Ayrı geçmek platformun işini kolaylaştırıyor:
-    // iOS paylaş sayfası URL'i tanıyıp başlık/önizleme çıkarıyor, WhatsApp
-    // bağlantıyı link kartı olarak basıyor.
-    const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
-    if (typeof nav.share === 'function') {
-      nav.share({ text, url }).catch(() => {
-        // Kullanıcı vazgeçmiş de olabilir; bir şey YAPMA. Eski hâl burada
-        // wa.me'ye düşüyordu, yani "paylaşmaktan vazgeçtim" jestini WhatsApp'a
-        // yönlendirmeye çeviriyordu.
-      });
-      return;
-    }
-    // Web Share API yok (masaüstü) → wa.me, YENİ SEKMEDE. Eski hâl
-    // `window.location.href` ile aynı sekmede açıyordu: kadın başarı
-    // ekranından (referans kodu, IBAN) çıkıp geri dönemiyordu.
+  /**
+   * ── WhatsApp'ta paylaş (İŞ 15) ──
+   *
+   * HER CİHAZDA `wa.me`. `navigator.share` KULLANILMIYOR ve bu bilinçli: o
+   * menü hedefi kadına seçtirir, yani düğmenin üstünde "WhatsApp" yazarken
+   * Mesajlar ya da Mail açılabilir. Düğme ne diyorsa onu yapmalı.
+   *
+   * Yeni sekmede (`window.open`) — aynı sekmede açmak kadını referans
+   * kodunun ve IBAN'ın durduğu başarı ekranından çıkarırdı.
+   */
+  function whatsappPaylas(text: string, url: string): void {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`,
       '_blank',
@@ -463,8 +469,36 @@ const {
     );
   }
 
-  async function kopyala(text: string, url: string): Promise<boolean> {
-    const tam = `${text} ${url}`;
+  /**
+   * ── E-postayla paylaş (İŞ 15) ──
+   *
+   * Konu ve gövde önceden dolu; gövdede metin ve bağlantı iki satır arayla.
+   * `location.href` kullanılıyor, `window.open` DEĞİL: `mailto:` yeni sekmede
+   * açıldığında bazı tarayıcılar boş bir sekme bırakıyor ve kadın ona geri
+   * dönmek zorunda kalıyor.
+   */
+  function epostaPaylas(text: string, url: string): void {
+    const konu = encodeURIComponent('Ateşin başında olacağım');
+    const govde = encodeURIComponent(`${text}\n\n${url}`);
+    window.location.href = `mailto:?subject=${konu}&body=${govde}`;
+  }
+
+  /* ── Eski birleşik `paylas()` KALDIRILDI (İŞ 15) ──
+   * `navigator.share({ text, url })` ile hedefi kadına seçtiriyordu. İŞ 15
+   * kanalları açık düğmelere ayırdı: WhatsApp düğmesi WhatsApp'ı açar,
+   * Instagram düğmesi Instagram'ı. Paylaş menüsü yalnız HİKÂYE KARTI
+   * dosyası için kullanılıyor (İŞ 13) — orada hedef zaten dosyayı alan
+   * uygulama. */
+
+  /**
+   * Panoya yazar. `kopyalaMetin` ham dizeyi alır; `kopyala` metin+bağlantıyı
+   * birleştirir.
+   *
+   * İŞ 15 — Instagram yolunda panoya YALNIZ `url` gidiyor: kadın onu hikâyede
+   * "Bağlantı" çıkartmasına yapıştırıyor ve o alan bir URL bekliyor. Metinle
+   * birlikte kopyalamak çıkartmayı bozardı.
+   */
+  async function kopyalaMetin(tam: string): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(tam);
       return true;
@@ -574,48 +608,52 @@ const {
         };
       }
 
-      const instagramNot = kutu.querySelector<HTMLElement>('[data-davet-instagram-not]');
+      // ── ÜÇ DÜĞME (İŞ 15) ──
+      // Dinamik bilgi satırları KALKTI: talimat artık sabit ve markup'ta,
+      // her zaman görünür. Eski hâlde iki varyant vardı ve ikisi de yalnız
+      // dokunulduktan SONRA çıkıyordu — kadın akışı öğrendiğinde zaten
+      // içindeydi.
 
       kutu
-        .querySelector<HTMLButtonElement>('[data-davet-paylas]')
+        .querySelector<HTMLButtonElement>('[data-davet-whatsapp]')
         ?.addEventListener('click', () => {
           const { url, metin } = getDavet();
-          paylas(metin, url);
+          whatsappPaylas(metin, url);
         });
 
-      // ── Instagram'da gönder (İŞ 11 + İŞ 13) ──
+      kutu
+        .querySelector<HTMLButtonElement>('[data-davet-eposta]')
+        ?.addEventListener('click', () => {
+          const { url, metin } = getDavet();
+          epostaPaylas(metin, url);
+        });
+
+      // ── Instagram'da paylaş (İŞ 13 akışı + İŞ 15 panosu) ──
       //
-      // İki yol, sırayla DENENİYOR; düğme ve yeri değişmiyor.
+      // İki yol, sırayla DENENİYOR:
       //
       //  (a) HİKÂYE KARTI — `navigator.canShare({ files })` destekliyorsa
       //      görsel paylaşım sayfasına verilir ve kadın onu doğrudan hikâyeye
-      //      koyar. Bağlantı panoda duruyor; hikâyede "bağlantı çıkartması"na
+      //      koyar. Bağlantı panoda duruyor; hikâyede "Bağlantı" çıkartmasına
       //      yapıştırıyor.
       //      ⚠ `share` çağrısında YALNIZ `files` var. `text`/`url` eklemek
-      //      Instagram'da metni düşürüyor, bazı hedefler ise dosyayı atlıyor —
-      //      ikisini birlikte vermek "ya biri ya öteki" kumarı olurdu.
+      //      Instagram'da metni düşürüyor, bazı hedefler ise dosyayı atlıyor.
       //
-      //  (b) DESTEKLENMİYORSA (masaüstü, eski tarayıcı) → İŞ 11 davranışı:
-      //      pano + DM gelen kutusu yeni sekmede.
+      //  (b) DESTEKLENMİYORSA (masaüstü, eski tarayıcı) → DM gelen kutusu
+      //      yeni sekmede.
+      //
+      // ⚠ Panoya YALNIZ `url` gidiyor (İŞ 15): hikâyedeki "Bağlantı"
+      // çıkartması bir URL bekliyor, metinle birlikte kopyalamak onu bozardı.
       //
       // ⚠ Görsel BASINCA fetch ediliyor, sayfa yüklenirken DEĞİL: 2,3 MB'lık
       // bir PNG'yi hiç paylaşmayacak her kadına indirtmek olurdu.
       //
-      // ⚠ Pano REDDEDİLİRSE paylaşıma yine devam edilir, ama bilgi satırı
-      // GÖSTERİLMEZ: "kopyalandı" demek yalan olurdu.
+      // ⚠ Pano reddedilirse paylaşıma yine devam edilir — talimat sabit
+      // olduğu için gösterilecek/gizlenecek bir satır yok.
       //
-      // ⚠ Kullanıcı paylaşımdan vazgeçerse (`AbortError`) SESSİZ kalınır —
-      // vazgeçme bir hata değil.
+      // ⚠ Kullanıcı paylaşımdan vazgeçerse (`AbortError`) SESSİZ kalınır.
       const HIKAYE_YOLU = '/paylas/ocak-hikaye-karti.png';
       const HIKAYE_ADI = 'ocak-hikaye-karti.png';
-      const NOT_HIKAYE = 'Bağlantı kopyalandı; hikâyede bağlantı çıkartmasına yapıştır.';
-      const NOT_DM = 'Metin kopyalandı; mesaja yapıştırman yeter.';
-
-      function notGoster(metin: string): void {
-        if (!instagramNot) return;
-        instagramNot.textContent = metin;
-        instagramNot.hidden = false;
-      }
 
       /** Hikâye kartını `File`'a çevirir. Fetch düşerse `null`. */
       async function hikayeDosyasi(): Promise<File | null> {
@@ -629,8 +667,7 @@ const {
         }
       }
 
-      function dmYolu(panoOk: boolean): void {
-        if (panoOk) notGoster(NOT_DM);
+      function dmYolu(): void {
         window.open(
           'https://www.instagram.com/direct/inbox/',
           '_blank',
@@ -641,10 +678,10 @@ const {
       kutu
         .querySelector<HTMLButtonElement>('[data-davet-instagram]')
         ?.addEventListener('click', async () => {
-          const { url, metin } = getDavet();
+          const { url } = getDavet();
 
-          // 1. Pano — reddedilse bile akış sürüyor.
-          const panoOk = await kopyala(metin, url);
+          // 1. Panoya YALNIZ bağlantı.
+          await kopyalaMetin(url);
 
           // 2. Görsel, BASINCA.
           const dosya = await hikayeDosyasi();
@@ -661,13 +698,10 @@ const {
             nav.canShare({ files: [dosya] });
 
           if (!dosyaPaylasilir) {
-            // 4. İŞ 11 yolu. Pano da düştüyse kadına yapıştıracak bir şey
-            // kalmadı; yine DM'i açıyoruz ama "kopyalandı" demiyoruz.
-            dmYolu(panoOk);
+            dmYolu();
             return;
           }
 
-          if (panoOk) notGoster(NOT_HIKAYE);
           try {
             await nav.share!({ files: [dosya!] });
           } catch (err) {
