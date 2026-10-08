@@ -43,7 +43,18 @@ const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0)
 
 {gosterilir && (
 <aside class="mektup-kutusu" data-mektup-kutusu data-mektup-kayit={kayitId} data-mektup-imza={imza}>
-  <h3 class="mektup-kutusu__baslik">{MEKTUP_METIN.baslik}</h3>
+  {/* ── Başlık: PAYLAŞILAN `.ocak-overline` (global.css) ──
+      Sitenin en altındaki Ateş Mektupları başlığının görsel dili bu: büyük
+      harf, harf aralıklı, `--accent-soft`, `--text-xs`.
+
+      ÖLÇÜLDÜ (8 Eki): `.footer__head` ile `.ocak-overline` ALTI ÖZELLİĞİN
+      ALTISINDA birebir aynı — `--font-body` · `--text-xs` · `font-weight 500`
+      · `--tracking-wider` · `uppercase` · `--accent-soft`. İkisi de aynı
+      deseni söylüyor ve `.ocak-overline` global, yani YENİDEN KULLANILABİLİR.
+      Kopya stil yazmadım (İŞ 16).
+
+      `<h3>`: sayfada `<h1>` var, `<h2>` başlık sırasını bozardı. */}
+  <h3 class="ocak-overline mektup-kutusu__baslik">{MEKTUP_METIN.baslik}</h3>
   <p class="mektup-kutusu__metin">{MEKTUP_METIN.govde}</p>
   <button type="button" class="ocak-dugme" data-mektup-dugme>{MEKTUP_METIN.dugme}</button>
   {/* Teyit/hata tek yerde. `role="status"` + `aria-live` — ekran okuyucu da
@@ -53,46 +64,38 @@ const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0)
 )}
 
 <style>
-  /* ── Ana sayfadaki `AtesMektuplari` bileşeninin GÖRSEL DİLİ (İŞ 12) ──
+  /* ── İŞ 16 (8 Eki) — başlık PAYLAŞILAN sınıfla, kopya stil YOK ──
    *
-   * Değerler o bileşenden ÖLÇÜLDÜ, yeni token yok:
-   *   başlık  `.ates-mektuplari__heading` → `--font-display` · italic ·
-   *           `--text-h2` · `--cream` · `font-weight: 400`
-   *   metin   `.ates-mektuplari__desc`    → `--text-base` · `--cream-soft` ·
-   *           `max-width: 40ch`
-   *   teyit   `.ates-mektuplari__success-text` → `--font-display` · italic ·
-   *           `1.15rem` · `--gold`
-   *   düğme   `.ocak-dugme` — `.ates-mektuplari__button`'ın biçimi (İŞ 1'de o
-   *           aileden türetildi; padding birebir aynı)
+   * `.ocak-overline` (global.css) sitenin en altındaki Ateş Mektupları
+   * başlığının görsel dilini taşıyor ve `.footer__head` ile altı özelliğin
+   * altısında birebir aynı (ölçüldü). Başlığın GÖRÜNÜMÜ için burada tek
+   * satır CSS yok — yalnız alt boşluğu veriliyor, çünkü `.ocak-overline`
+   * `display: inline-block` ve margin taşımıyor.
    *
-   * ⚠ SINIF ADLARI YENİDEN KULLANILAMIYOR, değerler kopyalandı. Astro'nun
-   * `<style>`ı bileşen-kapsamlı: `.ates-mektuplari__heading` başka bir
-   * bileşende hiçbir şey yapmaz. İŞ 1'in `.ocak-dugme` için çözdüğü sorunun
-   * aynısı; başlık/metin için paylaşılan bir sınıf çıkarmak ana sayfanın
-   * görünür yüzeyini de değiştireceği için ayrı bir iş ve ayrı bir eyeball.
-   * Raporlandı.
+   * ⚠ İŞ 12'nin kopyaladığı dört kural (display font · italic · `--text-h2` ·
+   * `--cream`) KALKTI. O değerler `AtesMektuplari`'nın BİLEŞEN-İÇİ başlığından
+   * ölçülmüştü; İŞ 16 sayfanın EN ALTINDAKİ bloğun dilini istedi ve o dil
+   * global bir sınıfta zaten yaşıyordu.
    *
-   * Başlık `<h3>`: sayfada `<h1>` var ve bu blok onun altında — `<h2>`
-   * (AtesMektuplari'nın etiketi) başlık sırasını bozardı. Biçim aynı, düzey
-   * doğru. */
+   * Gövde sitenin küçük metin ölçüsünde (`--text-sm`, İŞ 14 ile aynı basamak);
+   * teyit `--gold` + display italik — `.ates-mektuplari__success-text`'in
+   * ölçülmüş değeri.
+   *
+   * Başlık `<h3>`: sayfada `<h1>` var, `<h2>` sırayı bozardı. */
   .mektup-kutusu {
-    margin: var(--space-6) auto 0;
+    margin: var(--space-5) auto 0;
     max-width: 40ch;
     text-align: center;
   }
   .mektup-kutusu__baslik {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-h2);
-    color: var(--cream);
-    font-weight: 400;
     margin: 0 0 var(--space-3);
   }
   .mektup-kutusu__metin {
     font-family: var(--font-body);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     color: var(--cream-soft);
-    margin: 0 auto var(--space-6);
+    line-height: 1.6;
+    margin: 0 auto var(--space-4);
     max-width: 40ch;
   }
   .mektup-kutusu__teyit {
@@ -100,7 +103,7 @@ const gosterilir = yuva || (kayitId.trim().length > 0 && imza.trim().length > 0)
     font-style: italic;
     font-size: 1.15rem;
     color: var(--gold);
-    margin: var(--space-4) 0 0;
+    margin: var(--space-3) 0 0;
   }
 </style>
 

@@ -168,31 +168,49 @@ describe('MektupKutusu — yalnız tıklamayla, kimliksizse no-op', () => {
     expect(KOD).not.toMatch(/type="email"/);
   });
 
-  it('görsel dil `AtesMektuplari`\'ndan ÖLÇÜLDÜ — yeni token yok', () => {
-    const AM = readFileSync(join(__dirname, '..', 'components', 'AtesMektuplari.astro'), 'utf-8');
-    const amBaslik = AM.match(/\.ates-mektuplari__heading \{[\s\S]*?\n  \}/)?.[0] ?? '';
-    const amMetin = AM.match(/\.ates-mektuplari__desc \{[\s\S]*?\n  \}/)?.[0] ?? '';
-    const amTeyit = AM.match(/\.ates-mektuplari__success-text \{[\s\S]*?\n  \}/)?.[0] ?? '';
-    expect(amBaslik && amMetin && amTeyit).toBeTruthy();
-    // Başlık: display font · italic · --text-h2 · --cream · 400
-    for (const d of ['var(--font-display)', 'font-style: italic', 'var(--text-h2)', 'color: var(--cream)', 'font-weight: 400']) {
-      expect(amBaslik, `AtesMektuplari başlığında ${d} yok`).toContain(d);
-      expect(BILESEN, `MektupKutusu başlığında ${d} yok`).toContain(d);
-    }
-    // Metin: --text-base · --cream-soft · 40ch
-    for (const d of ['var(--text-base)', 'var(--cream-soft)', 'max-width: 40ch']) {
-      expect(amMetin).toContain(d);
-      expect(BILESEN).toContain(d);
-    }
-    // Teyit: display font · italic · 1.15rem · --gold
-    for (const d of ['1.15rem', 'color: var(--gold)']) {
-      expect(amTeyit).toContain(d);
-      expect(BILESEN).toContain(d);
+  it('⚠ başlık PAYLAŞILAN `.ocak-overline` — kopya stil YOK (İŞ 16)', () => {
+    // Sitenin en altındaki Ateş Mektupları başlığının dili: büyük harf, harf
+    // aralıklı, `--accent-soft`, `--text-xs`. O dil global bir sınıfta zaten
+    // yaşıyor; İŞ 12'nin kopyaladığı dört kural kalktı.
+    expect(KOD).toMatch(/<h3 class="ocak-overline mektup-kutusu__baslik">/);
+    const kural = BILESEN.match(/\.mektup-kutusu__baslik \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(kural).toBeTruthy();
+    // Yalnız alt boşluk — görünüm için tek satır CSS yok.
+    expect(kural).toMatch(/margin: 0 0 var\(--space-3\);/);
+    for (const yasak of ['font-family', 'font-size', 'color', 'text-transform', 'letter-spacing', 'font-style']) {
+      expect(kural, `başlık kuralında ${yasak} var — kopya stil`).not.toContain(yasak);
     }
   });
 
+  it('`.ocak-overline` ile `.footer__head` BİREBİR — ölçüm kilidi', () => {
+    // İŞ 16'nın dayanağı bu eşitlik. Biri değişirse blok sitenin en altındaki
+    // bloktan ayrışır ve burası kırmızı yanar.
+    const GLOBAL = readFileSync(join(__dirname, '..', 'styles', 'global.css'), 'utf-8');
+    const FOOTER = readFileSync(join(__dirname, '..', 'components', 'Footer.astro'), 'utf-8');
+    const al = (k: string, ad: string) => {
+      const blok = k.match(new RegExp(`\\.${ad} \\{([\\s\\S]*?)\\}`))?.[1] ?? '';
+      return blok
+        .split(';')
+        .map((x) => x.trim())
+        .filter((x) => x && !x.startsWith('margin') && !x.startsWith('display'))
+        .sort();
+    };
+    const overline = al(GLOBAL, 'ocak-overline');
+    const footer = al(FOOTER, 'footer__head');
+    expect(overline.length).toBe(6);
+    expect(overline).toEqual(footer);
+  });
+
+  it('gövde sitenin küçük metin ölçüsünde, teyit altın italik', () => {
+    const metin = BILESEN.match(/\.mektup-kutusu__metin \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(metin).toMatch(/font-size: var\(--text-sm\);/);
+    const teyit = BILESEN.match(/\.mektup-kutusu__teyit \{[\s\S]*?\n  \}/)?.[0] ?? '';
+    expect(teyit).toMatch(/color: var\(--gold\);/);
+    expect(teyit).toMatch(/font-style: italic;/);
+  });
+
   it('başlık `<h3>` — sayfada `<h1>` var, sıra bozulmuyor', () => {
-    expect(KOD).toMatch(/<h3 class="mektup-kutusu__baslik">/);
+    expect(KOD).toMatch(/<h3 class="ocak-overline mektup-kutusu__baslik">/);
     expect(KOD).not.toMatch(/<h2/);
   });
 });
