@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 7 Ekim 2026 · **Search Console + DNS envanteri turu**
+**Son güncelleme:** 8 Ekim 2026 · **B211 bildirim hattı turu**
 
 ---
 
@@ -11,10 +11,10 @@
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 
-**🔴 Önce (1 Eki): B193** — kart seçimi production'da mock ekrana iniyor; sıranın önüne
-geçer. Karar Kaan'da, önerilen kapanış B193 gövdesinde. Ardından **B118** (rıza banner'ı).
+**✅ B193 kapandı (7 Eki).** Sıranın önündeki iş artık **B118** (rıza banner'ı).
+⚠ **B215 — 12 Ekim 15:00'ten önce** (test satırları + 1 TL iadeleri).
 
-**Sıradaki iş (kod/altyapı hattı, 11 Eyl):** **B69 → B68 → n8n ödeme onayı.**
+**Sıradaki iş (kod/altyapı hattı, 8 Eki):** **Başvuru → kayıt köprüsü → havale otomatik eşleştirme → B68.** ✅ n8n ödeme onayı **düştü** (B211, 8 Eki — n8n yalnız saat, mantık `/api/bildirim-tara`'da). B69'un konusu düştü (aşağıda).
 ✅ Kuyruğun başındaki **B64 düştü** (11 Eyl, kapandı) — 20 Ağustos'tan beri değişmeyen
 sıra ilk kez ilerledi. Notion içerik güncellemeleri artık siteye **kendiliğinden** düşüyor;
 elle boş commit atma zorunluluğu kalktı.
@@ -447,7 +447,7 @@ başlığını etkiler.
 1. ✅ **Notion `Kayıtlar` alanları AÇILDI** (10 Eyl, Kaan) — `Beklenen Tutar` (number) +
    `Mail Gitti` (checkbox). 2. maddenin ön koşulu **doldu**. ⚠ Şema referansı
    `20-ref-notion.md` bu iki alanı da saymıyor — **B187**.
-2. **n8n ödeme onayı akışı** (Kaan) — `Ödendi` + `Mail Gitti` boş → MailerLite
+2. ✅ **DÜŞTÜ (8 Eki, B211 — KARAR 606 · 609).** *(Kapanan hâli, KARAR 61:)* **n8n ödeme onayı akışı** (Kaan) — `Ödendi` + `Mail Gitti` boş → MailerLite
    `odeme_durumu=alindi` → detay maili → `Mail Gitti` ✓. **Sıranın en kritik
    maddesi:** bu kurulana kadar detay mailleri **elle** gidiyor. `odeme_durumu`'nun
    üçüncü değerini hiçbir kod yazmıyor — kapı doğru çalışıyor, açan mekanizma yok.
@@ -456,6 +456,25 @@ başlığını etkiler.
 3. **Success ekranına kopyalama tuşları** (CC) — IBAN · tutar · kod, **üçü ayrı**.
 4. **Kayıt sonrası WhatsApp** (Kaan + CC) — `wa.me` butonu → 24 saatlik pencere →
    ödeme bilgileri ücretsiz serbest metin olarak. B19 display name hattına bağlı.
+
+### Ödeme sonrası — 8 Ekim'den devreden (B211 turu)
+
+1. **Başvuru → kayıt köprüsü** (Claude.ai tasarım → CC). Başvurular'da `Durum = Kabul` →
+   tarama Kayıtlar'a satır açar, yeni "kapı açıldı" şablonu gider, sonrası mevcut akış
+   (607 · 608). **Kaan'ın dört kararı bekliyor:** tutar (`Belirlenen Tutar` alanı mı,
+   *"Tam ise ücret, değilse Kaan"* kuralı mı) · ödeme süresi (öneri 72 sa + hatırlatma +
+   24 sa) · kabul maili metni · ödeme tek yerde (Kayıtlar). Red ve Yedek otomatik mail
+   almaz (öneri). Anadolu dışarıda (615).
+2. **Havale otomatik eşleştirme** (Kaan: *"ilk fırsatta"*). VakıfBank polling + açıklamadaki
+   `OCAK-XXXX` → Notion `Ödendi` → mevcut tarama "yerin hazır"ı gönderir. Ön koşul Faz 2
+   madde 5–6 + B79.
+3. **Etkinliğe özel hikâye kartı.** Bugünkü jenerik: `public/paylas/ocak-hikaye-karti.png`
+   (1080×1920, Kaan'ın 4:5 söz kartından genişletildi, `02a42df`).
+4. **12 Ekim'in beş kaydı** (Kaan). Eski kayıt → `Yer Tutma Bitişi` boş → tarama dokunmaz.
+   Havalesi gelen `Ödendi` işaretlenir, "yerin hazır" ve gün hatırlatması kendiliğinden
+   gider. Süre tanınacaksa satıra elle `Yer Tutma Bitişi` yazılır (kart kaydına ileri bitiş
+   yazılınca kart linkli hatırlatma gider).
+5. **Başvuru köprüsünden önce B216** (online Yolculuk `Kayıt Tipi`).
 
 ### 🔶 KAAN'DA BEKLEYEN GİRDİ — borç değil, girdi
 
@@ -523,13 +542,13 @@ sayfalar tamamlanamaz.
    KARAR 61: "Kuyruğun başı. Bu kapanmadan Notion içerik güncellemeleri siteye düşmüyor;
    her yayın için elle boş commit gerekiyor. Bir işi değil, bütün içerik hattını bloke
    ediyor.")* Yirmi üç gün kuyruğun başında durdu; kapanınca sıra **B69**'a geçti.
-2. **B69 — MailerLite şablon değişkenleri** (Kaan). **KISMİ (11 Eyl):** subject · gövde ·
+2. ⏸ **Konusu düştü (8 Eki):** MailerLite kayıt mailleri emekli (KARAR 606); B69'un kapanış yolu ayrı turda karara bağlanacak. *(Önceki hâl:)* **B69 — MailerLite şablon değişkenleri** (Kaan). **KISMİ (11 Eyl):** subject · gövde ·
    test maili ayakları düştü; footer ayağı ücretli plana bağlı bilinen sınıra dönüştü.
    Otomasyon durumu **ölçüldü: pause** (`enabled: false`). Aktive etmenin önkoşulu artık
    B69 değil — **madde 4** (n8n akışı) ve **B72** (test verisi temizliği).
 3. **B68 — `pratik-bilgi` altı satır** (Claude.ai → Notion). Havale gerçeğiyle hizalama;
    bekçi dosyalarına ücretli/ücretsiz varyant ayrımı girer.
-4. **n8n ödeme onayı akışı** (Kaan). `odeme_durumu = alindi` yazımı. **Bu olmadan Mail
+4. ✅ **DÜŞTÜ (8 Eki, B211 — KARAR 606 · 609).** *(Kapanan hâli, KARAR 61:)* **n8n ödeme onayı akışı** (Kaan). `odeme_durumu = alindi` yazımı. **Bu olmadan Mail
    2/3 hiç tetiklenmiyor** — ödeme gelince link elle yollanıyor. Brief hazır, verilmedi.
    Notion `Ödeme Durumu` değişimi → MailerLite alan güncellemesi; **idempotency işareti
    şart**, yoksa her gece aynı mail gider. *Borç kaydı yok — ürün işi (bkz. `00-durum.md`

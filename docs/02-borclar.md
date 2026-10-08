@@ -1462,12 +1462,19 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   `"ateşin en sıcak, en dayanıklı çekirdeği"` → `<del>`.
 - **Kapanış şartı:** üçü de gövde metni olur (KARAR 118 yazım disiplini).
 
-## B72 — Test verisi temizliği
-- [ ] **Sahip:** Kaan
+## B72 — Test verisi temizliği ✅ KAPANDI (7 Eki)
+- [x] **Sahip:** Kaan
 - **Ölçüm:** Notion Kayıtlar DB'sinde **on bir** test kaydı, MailerLite'ta **beş**
   test abonesi.
 - **Kapanış şartı:** Eylül'de gerçek kayıt gelmeden temizlenir. Erken temizlik
   Y1/kapı doğrulamalarının zeminini siler — sıralama önemli.
+
+- ✅ **Kapanış (7 Eki).** Kaan MailerLite abonelerini Notion'la eşleştirdi, fazlalıkların
+  hepsi silindi (Kaan beyanı). **Ölçüm** (Claude.ai MailerLite connector, 7 Eki): aktif
+  abone **7** — 12 Ekim Açık Kapı'nın beş kaydı + etkinlik alanı boş iki adres.
+  ⚠ Aynı akşam tetik ölçümü için `kaan@yap.com.tr` Claude.ai tarafından **yeniden eklendi**
+  ve **eski kaydıyla döndü** (aynı id, `sent` sayacı, beş grup) — şu an aktif.
+  Yeni test kalıntıları (7–8 Eki) → **B215**.
 
 ## B73 — `pre-merge-kayit-penceresi` tag'i push edilmedi ✅ KAPANDI (11 Eyl)
 - [x] **Sahip:** Kaan
@@ -3327,8 +3334,8 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ölçülmedi:** tek vaka mı, desen mi.
 - ⚠ **B64'ün akrabası** — ikisi de deploy tetikleme hattında. **Bağ:** B64
 
-## B192 — Notion'da mock test satırları
-- [ ] **Sahip:** Kaan · **Tetikleyici:** **ilk gerçek kayıt penceresi açılmadan önce**
+## B192 — Notion'da mock test satırları ✅ KAPANDI (7 Eki)
+- [x] **Sahip:** Kaan · **Tetikleyici:** **ilk gerçek kayıt penceresi açılmadan önce**
 - **İki tur, iki kalıntı.** (a) İŞ 4 Preview'da koşuldu (10 Eyl, **Kaan'ın raporu** —
   CC bağımsız doğrulamadı). (b) Uçtan uca tur **Production'da** koşuldu (11 Eyl, CC),
   aşağıdaki satır **ölçülmüş ve adıyla kayıtlı**:
@@ -3357,8 +3364,12 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
     Gerçek tutar daha yüksekse kayıt eksik tutarla `Ödendi` olur; daha düşükse gerçek ödeme
     `401` yer. İlk gerçek kayıt penceresinden önce **doğrulanmalı.**
 
-## B193 — Production'da mock ödeme ekranı canlı
-- [ ] **Sahip:** Kaan · **BÜYÜK** · **Tetikleyici:** ilk gerçek kayıt penceresi açılmadan önce
+- ✅ **Kapanış (7 Eki).** Notion ayağı: Kayıtlar DB'deki test satırları temizlendi
+  (Kaan, 7 Eki — kapalı yüzey). MailerLite ayağı **B72**'yle kapandı. 7–8 Ekim'in yeni test
+  satırları bu borcun değil **B215**'in kapsamı.
+
+## B193 — Production'da mock ödeme ekranı canlı ✅ KAPANDI (7 Eki)
+- [x] **Sahip:** Kaan · **BÜYÜK** · **Tetikleyici:** ilk gerçek kayıt penceresi açılmadan önce
 - **Kaan kararı (10 Eyl):** N-Kolay denetimi `www.ocak.biz` üzerinden yapılacak, mock ekran
   gösterilecek → `KART_AKISI=acik` · `PAYMENT_PROVIDER=mock` **Production kapsamına** yazılır.
   `ODEME_CALLBACK_SIR` Preview'dakinden **farklı** olur.
@@ -3402,6 +3413,16 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   (c) Notion Kayıtlar denetimi — 11 Eyl'den beri kart yöntemiyle `Ödendi`'ye geçmiş satır var
   mı (her biri tahsilatsızdır) · (d) callback'in `KART_AKISI` kapalıyken mock isteğini reddedip
   reddetmediği ölçülür. **Bağ:** B205
+
+- ✅ **Kapanış (7 Eki, Kaan raporu).** `/odeme/mock` artık `PAYMENT_PROVIDER≠mock` iken
+  **404**. `4f38887` (kapı + test; vitest 438 → 452; dört mutasyonla doğrulandı: kapı
+  sulandırma · kapı silme · factory'nin kendi env okumasına dönmesi · `MOCK_ROUTELARI`'na
+  `/odeme/tamam` sızması — dördü de kırmızı, revert sonrası yeşil) + `53420c3`
+  (`astro.config.mjs:41` bayat "üç route" yorumu). Kural `kart-akisi.ts`'te tek yerde:
+  `mockSaglayiciMi()` + `MOCK_SAGLAYICI_ACIK`; sayfa kapısı, `ODA_MAP` elemesi ve
+  `getPaymentProvider()` aynı sabiti okuyor. `ODEME_CALLBACK_SIR` production'da
+  **yenilendi** + redeploy (Kaan); Preview'a dokunulmadı. Canlı teyit: `/odeme/mock` 404 ·
+  kart yolu N-Kolay ekranına gidiyor. Varsayılanın yönü **KARAR 605**.
 
 ## B194 — MailerLite alan sayısı hiçbir komutla üretilemiyor ✅ KAPANDI (11 Eyl, yol (b))
 
@@ -3633,9 +3654,13 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   (`get_deployment_file_contents` ile tek turda kapanır).
 - ⚠ **Pratik sonuç bugün değişmez:** B193 kapanışında redeploy **her durumda** alınır.
 - **Bağ:** B193 · KARAR 488 · 575
+- **Ölçüm (Kaan, 7 Eki, B193 kapanış turu):** derlenmiş chunk'ta `MOCK_SAGLAYICI_ACIK` ve
+  `KART_AKISI` **inline edilmemiş**, çağrı duruyor. `kart-akisi.ts`'in *"değer build
+  zamanında sabitlenir, REDEPLOY şart"* doktrini bu iki değişken için **yanlış olabilir.**
+  Deploy edilmiş artifact'la teyit edilmedi — borç açık. **Bağ:** KARAR 605
 
-## B206 — WhatsApp davet linki ham Notion page id taşıyor
-- [ ] **Sahip:** CC + Kaan (ürün kararı) · **küçük ama iki uçlu**
+## B206 — WhatsApp davet linki ham Notion page id taşıyor ✅ KAPANDI (8 Eki)
+- [x] **Sahip:** CC + Kaan (ürün kararı) · **küçük ama iki uçlu**
 - `/odeme/tamam` → *"WhatsApp ile çağır"* linki şu biçimde çıkıyor:
   `/acik-kapi?etkinlik=<36 karakterlik page id>&ref=OCAK-XXXX`.
   `ref=` **doğru** — davet eden kadının kodu, `Davet Eden Ref` alanı için; dokunulmaz.
@@ -3653,6 +3678,14 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   (`content/config.ts:196-202`), sessizce boş `etkinlik=` göndermek bugünkünden kötü olur.
 - **Hedef sayfa `/acik-kapi` kalacak** (tanıtım), `/acik-kapi/kayit` değil — davet edilen
   kadın akışa baştan girer (Kaan kararı, 6 Eki). **Bağ:** B207 · KARAR 559
+
+- ✅ **Kapanış (8 Eki) — konusu yeniden yazımla düştü.** Paylaş bloğu baştan kuruldu
+  (`b2de084` · `7e67e6a` · `5e05447`, KARAR 614): link artık `etkinlikUrlFormatla(slug)` →
+  `/etkinlik/<slug>`; `?etkinlik=<id>&ref=` taşınmıyor. Hedefin `/acik-kapi` olması kararı
+  (6 Eki) yerine **etkinlik sayfası** seçildi (Claude.ai önerisi, Kaan onayı 7 Eki).
+  Davet atfı (`Davet Eden Ref`) bu linkten düştü — Davetler DB **0 satır** (CC ölçümü,
+  7 Eki), e-posta davet formu arayüzden kalktı (`DAVET_AKISI`), arka uç duruyor.
+  ⚠ B207 (559'un çapası) bu kapanıştan bağımsız açık kalır.
 
 ## B207 — KARAR 559'un ledger çapası çözülemiyor
 - [ ] **Sahip:** Claude.ai · **Tetikleyici:** B206'dan önce
@@ -3703,8 +3736,8 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   site tarafında görünür bir arıza yok. Yalnız kabuk yolu bozuk.
 - Kaynak: CC, 6 Eki PaymentList ölçümü sırasında, brief dışı bulgu.
 
-## B211 — Ödeme sonrası bildirim halkası yok
-- [ ] **Sahip:** CC + Kaan · 🔴 **AÇILIŞ'tan önce** · **Tetikleyici:** ilk ücretli kayıtlar
+## B211 — Ödeme sonrası bildirim halkası yok ✅ KAPANDI (8 Eki)
+- [x] **Sahip:** CC + Kaan · 🔴 **AÇILIŞ'tan önce** · **Tetikleyici:** ilk ücretli kayıtlar
 - Kart hattı 6 Ekim'de açıldı — callback Notion'a `Ödendi` yazıyor. **Ama MailerLite bunu
   görmüyor:** `odeme-callback.ts` içinde `resend|mailerlite|mail|eposta` → **sıfır eşleşme**
   (CC ölçümü, 6 Eki). Başarılı callback'in log'unda mail denemesi de hatası da yok.
@@ -3721,6 +3754,18 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   madde 4). ⚠ **KARAR 597'nin iki şartı atlanırsa sessizce bozulur:** tetik `etkinlik_adi`'dır,
   ve `zoom_link` · `zoom_sifresi` · `katilim_linki` **birlikte** yazılmalıdır.
 - **Devir dosyası hazır** (Claude.ai, 6 Eki) — ayrı sohbette açılacak. **Bağ:** KARAR 597 · 486
+
+- ✅ **Kapanış (7–8 Eki).** Halka kuruldu, ama gövdenin tarif ettiği yoldan değil.
+  İlk tasarım (callback MailerLite'a yazar, KARAR 597) uygulandı (`b7d0c33` · `c3f5ec6`),
+  sonra **ölçüm onu çürüttü:** MailerLite otomasyonu tetik alanına **aynı değer** yazılınca
+  koşmuyor, **değişince** 5 saniyede koşuyor (Claude.ai, 7 Eki, test abonesi, üç yazım).
+  Üstüne kişi başına tek abone sorunu → **Resend'e geçildi (KARAR 606, `bbc2254`).**
+  Kart: callback `odemeBildir` (**609**); havale + süreler: `/api/bildirim-tara` + n8n saati
+  (**607 · 608**). `Mail Gitti`'nin yazıcısı artık var. `tamam.astro:103` *"Mail kutuna da
+  düştü"* kalktı (`fc32dc7`), sonra sayfa baştan yazıldı (**613**).
+  **Canlı test (7 Eki, Kaan + Claude.ai):** havale — kayıt maili → hatırlatma + ek süre →
+  İptal (`Havale — süre doldu`) → Ödendi → "yerin hazır" · kart — kayıt anında sessiz →
+  33. dakikada "yerini tutuyoruz" → `/odeme/devam` → 1 TL → anında "yerin hazır". Dördü geçti.
 
 ## B212 — Sitemap çekilemiyor (`Couldn't fetch`)
 - [ ] **Sahip:** Kaan (kapalı yüzey) · **Tetikleyici:** birkaç gün sonra panele bakmak
@@ -3807,3 +3852,56 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   **Resend'i içermiyor** — beklenen durum, Resend kendi SPF'ini `send.mail` altında taşıyor.
   Ama apex'ten Resend ile gönderim denenirse **sessizce spam'e düşer.**
 - **Kapanış şartı:** `selam@ocak.biz`'e dışarıdan gerçek bir mail atılır, nereye düştüğü görülür.
+- ⚠ **Önem arttı (8 Eki).** Bütün kayıt/ödeme mailleri artık `reply_to: selam@ocak.biz`
+  taşıyor ve gövdede *"bu maili yanıtla"* diyor — yanıtın teslim zinciri hâlâ teyitsiz.
+  **Gönderim ayağı ölçüldü:** `selam@mail.ocak.biz` (Resend, `mail.ocak.biz` verified —
+  Resend connector, 7 Eki) → `kaan@yap.com.tr` ve `kaan.sonat@gmail.com` gelen kutusuna
+  düştü (Resend `delivered` + Kaan gözü). Aynı akşam MailerLite'tan giden test maili
+  **junk**'a düşmüştü.
+
+## B215 — 7–8 Ekim test kalıntıları
+- [ ] **Sahip:** Kaan · 🔴 **Tetikleyici:** **12 Ekim 15:00'ten önce** — o saatte gün
+  hatırlatması `Mail Gitti` işaretli test satırlarına gider
+- Notion Kayıtlar: `OCAK-UHKF` (kart, 1 TL ödendi) · `OCAK-UPE4` (havale, Ödendi) ·
+  `OCAK-3RF6` (kart, yanlış kayıt) + 8 Ekim telefon gezintisinin kayıtları (kodları
+  kaydedilmedi).
+- N-Kolay: 1 TL'lik ödemeler **iade edilecek** (UHKF + gezinti). İade Notion'a yansımaz
+  (B208) — satır silinir ya da arşivlenir.
+- MailerLite: `kaan@yap.com.tr` (B72 kapanış notu).
+
+## B216 — Online Yolculuk durakları Notion'da `Başvuru` görünüyor
+- [ ] **Sahip:** Kaan · **küçük** · **Tetikleyici:** ilk online Yolculuk kaydından önce
+- **Ölçüm (Claude.ai Notion connector, 7 Eki):** AÇILIŞ · İNİŞ · UYANIŞ · DURUŞ · GEÇİŞ ·
+  DÖNÜŞ — altısı `Format: Yolculuk` · `Mekân: Online` · **`Kayıt Tipi: Başvuru`**.
+  `10-marka.md` v1.4 online Yolculuğu *"screening'siz, Direkt kayıt"* diye tanımlıyor.
+- Başvuru kalırsa kadın Başvurular'a düşer, bildirim akışına (**615**) hiç girmez.
+- Kod tarafı hazır: `Yolculuk` formatı kayıt kapısından geçiyor, sayı kilidi var (CC,
+  `bbc2254`). Kapanış: altısı `Direkt`.
+
+## B217 — Ortak birincil düğme yalnız ödeme ekranlarında
+- [ ] **Sahip:** CC · **küçük**
+- `.ocak-dugme` (`c3fe234`) bu turda yalnız `/odeme/devam` · `/odeme/nkolay` · havale başarı
+  ekranı · `/odeme/tamam`'da kullanıldı. Sitenin geri kalanında birincil düğme **üç yerde
+  ayrı** yaşıyor: `.ocak-kayit-cta__buton` (`atmosfer.css:1754`, `section[data-section]`
+  ebeveynine bağlı) · `.kayit-formu__submit` · `.ates-mektuplari__button` (CC ölçümü, 7 Eki).
+- `/odeme/nkolay`'daki `ocak-btn` hiçbir yerde tanımlı değildi — o yüzey kapandı, sınıf
+  ailesi kapanmadı.
+
+## B218 — Etkinlik bilgisi değişirse mail almış kadına haber gitmiyor
+- [ ] **Sahip:** CC + Kaan (ürün kararı)
+- Zoom linki, saat ya da mekân Notion'da değişirse "yerin hazır" almış kadınlara hiçbir
+  şey gitmez; gün hatırlatması (**608**) güncel bilgiyle gider ama yalnız o gün.
+
+## B219 — `odeme-kayit-oku.ts` saat cross-fallback'i duruyor
+- [ ] **Sahip:** CC · **küçük**
+- `rich('Saat') || rich('Zoom Başlangıç Saati')` — `api/kayit.ts:191-198`'in canlı veriyle
+  çürüttüğü desenin aynısı; fiziksel buluşmada yanlış saat verir (CC, 7 Eki).
+- `/odeme/tamam` artık bu değişkeni kullanmıyor (**613**, mail kurucusundan okuyor).
+  **Kalan tüketicisi var mı ölçülmedi.**
+
+## B220 — `20-ref-*` bu turun yüzeylerini bilmiyor
+- [ ] **Sahip:** Claude.ai (Halka 3 turu)
+- `20-ref-notion.md`: Kayıtlar'ın dört yeni alanı + `Ödeme Durumu: İptal` + `İptal Nedeni`
+  seçenekleri. `20-ref-bot.md`: Resend şablonları, `/api/bildirim-tara`, n8n tarama akışı,
+  `TARAMA_SIR` · `ODEME_LINK_SIR` adları (değerleri değil, KARAR 97), MailerLite'ın yeni
+  rolü, eski on iki alanlık envanterin tarihçeye inmesi.
