@@ -169,9 +169,19 @@ describe('KayitFormu.astro — havale süresi kayıttan gelir, "üç gün" yok (
     expect(KOD).toMatch(/: '';/);
   });
 
-  it('ikinci satır brief metniyle birebir', () => {
-    expect(KOD).toMatch(/Payın ulaştığında sana yazarız\. Süre dar geliyorsa haber ver, birlikte bakarız\./);
+  it('üç cümle TEK paragrafta, birebir (İŞ 14)', () => {
+    // İŞ 14'te iki `<p>` birleşti: ayrı paragraflar iki boşluk üretiyor ve
+    // ekranı uzatıyordu, cümleler zaten aynı şeyi söylüyor.
+    const paragraf = KOD.match(/<p class="kayit-formu__success-odeme-not">([\s\S]*?)<\/p>/)?.[1] ?? '';
+    expect(paragraf).toBeTruthy();
+    const tek = paragraf.replace(/\s+/g, ' ').trim();
+    expect(tek).toBe(
+      'Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz. Payın ulaştığında sana yazarız. Süre dar geliyorsa haber ver, birlikte bakarız.',
+    );
     expect(KOD).not.toMatch(/yerini tutarız\./);
+    // İKİ paragraf değil, BİR.
+    const notlar = KOD.match(/class="kayit-formu__success-odeme-not"/g) ?? [];
+    expect(notlar).toHaveLength(1);
   });
 
   it('IBAN tablosu AYNEN duruyor', () => {
@@ -179,6 +189,21 @@ describe('KayitFormu.astro — havale süresi kayıttan gelir, "üç gün" yok (
       expect(KOD).toContain(alan);
     }
     expect(KOD).toMatch(/Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz\./);
+  });
+
+  it('İŞ 14 — sıkı düzen ve küçük gövde ölçüsü', () => {
+    const KAYNAK_HAM = readFileSync(SOURCE_PATH, 'utf-8');
+    const kural = (ad: string) =>
+      KAYNAK_HAM.match(new RegExp(`\\.${ad} \\{[\\s\\S]*?\\n  \\}`))?.[0] ?? '';
+    // Dikey nefes daraldı.
+    expect(kural('kayit-formu__success')).toMatch(/padding: var\(--space-5\) 0;/);
+    expect(kural('kayit-formu__success-title')).toMatch(/margin: 0 0 var\(--space-3\);/);
+    // Gövde sitenin küçük metin ölçüsünde.
+    expect(kural('kayit-formu__success-text')).toMatch(/font-size: var\(--text-sm\);/);
+    expect(kural('kayit-formu__success-odeme-not')).toMatch(/font-size: var\(--text-sm\);/);
+    // Başlık sitenin mevcut başlık stilinde.
+    expect(kural('kayit-formu__success-title')).toMatch(/font-family: var\(--font-display\);/);
+    expect(kural('kayit-formu__success-title')).toMatch(/font-size: var\(--text-h2\);/);
   });
 });
 

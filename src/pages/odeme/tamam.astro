@@ -158,9 +158,12 @@ const sayfaAciklamasi = gorunum.baslik;
 </Layout>
 
 <style>
+  /* ── SIKI DÜZEN (İŞ 14, 8 Eki) ──
+   * Dikey nefes `--space-7` → `--space-5`, köz altı `--space-6` → `--space-4`.
+   * Token değişmedi, basamak değişti. */
   .ocak-odeme-tamam {
     text-align: center;
-    padding: var(--space-7) 0;
+    padding: var(--space-5) 0;
   }
   .ocak-odeme-tamam__ember {
     width: 14px;
@@ -168,18 +171,31 @@ const sayfaAciklamasi = gorunum.baslik;
     background: var(--ember);
     border-radius: 50%;
     box-shadow: 0 0 20px var(--ember), 0 0 50px rgba(196, 75, 47, 0.35);
-    margin: 0 auto var(--space-6);
+    margin: 0 auto var(--space-4);
   }
+  /* Başlık `.kayit-formu__success-title` ile AYNI: `--font-display` · italic ·
+   * `--text-h2` · `--gold`. Önceden `.ocak-yasal h1`den `--text-h1` ölçüsünü
+   * ve `margin-bottom: var(--space-8)`i devralıyordu — havale başarı
+   * ekranından iki kat büyük bir başlık ve ekranın üçte birini yiyen bir
+   * boşluk. Üç ekran artık aynı başlığı aynı ağırlıkta basıyor (İŞ 8). */
   .ocak-odeme-tamam h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 400;
+    letter-spacing: normal;
     color: var(--gold);
     font-style: italic;
+    margin: 0 0 var(--space-3);
   }
+  /* Gövde sitenin KÜÇÜK metin ölçüsünde (`--text-sm`) — eskiden açık ölçü
+   * yoktu ve `.ocak-yasal`ın prose gövdesini devralıyordu. */
   .ocak-odeme-tamam__gövde {
     font-family: var(--font-body);
+    font-size: var(--text-sm);
     color: var(--cream-soft);
-    line-height: 1.7;
+    line-height: 1.6;
     max-width: 42ch;
-    margin: 0 auto var(--space-5);
+    margin: 0 auto var(--space-2);
   }
   /* Kardeş sayfa `/odeme/iptal`'in `__yardim` stiliyle birebir aynı —
    * iki ekran aynı akışta, aynı ağırlıkta durmalı. */
@@ -200,8 +216,8 @@ const sayfaAciklamasi = gorunum.baslik;
    * ve adres bu sayfada gösterilmiyor (İŞ 7), tüketicileri kalmadı. */
   .ocak-odeme-tamam__kart {
     max-width: 42ch;
-    margin: 0 auto var(--space-5);
-    padding: var(--space-4);
+    margin: 0 auto var(--space-4);
+    padding: var(--space-3) var(--space-4);
     border: 1px solid rgba(196, 75, 47, 0.28);
     background: rgba(255, 255, 255, 0.02);
   }

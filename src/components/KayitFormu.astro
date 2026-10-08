@@ -611,20 +611,20 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           <dt>Açıklama</dt>
           <dd data-kf-success-aciklama></dd>
         </dl>
-        {/* Faz 1 §4.2 — tablodan sonra iki satır. Birincisi işlevsel (kod
-            açıklamaya yazılmazsa eşleştirme elde kalır), ikincisi ahlaki:
-            süre bir eşik değil, konuşulabilir bir aralık.
+        {/* ── TEK PARAGRAF (İŞ 14, 8 Eki) ──
+            Üç cümle iki ayrı `<p>`de duruyordu: biri işlevsel (kod
+            açıklamaya yazılmazsa eşleştirme elde kalır), öteki ahlaki (süre
+            bir eşik değil, konuşulabilir bir aralık). Ayrı paragraflar iki
+            boşluk üretiyor ve ekranı uzatıyordu; cümleler zaten aynı şeyi
+            söylüyor — ödemeni nasıl buluruz ve zorlanırsan ne olur.
 
-            7 Eki: "Üç gün dar geliyorsa" → "Süre dar geliyorsa". Cümle sabit
-            bir sayı söylüyordu ama gerçek süre artık kaydın `Yer Tutma
-            Bitişi`'nden geliyor ve kayda göre değişiyor (kart 3 sa · havale
-            24 sa · etkinliğe ≤72 saat kaldıysa 12 sa). "Üç gün" demek üstteki
-            cümlenin söylediği anı yalanlamak olurdu. */}
+            7 Eki: "Üç gün dar geliyorsa" → "Süre dar geliyorsa" (süre artık
+            kaydın `Yer Tutma Bitişi`'nden geliyor ve kayda göre değişiyor;
+            sabit bir sayı söylemek üstteki cümleyi yalanlardı). */}
         <p class="kayit-formu__success-odeme-not">
-          Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz.
-        </p>
-        <p class="kayit-formu__success-odeme-not">
-          Payın ulaştığında sana yazarız. Süre dar geliyorsa haber ver, birlikte bakarız.
+          Açıklamaya referans kodunu yaz; ödemeni onunla buluyoruz. Payın
+          ulaştığında sana yazarız. Süre dar geliyorsa haber ver, birlikte
+          bakarız.
         </p>
       </div>
 
@@ -1099,10 +1099,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   .kayit-formu__bos-durum a:hover { border-bottom-color: var(--ember); }
 
   /* === Success state (Anadolu pattern) === */
+  /* ── SIKI DÜZEN (İŞ 14, 8 Eki) ──
+   * Dikey nefes `--space-7`den `--space-5`e indi: ekran daha az yer kaplıyor
+   * ve kadın IBAN'ı kaydırmadan görüyor. Token değişmedi, basamak değişti. */
   .kayit-formu__success {
     scroll-margin-top: var(--nav-height);
     text-align: center;
-    padding: var(--space-7) 0;
+    padding: var(--space-5) 0;
     animation: kayit-formu-fade 0.8s var(--ease-out) forwards;
   }
   .kayit-formu__success-ember {
@@ -1113,24 +1116,42 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     box-shadow: 0 0 15px var(--ember), 0 0 40px rgba(196, 75, 47, 0.3);
     margin: 0 auto var(--space-6);
   }
+  /* Başlık sitenin mevcut başlık stili: `--font-display` · italic ·
+   * `--text-h2` · `--gold`. `/odeme/tamam` ve `/odeme/devam`'ın h1'leri de
+   * 8 Eki'de bu ÖLÇÜYE getirildi — üç ekran aynı başlığı aynı ağırlıkta
+   * basıyor. Alt boşluk `--space-4` → `--space-3`. */
   .kayit-formu__success-title {
     font-family: var(--font-display);
     font-style: italic;
     font-size: var(--text-h2);
     color: var(--gold);
     font-weight: 400;
-    margin: 0 0 var(--space-4);
+    margin: 0 0 var(--space-3);
   }
+  /* Gövde sitenin KÜÇÜK metin ölçüsünde (`--text-sm`, 0.875rem) — eskiden
+   * `--text-base`. Ödeme ekranı bir okuma yüzeyi değil, bir teyit yüzeyi. */
   .kayit-formu__success-text {
     font-family: var(--font-body);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     color: var(--cream-soft);
-    line-height: 1.7;
-    margin: 0 auto var(--space-5);
+    line-height: 1.6;
+    margin: 0 auto var(--space-4);
+    max-width: 42ch;
+  }
+
+  /* IBAN tablosundan sonraki TEK paragraf. Önceden hiçbir kuralı YOKTU —
+   * tarayıcı varsayılanıyla, `--text-base` gövdeyle aynı ağırlıkta basılıyordu.
+   * Artık küçük ölçüde ve ikincil renkte: teyit değil dipnot. */
+  .kayit-formu__success-odeme-not {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--cream-soft);
+    line-height: 1.6;
+    margin: 0 auto;
     max-width: 42ch;
   }
   .kayit-formu__success-odeme {
-    margin: 0 auto var(--space-5);
+    margin: 0 auto var(--space-4);
     max-width: 42ch;
     display: grid;
     grid-template-columns: max-content 1fr;

@@ -435,3 +435,70 @@ describe('İŞ 8 — üç ekran tek aile', () => {
     expect(DEVAM).not.toMatch(/MektupKutusu/);
   });
 });
+
+/**
+ * İŞ 14 — sıkı düzen: üç ekran daha az yer kaplıyor, başlıklar aynı ölçüde,
+ * gövde sitenin küçük metin ölçüsünde.
+ */
+describe('İŞ 14 — sıkı düzen, iki ödeme sayfası', () => {
+  const DEVAM = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'devam.astro'), 'utf-8');
+  const TAMAM = readFileSync(join(__dirname, '..', 'pages', 'odeme', 'tamam.astro'), 'utf-8');
+  const FORM = readFileSync(join(__dirname, '..', 'components', 'KayitFormu.astro'), 'utf-8');
+  const kural = (k: string, ad: string) =>
+    k.match(new RegExp(`\\.${ad} \\{[\\s\\S]*?\\n  \\}`))?.[0] ?? '';
+
+  it('dikey nefes daraldı — `--space-7` → `--space-5`', () => {
+    for (const k of [DEVAM, TAMAM]) {
+      expect(kural(k, 'ocak-odeme-tamam')).toMatch(/padding: var\(--space-5\) 0;/);
+      expect(kural(k, 'ocak-odeme-tamam__ember')).toMatch(/margin: 0 auto var\(--space-4\);/);
+    }
+  });
+
+  it('⚠ BAŞLIK üç ekranda AYNI ÖLÇÜ — `--text-h2` · gold · italik', () => {
+    // Önceden `/odeme/*` h1'leri `.ocak-yasal h1`den `--text-h1` ve
+    // `margin-bottom: var(--space-8)` devralıyordu: havale başarı ekranından
+    // iki kat büyük başlık ve ekranın üçte birini yiyen bir boşluk.
+    const basliklar = [
+      kural(DEVAM, 'ocak-odeme-tamam h1'),
+      kural(TAMAM, 'ocak-odeme-tamam h1'),
+      kural(FORM, 'kayit-formu__success-title'),
+    ];
+    for (const b of basliklar) {
+      expect(b).toMatch(/font-family: var\(--font-display\);/);
+      expect(b).toMatch(/font-size: var\(--text-h2\);/);
+      expect(b).toMatch(/font-style: italic;/);
+      expect(b).toMatch(/var\(--space-3\)/);
+    }
+    // İki sayfanın h1 kuralı BİREBİR aynı.
+    expect(basliklar[0]).toBe(basliklar[1]);
+  });
+
+  it('gövde sitenin KÜÇÜK metin ölçüsünde — `--text-sm`', () => {
+    for (const k of [DEVAM, TAMAM]) {
+      expect(kural(k, 'ocak-odeme-tamam__gövde')).toMatch(/font-size: var\(--text-sm\);/);
+    }
+    expect(kural(FORM, 'kayit-formu__success-text')).toMatch(/font-size: var\(--text-sm\);/);
+  });
+
+  it('gövde kuralı iki sayfada BİREBİR aynı — alt boşluk ayrışması bitti', () => {
+    // Önceden biri `--space-5`, öteki `--space-3` kullanıyordu.
+    expect(kural(DEVAM, 'ocak-odeme-tamam__gövde')).toBe(kural(TAMAM, 'ocak-odeme-tamam__gövde'));
+  });
+
+  it('durum kartı daraldı ve iki sayfada hâlâ birebir', () => {
+    expect(kural(DEVAM, 'ocak-odeme-tamam__kart')).toMatch(/padding: var\(--space-3\) var\(--space-4\);/);
+    expect(kural(DEVAM, 'ocak-odeme-tamam__kart')).toBe(kural(TAMAM, 'ocak-odeme-tamam__kart'));
+  });
+
+  it('YENİ TOKEN YOK — kullanılan her token tokens.css\'te', () => {
+    const TOKENS = readFileSync(join(__dirname, '..', 'styles', 'tokens.css'), 'utf-8');
+    const kullanilan = new Set(
+      [...DEVAM.matchAll(/var\((--[a-z0-9-]+)\)/g), ...TAMAM.matchAll(/var\((--[a-z0-9-]+)\)/g)]
+        .map((m) => m[1]),
+    );
+    for (const t of kullanilan) {
+      if (t === '--font-display') { expect(TOKENS).toContain('--font-display:'); continue; }
+      expect(TOKENS, `${t} tokens.css'te yok`).toContain(`${t}:`);
+    }
+  });
+});
