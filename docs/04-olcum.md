@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 08.10.2026 21:31 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 08.10.2026 21:39 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `9767fee` | `git log -1` |
+| canlı HEAD | `5d6d83f` | `git log -1` |
 | HEAD tarihi | 2026-10-08 | `git log -1 --date=short` |
-| HEAD konusu | kayit(gecis): "Ödeme ekranına geçiyoruz." en az 1500 ms görünür (İŞ 17) | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: B211 bildirim hattı turu — KARAR 605–615, B215–B220, B72/B192/B193/B206/B211 kapandı | `git log -1 --format=%s` |
+| çalışma ağacı | **temiz** | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **69** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **70** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
