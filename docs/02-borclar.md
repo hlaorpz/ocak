@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 1 Ekim 2026 · **robots Allow turu**
+**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu**
 
 ---
 
@@ -1599,6 +1599,17 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   **Sensitive** işaretlenir. ⚠ Sensitive'e çevirmek değeri **yeniden girmeyi**
   gerektirir ve üç ortamda da (Production · Preview · Development) yapılmalı;
   atlanan ortam sessizce boş kalır ve o ortamdaki akış çalışmayı durdurur.
+- **Ölçüm (Kaan, 7 Eki, Vercel paneli ekran görüntüsü — kapalı yüzey, doğrulamaya çalışma):**
+  env listesinde `ZOOM_WEBHOOK_SECRET` ve `ZOOM_CLIENT_SECRET` satırlarında **"Needs Attention"**
+  rozeti var; `ZOOM_CLIENT_ID` ve `ZOOM_ACCOUNT_ID`'de yok. Rozetin tanımı Vercel dokümanında
+  bulunamadı (Claude.ai, web araması, 7 Eki) — belirtiyle örtüşüyor, tanım teyitsiz.
+- ⚠ **Kapanış şartının "üç ortam" ayağı bayat olabilir.** Vercel Academy'ye göre Sensitive değişken
+  yalnız Production ve Preview'ı hedefler, Development'ı hedefleyemez; mevcut değişkeni çevirmenin
+  yolu sil-yeniden-yarat (kaynak: vercel.com/academy/optimize-your-vercel-account/sensitive-env-vars,
+  okuma 7 Eki). Panelde sınanmadı — B78 turunda ilk iş.
+- ⚠ **`ZOOM_WEBHOOK_SECRET` iki yerde yaşar:** Vercel env + Notion automation'ın `x-ocak-secret`
+  başlığı (`90-kronoloji/2026-06.md:234`). Yeniden girilirken değer birebir aynı olmazsa
+  `zoom-olustur` 401 döner. **Bağ:** KARAR 616
 
 ## B79 — Faz 2 eşleştirme regex'i ÜÇ referans formatını tanımalı
 - [ ] **Sahip:** CC (Faz 2 turunda)
@@ -3658,6 +3669,21 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   `KART_AKISI` **inline edilmemiş**, çağrı duruyor. `kart-akisi.ts`'in *"değer build
   zamanında sabitlenir, REDEPLOY şart"* doktrini bu iki değişken için **yanlış olabilir.**
   Deploy edilmiş artifact'la teyit edilmedi — borç açık. **Bağ:** KARAR 605
+- **Ölçüm (CC, 8 Eki, Zoom host turu — yerel build, ÜÇ koşum; patch "iki" diyordu, üçüncüsü
+  teşhisin kendisinden doğdu):** ölçülen dosya her koşumda
+  `.vercel/output/_functions/pages/api/zoom-olustur.astro.mjs`, komut `npm run build` + `grep -n`.
+  (1) Hiç `ZOOM_*` verilmeden (yerelin normal hâli, `.env`'de bu adlar yok): `ZOOM_WEBHOOK_SECRET`
+  `undefined`'a katlanıyor → `zoom-olustur.ts` guard'ı sabit-doğru → **`zoom.ts`'in tamamı
+  tree-shake ediliyor**, bundle 26 satır (yalnız 401 dönen POST). Bu yüzden ilk `ZOOM_HOST_EMAIL`
+  grep'i sıfır döndü ve "output yok" sanıldı. (2) `ZOOM_WEBHOOK_SECRET` kabuktan yalancı bir
+  değerle verilip `ZOOM_HOST_EMAIL` **verilmeyince**: satır 28 → `const hostSegment = "me";` —
+  yalnız değer değil **env okuması da** derlenmemiş. (3) ikisi de kabuktan verilince: satır 7 →
+  `const HOST_EMAIL = process.env.ZOOM_HOST_EMAIL;` — **çalışma zamanı okuması**, inline değil.
+  Örüntü B205'in gövdesindekiyle aynı, bir sonucu daha var: **katlanan `undefined` ölü-kod
+  elemesini besliyor**, yani değişken build anında yoksa okuma hiç derlenmez — "env'i sonradan
+  eklerim, kod zaten okuyor" yanlış; Vercel'de env yalnız Production scope'undaysa Preview
+  build'i sabite katlanır.
+  Üçüncü veri noktası; yine **yerel** — deploy edilmiş artifact okunmadı, borç açık. **Bağ:** KARAR 616
 
 ## B206 — WhatsApp davet linki ham Notion page id taşıyor ✅ KAPANDI (8 Eki)
 - [x] **Sahip:** CC + Kaan (ürün kararı) · **küçük ama iki uçlu**

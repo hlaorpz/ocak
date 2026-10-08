@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 8 Ekim 2026 · **B211 bildirim hattı turu**
+**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu**
 
 ---
 
@@ -795,6 +795,8 @@ Bu dosya **kısa kalır.** Gerekçe yazılmaz, durum tekrar edilmez, tarih anlat
 
 ## BİTENLER
 
+- **8 Ekim — Zoom host turu ✅** (1 kod commit `a56488d` + bu patch) — sıra dışı iş, kuyrukta yoktu.
+  Açık kalan: eski kullanıcı adına açılmış odalar yerinde; eski kullanıcı o etkinlikler geçmeden silinmez.
 - **1 Ekim — hamburger Takvim turu ✅** (1 kod commit `2640f49` + bu patch)
   Takvim menünün son öğesi, mobilde ayraçlı (**KARAR 600**). Advaita'nın isteği;
   footer bağlantısı yerinde kaldı. Kalan: iPhone Safari eyeball (Kaan).

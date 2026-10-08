@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 08.10.2026 21:39 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 08.10.2026 23:00 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `5d6d83f` | `git log -1` |
+| canlı HEAD | `a56488d` | `git log -1` |
 | HEAD tarihi | 2026-10-08 | `git log -1 --date=short` |
-| HEAD konusu | docs: B211 bildirim hattı turu — KARAR 605–615, B215–B220, B72/B192/B193/B206/B211 kapandı | `git log -1 --format=%s` |
-| çalışma ağacı | **temiz** | `git status --porcelain` |
+| HEAD konusu | zoom(host): meeting host'u ZOOM_HOST_EMAIL env'inden, boşsa `me` + warn | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **70** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **72** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -45,13 +45,13 @@
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 189 |
-| `docs/02-borclar.md` | 3907 |
-| `docs/03-sira.md` | 964 |
+| `docs/00-durum.md` | 190 |
+| `docs/02-borclar.md` | 3933 |
+| `docs/03-sira.md` | 966 |
 | `docs/05-harita.md` | 187 |
-| `docs/01-kararlar.tsv` | 616 |
+| `docs/01-kararlar.tsv` | 617 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **189** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **190** — ✅ altında
 
 ## BORÇ SAYIMI
 
@@ -69,8 +69,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **615** | — |
-| satır sayısı (başlık dahil) | 616 | — |
+| son KARAR numarası | **616** | — |
+| satır sayısı (başlık dahil) | 617 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |

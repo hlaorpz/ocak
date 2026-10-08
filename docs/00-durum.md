@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ekim 2026 · **B211 bildirim hattı turu** · dönem HEAD `9767fee`
+**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu** · dönem HEAD `a56488d`
 
 ---
 
@@ -67,7 +67,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`9767fee`** (8 Eki, B211 bildirim hattı turu — bir önceki dönem `f1a41b4`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem çok KOD içerdi:** `4f38887` · `53420c3` (B193) → `b7d0c33` … `9767fee` (B211 + ödeme ekranları). Zincir: `git log --oneline f1a41b4..9767fee`; iş eşlemesi `90-kronoloji/2026-10.md`. Kurtarma tag'i `kurtarma-b211-oncesi` = `7be7de0` (uzakta, CC 7 Eki). Önceki dönemin (`f1a41b4`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
+| `main` dönem HEAD | **`a56488d`** (8 Eki, Zoom host turu — bir önceki dönem `9767fee`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `a56488d` (`src/lib/zoom.ts` — meeting host'u env'den; `src/lib/zoom.test.ts` yeni). Arada iki doküman commit'i: `5d6d83f` · `f2bd9df`. Önceki dönemin (`9767fee`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -135,6 +135,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **8 Ekim — Zoom host turu:** `a56488d`. Online oda artık `ZOOM_HOST_EMAIL`'deki kullanıcı adına açılıyor (`users/me` kalktı); canlıda doğrulandı. **KARAR 616** · B78 ve B205'e ölçüm eklendi. → `90-kronoloji/2026-10.md`
 - **7–8 Ekim — B211 bildirim hattı turu:** `4f38887` … `9767fee`. **B193 ✅ · B211 ✅** · B72 · B192 · B206 ✅.
   Kayıt/ödeme mailleri MailerLite'tan Resend'e geçti; süre sayan her şey `/api/bildirim-tara` + n8n saati;
   ödeme ekranları yeniden yazıldı. **605–615** · B215–B220 açıldı. → `90-kronoloji/2026-10.md`
