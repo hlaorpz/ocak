@@ -6,6 +6,9 @@
  *   zoomAccessToken(): account_credentials grant ile ~1 saatlik bearer token.
  *   zoomMeetingOlustur({ topic, startTime }): scheduled meeting yaratır → { join_url, meeting_id }.
  *
+ * Meeting'in açıldığı host `ZOOM_HOST_EMAIL` env'inden gelir; tanımsız ya da
+ * boşluktan ibaretse eski davranış (`users/me`) korunur + console.warn düşer.
+ *
  * Token cache YOK — her çağrıda taze. Lansman hacmi düşük (etkinlik başına 1 çağrı).
  * ZoomError.kind: 'credential' (401/env eksik) vs 'scope' (403, meeting:write eksik) vs 'other'.
  */
@@ -13,6 +16,7 @@
 const ACCOUNT_ID = import.meta.env.ZOOM_ACCOUNT_ID;
 const CLIENT_ID = import.meta.env.ZOOM_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.ZOOM_CLIENT_SECRET;
+const HOST_EMAIL = import.meta.env.ZOOM_HOST_EMAIL;
 
 export type ZoomMeetingArgs = {
   /** Notion "Başlık" — meeting topic. */
@@ -74,7 +78,14 @@ export async function zoomAccessToken(): Promise<string> {
 
 export async function zoomMeetingOlustur(args: ZoomMeetingArgs): Promise<ZoomMeetingResult> {
   const token = await zoomAccessToken();
-  const res = await fetch('https://api.zoom.us/v2/users/me/meetings', {
+  // Host segmenti çağrı anında çözülür — uyarı her varsayılan-host çağrısında
+  // bir kez düşsün diye, modül yüklenişinde bir kez değil. Boşluk da "boş"tur.
+  const host = HOST_EMAIL?.trim();
+  if (!host) {
+    console.warn('[zoom] ZOOM_HOST_EMAIL tanımsız, varsayılan host');
+  }
+  const hostSegment = host ? encodeURIComponent(host) : 'me';
+  const res = await fetch(`https://api.zoom.us/v2/users/${hostSegment}/meetings`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
