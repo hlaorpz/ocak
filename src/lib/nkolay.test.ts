@@ -525,11 +525,18 @@ describe('kaynak disiplini — route ve sözleşme korundu', () => {
     }
   });
 
-  it('checkoutUrl sözleşmesi korundu — api.ts ve KayitFormu dokunulmadı', () => {
+  it('checkoutUrl sözleşmesi korundu — alan ve yönlendirme yerinde', () => {
+    // ⚠ Ölçüt 8 Eki'de güncellendi (İŞ 17). Eski hâli satır içi
+    // `window.location.href = result.checkoutUrl;` arıyordu; yönlendirme artık
+    // `git()` içinde ve `checkoutUrl!` yazıyor, çünkü geçiş ekranı en az
+    // 1500 ms görünecek şekilde geciktirilebiliyor.
+    //
+    // SÖZLEŞME aynı: `api.ts` alanı taşıyor, KayitFormu o alana gidiyor.
+    // Ölçülen şey o; satırın tam yazımı değil.
     expect(oku('src', 'lib', 'api.ts')).toMatch(/checkoutUrl\?: string;/);
-    expect(oku('src', 'components', 'KayitFormu.astro')).toMatch(
-      /window\.location\.href = result\.checkoutUrl;/,
-    );
+    const form = oku('src', 'components', 'KayitFormu.astro');
+    expect(form).toMatch(/if \(result\.checkoutUrl\) \{/);
+    expect(form).toMatch(/window\.location\.href = result\.checkoutUrl!;/);
   });
 
   it('/odeme/nkolay: prerender false + KART_AKISI muhafızının KOŞULU', () => {

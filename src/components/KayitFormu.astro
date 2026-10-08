@@ -1615,6 +1615,8 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   import { submitKayit, type KayitPayload } from '../lib/api';
   import { scrollToSuccess } from '../lib/scroll-to-success';
   import { gecersizAlaniGoster } from '../lib/gecersiz-alan-goster';
+  // İŞ 17 — geçiş tabanı. Hesap lib'de (inline script test edilemiyor).
+  import { gecisKalanMs, GECIS_EN_AZ_MS } from '../lib/gecis';
   import {
     uygulaIndirim,
     kademeTutari,
@@ -2198,9 +2200,14 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       const { ucret: gecisKatmanA } = aktifUcret();
       const gecisToplam = uygulaIndirim(gecisKatmanA, 0, promoSonuc).toplam;
       const kartYolu = direktAktif() && yontem === 'kart' && gecisToplam > 0;
+      // ── İŞ 17 (8 Eki) — geçiş OKUNUR olsun ──
+      // Geçişin başladığı an. Yönlendirme, API yanıtı ile `GECIS_EN_AZ_MS`ten
+      // hangisi SONRA gelirse onda olur.
+      let gecisBaslangici = 0;
       if (kartYolu) {
         form.hidden = true;
         gecisEl.hidden = false;
+        gecisBaslangici = Date.now();
       }
 
       try {
@@ -2211,7 +2218,23 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           // (kullanıcı geri dönerse — örn. browser back — sayfada kalır;
           // hata akışında /odeme/iptal sayfasından geri gelir).
           if (result.checkoutUrl) {
-            window.location.href = result.checkoutUrl;
+            // ── İŞ 17 — "Ödeme ekranına geçiyoruz." EN AZ 1500 ms görünür ──
+            //
+            // Hızlı yanıtta (yerel, iyi ağ) geçiş bir kare görünüp kayboluyordu:
+            // kadın köz noktasını fark etmeden N-Kolay ekranında buluyordu
+            // kendini ve ekran değişimi ani bir kesinti gibi okunuyordu.
+            //
+            // ⚠ EK BEKLEME EKLENMİYOR. Bekleme `max(0, 1500 − geçen süre)`:
+            // API zaten 1500 ms'den uzun sürdüyse kalan negatif olur ve
+            // yönlendirme ANINDA yapılır. Yani yavaş ağ cezalandırılmıyor —
+            // eşik bir TABAN, bir gecikme değil.
+            const gecen = gecisBaslangici > 0 ? Date.now() - gecisBaslangici : GECIS_EN_AZ_MS;
+            const kalan = gecisKalanMs(gecen);
+            const git = () => {
+              window.location.href = result.checkoutUrl!;
+            };
+            if (kalan > 0) window.setTimeout(git, kalan);
+            else git();
             return;
           }
 
