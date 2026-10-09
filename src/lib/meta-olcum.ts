@@ -14,7 +14,9 @@
  * ölçüm. Meta'ya ulaşılamazsa ödeme bildirimi aynen sürer.
  *
  * ── Kapılar (Kaan koşulları 2 · 3 · 4) ──
- *  1. Üç ortam değişkeninin ÜÇÜ de tanımlı olacak, yoksa hiç istek atılmaz
+ *  1. `META_PIXEL_ID` ve `META_CAPI_TOKEN` tanımlı olacak, yoksa hiç istek
+ *     atılmaz. `META_TEST_EVENT_CODE` İSTEĞE BAĞLI — varsa test akışı, yoksa
+ *     gerçek akış.
  *  2. `Ölçüm Rızası` işaretli olacak
  *  3. `Ölçüm Gitti` BOŞ olacak (tekillik)
  *  4. Kayıt ID ve pozitif tutar olacak
@@ -24,7 +26,7 @@
  * YOK: e-posta ve telefon özeti — hukuk teyidi bekliyor (14 Eki). Ad, şehir,
  * IP, user-agent da yok; hiçbiri onaylı listede değil.
  *
- * ⚠ ÜÇ YARGI KARARI — raporlandı, Kaan'ın onayını bekliyor:
+ * ── Üç yargı kararı — Kaan onayladı (9 Eki 2026) ──
  *
  *  (a) `user_data.external_id` = Kayıt ID'nin SHA-256'sı. Meta CAPI boş
  *      `user_data` ile gelen olayı REDDEDER; en az bir tanımlayıcı ister.
@@ -35,16 +37,16 @@
  *  (b) `action_source: 'other'`. `'website'` Meta tarafında
  *      `client_user_agent` ya da `client_ip_address` ZORUNLU kılıyor; ikisi de
  *      onaylı yükte yok. Bedeli: web kampanyası ilişkilendirmesi zayıflar.
- *
- *  (c) `META_GRAPH_SURUMU` — **TEYITSIZ.** Sürümü ölçemedim (ağ çağrısı
- *      yapmadım, Meta dokümanına bakmadım). Yanlışsa ilk gerçek denemede
- *      Meta açık bir sürüm hatası döner ve bu modül onu log'lar. Tek sabit,
- *      tek satır.
+ *      ⏭ Hukuk teyidi (14 Eki) gelirse `'website'`a geçilecek — AYRI İŞ,
+ *      bu turda yapılmadı.
  */
 import { createHash } from 'node:crypto';
 
-/** ⚠ TEYITSIZ — ilk canlı denemeden önce Meta dokümanına karşı doğrulanmalı. */
-export const META_GRAPH_SURUMU = 'v21.0';
+/**
+ * Graph API sürümü — Kaan verdi (9 Eki 2026): v26.0, 29 Temmuz 2026 sürümü.
+ * v21 Ocak 2027'de kalkıyor, o yüzden buraya yazılmadı.
+ */
+export const META_GRAPH_SURUMU = 'v26.0';
 
 /** Meta olay adı. Tarayıcıdaki GTM Purchase etiketiyle AYNI olay. */
 export const META_OLAY_ADI = 'Purchase';
@@ -58,24 +60,33 @@ export const OLCUM_RIZASI_ALANI = 'Ölçüm Rızası';
 export type MetaAyarlari = {
   pixelId: string;
   token: string;
-  testKodu: string;
+  /**
+   * `META_TEST_EVENT_CODE` — **isteğe bağlı** (Kaan, 9 Eki).
+   *
+   * Tanımlıysa olay Events Manager'ın **Test Events** akışına düşer ve gerçek
+   * dönüşüm sayılmaz; doğrulama için budur. Tanımsızsa `test_event_code`
+   * gövdeye HİÇ girmez ve olay gerçek akışa gider.
+   *
+   * `undefined` ile boş dize AYRIMI YOK: ikisi de "tanımsız" sayılır. Boş bir
+   * `test_event_code` göndermek Meta tarafında geçersiz bir kod demekti.
+   */
+  testKodu?: string;
 };
 
 /**
- * Üç ortam değişkenini okur. **Üçünden biri tanımsızsa `null`** — çağıran
- * hiçbir istek atmaz, sessizce geçer (Kaan koşulu 4).
+ * Ortam değişkenlerini okur.
+ *
+ * **`META_PIXEL_ID` ya da `META_CAPI_TOKEN` tanımsızsa `null`** — çağıran
+ * hiçbir istek atmaz, sessizce geçer (Kaan koşulu 4). İkisi de olmadan uca
+ * çıkılamaz; bu yüzden zorunlular.
+ *
+ * `META_TEST_EVENT_CODE` yokluğu bir eksiklik DEĞİL, bir moddur: gerçek akış.
  *
  * ⚠ `process.env`, `import.meta.env` DEĞİL. `import.meta.env` Vite tarafından
  * BUILD ZAMANINDA sabitlenir (`kart-akisi.ts`'in uzun uyarısı aynı tuzağı
  * anlatıyor) ve Vercel'de anahtarı değiştirmek redeploy gerektirirdi. Buradan
- * okunan değer çalışma zamanında taze.
- *
- * ⚠ `META_TEST_EVENT_CODE` de ZORUNLU — Kaan'ın koşulu birebir böyle. Bunun
- * doğrudan sonucu: test kodu tanımlı olmayan bir ortamda bu özellik HİÇ
- * çalışmaz. Production'da gerçek dönüşüm istenen gün ya kod oraya da
- * yazılacak (olaylar Events Manager'ın Test Events akışına düşer) ya da bu
- * satırdaki üçlü ikiliye inecek. Karar Kaan'ın; kod bugün koşulu birebir
- * uyguluyor.
+ * okunan değer çalışma zamanında taze — test kodunu eklemek/kaldırmak, yani
+ * test akışı ile gerçek akış arasında gidip gelmek, tek bir env değişikliği.
  */
 export function metaAyarlariniOku(
   env: Record<string, string | undefined>,
@@ -83,8 +94,8 @@ export function metaAyarlariniOku(
   const pixelId = (env.META_PIXEL_ID ?? '').trim();
   const token = (env.META_CAPI_TOKEN ?? '').trim();
   const testKodu = (env.META_TEST_EVENT_CODE ?? '').trim();
-  if (!pixelId || !token || !testKodu) return null;
-  return { pixelId, token, testKodu };
+  if (!pixelId || !token) return null;
+  return testKodu ? { pixelId, token, testKodu } : { pixelId, token };
 }
 
 /** Meta Conversions API uç adresi. Token gövdede gider, URL'de DEĞİL. */
@@ -133,14 +144,20 @@ export function purchaseOlayi(g: PurchaseGirdisi): Record<string, unknown> {
   };
 }
 
-/** Uca gidecek tam gövde. Token burada — URL'de değil, log'da değil. */
+/**
+ * Uca gidecek tam gövde. Token burada — URL'de değil, log'da değil.
+ *
+ * ⚠ `test_event_code` anahtarı yalnız kod TANIMLIYKEN basılır. `undefined`
+ * bir değerle göndermek `JSON.stringify` sayesinde anahtarı düşürürdü ama
+ * niyeti okunmaz kılardı; koşul açık yazılı.
+ */
 export function purchaseGovdesi(
   g: PurchaseGirdisi,
   ayarlar: MetaAyarlari,
 ): Record<string, unknown> {
   return {
     data: [purchaseOlayi(g)],
-    test_event_code: ayarlar.testKodu,
+    ...(ayarlar.testKodu ? { test_event_code: ayarlar.testKodu } : {}),
     access_token: ayarlar.token,
   };
 }
@@ -242,7 +259,7 @@ export async function purchaseBildir(
   if (!ayarlar) {
     // Sessizce geçilir (Kaan koşulu 4). `console.log`, `error` değil: eksik
     // yapılandırma bir arıza değil, "bu ortamda kapalı" demek.
-    return atla('META_PIXEL_ID · META_CAPI_TOKEN · META_TEST_EVENT_CODE üçü birden tanımlı değil');
+    return atla('META_PIXEL_ID ya da META_CAPI_TOKEN tanımlı değil');
   }
 
   const kapi = olcumKapisi(g);
@@ -286,7 +303,11 @@ export async function purchaseBildir(
     return { durum: 'gonderildi', isaretlendi: false, sebep };
   }
 
-  console.log(`[meta-olcum] OK — kayitId=${g.kayitId} ${OLCUM_GITTI_ALANI}=✓`);
+  // Akış log'da görünüyor: Events Manager'da olayı ararken "test akışına mı
+  // gerçek akışa mı düştü" sorusu ilk sorulan şey. Kodun KENDİSİ log'a
+  // GİRMEZ (CLAUDE.md §8) — yalnız hangi modda olduğu.
+  const akis = ayarlar.testKodu ? 'test' : 'gerçek';
+  console.log(`[meta-olcum] OK — kayitId=${g.kayitId} akis=${akis} ${OLCUM_GITTI_ALANI}=✓`);
   return { durum: 'gonderildi', isaretlendi: true };
 }
 

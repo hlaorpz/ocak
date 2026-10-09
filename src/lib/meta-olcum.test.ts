@@ -44,7 +44,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('Koşul 4 — üç ortam değişkeninin ÜÇÜ de zorunlu', () => {
+describe('Koşul 4 — pixel ve token ZORUNLU, test kodu İSTEĞE BAĞLI', () => {
   it('üçü de doluyken ayarlar okunur', () => {
     expect(metaAyarlariniOku(AYAR_ENV)).toEqual({
       pixelId: '861407993595884',
@@ -66,20 +66,36 @@ describe('Koşul 4 — üç ortam değişkeninin ÜÇÜ de zorunlu', () => {
     expect(yuzey).not.toContain('import.meta.env');
   });
 
-  it('herhangi biri tanımsız → null (hiçbir istek atılmaz)', () => {
-    for (const eksik of ['META_PIXEL_ID', 'META_CAPI_TOKEN', 'META_TEST_EVENT_CODE']) {
+  it('ZORUNLU ikiliden biri tanımsız → null (hiçbir istek atılmaz)', () => {
+    for (const eksik of ['META_PIXEL_ID', 'META_CAPI_TOKEN']) {
       const env = { ...AYAR_ENV, [eksik]: undefined };
       expect(metaAyarlariniOku(env), eksik).toBeNull();
     }
   });
 
-  it('boş ya da yalnız-boşluk değer de tanımsız sayılır', () => {
+  it('zorunlu ikilide boş ya da yalnız-boşluk değer de tanımsız sayılır', () => {
     expect(metaAyarlariniOku({ ...AYAR_ENV, META_CAPI_TOKEN: '' })).toBeNull();
     expect(metaAyarlariniOku({ ...AYAR_ENV, META_PIXEL_ID: '   ' })).toBeNull();
   });
 
   it('tamamen boş ortam → null', () => {
     expect(metaAyarlariniOku({})).toBeNull();
+  });
+
+  it('TEST KODU YOKKEN ayarlar OKUNUR — gerçek akış, `testKodu` alanı HİÇ yok', () => {
+    const { META_TEST_EVENT_CODE: _, ...env } = AYAR_ENV;
+    const ayarlar = metaAyarlariniOku(env);
+    expect(ayarlar).toEqual({ pixelId: '861407993595884', token: 'sahte-token' });
+    expect(ayarlar).not.toHaveProperty('testKodu');
+  });
+
+  it('BOŞ test kodu tanımsızla AYNI — geçersiz bir kod gönderilmez', () => {
+    for (const bos of ['', '   ']) {
+      const ayarlar = metaAyarlariniOku({ ...AYAR_ENV, META_TEST_EVENT_CODE: bos });
+      expect(ayarlar, JSON.stringify(bos)).not.toHaveProperty('testKodu');
+      // Zorunlu ikili hâlâ okunuyor, yani akış KAPANMIYOR.
+      expect(ayarlar?.pixelId).toBe('861407993595884');
+    }
   });
 
   it('ayarlar eksikken `purchaseBildir` HİÇBİR istek atmaz ve atlanır', async () => {
@@ -94,6 +110,39 @@ describe('Koşul 4 — üç ortam değişkeninin ÜÇÜ de zorunlu', () => {
     expect(isaretle).not.toHaveBeenCalled();
     expect(sonuc.durum).toBe('atlandi');
     expect(sonuc.sebep).toContain('META_PIXEL_ID');
+  });
+
+  it('test kodu YOKKEN `purchaseBildir` GERÇEK akışa gönderir — kapı kapanmaz', async () => {
+    const { cagrilar, tasima } = tasimaTopla({ ok: true });
+    const { META_TEST_EVENT_CODE: _, ...env } = AYAR_ENV;
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    const sonuc = await purchaseBildir(
+      { kayitId: 'OCAK-1234', pageId: 'p1', tutar: 750, paraBirimi: 'TRY', olcumRizasi: true, olcumGitti: false },
+      { tasima, olcumGittiIsaretle: vi.fn(), env, anSaniye: AN },
+    );
+    expect(sonuc.durum).toBe('gonderildi');
+    expect(cagrilar).toHaveLength(1);
+    expect(cagrilar[0].govde).not.toHaveProperty('test_event_code');
+  });
+
+  it('log hangi akışa gidildiğini söylüyor; test KODUNUN KENDİSİ log\'a girmiyor', async () => {
+    const satirlar: string[] = [];
+    vi.spyOn(console, 'log').mockImplementation((...a: unknown[]) => void satirlar.push(a.join(' ')));
+    const { tasima } = tasimaTopla({ ok: true });
+    const girdi = { kayitId: 'OCAK-1', pageId: 'p', tutar: 1, paraBirimi: 'TRY', olcumRizasi: true, olcumGitti: false };
+
+    await purchaseBildir(girdi, { tasima, olcumGittiIsaretle: vi.fn(), env: AYAR_ENV, anSaniye: AN });
+    expect(satirlar.at(-1)).toContain('akis=test');
+
+    const { META_TEST_EVENT_CODE: _, ...env } = AYAR_ENV;
+    await purchaseBildir(girdi, { tasima, olcumGittiIsaretle: vi.fn(), env, anSaniye: AN });
+    expect(satirlar.at(-1)).toContain('akis=gerçek');
+
+    // Kod ve token hiçbir satırda geçmiyor (CLAUDE.md §8).
+    for (const s of satirlar) {
+      expect(s).not.toContain('TEST12345');
+      expect(s).not.toContain('sahte-token');
+    }
   });
 });
 
@@ -200,11 +249,27 @@ describe('Koşul 5 — yükte yalnız Kayıt ID, tutar, para birimi, zaman', () 
     expect((purchaseOlayi({ ...G, paraBirimi: ' try ' }) as any).custom_data.currency).toBe('try');
   });
 
-  it('gövde: olay + test kodu + token', () => {
+  it('gövde (TEST akışı): olay + test kodu + token', () => {
     const govde = purchaseGovdesi(G, metaAyarlariniOku(AYAR_ENV)!);
     expect(govde.data).toHaveLength(1);
     expect(govde.test_event_code).toBe('TEST12345');
     expect(govde.access_token).toBe('sahte-token');
+  });
+
+  it('gövde (GERÇEK akış): `test_event_code` anahtarı HİÇ BASILMAZ', () => {
+    const { META_TEST_EVENT_CODE: _, ...env } = AYAR_ENV;
+    const govde = purchaseGovdesi(G, metaAyarlariniOku(env)!);
+    expect(govde).not.toHaveProperty('test_event_code');
+    expect(Object.keys(govde).sort()).toEqual(['access_token', 'data']);
+    // Olayın kendisi iki akışta da AYNI — yalnız zarf değişiyor.
+    expect(govde.data).toEqual(purchaseGovdesi(G, metaAyarlariniOku(AYAR_ENV)!).data);
+  });
+
+  it('gerçek akış gövdesi JSON\'da `test_event_code` dizesini taşımıyor', () => {
+    const { META_TEST_EVENT_CODE: _, ...env } = AYAR_ENV;
+    expect(JSON.stringify(purchaseGovdesi(G, metaAyarlariniOku(env)!))).not.toContain(
+      'test_event_code',
+    );
   });
 
   it('TOKEN URL\'de DEĞİL (CLAUDE.md §8 — sır log\'a/adrese sızmaz)', () => {
@@ -212,6 +277,11 @@ describe('Koşul 5 — yükte yalnız Kayıt ID, tutar, para birimi, zaman', () 
     expect(url).not.toContain('sahte-token');
     expect(url).not.toContain('access_token');
     expect(url).toBe(`https://graph.facebook.com/${META_GRAPH_SURUMU}/861407993595884/events`);
+  });
+
+  it('Graph API sürümü v26.0 — Kaan verdi (29 Tem 2026 sürümü; v21 Oca 2027\'de kalkıyor)', () => {
+    expect(META_GRAPH_SURUMU).toBe('v26.0');
+    expect(metaUcAdresi('1')).toContain('/v26.0/');
   });
 
   it('olay adı Purchase, GTM etiketiyle aynı', () => {
