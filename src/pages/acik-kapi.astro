@@ -17,6 +17,7 @@ import { getEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import PageContent from '../components/PageContent.astro';
 import DavetGecmisEtkinlikUyari from '../components/DavetGecmisEtkinlikUyari.astro';
+import OlcumSayfa from '../components/OlcumSayfa.astro';
 import { etkinlikGecmisMi } from '../lib/davet-guvenlik-agi.ts';
 
 const sayfa = await getEntry('sayfalar', '/acik-kapi');
@@ -41,4 +42,8 @@ const etkinlikGecmis = await etkinlikGecmisMi(etkinlikId);
   )}
 
   <PageContent slug="/acik-kapi" fragments={sayfa.data.fragments} />
+
+  {/* B118 İŞ B — `view_content`. Hiçbir şey render etmez; GTM'deki
+      ViewContent tetikleyicisinin kaynağı. */}
+  <OlcumSayfa icerikTipi="acik-kapi" />
 </Layout>

@@ -23,6 +23,7 @@ import { tamamGorunumu } from '../../lib/odeme-tamam.ts';
 import { etkinlikUrlFormatla } from '../../lib/kayit.ts';
 import DavetKutusu from '../../components/DavetKutusu.astro';
 import MektupKutusu from '../../components/MektupKutusu.astro';
+import OlcumPurchase from '../../components/OlcumPurchase.astro';
 import { odemeLinkImzasi, odemeLinkSirri } from '../../lib/odeme-link.ts';
 // KARAR 488 — kart akışı kapalıyken bu sayfa 404. Dosya silinmedi.
 //
@@ -146,6 +147,18 @@ const sayfaAciklamasi = gorunum.baslik;
       {/* İŞ 8 sırası: başlık → durum kartı → açıklama → paylaş → Ateş
           Mektupları → referans. Referans kodu EN ALTTA ve küçük. */}
       {ref && <p class="ocak-odeme-tamam__ref">({ref})</p>}
+
+      {/* B118 İŞ B — `purchase`. Hiçbir şey render etmez. Beş koşulun dördü
+          burada ön-değerlendirilir, beşincisi (`localStorage` işareti)
+          tarayıcıda. Havale kaydında olay ATILMAZ (brief K-2). */}
+      <OlcumPurchase
+        kayitDurumu={durum}
+        odemeDurumu={kayit.odemeDurumu}
+        odemeYontemi={kayit.odemeYontemi}
+        kayitId={ref}
+        tutar={kayit.tutar}
+        paraBirimi={kayit.paraBirimiHam}
+      />
 
       {mockMu && (
         <p class="ocak-mock-uyari">

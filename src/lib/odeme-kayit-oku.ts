@@ -191,6 +191,20 @@ export type KayitOkumaSonuc = {
    */
   odemeDurumu: string;
   /**
+   * Kayıtlar `Ödeme Yöntemi` select adı — `Kredi Kartı` · `Havale`. Ücretsiz
+   * kayıtta boş (`api/kayit.ts` yalnız `ucretliMi` iken yazıyor).
+   *
+   * B118 İŞ B (9 Eki 2026) ile okunmaya başladı: `/odeme/tamam`'ın `purchase`
+   * olayı YALNIZ kart ödemesinde atılır (brief K-2 — havale yolu Meta'ya
+   * sunucudan gidecek, İŞ D). Bu alan okunmadan o koşul kurulamıyordu; ADIM
+   * 0'da brief'in DUR koşulu 3'ü tam burada sınırdaydı.
+   *
+   * ⚠ Değeri callback de yazıyor (`api/odeme-callback.ts` → `Kredi Kartı`),
+   * yani kart ödemesi onaylandığında alan kesin dolu. Havalede kayıt anında
+   * yazılmış hâli kalıyor.
+   */
+  odemeYontemi: string;
+  /**
    * Kayıtlar `Yer Tutma Bitişi` (date, saatli) — `null` = alan boş.
    *
    * Boş olmak "süresi geçti" DEĞİL: bu brief öncesi açılmış kayıtlarda alan
@@ -242,6 +256,7 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     konumDetayHam: '',
     paraBirimiHam: '',
     odemeDurumu: '',
+    odemeYontemi: '',
     yerTutmaBitisi: null,
   };
 }
@@ -312,6 +327,8 @@ export async function kayitOku(
       .trim();
 
     const odemeDurumu: string = props['Ödeme Durumu']?.select?.name ?? '';
+    // B118 İŞ B — `purchase` olayının kart/havale ayrımı buna bakıyor (K-2).
+    const odemeYontemi: string = props['Ödeme Yöntemi']?.select?.name ?? '';
     const ytbISO: string = props['Yer Tutma Bitişi']?.date?.start ?? '';
     // Bozuk bir tarih `Invalid Date` üretir ve karşılaştırmalarda sessizce
     // `false` döndürürdü — kapı "süre dolmamış" sanıp ödeme başlatırdı. `null`
@@ -329,6 +346,7 @@ export async function kayitOku(
       email,
       seciliTarih,
       odemeDurumu,
+      odemeYontemi,
       yerTutmaBitisi,
     };
 

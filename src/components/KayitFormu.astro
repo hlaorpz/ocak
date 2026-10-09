@@ -1625,6 +1625,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     type Kademe,
   } from '../lib/kayit';
   import type { KodSonuc } from '../lib/kodlar';
+  // B118 İŞ B — ölçüm olayları. Kural ve K-4/K-5 koruması lib'de; burada
+  // yalnız çağrı var. `olayGonder` throw etmiyor, ek `try/catch` gereksiz.
+  import { olayGonder, beginCheckoutYuku, formSubmitYuku } from '../lib/olcum';
 
   const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
   if (form) {
@@ -2213,11 +2216,67 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
       try {
         const result = await submitKayit(payload);
         if (result.status === 'success') {
+          // ── B118 İŞ B — olay yükünün ortak girdileri ──
+          // Tutar ve para birimi SUNUCUDAN geliyor (`result.odeme`), istemcinin
+          // kendi hesabından değil: `/api/kayit` promoyu yeniden doğruluyor ve
+          // Notion `Beklenen Tutar` alanına YAZDIĞI sayı o. İstemci hesabı
+          // (`gecisToplam`) yalnız geçiş ekranı için; ölçüm, Notion'a yazılanla
+          // aynı sayıyı söylemek zorunda.
+          const olcumKayitId = result.referansNo ?? '';
+          const olcumDeger = result.odeme?.tutar ?? 0;
+          const olcumParaBirimi = result.odeme?.paraBirimi ?? null;
+          const olcumYontem = result.odeme?.yontem ?? '';
+
+          // ⚠ `form_submit` BURADA, `checkoutUrl` dalından ÖNCE.
+          //
+          // ADIM 0 bulgusu (9 Eki): eski push aşağıdaki başarı bloğundaydı,
+          // yani `if (result.checkoutUrl) { … return; }` erken dönüşünün
+          // ALTINDA — kartla kaydolan kadın hiç Lead üretmiyordu. Kayıt kart
+          // yolunda da yazılıyor; brief §5 olayı "kayıt başarıyla yazılınca"
+          // diye tanımlıyor. Ad ve `form_type` AYNEN korundu (GTM'deki mevcut
+          // Lead tetikleyicisi onlara bağlı), yalnız konumu ve yeni alanları
+          // değişti.
+          //
+          // Etkisi: bugünkü Lead sayısı kart kayıtları kadar YUKARI çıkar.
+          // Bilinçli ve geri alınabilir — tek `olayGonder` satırı.
+          olayGonder(
+            'form_submit',
+            formSubmitYuku({
+              formType: format,
+              kayitId: olcumKayitId,
+              deger: olcumDeger,
+              paraBirimi: olcumParaBirimi,
+              odemeYontemi: olcumYontem,
+            }),
+          );
+
           // Aşama 3b — kart yöntemi: backend checkoutUrl döndü → kullanıcı
           // sağlayıcı checkout sayfasına yönlendirilir. Form ekranı gizlenmez
           // (kullanıcı geri dönerse — örn. browser back — sayfada kalır;
           // hata akışında /odeme/iptal sayfasından geri gelir).
           if (result.checkoutUrl) {
+            // ── B118 İŞ B — `begin_checkout`, yönlendirmeden hemen önce ──
+            //
+            // Brief "push'tan sonra yönlendirme en çok 300 ms bekler" diyordu.
+            // EK BEKLEME KONULMADI ve gerekmiyor: aşağıdaki İŞ 17 tabanı
+            // yönlendirmeyi `max(0, 1500 − geçen süre)` kadar geciktiriyor,
+            // yani istenen 300 ms güvencesi zaten mevcut davranışın içinde.
+            // İkinci bir bekleme kadını boşuna bekletirdi.
+            //
+            // ⚠ Taban yalnız geçiş ekranı açıldığında (`kartYolu`) işliyor;
+            // o da kart yolunun tanımı, yani `checkoutUrl` dönen her durumda
+            // açık. `gecisBaslangici === 0` hâlinde `gecen` tabana eşitlenip
+            // yönlendirme anında yapılıyor — o yolda da olay push'tan SONRA
+            // geliyor, çünkü push senkron.
+            olayGonder(
+              'begin_checkout',
+              beginCheckoutYuku({
+                kayitId: olcumKayitId,
+                deger: olcumDeger,
+                paraBirimi: olcumParaBirimi,
+              }),
+            );
+
             // ── İŞ 17 — "Ödeme ekranına geçiyoruz." EN AZ 1500 ms görünür ──
             //
             // Hızlı yanıtta (yerel, iyi ağ) geçiş bir kare görünüp kayboluyordu:
@@ -2452,9 +2511,20 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
           }
           successEl.hidden = false;
           scrollToSuccess(successEl);
-          if (typeof window !== 'undefined' && window.dataLayer) {
-            window.dataLayer.push({ event: 'form_submit', form_type: format });
-          }
+          // ⚠ `form_submit` push'u BURADAN YUKARIYA TAŞINDI (B118 İŞ B,
+          // 9 Eki 2026) — silinmedi, yeri değişti (KARAR 61).
+          //
+          // Eski hâli tam buradaydı:
+          //   if (typeof window !== 'undefined' && window.dataLayer) {
+          //     window.dataLayer.push({ event: 'form_submit', form_type: format });
+          //   }
+          //
+          // Sorun: bu satır `if (result.checkoutUrl) { … return; }` erken
+          // dönüşünün ALTINDA kaldığı için kart yolunda hiç koşmuyordu. Yeni
+          // yeri `result.status === 'success'` bloğunun BAŞI; iki yol da
+          // Lead üretiyor. `window.dataLayer` guard'ı da kalktı: dizi artık
+          // `Layout.astro`'da koşulsuz tanımlı ve `olayGonder` kendi
+          // korumasını taşıyor (K-5).
         } else if (result.status === 'skip') {
           // Honeypot — sessiz success (kullanıcıya bir şey gösterme, sadece form'da kal).
           form.hidden = true;

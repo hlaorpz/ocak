@@ -1,0 +1,111 @@
+---
+// OlcumPurchase — `purchase` olayının mount noktası (B118 İŞ B).
+//
+// `/odeme/tamam`'a tek satırla konur. Bir şey RENDER ETMEZ.
+//
+// ── Kapı sunucuda kurulur, işaret istemcide kontrol edilir ──
+// Beş koşulun dördü sunucu verisi (kayıt bulundu mu · Ödeme Durumu · Ödeme
+// Yöntemi · Kayıt ID); beşincisi `localStorage` işareti, yani ancak tarayıcıda
+// bilinebiliyor. O yüzden sunucu dördünü ÖN-DEĞERLENDİRİP `data-uygun`
+// basıyor, script yalnız işareti ekleyip `purchaseAtilsinMi`'yi çağırıyor.
+// Kural `olcum.ts`'te tek yerde yaşıyor ve orada ölçülüyor.
+//
+// ── Havale kaydında olay ATILMAZ (brief K-2) ──
+// Yöntem `Kredi Kartı` değilse `data-uygun` hiç `1` olmaz. Havale yolu Meta'ya
+// sunucudan gidecek (İŞ D, henüz açılmadı).
+//
+// ── İşaret neden şart (KARAR 613) ──
+// Sayfa `?ref=OCAK-XXXX` ile açılıyor ve o kod maillerde, banka
+// açıklamasında, WhatsApp'ta dolaşıyor. İşaret olmasa her açılış yeni bir
+// ödeme sayılır, aynı kadının cirosu Meta'ya tekrar tekrar giderdi.
+import { KART_YONTEMI, ODENDI } from '../lib/olcum';
+
+interface Props {
+  kayitDurumu: string;
+  odemeDurumu: string;
+  odemeYontemi: string;
+  kayitId: string;
+  tutar: number;
+  paraBirimi: string;
+}
+
+const { kayitDurumu, odemeDurumu, odemeYontemi, kayitId, tutar, paraBirimi } = Astro.props;
+
+// Sunucunun bilebildiği dört koşul. `purchaseAtilsinMi`'nin aynı dört dalı —
+// burada ön-değerlendiriliyor ki uygun olmayan hâlde tutar bile yüzeye inmesin.
+const sunucuUygun =
+  kayitDurumu === 'bulundu' &&
+  odemeDurumu.trim() === ODENDI &&
+  odemeYontemi.trim() === KART_YONTEMI &&
+  kayitId.trim().length > 0;
+---
+
+<div
+  data-olcum-purchase
+  data-uygun={sunucuUygun ? '1' : '0'}
+  data-kayit-id={sunucuUygun ? kayitId : undefined}
+  data-deger={sunucuUygun ? String(tutar) : undefined}
+  data-para-birimi={sunucuUygun ? paraBirimi : undefined}
+  hidden
+>
+</div>
+
+<script>
+  import {
+    ODENDI,
+    KART_YONTEMI,
+    olayGonder,
+    purchaseAtilsinMi,
+    purchaseIsaretAnahtari,
+    purchaseYuku,
+  } from '../lib/olcum';
+
+  const dugum = document.querySelector<HTMLElement>('[data-olcum-purchase]');
+  if (dugum && dugum.dataset.uygun === '1') {
+    const kayitId = dugum.dataset.kayitId ?? '';
+    const anahtar = purchaseIsaretAnahtari(kayitId);
+
+    let isaretliMi = false;
+    try {
+      isaretliMi = localStorage.getItem(anahtar) !== null;
+    } catch {
+      // `localStorage` okunamıyorsa (Safari gizli sekme) İŞARETLİ SAY —
+      // fail-closed. Alternatifi her açılışta yeni bir ödeme bildirmekti;
+      // bir Purchase'ı kaçırmak, aynı cironun beş kez gitmesinden iyidir.
+      isaretliMi = true;
+    }
+
+    // Sunucu dört koşulu geçirdi; kuralın TAMAMI yine lib'de koşuyor ki
+    // yüzeyin `data-uygun` hesabı ile kapı aynı cümleyi söylesin.
+    const atilsin = purchaseAtilsinMi({
+      kayitDurumu: 'bulundu',
+      odemeDurumu: ODENDI,
+      odemeYontemi: KART_YONTEMI,
+      kayitId,
+      isaretliMi,
+    });
+
+    if (atilsin) {
+      const gitti = olayGonder(
+        'purchase',
+        purchaseYuku({
+          kayitId,
+          deger: Number(dugum.dataset.deger ?? '0'),
+          paraBirimi: dugum.dataset.paraBirimi ?? null,
+        }),
+      );
+      // ⚠ İşaret olay GİTTİKTEN SONRA konur. Önce konsa, `dataLayer` henüz
+      // hazır olmadığı bir yüklemede olay kaybolur ve işaret ikinci şansı da
+      // kapatırdı.
+      if (gitti) {
+        try {
+          localStorage.setItem(anahtar, new Date().toISOString());
+        } catch {
+          // Yazamadıysak olay bir sonraki açılışta tekrar gider. Gürültülü
+          // ama sessiz veri kaybından iyi; GTM tarafında `eventID` =
+          // Kayıt ID olduğu için Meta tekrarı kendi tekilleştiriyor.
+        }
+      }
+    }
+  }
+</script>

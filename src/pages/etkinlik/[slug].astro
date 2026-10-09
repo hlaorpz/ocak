@@ -26,6 +26,7 @@ import Layout from '../../layouts/Layout.astro';
 import Hero from '../../components/Hero.astro';
 import EtkinlikListe from '../../components/EtkinlikListe.astro';
 import KayitBtn from '../../components/KayitBtn.astro';
+import OlcumSayfa from '../../components/OlcumSayfa.astro';
 import { formatEtkinlikTarihi, bugunTR } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori';
@@ -162,6 +163,10 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
   ) : (
     <KayitBtn etkinlik={etkinlik} digerTarihler digerTarihlerHref={takvimHref} />
   )}
+
+  {/* B118 İŞ B — `view_content`, buluşmanın sluğuyla. GTM'deki ViewContent
+      etiketi `content_name` olarak bu sluğu kullanıyor. */}
+  <OlcumSayfa icerikTipi="etkinlik" etkinlikSlug={etkinlik.slug} />
 </Layout>
 
 <!-- brief-kayit-buton-FINAL Faz 4: güncel etkinlik CTA'sı KayitBtn primitive

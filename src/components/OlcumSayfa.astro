@@ -1,0 +1,49 @@
+---
+// OlcumSayfa — `view_content` olayının mount noktası (B118 İŞ B).
+//
+// `/acik-kapi` ve `/etkinlik/[slug]` sayfalarına tek satırla konur. Bir şey
+// RENDER ETMEZ; yalnız sunucu değerlerini `data-*` olarak taşır ve hoisted
+// script onları okuyup `olcum.ts`'i çağırır.
+//
+// ── Neden `data-*`, neden `define:vars` değil ──
+// `define:vars` script'i `is:inline`a çeviriyor; inline script `olcum.ts`'i
+// import edemez ve olay kodu ikinci bir kopya olarak bileşene yazılmak
+// zorunda kalırdı. Veriyi attribute'tan geçirmek tek otoriteyi koruyor
+// (`MektupKutusu.astro`'nun deseni).
+//
+// ── Rıza bilinmez ──
+// Olay her durumda `dataLayer`a düşer; GTM yüklü değilse kimse okumaz
+// (brief §4). Bu bileşenin rızayı sorgulaması gerekmiyor.
+import type { IcerikTipi } from '../lib/olcum';
+
+interface Props {
+  icerikTipi: IcerikTipi;
+  /** `/etkinlik/[slug]`ta buluşmanın sluğu; `/acik-kapi`da verilmez. */
+  etkinlikSlug?: string | null;
+}
+
+const { icerikTipi, etkinlikSlug } = Astro.props;
+---
+
+<div
+  data-olcum-sayfa
+  data-icerik-tipi={icerikTipi}
+  data-etkinlik-slug={etkinlikSlug ?? undefined}
+  hidden
+>
+</div>
+
+<script>
+  import { olayGonder, viewContentYuku, type IcerikTipi } from '../lib/olcum';
+
+  // Bir sayfada birden çok mount olmaz; yine de `querySelector` (ilki) alınıyor
+  // ki kazara iki mount tek olay üretsin — çift `view_content` GTM'de iki
+  // ViewContent demekti.
+  const dugum = document.querySelector<HTMLElement>('[data-olcum-sayfa]');
+  if (dugum) {
+    const tip = dugum.dataset.icerikTipi as IcerikTipi | undefined;
+    if (tip === 'acik-kapi' || tip === 'etkinlik') {
+      olayGonder('view_content', viewContentYuku(tip, dugum.dataset.etkinlikSlug ?? null));
+    }
+  }
+</script>
