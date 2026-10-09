@@ -56,9 +56,19 @@ const year = new Date().getFullYear();
 
     {/* Baseline satırı: sol OCAK ↔ sağ © yıl. Yasal linkler (KARAR 363)
         artık kayıt sayfası lokal şeridinde (banka sanal POS geçişi
-        onay-kriteri değişikliği). Footer sadece imza + tarih taşır. */}
+        onay-kriteri değişikliği). Footer sadece imza + tarih taşır.
+
+        ⚠ B118 (9 Eki 2026) — `Çerez tercihleri` bu satıra KATILDI. KARAR 363
+        yasal linkleri buradan bilinçli kaldırmıştı; bu bir geri dönüş DEĞİL,
+        ayrı bir gerekçe: rızanın geri alınabilir olması kapının kendisi kadar
+        zorunlu ve geri alma yüzeyi HER sayfada bulunmak zorunda. Kayıt sayfası
+        şeridi yalnız kayıt sayfalarında var.
+
+        `<button>`, `<a>` değil: bu bir gezinme değil, bir eylem — bandı
+        yeniden açıyor. Görünümü bağlantı gibi; davranışı düğme. */}
     <div class="footer__bottom">
       <span class="footer__brand">OCAK</span>
+      <button class="footer__riza" type="button" data-riza-ac>Çerez tercihleri</button>
       <span class="footer__year">© {year}</span>
     </div>
   </div>
@@ -154,16 +164,48 @@ const year = new Date().getFullYear();
     }
   }
 
-  /* Baseline satırı (KARAR 363): sol OCAK ↔ sağ © yıl. Yasal nav
-   * kayıt sayfası lokal şeridine taşındı (KayitFormu.astro). Mobil ve
-   * masaüstü aynı: iki-öğe space-between. */
+  /* Baseline satırı (KARAR 363): sol OCAK ↔ orta `Çerez tercihleri` (B118)
+   * ↔ sağ © yıl. Yasal nav kayıt sayfası lokal şeridine taşındı
+   * (KayitFormu.astro). Üç öğe space-between; dar ekranda ortadaki satır
+   * başına geçer — `flex-wrap` o yüzden açık, aksi hâlde yıl taşardı. */
   .footer__bottom {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--space-3);
     padding-top: var(--space-5);
     border-top: 1px solid var(--border-subtle);
+  }
+
+  /* Bağlantı gibi görünür, düğme gibi davranır. Tarayıcı düğme zemini ve
+   * çerçevesi sıfırlanıyor; dokunma alanı 44px'e `padding` ile çıkıyor
+   * (satır yüksekliği tek başına yetmiyor). */
+  .footer__riza {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: var(--space-3) 0;
+    margin: calc(var(--space-3) * -1) 0;
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .footer__riza:hover,
+  .footer__riza:focus-visible {
+    color: var(--text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footer__riza {
+      transition: none;
+    }
   }
 
   .footer__brand {

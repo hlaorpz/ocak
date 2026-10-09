@@ -5,6 +5,7 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import GrainOverlay from '../components/GrainOverlay.astro';
 import WhatsappYuzen from '../components/WhatsappYuzen.astro';
+import RizaBandi from '../components/RizaBandi.astro';
 import type { Oda } from '../lib/oda-map';
 
 interface Props {
@@ -41,8 +42,19 @@ const ogImageUrl = new URL(ogImage, Astro.site ?? 'https://www.ocak.biz').toStri
 const pageSlug = Astro.url.pathname.replace(/^\//, '').replace(/\/$/, '') || 'home';
 
 // Brief I.1 — GTM container. Snippet sadece PROD'da emit (dev'de sessiz).
+//
+// ── B118 (9 Eki 2026) — SNIPPET BURADAN KALKTI, RIZA KAPISININ ARKASINA GİTTİ ──
+// Eskiden bu dosya `<head>`e koşulsuz `gtm.js` basıyor ve `<body>` başına
+// `ns.html` iframe'i koyuyordu; ikisi de rızasız yükleme yoluydu (ölçüm: 9 Eki,
+// `dist/client`'ın 38 HTML dosyasının 38'i). Artık kimlik yalnız
+// `<body data-gtm>` attribute'u olarak basılıyor; enjeksiyonu
+// `RizaBandi.astro` yapıyor ve YALNIZ `kabul` kaydı varken yapıyor (brief K-1).
+// `<noscript>` iframe'i KALDIRILDI — JavaScript'siz tarayıcıya rıza
+// sorulamıyor, dolayısıyla rızasız yükleme de yapılamaz.
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
 const isProd = import.meta.env.PROD;
+/** GTM kimliği yalnız PROD'da ve tanımlıysa yüzeye iner. Yoksa kapı hiç kurulmaz. */
+const gtmAttr = isProd && gtmId ? gtmId : undefined;
 ---
 
 <!doctype html>
@@ -87,28 +99,29 @@ const isProd = import.meta.env.PROD;
     <meta name="theme-color" content="#1A1210" />
     <meta name="format-detection" content="telephone=no" />
 
-    {/* Brief I.1 — GTM container head snippet (Pixel + GA4 GTM UI'da, kodda yok) */}
-    {isProd && gtmId && (
-      <script is:inline set:html={`
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','${gtmId}');
-      `} />
-    )}
+    {/* B118 — `window.dataLayer` RIZADAN BAĞIMSIZ tanımlıdır ve HER ZAMAN
+        basılır (dev dahil). Olaylar rızadan bağımsız `push` edilir; GTM
+        yoksa kimse okumaz. Böylece `olcum.ts` ve form bileşenleri rızayı
+        bilmek zorunda kalmıyor (brief §4).
+
+        ⚠ Bu `is:inline` ve `<head>`de ÖNDE: bütün olay kodu hoisted (defer)
+        modül script'i, yani bu satır onlardan önce koşuyor. Dizi burada
+        doğmazsa ilk `push` sessizce kaybolurdu. */}
+    <script is:inline>window.dataLayer = window.dataLayer || [];</script>
   </head>
 
-  <body>
-    {isProd && gtmId && (
-      <noscript set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`} />
-    )}
+  <body data-gtm={gtmAttr}>
     <Nav />
     <main id="main" data-oda={oda} data-page={pageSlug}>
       <slot />
     </main>
     <WhatsappYuzen />
     <Footer />
+    {/* B118 — rıza bandı. Markup her sayfada basılır ve `hidden` doğar;
+        kararı `localStorage` üzerinden bileşenin kendi script'i verir.
+        SSR'da koşullu basmak, önbelleğe alınmış HTML'in bir kadının kararını
+        başkasına taşıması olurdu. GTM enjeksiyonu da bu bileşende. */}
+    <RizaBandi />
     <GrainOverlay />
 
     <script>

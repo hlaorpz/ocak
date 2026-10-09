@@ -1,0 +1,311 @@
+---
+// RizaBandi — çerez rızası bandı (B118 · B119, brief K-1).
+//
+// ── Kapı sert ──
+// Kabul edilene kadar GTM betiği DOM'a HİÇ girmez; Pixel ve GA4 de çalışmaz.
+// Reddeden kadından hiçbir üçüncü taraf isteği çıkmaz. Consent Mode'un
+// "rızasız modelleme pingi" kullanılmıyor — kapı KODDA, GTM arayüzünde değil.
+//
+// ── Neden SSR'da her zaman basılır (ve `hidden` doğar) ──
+// Rıza `localStorage`'da yaşıyor; sunucu onu göremez ve sayfaların çoğu
+// prerender. Bandı sunucuda koşullu basmak, önbelleğe alınmış HTML'in bir
+// kadının kararını başkasına taşıması demekti. O yüzden: markup her sayfada
+// var, `hidden` doğuyor, kararı aşağıdaki script veriyor.
+//
+// ── GTM kimliği `<body data-gtm>`den okunur ──
+// Hoisted (bundle'lanan) script sunucu değişkenini interpolate edemez.
+// `Layout.astro` kimliği `<body>`ye koyuyor — yalnız PROD'da ve kimlik varsa.
+// Attribute yoksa bu script GTM'e hiç dokunmaz (dev'de sessiz).
+//
+// ── Sınıf öneki `riza-bant`, `ocak-` DEĞİL (KARAR 375) ──
+// Baseline `section[data-section][class^="ocak-"]` prose kuralı bandı
+// yakalamasın; bant bir prose section değil.
+---
+
+<div class="riza-bant" data-riza-bant role="region" aria-label="Çerez tercihi" hidden>
+  <div class="riza-bant__ic">
+    <p class="riza-bant__metin">
+      Siteyi nasıl kullandığını görmek ve OCAK'ı duyurmak için çerez
+      kullanıyoruz. Kabul edersen ölçüm ve reklam çerezleri çalışır; etmezsen
+      site aynı şekilde açılır.
+      <a class="riza-bant__ayrinti" href="/gizlilik#cerez">Ayrıntı</a>
+    </p>
+
+    {/* İki düğme EŞİT AĞIRLIKTA: aynı boyut, aynı tipografi, yan yana.
+        Reddetme düğmesi bağlantıya küçültülmüyor, gizlenmiyor. Ayrımı yalnız
+        zemin/çerçeve taşıyor — hiyerarşi değil, ayırt edilebilirlik için. */}
+    <div class="riza-bant__dugmeler">
+      <button class="riza-bant__dugme riza-bant__dugme--kabul" type="button" data-riza-kabul>
+        Kabul et
+      </button>
+      <button class="riza-bant__dugme riza-bant__dugme--ret" type="button" data-riza-ret>
+        Kabul etme
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Kural `src/lib/riza.ts`'te yaşıyor ve orada ölçülüyor (`riza.test.ts`).
+  // Bu script yalnız onu ÇAĞIRIR: kuralın ikinci bir kopyası yok.
+  import {
+    RIZA_ANAHTARI,
+    RIZA_CEREZ_ALANLARI,
+    bantGosterilsinMi,
+    cerezAdlariniAyikla,
+    cerezSilmeDizeleri,
+    gtmYuklensinMi,
+    rizaKaydiUret,
+    silinecekCerezAdlari,
+    type RizaDeger,
+  } from '../lib/riza';
+
+  const bant = document.querySelector<HTMLElement>('[data-riza-bant]');
+
+  // ── GTM enjeksiyonu — tek giriş noktası, bir kez ──
+  // `gtm.js` snippet'inin kodda kalan TEK hâli burası. `Layout.astro`'daki
+  // koşulsuz `<script>` ve `<noscript>` iframe'i KALDIRILDI (ikisi de rızasız
+  // yükleme yoluydu).
+  let gtmYuklendi = false;
+  function gtmYukle(): void {
+    if (gtmYuklendi) return;
+    const kimlik = document.body?.dataset.gtm;
+    if (!kimlik) return;
+    gtmYuklendi = true;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+    const betik = document.createElement('script');
+    betik.async = true;
+    betik.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(kimlik)}`;
+    document.head.appendChild(betik);
+  }
+
+  function hamOku(): string | null {
+    try {
+      return localStorage.getItem(RIZA_ANAHTARI);
+    } catch {
+      // Safari gizli sekmede `localStorage` atabilir. O hâlde rıza YOK sayılır:
+      // bant gösterilir, GTM yüklenmez. Fail-closed — kapı gevşemez.
+      return null;
+    }
+  }
+
+  function hamYaz(deger: RizaDeger): void {
+    try {
+      localStorage.setItem(RIZA_ANAHTARI, JSON.stringify(rizaKaydiUret(deger, new Date())));
+    } catch {
+      // Yazamadıysak karar oturumla ölür ve bant bir sonraki sayfada yeniden
+      // sorar. Kabul edilebilir — alternatifi rızayı yok sayıp ölçmekti.
+    }
+  }
+
+  // ── Bandın yüksekliği sayfaya bildirilir ──
+  // `body` alt dolgusu ve yüzen WhatsApp düğmesi bu değere bakıyor; bant
+  // kayıt formunun gönder düğmesini, yöntem seçimini ve onay kutularını
+  // ÖRTMESİN. iPhone güvenli alanı bandın kendi dolgusunda hesaplanıyor.
+  function yukseklikBildir(): void {
+    if (!bant) return;
+    const h = bant.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--riza-bant-h', `${Math.ceil(h)}px`);
+  }
+
+  function bandiAc(): void {
+    if (!bant) return;
+    bant.hidden = false;
+    document.documentElement.dataset.rizaAcik = '';
+    yukseklikBildir();
+  }
+
+  function bandiKapat(): void {
+    if (!bant) return;
+    bant.hidden = true;
+    delete document.documentElement.dataset.rizaAcik;
+    document.documentElement.style.removeProperty('--riza-bant-h');
+  }
+
+  // ── Geri alma: kabul → ret geçişinde ölçüm çerezleri silinir ──
+  // `_ga*` bir kalıp (ölçüm kimliği başına ayrı çerez), o yüzden adlar
+  // `document.cookie`den okunup eleniyor. Silme EN İYİ ÇABA: JavaScript
+  // çerezin hangi domain/path ile yazıldığını okuyamaz, olası ikililerin
+  // hepsine süresi geçmiş yazım gönderilir.
+  function olcumCerezleriniSil(): void {
+    const adlar = silinecekCerezAdlari(cerezAdlariniAyikla(document.cookie));
+    for (const ad of adlar) {
+      for (const dize of cerezSilmeDizeleri(ad, RIZA_CEREZ_ALANLARI)) {
+        document.cookie = dize;
+      }
+    }
+  }
+
+  function kararVer(deger: RizaDeger): void {
+    const oncekiKabul = gtmYuklensinMi(hamOku(), new Date());
+    hamYaz(deger);
+    bandiKapat();
+    if (deger === 'kabul') {
+      // Sayfa YENİLENMEDEN enjekte edilir (brief §4).
+      gtmYukle();
+      return;
+    }
+    // `ret`: yüklenmiş GTM'i geri almanın tek yolu yeniden yüklemek. Çerezler
+    // önce silinir, sonra sayfa yenilenir — yenileme SONRASI kapı kapalı.
+    if (oncekiKabul) {
+      olcumCerezleriniSil();
+      window.location.reload();
+    }
+  }
+
+  // ── Açılış ──
+  const ham = hamOku();
+  const simdi = new Date();
+  if (gtmYuklensinMi(ham, simdi)) gtmYukle();
+  if (bantGosterilsinMi(ham, simdi)) bandiAc();
+
+  bant?.querySelector('[data-riza-kabul]')?.addEventListener('click', () => kararVer('kabul'));
+  bant?.querySelector('[data-riza-ret]')?.addEventListener('click', () => kararVer('ret'));
+
+  // Footer'daki `Çerez tercihleri` — bandı yeniden açar (brief §4 "Geri alma").
+  document.querySelectorAll('[data-riza-ac]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      bandiAc();
+      bant?.querySelector<HTMLElement>('[data-riza-kabul]')?.focus();
+    });
+  });
+
+  // Bant açıkken yükseklik değişebilir (yazı sarması, dönme). Dolgu da onunla
+  // güncellenir; aksi hâlde yatay çevirmede bant formun düğmesini örtebilir.
+  if (typeof ResizeObserver !== 'undefined' && bant) {
+    new ResizeObserver(() => {
+      if (!bant.hidden) yukseklikBildir();
+    }).observe(bant);
+  }
+</script>
+
+<style>
+  .riza-bant {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    /* --z-grain (100) ve yüzen WhatsApp düğmesi (150) üstü, --z-overlay (200)
+       altı. Modal çıkarsa bant onun altında kalır. */
+    z-index: 160;
+
+    background: var(--ash);
+    color: var(--cream);
+    border-top: 1px solid var(--ember-alpha-32);
+    /* iPhone güvenli alanı bandın KENDİ dolgusunda — düğmeler home
+       çubuğunun altına düşmesin. */
+    padding: var(--space-4) var(--space-5) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .riza-bant[hidden] {
+    display: none;
+  }
+
+  .riza-bant__ic {
+    max-width: 68rem;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+  }
+
+  .riza-bant__metin {
+    flex: 1 1 22rem;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--cream-soft);
+  }
+
+  .riza-bant__ayrinti {
+    color: var(--cream);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  .riza-bant__ayrinti:hover,
+  .riza-bant__ayrinti:focus-visible {
+    color: var(--ember-soft);
+  }
+
+  .riza-bant__dugmeler {
+    display: flex;
+    gap: var(--space-3);
+    flex: 0 0 auto;
+  }
+
+  /* İki düğme AYNI boyut ve AYNI tipografi — eşit ağırlık (brief §4).
+     En az 44px dokunma alanı. */
+  .riza-bant__dugme {
+    min-height: 44px;
+    min-width: 8.5rem;
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition:
+      background var(--duration-base) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out);
+  }
+
+  .riza-bant__dugme--kabul {
+    background: var(--ember);
+    color: var(--cream);
+    border: 1px solid var(--ember);
+  }
+
+  .riza-bant__dugme--kabul:hover,
+  .riza-bant__dugme--kabul:focus-visible {
+    background: var(--ember-soft);
+    border-color: var(--ember-soft);
+  }
+
+  .riza-bant__dugme--ret {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid var(--cream-soft);
+  }
+
+  .riza-bant__dugme--ret:hover,
+  .riza-bant__dugme--ret:focus-visible {
+    background: var(--ash-warm);
+    border-color: var(--cream);
+  }
+
+  @media (max-width: 640px) {
+    .riza-bant__dugmeler {
+      flex: 1 1 100%;
+    }
+    .riza-bant__dugme {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: var(--space-2) var(--space-3);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .riza-bant__dugme {
+      transition: none;
+    }
+  }
+
+  /* ── Bant açıkken sayfa ona yer açar ──
+     Scoped CSS bandın dışına ulaşamaz; iki kural bilinçli `:global`.
+     `--riza-bant-h` yukarıdaki script'in ölçtüğü gerçek yükseklik — sabit bir
+     tahmin değil, çünkü metin sarması cihazdan cihaza değişiyor. */
+  :global(html[data-riza-acik] body) {
+    padding-bottom: var(--riza-bant-h, 0px);
+  }
+
+  :global(html[data-riza-acik] .wa-yuzen) {
+    bottom: calc(22px + var(--riza-bant-h, 0px));
+  }
+</style>

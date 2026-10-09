@@ -136,11 +136,23 @@ import Layout from '../layouts/Layout.astro';
 
     <p>E-posta adresinizi ve işlem güvenliği bilgilerinizi işleriz.</p>
 
+    {/* B119 — bülten ölçümü. Hukuk teyidi bekliyor (Kaan, 14 Ekim 2026). */}
+    <p>
+      Ateş Mektupları'nda e-postanın açılıp açılmadığı ve içindeki bağlantılara
+      tıklanıp tıklanmadığı, mektupları iyileştirmek amacıyla ölçülür.
+    </p>
+
     <p><strong>Etkinliklere kayıt olan / başvuran kullanıcılarımız</strong></p>
 
     <p>
       Kimlik (ad-soyad), iletişim (e-posta, telefon, şehir) ve başvuru kapsamında
       paylaştığınız bilgileri (niyet metni, deneyim notları vb.) işleriz.
+    </p>
+
+    {/* B118 İŞ C — kaynak etiketi (UTM). Hukuk teyidi bekliyor. */}
+    <p>
+      Kayıt olurken, siteye hangi bağlantıdan ulaştığınızı gösteren kaynak
+      etiketi kaydınızla birlikte saklanır.
     </p>
 
     <p><strong>Ücretli etkinliklere kayıt olan kullanıcılarımız</strong></p>
@@ -254,7 +266,10 @@ import Layout from '../layouts/Layout.astro';
       Tebliğ'de belirtilen diğer yöntemlerle kullanabilirsiniz.
     </p>
 
-    <h2>Çerez Politikası</h2>
+    {/* `id` rıza bandındaki `Ayrıntı` bağlantısının hedefi
+        (`RizaBandi.astro` → `/gizlilik#cerez`). Değişirse o bağlantı sessizce
+        sayfa başına düşer. */}
+    <h2 id="cerez">Çerez Politikası</h2>
 
     <h3>Politika Hakkında</h3>
 
@@ -312,24 +327,44 @@ import Layout from '../layouts/Layout.astro';
 
     <h3>Çerezlerle Veri İşlemenin Hukuki Sebebi</h3>
 
+    {/* ⚠ B118 (9 Eki 2026) — ESKİ CÜMLE DEĞİŞTİ, yanına eklenmedi.
+        Eski hâli şöyleydi: "Zorunlu çerezler, sitenin işlerliği için
+        kullanılır. Analitik ve pazarlama çerezleri ise meşru menfaatlerimiz
+        ve — gerekli olduğu ölçüde — açık rızanız doğrultusunda kullanılır."
+        O cümle artık GERÇEĞE AYKIRI: rıza kapısı sert (brief K-1), analitik
+        ve pazarlama çerezleri meşru menfaate dayanarak HİÇ çalışmıyor.
+        Çelişen cümlenin yanına doğrusunu eklemek iki hukuki sebep beyan
+        etmek olurdu. */}
     <p>
       Zorunlu çerezler, sitenin işlerliği için kullanılır. Analitik ve pazarlama
-      çerezleri ise meşru menfaatlerimiz ve — gerekli olduğu ölçüde — açık rızanız
-      doğrultusunda kullanılır. Verileriniz çerezler aracılığıyla otomatik
-      yöntemlerle toplanır.
+      çerezleri yalnızca onay vermeniz hâlinde çalışır. Onayınızı her sayfanın
+      altındaki "Çerez tercihleri" bağlantısından dilediğiniz an geri
+      alabilirsiniz. Verileriniz çerezler aracılığıyla otomatik yöntemlerle
+      toplanır.
+    </p>
+
+    <p>
+      Onay vermeniz hâlinde kullanılan araçlar: Google Tag Manager, Google
+      Analytics ve Meta Pixel.
     </p>
 
     <h3>Çerezleri Nasıl Kontrol Edebilirsiniz?</h3>
 
     <p>
-      Tarayıcınızın ayarlarını değiştirerek çerezleri etkinleştirebilir veya devre
-      dışı bırakabilirsiniz. Çerezleri devre dışı bıraktığınızda sitenin bazı
-      özelliklerinden yararlanamayabilirsiniz; teknik çerezler gibi zorunlu
-      çerezlerin engellenmesi mümkün olmayabilir. Tarayıcınıza özgü yönergeler
-      için Google Chrome, Safari, Mozilla Firefox ve diğer tarayıcıların yardım
-      sayfalarına başvurabilirsiniz.
+      Analitik ve pazarlama çerezlerine ilişkin onayınızı her sayfanın altındaki
+      "Çerez tercihleri" bağlantısından verebilir veya geri alabilirsiniz. Onay
+      vermediğiniz sürece bu çerezler cihazınıza yerleştirilmez.
     </p>
 
-    <p><em>Son güncelleme: 19 Haziran 2026</em></p>
+    <p>
+      Ayrıca tarayıcınızın ayarlarını değiştirerek çerezleri etkinleştirebilir
+      veya devre dışı bırakabilirsiniz. Çerezleri devre dışı bıraktığınızda
+      sitenin bazı özelliklerinden yararlanamayabilirsiniz; teknik çerezler gibi
+      zorunlu çerezlerin engellenmesi mümkün olmayabilir. Tarayıcınıza özgü
+      yönergeler için Google Chrome, Safari, Mozilla Firefox ve diğer
+      tarayıcıların yardım sayfalarına başvurabilirsiniz.
+    </p>
+
+    <p><em>Son güncelleme: 9 Ekim 2026</em></p>
   </article>
 </Layout>
