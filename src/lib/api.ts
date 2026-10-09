@@ -243,6 +243,28 @@ export type KayitPayload = {
    * n8n sonuç eşleştirmesi bu kolondan Davetler DB satırını "Geldi" yapar.
    */
   ref?: string;
+  /**
+   * B118 İŞ C — kaynak etiketi. `sessionStorage` `ocak-kaynak`'tan okunup
+   * gövdeye katılıyor (ilk dokunuş kazanır, `lib/kaynak.ts`).
+   *
+   * Düz alan olarak taşınıyor, iç içe nesne DEĞİL: `/api/kayit`'in gövde
+   * şekli öteden beri düz ve iki tarafın da aynı anahtarı görmesi (ör.
+   * `utm_source`) eşleme hatası ihtimalini sıfırlıyor. Sunucu her değeri
+   * yeniden doğruluyor; uymayan ATILIR, kayıt reddedilmez (K-5).
+   *
+   * `utm_term` okunuyor ve taşınıyor ama Notion'a yazılmıyor — alan açılmadı.
+   */
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  /**
+   * B118 İŞ C — ölçüm rızası bayrağı. Rıza bandının değeri `kabul` ise `true`.
+   * Notion `Ölçüm Rızası` (Checkbox) alanına yazılıyor; İŞ D'nin (sunucudan
+   * ödeme olayı) ön koşulu.
+   */
+  olcum_rizasi?: boolean;
 };
 
 /**

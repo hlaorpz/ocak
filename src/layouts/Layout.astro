@@ -6,6 +6,7 @@ import Footer from '../components/Footer.astro';
 import GrainOverlay from '../components/GrainOverlay.astro';
 import WhatsappYuzen from '../components/WhatsappYuzen.astro';
 import RizaBandi from '../components/RizaBandi.astro';
+import KaynakYakala from '../components/KaynakYakala.astro';
 import type { Oda } from '../lib/oda-map';
 
 interface Props {
@@ -122,6 +123,9 @@ const gtmAttr = isProd && gtmId ? gtmId : undefined;
         SSR'da koşullu basmak, önbelleğe alınmış HTML'in bir kadının kararını
         başkasına taşıması olurdu. GTM enjeksiyonu da bu bileşende. */}
     <RizaBandi />
+    {/* B118 İŞ C — UTM yakalama. Her sayfada, inişte. Hiçbir şey render
+        etmez; rıza kapısının arkasında değil (gerekçe bileşende). */}
+    <KaynakYakala />
     <GrainOverlay />
 
     <script>

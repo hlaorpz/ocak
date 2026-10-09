@@ -1,0 +1,37 @@
+---
+// KaynakYakala — UTM kaynak etiketinin yakalanma noktası (B118 İŞ C).
+//
+// `Layout.astro` içinde her sayfada mount edilir; hiçbir şey render etmez.
+// İnişte URL'den beş UTM parametresi okunur ve `sessionStorage`'a yazılır.
+//
+// ── İLK DOKUNUŞ KAZANIR ──
+// Anahtar doluysa üzerine yazılmaz. Kadın reklamdan `/acik-kapi?utm_source=meta`
+// ya iniyor, oradan `/acik-kapi/kayit`a geçiyor — ikinci sayfanın URL'inde UTM
+// yok. Son dokunuş kazansa her kayıt "kaynaksız" yazılırdı.
+//
+// ── Rıza kapısının ARKASINDA DEĞİL ──
+// Değer üçüncü tarafa gitmiyor, yalnız kendi sunucumuza ve Notion'a;
+// `sessionStorage` olduğu için oturumla ölüyor. Bir kaydın nereden geldiğini
+// bilmek, kaydın kendisi kadar birinci taraf bir bilgi.
+//
+// ── Neden Layout'ta, kayıt sayfasında değil ──
+// Yakalama inişte olmak zorunda. Kayıt sayfasına bağlansa, reklamın indirdiği
+// sayfa (format sayfası, etkinlik detayı) kaynağı hiç görmeden geçerdi.
+---
+
+<script>
+  import { KAYNAK_ANAHTARI, kaynakYazilacakMi } from '../lib/kaynak';
+
+  try {
+    const yeni = kaynakYazilacakMi(
+      sessionStorage.getItem(KAYNAK_ANAHTARI),
+      window.location.search,
+    );
+    if (yeni) sessionStorage.setItem(KAYNAK_ANAHTARI, JSON.stringify(yeni));
+  } catch {
+    // `sessionStorage` erişilemiyorsa (Safari gizli sekme, sert gizlilik
+    // ayarı) kaynak ölçülmez ve ölçülmemesi hiçbir şeyi kırmaz: kayıt UTM
+    // alanları olmadan yazılır (K-5). Sessiz geçmek doğru — kadına
+    // gösterilecek bir hata yok.
+  }
+</script>

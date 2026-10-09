@@ -1628,6 +1628,27 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   // B118 İŞ B — ölçüm olayları. Kural ve K-4/K-5 koruması lib'de; burada
   // yalnız çağrı var. `olayGonder` throw etmiyor, ek `try/catch` gereksiz.
   import { olayGonder, beginCheckoutYuku, formSubmitYuku } from '../lib/olcum';
+  // B118 İŞ C — kaynak etiketi + ölçüm rızası gövdeye katılıyor.
+  import { KAYNAK_ANAHTARI, kayitKaynakYuku } from '../lib/kaynak';
+  import { RIZA_ANAHTARI, gtmYuklensinMi } from '../lib/riza';
+
+  /**
+   * `sessionStorage`/`localStorage` okumasını tek yerde topluyor.
+   *
+   * ⚠ K-5: okuma patlarsa (Safari gizli sekme) BOŞ dönüyor ve kayıt UTM'siz
+   * yazılıyor. Ölçüm kodundaki hiçbir hata kayıt yolunu kıramaz — bu yüzden
+   * çağrı yeri de `try/catch` içinde değil, koruma burada.
+   */
+  function kaynakYukuOku(): Record<string, string | true> {
+    try {
+      return kayitKaynakYuku({
+        kaynakHam: sessionStorage.getItem(KAYNAK_ANAHTARI),
+        rizaKabul: gtmYuklensinMi(localStorage.getItem(RIZA_ANAHTARI), new Date()),
+      });
+    } catch {
+      return {};
+    }
+  }
 
   const form = document.querySelector<HTMLFormElement>('.kayit-formu__form');
   if (form) {
@@ -2155,6 +2176,9 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
         ...(promoKodIdRaw ? { kodId: promoKodIdRaw } : {}),
         ...(direktAktif() && kademeOk ? { kademe: kademeRaw as 'ust' | 'orta' | 'alt' } : {}),
         ...(direktAktif() ? { odemeYontemi: yontem } : {}),
+        // B118 İŞ C — kaynak etiketi (ilk dokunuş) + ölçüm rızası. Yoksa
+        // hiçbir alan eklenmez ve gövde eskisiyle BİREBİR aynı kalır.
+        ...kaynakYukuOku(),
       };
 
       // Defansif validation:

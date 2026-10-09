@@ -50,6 +50,14 @@ import {
 } from '../../lib/kayit.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; kart isteyen gövde 400 alır.
 import { KART_AKISI_ACIK } from '../../lib/kart-akisi.ts';
+// B118 İŞ C — kaynak etiketi, ölçüm rızası, şehir yazımı ve K-5'in yedek yolu.
+import {
+  kaynakGovdeSuz,
+  kaynakNotionProperties,
+  olcumRizasiProperty,
+} from '../../lib/kaynak.ts';
+import { sehirYaz } from '../../lib/sehir.ts';
+import { notionKayitYaz } from '../../lib/kayit-yazim.ts';
 
 const NOTION_KODLAR_DB = import.meta.env.NOTION_KODLAR_DB_ID ?? '';
 
@@ -93,6 +101,18 @@ type KayitBody = {
   // brief-davet-sistemi: davet eden ref izi (OCAK-XXXX). Boş gelirse
   // Kayıtlar DB'ye yazılmaz (property atlanır).
   ref?: string;
+  // ── B118 İŞ C — kaynak etiketi + ölçüm rızası ──
+  // UTM değerleri gövdenin KÖKÜNDE düz alan olarak geliyor (istemci
+  // `sessionStorage`'dan okuyup ekliyor). Her biri sunucuda yeniden
+  // doğrulanıyor (`kaynakGovdeSuz`); uymayan ATILIR, kayıt reddedilmez.
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_content?: string;
+  utm_term?: string;
+  // Rıza bandının `kabul` değeri. `true` değilse kutu boş kalır — "sorulmadı"
+  // ile "reddetti" Notion'da ayrı tutulmuyor, ikisi de rıza YOK demek.
+  olcum_rizasi?: boolean;
 };
 
 const HAVALE_IBAN = import.meta.env.PUBLIC_HAVALE_IBAN ?? '';
@@ -304,8 +324,14 @@ async function notionKayitlaraYaz(args: {
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
   // Aşama 3b-fix eyeball — Şehir opsiyonel rich_text. Boşsa atlanır.
   // Kayıtlar.Şehir property bu turda eklendi (Kaan + CC paralel).
-  if (body.sehir) {
-    properties['Şehir'] = { rich_text: [{ text: { content: body.sehir } }] };
+  //
+  // B118 İŞ C (9 Eki 2026) — değer artık NORMALLEŞTİRİLEREK yazılıyor:
+  // `izmir` → `İzmir`, `İSTANBUL` → `İstanbul` (`tr` yereliyle, `sehir.ts`).
+  // Canlı veride aynı şehir iki yazımla iki satır üretiyordu. Mevcut satırları
+  // Kaan elle düzeltiyor; burada yalnız YAZIM anı düzeldi.
+  const sehirDeger = sehirYaz(body.sehir);
+  if (sehirDeger) {
+    properties['Şehir'] = { rich_text: [{ text: { content: sehirDeger } }] };
   }
   if (body.seciliTarih) {
     properties['Seçilen Tarih'] = { rich_text: [{ text: { content: body.seciliTarih } }] };
@@ -353,14 +379,32 @@ async function notionKayitlaraYaz(args: {
   if (yerTutmaBitisi) {
     properties['Yer Tutma Bitişi'] = { date: { start: yerTutmaBitisi.toISOString() } };
   }
+  // ── B118 İŞ C — kaynak etiketi + ölçüm rızası ──
+  // Değerler sunucuda yeniden süzülüyor; uymayan ATILIR, kayıt reddedilmez.
+  // `Ölçüm Rızası` her kayıtta yazılıyor (false dahil) — alanın hiç
+  // yazılmaması ile `false` arasında Notion'da fark yok, ama İŞ D'nin
+  // "yalnız rıza işaretli kayıtlar" süzgeci alanın DOLDUĞUNU varsayıyor.
+  Object.assign(properties, kaynakNotionProperties(kaynakGovdeSuz(body)));
+  Object.assign(properties, olcumRizasiProperty(body.olcum_rizasi === true));
   // `Ödenen Tutar`, `Ödeme Tarihi` → ödeme ONAYLANINCA (Aşama 3b callback).
   // `Katıldı mı?`, `Geri Bildirim Verdi`, `Notlar` → kayıt anında dokunulmaz.
 
-  const result = await notion.pages.create({
-    parent: { database_id: NOTION_KAYITLAR_DB },
+  // ⚠ Doğrudan `notion.pages.create` DEĞİL (B118 K-5): beş yeni alan Notion'da
+  // açık değilse API tüm sayfa oluşturmayı reddeder ve ölçüm için eklenen bir
+  // alan KAYDIN KENDİSİNİ düşürürdü. `notionKayitYaz` reddi yakalayıp aynı
+  // kaydı ölçüm alanları olmadan yeniden yazıyor ve log'a gürültülü satır
+  // basıyor. Yedek yol yalnız B118 alanı gönderilmişken koşuyor.
+  return await notionKayitYaz({
+    olustur: async (props) => {
+      const result = await notion.pages.create({
+        parent: { database_id: NOTION_KAYITLAR_DB },
+        properties: props as any,
+      });
+      return result.id;
+    },
     properties,
+    referansNo,
   });
-  return result.id;
 }
 
 /**
@@ -400,11 +444,21 @@ async function notionSadeceAskiYaz(args: {
   if (body.ref) {
     properties['Davet Eden Ref'] = { rich_text: [{ text: { content: body.ref } }] };
   }
-  const result = await notion.pages.create({
-    parent: { database_id: NOTION_KAYITLAR_DB },
+  // B118 İŞ C — askı satırı da Kayıtlar DB'sinde yaşıyor, aynı beş alan.
+  // Reklamdan gelip yalnız askıya katkı veren bir kadının kaynağı da ölçülüyor.
+  Object.assign(properties, kaynakNotionProperties(kaynakGovdeSuz(body)));
+  Object.assign(properties, olcumRizasiProperty(body.olcum_rizasi === true));
+  return await notionKayitYaz({
+    olustur: async (props) => {
+      const result = await notion.pages.create({
+        parent: { database_id: NOTION_KAYITLAR_DB },
+        properties: props as any,
+      });
+      return result.id;
+    },
     properties,
+    referansNo,
   });
-  return result.id;
 }
 
 async function notionBasvuruYaz(args: {
@@ -427,7 +481,13 @@ async function notionBasvuruYaz(args: {
   };
   if (body.email) properties.Email = { email: body.email };
   if (body.telefon) properties.Telefon = { phone_number: body.telefon };
-  if (body.sehir) properties.Şehir = { rich_text: [{ text: { content: body.sehir } }] };
+  // B118 İŞ C — Başvurular DB'sinin `Şehir`'i de normalleştirilerek yazılıyor.
+  // Kural tek yerde (`sehir.ts`); iki DB iki yazım üretmesin.
+  //
+  // ⚠ UTM alanları buraya GİRMİYOR: beş alan Kayıtlar DB'sinde açıldı,
+  // Başvurular'da yok. Gönderilse Notion tüm başvuruyu reddederdi.
+  const basvuruSehir = sehirYaz(body.sehir);
+  if (basvuruSehir) properties.Şehir = { rich_text: [{ text: { content: basvuruSehir } }] };
   if (body.kanal) properties['İlk dokunuş kanalı'] = { select: { name: body.kanal } };
   if (body.ekonomikKatilim) {
     properties['Ekonomik katılım'] = { select: { name: body.ekonomikKatilim } };
