@@ -18,6 +18,9 @@
 // Yalnız sayılar ve `Kayıt ID` listeleri. Kişi verisi YOK (CLAUDE.md §8).
 import type { APIRoute } from 'astro';
 import { notion, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
+// B118 İŞ D — sunucudan Meta Purchase olayı. Alan adları ve bağlama tek
+// otoritede; bu route yalnız `notion` istemcisini veriyor.
+import { metaOlcumAdimi, OLCUM_GITTI_ALANI, OLCUM_RIZASI_ALANI } from '../../lib/meta-olcum.ts';
 import { sabitZamanliEsit } from '../../lib/sabit-zamanli.ts';
 import { etkinlikBaslangicAni } from '../../lib/yer-tutma.ts';
 import { sonAnMetni } from '../../lib/yer-tutma.ts';
@@ -194,6 +197,12 @@ type Aday = {
   /** `Etkinlikler` relation öğe sayısı — 1 değilse mail gönderilmez. */
   etkinlikSayisi: number;
   etkinlik: EtkinlikBilgi | null;
+  // ── B118 İŞ D — Meta Purchase olayının iki kapısı ──
+  // ⚠ `TaramaSatiri`'ne DEĞİL buraya eklendi: o tip `lib/tarama.ts`'in karar
+  // motorunun sözleşmesi ve motor bu iki alanı okumuyor. Karar motoruna
+  // kullanmadığı alan eklemek, test ettiği şeyi bulandırırdı.
+  olcumRizasi: boolean;
+  olcumGitti: boolean;
 };
 
 /**
@@ -245,6 +254,10 @@ async function adaylariOku(): Promise<Aday[]> {
       tutar: p['Beklenen Tutar']?.number ?? 0,
       etkinlikSayisi: rel.length,
       etkinlik,
+      // B118 İŞ D — alan Notion'da yoksa `undefined === true` → `false`.
+      // İkisi de fail-closed: rıza okunamıyorsa olay gitmez.
+      olcumRizasi: p[OLCUM_RIZASI_ALANI]?.checkbox === true,
+      olcumGitti: p[OLCUM_GITTI_ALANI]?.checkbox === true,
     });
   }
   return adaylar;
@@ -275,6 +288,15 @@ function bildirimGirdisi(a: Aday): OdemeBildirGirdi | null {
     katilimLinkiHam: e.katilimLinki,
     zoomSifresiHam: e.zoomSifresi,
     konumDetayHam: e.konumDetay,
+    // ── B118 İŞ D ──
+    // ⚠ Bu dört alan (c) dalında da taşınıyor ama orada kimse okumuyor:
+    // `bildirimDegiskenleri` yalnız mail değişkenlerine bakıyor ve ölçüm adımı
+    // `odemeBildir`'in içinde, yani (a) dalına özgü. Zararsız ve bilinçli —
+    // ikinci bir kurucu yazmak iki yerin ayrışması demekti.
+    tutar: a.tutar,
+    paraBirimiHam: e.paraBirimi,
+    olcumRizasi: a.olcumRizasi,
+    olcumGitti: a.olcumGitti,
   };
 }
 
@@ -461,6 +483,10 @@ async function handle(request: Request): Promise<Response> {
       const sonuc = await odemeBildir(girdi, {
         tasima: resendTasima(),
         mailGittiIsaretle,
+        // B118 İŞ D — havale yolunun Meta Purchase olayı buradan gidiyor
+        // (kart yolu callback'ten). Fail-open: `bildirimDurumu(sonuc)`
+        // dizeleri bu adımdan ETKİLENMİYOR.
+        olcumGonder: metaOlcumAdimi(notion),
       });
       sonuclar.push({ kayitId, islem: islemAdi(islem), durum: bildirimDurumu(sonuc) });
       continue;

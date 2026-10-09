@@ -51,6 +51,9 @@ import { katilimTipiCoz } from './kayit.ts';
 import { ilkAd } from './davet-baglam.ts';
 import { FORMAT_KATEGORI } from './etkinlik-kategori.ts';
 import { formatEtkinlikTarihi } from './format-etkinlik.ts';
+// B118 İŞ D — alan adları tek otoritede (`meta-olcum.ts`); burada ve
+// `bildirim-tara.ts`'te ikinci bir dize kopyası yazılmıyor.
+import { OLCUM_GITTI_ALANI, OLCUM_RIZASI_ALANI } from './meta-olcum.ts';
 
 export type Katilim = {
   tipi: 'link' | 'adres';
@@ -205,6 +208,22 @@ export type KayitOkumaSonuc = {
    */
   odemeYontemi: string;
   /**
+   * Kayıtlar `Ölçüm Rızası` (Checkbox) — B118 İŞ C yazıyor, İŞ D okuyor.
+   * Meta Purchase olayı YALNIZ bu kutu işaretliyken gider (Kaan koşulu 2).
+   *
+   * ⚠ Alan Notion'da yoksa `false` döner ve olay GİTMEZ. Fail-closed:
+   * eksik yapılandırma yüzünden rızasız ölçüm yapılmaz.
+   */
+  olcumRizasi: boolean;
+  /**
+   * Kayıtlar `Ölçüm Gitti` (Checkbox) — B118 İŞ D'nin tekillik işareti.
+   *
+   * ⚠ Alan Notion'da yoksa `false` döner, yani tekillik korumasının BU ayağı
+   * çalışmaz. İkinci ayak Meta'nın `event_id` tekilleştirmesi; `event_id`
+   * düz Kayıt ID olduğu için aynı ödeme iki kez sayılmaz.
+   */
+  olcumGitti: boolean;
+  /**
    * Kayıtlar `Yer Tutma Bitişi` (date, saatli) — `null` = alan boş.
    *
    * Boş olmak "süresi geçti" DEĞİL: bu brief öncesi açılmış kayıtlarda alan
@@ -257,6 +276,8 @@ function bosSonuc(durum: KayitDurumu): KayitOkumaSonuc {
     paraBirimiHam: '',
     odemeDurumu: '',
     odemeYontemi: '',
+    olcumRizasi: false,
+    olcumGitti: false,
     yerTutmaBitisi: null,
   };
 }
@@ -329,6 +350,10 @@ export async function kayitOku(
     const odemeDurumu: string = props['Ödeme Durumu']?.select?.name ?? '';
     // B118 İŞ B — `purchase` olayının kart/havale ayrımı buna bakıyor (K-2).
     const odemeYontemi: string = props['Ödeme Yöntemi']?.select?.name ?? '';
+    // B118 İŞ D — sunucudan giden Meta olayının iki kapısı. Alan yoksa
+    // `undefined === true` → `false`; ikisi de fail-closed yanda.
+    const olcumRizasi: boolean = props[OLCUM_RIZASI_ALANI]?.checkbox === true;
+    const olcumGitti: boolean = props[OLCUM_GITTI_ALANI]?.checkbox === true;
     const ytbISO: string = props['Yer Tutma Bitişi']?.date?.start ?? '';
     // Bozuk bir tarih `Invalid Date` üretir ve karşılaştırmalarda sessizce
     // `false` döndürürdü — kapı "süre dolmamış" sanıp ödeme başlatırdı. `null`
@@ -347,6 +372,8 @@ export async function kayitOku(
       seciliTarih,
       odemeDurumu,
       odemeYontemi,
+      olcumRizasi,
+      olcumGitti,
       yerTutmaBitisi,
     };
 

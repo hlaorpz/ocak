@@ -25,6 +25,9 @@ import { kodKullanimArtir } from '../../lib/kodlar.ts';
 // B211 — ödeme bildirimi. Saf mantık lib'de (testlenebilir); Notion yazımı
 // burada, Resend taşıması `lib/posta.ts`'te (anahtar orada okunuyor).
 import { odemeBildir } from '../../lib/odeme-bildir.ts';
+// B118 İŞ D — sunucudan Meta Purchase olayı. Bağlama tek yerde; bu route
+// yalnız `notion` istemcisini veriyor.
+import { metaOlcumAdimi } from '../../lib/meta-olcum.ts';
 import { resendTasima } from '../../lib/posta.ts';
 import { publicOrigin } from '../../lib/public-origin.ts';
 // KARAR 488 — kart akışı env anahtarıyla kapalı; callback 410 döner.
@@ -394,8 +397,22 @@ async function handle(request: Request): Promise<Response> {
         konumDetayHam: kayit.konumDetayHam,
         // Mailin `AD` değişkeni — Kayıtlar `Kadın` alanından ilk ad.
         ad: kayit.davetEdenAd,
+        // ── B118 İŞ D — Meta Purchase olayının girdileri ──
+        // Hiçbiri maile girmiyor. `tutar` `Beklenen Tutar`: tarayıcıdaki
+        // `purchase` olayı da o alanı kullanıyor, iki yol aynı sayıyı söylesin.
+        tutar: kayit.tutar,
+        paraBirimiHam: kayit.paraBirimiHam,
+        olcumRizasi: kayit.olcumRizasi,
+        olcumGitti: kayit.olcumGitti,
       },
-      { tasima: resendTasima(), mailGittiIsaretle },
+      {
+        tasima: resendTasima(),
+        mailGittiIsaretle,
+        // B118 İŞ D — fail-open: bu çağrının hiçbir sonucu `odemeBildir`'in
+        // dönüşünü, callback'in yanıt kodunu ya da Notion'a yazılmış ödemeyi
+        // değiştirmez.
+        olcumGonder: metaOlcumAdimi(notion),
+      },
     );
   } catch (err) {
     console.error(

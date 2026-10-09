@@ -72,6 +72,18 @@ export type OdemeBildirGirdi = {
   katilimLinkiHam: string;
   zoomSifresiHam: string;
   konumDetayHam: string;
+  // ── B118 İŞ D — Meta Purchase olayının girdileri ──
+  // Hiçbiri MAİLE girmiyor; yalnız `olcumGonder` adımı okuyor. Dördü de
+  // opsiyonel: `odemeBildir`'in bugünkü çağıranları dışında bir yer bu tipi
+  // kurarsa ölçüm adımı sessizce atlanır, mail yolu etkilenmez.
+  /** Kayıtlar `Beklenen Tutar`. Tarayıcıdaki `purchase` olayı da bu alanı kullanıyor. */
+  tutar?: number;
+  /** Etkinlikler `Para Birimi` select ham değeri. Boşsa ölçüm adımı `TRY` varsaymaz, kapı tutar. */
+  paraBirimiHam?: string;
+  /** Kayıtlar `Ölçüm Rızası` (Checkbox). İşaretli değilse olay GİTMEZ. */
+  olcumRizasi?: boolean;
+  /** Kayıtlar `Ölçüm Gitti` (Checkbox). Doluysa olay GİTMEZ — tekillik. */
+  olcumGitti?: boolean;
 };
 
 export type OdemeBildirSonuc = {
@@ -138,6 +150,15 @@ export type OdemeBildirBagimliliklari = {
   tasima: PostaTasima;
   /** Notion Kayıtlar `Mail Gitti` checkbox'ını işaretler. */
   mailGittiIsaretle(pageId: string): Promise<void>;
+  /**
+   * B118 İŞ D — Meta Purchase olayı. **Opsiyonel:** verilmezse ölçüm adımı
+   * hiç koşmaz ve bu fonksiyon İŞ D öncesiyle birebir aynı davranır.
+   *
+   * ⚠ Dönüşü OKUNMAZ ve hatası YUTULUR (Kaan koşulu 1 — fail-open). İmzanın
+   * `Promise<unknown>` olması bilinçli: çağıran burada bir sözleşme
+   * kurmuyor, yalnız "şunu da dene" diyor.
+   */
+  olcumGonder?: (girdi: OdemeBildirGirdi) => Promise<unknown>;
 };
 
 /**
@@ -208,14 +229,45 @@ export async function odemeBildir(
     return { durum: 'hata', mailGitti: false, sebep };
   }
 
+  let mailGittiSebebi: string | undefined;
   try {
     await deps.mailGittiIsaretle(g.pageId);
   } catch (err) {
-    const sebep = `Mail Gitti yazılamadı: ${String(err).slice(0, 200)}`;
-    console.error(`[odeme-bildir] kısmi — kayitId=${g.kayitId} sebep=${sebep}`);
-    return { durum: 'yazildi', mailGitti: false, sebep };
+    mailGittiSebebi = `Mail Gitti yazılamadı: ${String(err).slice(0, 200)}`;
+    console.error(`[odeme-bildir] kısmi — kayitId=${g.kayitId} sebep=${mailGittiSebebi}`);
   }
 
+  // ── B118 İŞ D — ÖLÇÜM ADIMI ──
+  //
+  // Yeri bilinçli: mailden VE `Mail Gitti` denemesinden SONRA (Kaan koşulu 1).
+  // Buraya gelindiğinde para çekilmiş, Notion'a `Ödendi` yazılmış ve mail
+  // Resend tarafından kabul edilmiş olur.
+  //
+  // ⚠ `Mail Gitti` yazılamamış olsa bile çalışır: ödeme gerçekleşti, eksik
+  // olan yalnız iz. O kayıt sonraki taramada yeniden işlenirse olay ikinci kez
+  // gider — `Ölçüm Gitti` ve Meta'nın `event_id` tekilleştirmesi iki ayrı
+  // koruma olarak duruyor.
+  //
+  // ⚠ DÖNÜŞ DEĞERİ DEĞİŞMİYOR. Bu blok `durum`, `mailGitti` ve `sebep`
+  // alanlarının hiçbirine dokunmuyor; ölçüm adımının başarısı ya da
+  // başarısızlığı çağıranın gördüğü sonuca GİRMEZ (fail-open). `bildirim-tara`
+  // yanıt dizelerini `bildirimDurumu(sonuc)` ile kuruyor — o dizeler de
+  // bu yüzden aynen kalıyor.
+  if (deps.olcumGonder) {
+    try {
+      await deps.olcumGonder(g);
+    } catch (err) {
+      // `purchaseBildir` throw etmiyor; "etmiyor" bir gözlem, sözleşme değil.
+      console.error(
+        `[odeme-bildir] ölçüm adımı düştü (ödeme ve mail ETKİLENMEDİ) — ` +
+          `kayitId=${g.kayitId} ${String(err).slice(0, 200)}`,
+      );
+    }
+  }
+
+  if (mailGittiSebebi) {
+    return { durum: 'yazildi', mailGitti: false, sebep: mailGittiSebebi };
+  }
   console.log(`[odeme-bildir] OK — kayitId=${g.kayitId} sablon=${sablon} MailGitti=✓`);
   return { durum: 'yazildi', mailGitti: true };
 }

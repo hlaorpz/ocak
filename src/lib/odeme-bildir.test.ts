@@ -251,3 +251,127 @@ describe('odemeBildir — gönderim · Mail Gitti · hata yalıtımı', () => {
     }
   });
 });
+
+/**
+ * B118 İŞ D — ölçüm adımının `odemeBildir` içindeki yeri ve yalıtımı.
+ *
+ * Kaan'ın koşulu 1: *"Mailden ve Mail Gitti yazımından sonra, kendi
+ * try/catch'inde; dönüş değerini etkilemez (fail-open)."* Aşağıdaki testler
+ * o cümlenin dört ayağını ayrı ayrı kilitliyor. Olayın İÇERİĞİ burada
+ * ölçülmüyor — o `meta-olcum.test.ts`'te (31 test).
+ */
+describe('İŞ D — ölçüm adımı: yer, sıra, yalıtım', () => {
+  /** Mail/işaret adımlarını izleyen, ölçüm adımını da sıraya yazan kurulum. */
+  function izlemeliDeps(opts: {
+    mailOk?: boolean;
+    mailGittiFirlat?: boolean;
+    olcumFirlat?: boolean;
+    olcumVerme?: boolean;
+  } = {}) {
+    const sira: string[] = [];
+    const olcumGirdileri: OdemeBildirGirdi[] = [];
+    const d = {
+      tasima: (async () => {
+        sira.push('mail');
+        return opts.mailOk === false ? { ok: false, hata: 'HTTP 500' } : { ok: true };
+      }) as unknown as PostaTasima,
+      mailGittiIsaretle: async () => {
+        sira.push('mailGitti');
+        if (opts.mailGittiFirlat) throw new Error('Notion düştü');
+      },
+      ...(opts.olcumVerme
+        ? {}
+        : {
+            olcumGonder: async (g: OdemeBildirGirdi) => {
+              sira.push('olcum');
+              olcumGirdileri.push(g);
+              if (opts.olcumFirlat) throw new Error('Meta düştü');
+              return { durum: 'gonderildi' as const };
+            },
+          }),
+    };
+    return { sira, olcumGirdileri, deps: d };
+  }
+
+  it('SIRA: mail → Mail Gitti → ölçüm', async () => {
+    const { sira, deps: d } = izlemeliDeps();
+    await odemeBildir(ONLINE, d);
+    expect(sira).toEqual(['mail', 'mailGitti', 'olcum']);
+  });
+
+  it('dönüş değeri DEĞİŞMİYOR — ölçüm adımı varken de `{yazildi, true}`', async () => {
+    const { deps: d } = izlemeliDeps();
+    expect(await odemeBildir(ONLINE, d)).toEqual({ durum: 'yazildi', mailGitti: true });
+  });
+
+  it('ölçüm adımı THROW ederse dönüş AYNI kalır ve hata dışarı sızmaz (fail-open)', async () => {
+    const { sira, deps: d } = izlemeliDeps({ olcumFirlat: true });
+    const sonuc = await odemeBildir(ONLINE, d);
+    expect(sonuc).toEqual({ durum: 'yazildi', mailGitti: true });
+    expect(sira).toEqual(['mail', 'mailGitti', 'olcum']);
+  });
+
+  it('MAİL BAŞARISIZSA ölçüm adımı HİÇ koşmaz', async () => {
+    const { sira, deps: d } = izlemeliDeps({ mailOk: false });
+    const sonuc = await odemeBildir(ONLINE, d);
+    expect(sonuc.durum).toBe('hata');
+    expect(sira).toEqual(['mail']);
+  });
+
+  it('ÖN KOŞUL tutmazsa (relation ≠ 1) ölçüm adımı HİÇ koşmaz', async () => {
+    const { sira, deps: d } = izlemeliDeps();
+    await odemeBildir({ ...ONLINE, etkinlikSayisi: 0 }, d);
+    expect(sira).toEqual([]);
+  });
+
+  it('`Mail Gitti` YAZILAMASA BİLE ölçüm koşar — ödeme gerçekleşti, eksik olan iz', async () => {
+    const { sira, deps: d } = izlemeliDeps({ mailGittiFirlat: true });
+    const sonuc = await odemeBildir(ONLINE, d);
+    expect(sira).toEqual(['mail', 'mailGitti', 'olcum']);
+    // Dönüş eski davranışla BİREBİR: kısmi başarı, gerekçesiyle.
+    expect(sonuc.durum).toBe('yazildi');
+    expect(sonuc.mailGitti).toBe(false);
+    expect(sonuc.sebep).toContain('Mail Gitti yazılamadı');
+  });
+
+  it('`olcumGonder` VERİLMEZSE İŞ D öncesiyle birebir aynı davranış', async () => {
+    const { sira, deps: d } = izlemeliDeps({ olcumVerme: true });
+    expect(await odemeBildir(ONLINE, d)).toEqual({ durum: 'yazildi', mailGitti: true });
+    expect(sira).toEqual(['mail', 'mailGitti']);
+  });
+
+  it('ölçüm adımına GİRDİNİN TAMAMI geçiyor — dört İŞ D alanı dahil', async () => {
+    const { olcumGirdileri, deps: d } = izlemeliDeps();
+    const girdi: OdemeBildirGirdi = {
+      ...ONLINE,
+      tutar: 937.5,
+      paraBirimiHam: 'TRY',
+      olcumRizasi: true,
+      olcumGitti: false,
+    };
+    await odemeBildir(girdi, d);
+    expect(olcumGirdileri).toHaveLength(1);
+    expect(olcumGirdileri[0]).toMatchObject({
+      kayitId: 'OCAK-7K2M',
+      pageId: 'page-uuid-1',
+      tutar: 937.5,
+      paraBirimiHam: 'TRY',
+      olcumRizasi: true,
+      olcumGitti: false,
+    });
+  });
+
+  it('ölçüm hatası log\'a Kayıt ID ile düşüyor, e-posta/ad TAŞIMIYOR', async () => {
+    const satirlar: string[] = [];
+    for (const m of ['log', 'warn', 'error'] as const) {
+      vi.spyOn(console, m).mockImplementation((...a: unknown[]) => void satirlar.push(a.join(' ')));
+    }
+    const { deps: d } = izlemeliDeps({ olcumFirlat: true });
+    await odemeBildir(ONLINE, d);
+    const olcumSatiri = satirlar.find((s) => s.includes('ölçüm adımı düştü'));
+    expect(olcumSatiri).toBeDefined();
+    expect(olcumSatiri).toContain('OCAK-7K2M');
+    expect(olcumSatiri).not.toContain('@');
+    expect(olcumSatiri).not.toContain('Deniz');
+  });
+});
