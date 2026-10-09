@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu**
+**Son güncelleme:** 8 Ekim 2026 · **Site dili + Anadolu takvimi turu**
 
 ---
 
@@ -10,6 +10,8 @@
 
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
+
+**Sıradaki iş (içerik hattı, 8 Eki):** **sosyal medya planının yenilenmesi** (`30-sosyal.md`, **B221**) → ***Eşikte Üç Akşam*** için Advaita onayı + tarih (KARAR 624, `ONERI`) → dört çember gövdesi + bekçi dosyası (**B223**). ⚠ Hepsinden önce: 8 Ekim Notion değişikliklerinin **canlı teyidi** (**B225**) ve `ocak-etkinlik` skill'indeki eski kayıt satırı (**B226**, KARAR 626) — reklam `/acik-kapi`'ye iniyor.
 
 **✅ B193 kapandı (7 Eki).** Sıranın önündeki iş artık **B118** (rıza banner'ı).
 ⚠ **B215 — 12 Ekim 15:00'ten önce** (test satırları + 1 TL iadeleri).

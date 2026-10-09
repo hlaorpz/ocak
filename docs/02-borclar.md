@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu**
+**Son güncelleme:** 8 Ekim 2026 · **Site dili + Anadolu takvimi turu**
 
 ---
 
@@ -1654,6 +1654,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
   Diğer 14 etkinlik sayfası 488–795 kelime taşıyor.
 - **Ağırlık:** bugün karara bağlanan **AÇILIŞ 24–27 Eylül** (KARAR 492) sitede
   içeriksiz duruyor. Sosyal v2.1'in C11/C20 kartları bu sayfaya bakıyor.
+- ⚠ **8 Eki 2026 — ağırlık öncülü düştü:** AÇILIŞ 24–27 Eylül 2026 gerçekleşmedi; KARAR 492 → SUPERSEDE, yeni hedef Eylül 2027 (KARAR 617). `yolculuk-acilis` kaydı Notion'da yayında değil (`Yayınla` işaretsiz, tarih yer tutucu `2027-02-20`; ölçüm: Claude.ai Notion bağlantısı, 7 Eki). Borç kapanmadı — `Detay` hâlâ boş.
 - **Kapanış şartı:** Notion `detay` alanı section marker'larıyla yazılır, redeploy
   sonrası dumpta ≥400 kelime.
 
@@ -1683,6 +1684,7 @@ Bu gözlem KARAR 465'in doğrudan kaynağıdır.
 - [ ] **Sahip:** Kaan
 - **Belirti:** rezerve mi, opsiyonda mı, yok mu — bilinmiyor.
 - **Bağ:** KARAR 492. Fiyat bandı (D3) buna bakıyor.
+- ⚠ **8 Eki 2026 — tarih değişti:** başlıktaki "24–27 Eylül" artık geçersiz. Yeni iç hedef **23–26 Eylül 2027** (Perş–Paz, KARAR 617); sitede yalnız "Eylül 2027" yazıyor, gün mekân kesinleşince çıkar (KARAR 619). Mekân sorusu aynen açık.
 
 ## B85 — v2.1'deki üç kayıt cümlesi için sözlü teyit
 - [ ] **Sahip:** Kaan · ~1 dk
@@ -3931,3 +3933,53 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   seçenekleri. `20-ref-bot.md`: Resend şablonları, `/api/bildirim-tara`, n8n tarama akışı,
   `TARAMA_SIR` · `ODEME_LINK_SIR` adları (değerleri değil, KARAR 97), MailerLite'ın yeni
   rolü, eski on iki alanlık envanterin tarihçeye inmesi.
+
+## B221 — `30-sosyal.md` Eylül 2026 kohortunu duyuruyor
+- [ ] **Sahip:** Claude.ai + Kaan · **Tetikleyici:** sıradaki içerik sohbeti (sosyal planın yenilenmesi)
+- **Ne:** plan iki yolculuğun Eylül 2026'da yola çıktığını ve Dünya Yolculuğu'nun Mart 2027'de açıldığını söylüyor. İkisi de artık yanlış (KARAR 617 · 620 · 621).
+- **Ölçüm:** `docs_ara` regex `24–27 Eylül|Eylül kohort|Eylül 2026|Mart 2027`, MCP damgası `7be7de0`, Claude.ai 8 Eki → `30-sosyal.md` satır **71 · 155 · 289 · 670 · 904**.
+- **Kapanış şartı:** plan yenilenir ya da bu satırlar düşüş notu alır; aynı regex `30-sosyal.md`'de yalnız tarihsel bağlamda eşleşir.
+- **Bağ:** KARAR 617 · 620 · 621 · KARAR 451
+
+## B222 — Korpusta Eylül 2026 kohort tarihinin kalıntıları
+- [ ] **Sahip:** Claude.ai (sonraki patch)
+- **Ne:** `docs-patch-2026-10-08` yalnız dört satırı güncelledi; aşağıdakiler bilerek bırakıldı (dev hücreler ya da başka dosyalar).
+- **Ölçüm (aynı arama, `7be7de0`):** `03-sira.md` **155 · 561 · 730 · 746** · `20-ref-marka.md` **523** · `20-ref-program.md` **423 · 469 · 473 · 486 · 490** (bu dosyaya 8 Ekim eklemesi girdi; eski satırlar tarihsel olarak işaretlendi ama yerinde duruyor) · `00-durum.md` "Dal modeli" ve "Ödeme" hücrelerindeki *"AÇILIŞ'a kadar"* / *"AÇILIŞ'tan önce"*.
+- **Ayrıca marka dosyası:** `10-marka.md` K1 satırı *"Aylık çemberler"* ve OCAK WAY *"tema her ay farklı"* diyor; KARAR 622 ile gerilimli. Marka kararı Kaan'ındır — bu patch dokunmadı.
+- **Kapanış şartı:** her satır ya düşüş notu alır ya "tarihsel, doğru" diye teyit edilir.
+- **Bağ:** KARAR 617 · 622 · KARAR 61
+
+## B223 — Çember etkinlik gövdeleri ve bekçi dosyası `/cember`'den geride
+- [ ] **Sahip:** Kaan (Notion, dört kelime) · Advaita (hazırlık satırı) · Claude.ai (bekçi dosyası)
+- **Ne (a):** yayındaki dört çember gövdesi *"Sonra ayın teması."* diyor; `/cember` artık *"Akşamın Teması"* (KARAR 622). Kayıtlar: Ellerin Dolu · Neyi Bekliyorsun? · Yer Açmak · Hangi Tohumu Ekeceksin?
+- **Ne (b):** *Yer Açmak* kapanışı *"bedenle çalışıyoruz"* diyor, `Yanına Al` listesinde rahat kıyafet ya da mat yok.
+- **Ne (c):** `docs/skills/ocak-etkinlik/ornekler-cember.md` canlı gövdelerle ayrışmış: başlıklar (*Elin Neyle Dolu?* → *Ellerin Dolu*, *Ekmeden Önce* → *Yer Açmak*), `ne-olur` paragraf sayısı (dosya on, canlı dokuz), `yaninda-getir` (dosya beş + bir, canlı dört + tek cümle), `pratik-bilgi` (dosya beş madde, canlı dört; *"Tema bölümü kaydedilebilir"* canlıda yok — KARAR 558 ile uyumlu olan canlıdır).
+- **Ölçüm:** Claude.ai Notion bağlantısı, Etkinlikler DB `Detay` alanı, 7–8 Eki (SQL `LIKE` + `substr`). ⚠ Kapalı yüzey — CC doğrulamaya çalışmaz.
+- **Neden Claude.ai yazmadı:** `Detay` tek metin alanı; değişiklik için 3.500 karakterlik gövdenin tamamı yeniden yazılır, kırpılma riski var (KARAR 625).
+- **Kapanış şartı:** (a) dört gövdede "akşamın teması" · (b) Advaita kararı · (c) bekçi dosyası canlıdan yeniden ölçülür.
+- **Bağ:** KARAR 622 · 625 · KARAR 558
+
+## B224 — Kod yüzeyinde tarih taraması yapılmadı
+- [ ] **Sahip:** CC
+- **Ne:** 8 Ekim turu yalnız Notion'u taradı (Sayfalar DB 21 sayfanın 20'si + Etkinlikler DB'de gövdeli 18 kayıt). `/anadolu/basvuru` formu, yasal sayfalar ve diğer `src/` metinleri **okunmadı** — Claude.ai bu yüzeye erişemiyor.
+- **Önerilen ölçüm:** `grep -rnE "Eylül 2026|Ağustos 2027|Mart 2027|2026 başvuru" src/ --include='*.astro' --include='*.ts' | grep -v '\.test\.'`
+- **Kapanış şartı:** komut koşulur; eşleşme varsa her biri ya düzeltilir ya "doğru" diye gerekçelenir.
+- **Bağ:** KARAR 617 · 621
+
+## B225 — 8 Ekim Notion değişikliklerinin canlı teyidi alınmadı
+- [ ] **Sahip:** Kaan (iPhone) ya da CC (`curl`) · **Tetikleyici:** reklam başlamadan **önce** — `/acik-kapi` reklamın indiği sayfa (ilk Açık Kapı 7 Eki ölçümünde 12 Ekim'di, 8 Eki akşamı ölçümünde **19 Ekim**)
+- **Ne:** Claude.ai'nin sayfa çekme aracı `/cember` ve `/bulusmalar` için, sorgu parametresi değiştirildiği hâlde (`?v=2` … `?v=5`) **eski metni** döndürdü. Deploy tarafı temiz göründüğü için en olası açıklama aracın bayat kopya göstermesi; **kanıtlanmadı.**
+- **Deploy ölçümü (Claude.ai Vercel MCP, 7 Eki UTC — CC doğrulamaya çalışmaz):** `dpl_ACTudBHSuesvTutqtuDcvTv4utCg` 21:54:09'da oluştu, `READY`, build logu `Notion Sayfalar: 20 sayfa store'a yazıldı` (21:54:25), alias listesinde `www.ocak.biz`. Ardından `dpl_5Q8EtK5NXWRgZ93rdwga7U8owEMB` 22:07:46, commit `5a2397f`, `READY`.
+- ⚠ **Son Notion yazımları bu iki deploy'dan SONRA:** ikinci tur 22:14–22:15 UTC (on dört sayfa), üçüncü tur 22:34 UTC (`/atolye`, `/seremoni`) ve ardından `/seremoni` SSS'inde bir cümle; dördüncü tur 8 Eki 07:50 ve 07:58 UTC (`/acik-kapi` SSS'inde iki cevap). Bunlar için **yeni bir production deploy şart.** 8 Ekim gündüzü deploy alınıp alınmadığı **ölçülmedi.**
+- **Kapanış şartı:** deploy sonrası `curl -s https://www.ocak.biz/anadolu | grep -c 'Eylül 2027'` ≥ 1 **ve** `grep -c 'Eylül 2026'` = 0 · `curl -s https://www.ocak.biz/cember | grep -c 'Her ay açılan çemberler'` ≥ 1 · `/anadolu`'da altı evre kartının tarih satırı gözle.
+- **Bağ:** KARAR 625 · ↔B97 (aynı sınıf: başarılı görünen ama tazeliği teyitsiz yüzey)
+
+## B226 — Açık Kapı'da kayıt kalktı; korpus eski sözü taşıyor (Notion ayağı ✅)
+- [ ] **Sahip:** Claude.ai (korpus, sonraki patch) · Kaan (deploy + göz) · **Tetikleyici:** ilk Açık Kapı'dan ve reklamdan **önce**
+- ✅ **Ne (a) — altı gövde (Kaan, 8 Eki):** yayındaki altı Açık Kapı'nın `Detay` → `Pratik Bilgi` bölümünden iki madde çıktı — *"Tema ve pratik kaydedilir, hemen ardından e-postana düşer — gelemezsen sonradan izlersin"* · *"Soruların okunduğu bölüm kaydedilmez; yazdığın o akşamda kalır"* — yerlerine girdi: *"Buluşma kaydedilmez; o akşam orada olanlarla yaşanır"* · *"Gelemeyeceksen buluşmadan önce selam@ocak.biz adresine yaz; dilediğin bir Açık Kapı için sana bir kod göndeririz"*. Altı gövdenin her biri tam 14 karakter uzadı (2.172 · 3.344 · 3.132 · 3.058 · 3.226 · 3.278), kırpılma yok, son satırlar yerinde.
+- ✅ **Ne (b) — `Kayıt Var` (Kaan, 8 Eki):** altı kayıtta da işaret kalktı. Yayındaki on iki kayıttan yalnız *Ritüel Tasarımı* (Atölye) işaretli kaldı. ⚠ Alan sitede bir şey basmıyor — bugünkü uygulama köprü, kayıt cümlesi gövdeye elle yazılıyor (**B167**, açık).
+- **Ne (c) — korpus:** `20-ref-program.md:367` *"Her Açık Kapı kaydedilir. Gelemeyenler izler."* · `skills/ocak-etkinlik/SKILL.md:104` Açık Kapı sabit satırı *"Kayıt alınır, hemen ardından e-postana düşer — gelemezsen sonradan izlersin"* · `20-ref-bot.md:730` Zoom kaydı süreci. Bu patch üçüne de dokunmadı. ⚠ Skill dosyası düzelmeden yazılan her yeni Açık Kapı gövdesi eski sözü geri getirir.
+- **Ne (d) — kodun kendisi:** süreç elle (Kaan: *"mail atacaklar, biz yaparız"*). Yüzde yüz indirimli bir kodun kayıt akışından ödemesiz geçip geçmediği **ölçülmedi.**
+- **Ölçüm:** Claude.ai Notion bağlantısı, Etkinlikler DB, SQL `instr("Detay", …)` + `"Kayıt Var"`, 8 Eki. ~19:25 UTC'de altı kayıtta eski dize vardı, `Kayıt Var` işaretliydi; ~19:27'de gövdeler yeni hâlde, ~19:30'da `Kayıt Var` altısında işaretsiz. Korpus satırları: `docs_ara` regex `Tema ve pratik kaydedilir|Açık Kapı kaydedilir|kaydı hemen ardından|sonradan izle`, `f2bd9df`. ⚠ Notion kapalı yüzey — CC doğrulamaya çalışmaz.
+- **Kapanış şartı:** (c) üç korpus satırı güncellenir ya da düşüş notu alır · deploy + bir etkinlik sayfası gözle.
+- **Bağ:** KARAR 626 · KARAR 547 · 558 · B167

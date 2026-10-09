@@ -197,7 +197,7 @@ no	tarih	baslik	durum	iliski	kaynak
 306	2026-07-05	H8 "fiziksel" → "yüz yüze" sweep	AKTIF		2026-07.md:384
 1	2026-02-11	Beş evre çerçevesi — İNİŞ/UYANIŞ/DURUŞ/GEÇİŞ/DÖNÜŞ	KALICI		2026-02.md:14
 2	2026-02-11	Anadolu merkez — pazar stratejisi	KALICI		2026-02.md:15
-5	2026-02-11	AÇILIŞ + kutsal takvim — 15 aylık	AKTIF		2026-02.md:18
+5	2026-02-11	AÇILIŞ + kutsal takvim — 15 aylık	AKTIF	→621 (kısmi: yıl bir kaydı; kutsal takvim korundu)	2026-02.md:18
 6	2026-02-11	Retreat süreleri	SUPERSEDE	→443	2026-02.md:19
 7	2026-02-11	Mekânla çalışmak	AKTIF		2026-02.md:20
 8	2026-02-11	Aralık yapısı — retreatler arası program	AKTIF		2026-02.md:21
@@ -209,7 +209,7 @@ no	tarih	baslik	durum	iliski	kaynak
 16	2026-02-11	Ekosistem mimarisi — 4 katman	KALICI		2026-02.md:32
 17	2026-02-11	Araç kutusu yapısı — AL · OL · VER	KALICI		2026-02.md:33
 18	2026-02-11	Marka konumlandırma çekirdeği	KALICI		2026-02.md:34
-19	2026-02-11	Katman 1 — ÇEMBER içerik detayı	AKTIF		2026-02.md:35
+19	2026-02-11	Katman 1 — ÇEMBER içerik detayı	AKTIF	→622 (kısmi: on iki aylık sabit tema döngüsü sözü siteden kalktı)	2026-02.md:35
 20	2026-02-11	Katman 2 — DENEYİMLER içerik detayı	AKTIF		2026-02.md:36
 21	2026-02-11	Dış uzman stratejisi — hibrit model	AKTIF	↔398	2026-02.md:37
 24	2026-02-13	Domain stratejisi	SUPERSEDE	→48	2026-02.md:43
@@ -419,7 +419,7 @@ no	tarih	baslik	durum	iliski	kaynak
 403	2026-07	Ürün-katmanı imza cümlesi tek evi `/yolculuk` hero	AKTIF		2026-07.md:1148
 410	2026-07	WhatsApp display name adayları Meta tarafından reddedildi	SUPERSEDE	→519 (…5226'da "Ocak Kadın Çemberi" onaylandı, 19 Ağu Kaan teyidi) · B19	2026-07.md:1194
 430	2026-07-12	Format enum "Uluslararası Yolculuğu" → yüz yüze; migrasyon yok	AKTIF		2026-07.md:1075
-431	2026-07-12	Yolculuk online — 20-24 kontenjan, Direkt kayıt, paralel takvim	AKTIF		2026-07.md:1071
+431	2026-07-12	Yolculuk online — 20-24 kontenjan, Direkt kayıt, paralel takvim	AKTIF	→620 (kısmi: paralel takvim düştü; kontenjan ve Direkt kayıt korundu)	2026-07.md:1071
 434	2026-07	Kavram katmanı Anadolu-spesifik gerçeklerden arındırıldı	AKTIF		00-devir.md:10
 435	2026-07	İki farklı kapı — biri diğerinin küçüğü değil	KALICI		2026-07.md:1113
 437	2026-07-12	"Uluslararası" → "Dünya"	KALICI		2026-07.md:1071
@@ -490,7 +490,7 @@ no	tarih	baslik	durum	iliski	kaynak
 489	2026-08-19	Referans kodu `OCAK-` + 4 karakter, 29 karakterlik alfabe	AKTIF	←210 · ↔490	2026-08.md#k489
 490	2026-08-19	Kod alfabesinde ölçüt: yanlış okuma geçersiz karakter üretmeli	KALICI	↔489	2026-08.md#k490
 491	2026-08-19	Bir brief maddesini yanlışlayan kanıt öteki maddelerine de uygulanır	KALICI	←156 · ↔102	2026-08.md#k491
-492	2026-08-19	AÇILIŞ 24–27 Eylül 2026 (Perş–Paz), Ege — üç gece dört gün	AKTIF	←13 · ←443	2026-08.md#k492
+492	2026-08-19	AÇILIŞ 24–27 Eylül 2026 (Perş–Paz), Ege — üç gece dört gün	SUPERSEDE	←13 · ←443 · →617	2026-08.md#k492
 493	2026-08-19	Sosyal medya katman mimarisi — taban kişisiz akar, üst opsiyonel biner	AKTIF	←453 · ←450	2026-08.md#k493
 494	2026-08-19	Yeniden yazma kararı sezgiyle değil dört-kova ölçümüyle verilir	KALICI	↔483	2026-08.md#k494
 495	2026-08-19	Dump araçları kabul testiyle koşulur — HTTP 200 içerik garantisi değildir	KALICI	↔355 · ↔408	2026-08.md#k495
@@ -545,7 +545,7 @@ no	tarih	baslik	durum	iliski	kaynak
 544	2026-08-23	İmza ışığın karşı ucunda durur; konum zemin tipinden çıkar — fotoğraflı zeminde metnin üstünde, glow zeminde kart dibinde	KALICI	↔543	2026-08.md#k544
 545	2026-08-23	Söz kartı metni iki kademelidir: iddia büyük, fısıltı ana puntonun 0.62'sinde	AKTIF		2026-08.md#k545
 546	2026-08-23	Fotoğrafsız kart zemini tasarımdır, yedek değil — kömür zemin + metin merkezine kilitli kor glow	AKTIF	B86 kapandı	2026-08.md#k546
-547	2026-08-23	Kayıt sınırı formatın değil bloğun cinsine göre — anlatım ve uygulama kaydedilir, kadın kadına paylaşım kaydedilmez; kayıt varlığı etkinlik başına DB alanında tutulur	KALICI	↔57	2026-08.md#k547
+547	2026-08-23	Kayıt sınırı formatın değil bloğun cinsine göre — anlatım ve uygulama kaydedilir, kadın kadına paylaşım kaydedilmez; kayıt varlığı etkinlik başına DB alanında tutulur	KALICI	↔57 · →626 (kısmi: Açık Kapı formatında anlatım ve uygulama bloğu da kaydedilmez)	2026-08.md#k547
 548	2026-08-23	Unvan yasağı betimlemeyi kapsamaz — `cacaoista` Türkçe betimlemenin açıklayıcı eki olarak geçebilir; tek başına unvan olarak kullanılmaz	KALICI	←506	2026-08.md#k548
 549	2026-08-23	Etkinlik sayfası akışı, hazırlığı ve mahrem soruları kamuya açmaz — hazırlık gerektiren formatlarda `Yanına Al` işaretçiye iner, beslenme/ilaç/hamilelik kayıt sonrası kanala taşınır	KALICI		2026-08.md#k549
 550	2026-08-23	Notion text property'sine yazım cerrahi değildir — gövde önce kabukta kurulur, `python3 len()` ile ölçülür, yazılır, geri okunan uzunluk beklenenle karşılaştırılır	KALICI	B150 (skill'e yazımı)	2026-08.md#k550
@@ -615,3 +615,13 @@ no	tarih	baslik	durum	iliski	kaynak
 614	2026-10-08	Paylaş bloğu üç eşit düğmedir — WhatsApp (wa.me, hazır metin), Instagram (yalnız link panoya + jenerik hikâye kartı), E-posta (mailto); link etkinlik sayfasıdır ve davet atfı taşımaz; e-posta davet formu arayüzden kalktı, arka ucu DAVET_AKISI arkasında durur	AKTIF	↔B206 · ↔B207	2026-10.md#k614
 615	2026-10-07	Anadolu Yolculuğu otomatik kayıt ve ödeme mail akışının dışındadır (kendi başvuru yolunda, Etkinlikler'de yok); online Yolculuk durakları normal program gibi işlenir, mailleri ileride özelleşebilir	AKTIF	↔B216	2026-10.md#k615
 616	2026-10-08	Zoom meeting host'u ZOOM_HOST_EMAIL env'inden okunur, users/me sabiti kalktı — S2S app hesap seviyesinde olduğu için host değişimi kimlik değişimi değildir (ZOOM_ACCOUNT_ID · ZOOM_CLIENT_ID · ZOOM_CLIENT_SECRET ve ZOOM_WEBHOOK_SECRET aynı kalır); env tanımsız ya da boşsa me'ye düşer ve çağrı başına uyarı basar, sessiz düşmez	AKTIF	←226 · ←227	2026-10.md#k616
+617	2026-10-08	Anadolu Yolculuğu ilk kohortu Eylül 2027 – Ağustos 2028 — aylar ve mekânlar aynen, yıl bir kaydı; AÇILIŞ iç hedefi 23–26 Eylül 2027 (Perş–Paz)	AKTIF	←492 · ←13	2026-10.md#k617
+618	2026-10-08	Anadolu takvimi kaydırılmaz, tam yıl döner — ay–mekân eşleşmesi hava ve anlamlı güne bağlı, evre sırası sabit; zincir yalnız sonbaharda kurulur	KALICI	←617 · ←492	2026-10.md#k618
+619	2026-10-08	Sitede Anadolu tarihleri ay + yıl yazılır, gün başvuru sonrası paylaşılır — AÇILIŞ güz ekinoksuyla, GEÇİŞ yaz gündönümüyle anılır	AKTIF	←617	2026-10.md#k619
+620	2026-10-08	Yolculuk online Anadolu takviminden ayrıldı — başlangıç tarihi sayfada yazılmaz, takvim gösterir; imge kalır, "aynı takvim" sözü düştü	AKTIF	←431 · ↔436	2026-10.md#k620
+621	2026-10-08	Dünya Yolculuğu açılışı Mart 2028 — kutsal takvim aynen, yıl bir kaydı	AKTIF	←5 · ←617	2026-10.md#k621
+622	2026-10-08	Çember "aylık" kimliğini bıraktı — "her ay açılan çemberler"; tema mevsimden, Advaita'dan ve çemberdeki ihtiyaçtan doğar, on iki aylık sabit döngü sözü siteden kalktı	AKTIF	←19 · ↔444	2026-10.md#k622
+623	2026-10-08	/acik-kapi davet sayfasıdır — başlık davet, üç format bölümü sayfadan çıktı (takvime girdiğinde döner), "her akşamın bir sorusu" çerçevesi reddedildi	AKTIF		2026-10.md#k623
+624	2026-10-08	Eşik Açık Kapısı'nın devamı açık seridir — "Eşikte Üç Akşam": üç çember tek tek kaydolunur, Açık Kapı ön koşul olmaz, Yolculuk'un beş eşiğini sıralamaz	ONERI	↔44	2026-10.md#k624
+625	2026-10-08	Claude.ai Notion Sayfalar gövdesine yalnız Kaan'ın konu bazlı açık onayıyla yazar — bul-değiştir + yeniden okuma; Etkinlikler Detay alanına yazmaz	AKTIF		2026-10.md#k625
+626	2026-10-08	Açık Kapı'da kayıt yoktur — gelemeyecek kadın buluşmadan önce selam@ocak.biz'e yazar, dilediği bir Açık Kapı için ücretsiz katılım kodu alır; kodu ekip elle gönderir	AKTIF	←547 · ↔558 · ↔623	2026-10.md#k626

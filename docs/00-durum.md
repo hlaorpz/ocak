@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 8 Ekim 2026 · **Zoom host turu** · dönem HEAD `a56488d`
+**Son güncelleme:** 8 Ekim 2026 · **Site dili + Anadolu takvimi turu** · dönem HEAD `886a5bf`
 
 ---
 
@@ -93,7 +93,7 @@ Detay ve sahipler `02-borclar.md`'de. Burada yalnız kilit zinciri:
 2. **İade cümlesi ✅ ÇÖZÜLDÜ (10 Eyl, KARAR 576, `0b173ac`)** — `robots Allow` 1 Eki'de açıldı (KARAR 599). Hukukçuya kalan iki soru metne girmedi. Gövde `90-kronoloji/2026-10.md`'ye indi (7 Eki tahliyesi, KARAR 61).
 3. **Sosyal v2 `[KAAN]` önkoşulları** — kurucu görsel **✅ mühürlendi** (23 Ağu, KARAR 542);
    `KURUCU-URL` ara-değiştir **✅ KAPANDI** (24 Ağu, **B139** · **B184**) — dokuz promptun dokuzunda gerçek `--sref`, `--v 8.1`, `--chaos 5`; `--sref KURUCU-URL` → **0**. ⚠ **Bu madde artık Gün 1'i kilitlemiyor**; kalan kilit V05–V09'un üretimde hiç sınanmamış olması (ilk parti kanarya).
-4. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu.
+4. **Yolculuk fiyat bandı → ilk Yolculuk etkinliği.** Eylül kohortu duyurusunun önkoşulu. ⚠ **8 Eki:** "Eylül kohortu" artık **Eylül 2027** (KARAR 617); online Yolculuk Anadolu takviminden ayrıldı (KARAR 620) — bant ikisinin de önkoşulu olmayı sürdürüyor.
 
 **Kapanan halka — etkinlik tarihleri.** Tam kayıt `90-kronoloji/2026-09.md`'de (10 Eylül tahliyesi, KARAR 457/61): 15 yayında etkinlik, yedi format kayıt route'u canlı; on dördü gövdeli, `yolculuk-acilis` `Detay` **NULL** — **B81** açık.
 
@@ -135,6 +135,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **8 Ekim — Site dili + Anadolu takvimi turu:** kod commit'i yok. `/acik-kapi` davet sayfası olarak yeniden yazıldı, `/cember` "aylık" kimliğini bıraktı, Anadolu Yolculuğu ilk kohortu **Eylül 2027**'ye kaydı (KARAR 492 → SUPERSEDE), online Yolculuk Anadolu takviminden ayrıldı, **Açık Kapı'da kayıt kalktı** — gelemeyene ücretsiz kod (KARAR 626), *Eşikte Üç Akşam* serisi `ONERI`. Notion Sayfalar DB'de on sekiz sayfa değişti — yazımların bir kısmını **Claude.ai** yaptı (KARAR 625). ⚠ **Canlı teyit alınmadı** (**B225**); korpusta üç satır eski kayıt sözünü taşıyor (**B226**). **KARAR 617–626** · **B221–B226**. → `90-kronoloji/2026-10.md`
 - **8 Ekim — Zoom host turu:** `a56488d`. Online oda artık `ZOOM_HOST_EMAIL`'deki kullanıcı adına açılıyor (`users/me` kalktı); canlıda doğrulandı. **KARAR 616** · B78 ve B205'e ölçüm eklendi. → `90-kronoloji/2026-10.md`
 - **7–8 Ekim — B211 bildirim hattı turu:** `4f38887` … `9767fee`. **B193 ✅ · B211 ✅** · B72 · B192 · B206 ✅.
   Kayıt/ödeme mailleri MailerLite'tan Resend'e geçti; süre sayan her şey `/api/bildirim-tara` + n8n saati;
@@ -185,6 +186,6 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 
 **Lansman tanımı (KARAR 149):** lansman = robots Allow + duyuru. Sitenin canlı olması değil.
 ✅ **Lansman: 1 Ekim 2026** — robots Allow (`520e5fe`, KARAR 599) + duyuru (Kaan bildirdi; kanal kaydedilmedi).
-*Lansmana kadar site stealth-canlıydı (27 May → 1 Eki; KARAR 147 → 599).* **İlk kohort hedefi: 24–27 Eylül 2026 — Anadolu Yolculuğu AÇILIŞ.**
+*Lansmana kadar site stealth-canlıydı (27 May → 1 Eki; KARAR 147 → 599).* **İlk kohort hedefi: Eylül 2027 — Anadolu Yolculuğu AÇILIŞ** (iç hedef 23–26 Eylül 2027, KARAR 617). *Önceki hedef 24–27 Eylül 2026 (KARAR 492) tutmadı — SUPERSEDE.*
 **Fiyatlandırma:** bu dokümanda rakam tahmini yapılmaz. **Kaan** site sayfalarında görünmez
 (KARAR 89).
