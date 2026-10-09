@@ -479,6 +479,31 @@ Ana yolculuğa ortadan giriş yok. AÇILIŞ'tan DÖNÜŞ'e kadar aynı kadınlar
 
 **Toplam:** ~11 ay. Uluslararasının ~1/3'ü fiyatında, daha sık kohort açılabilir.
 
+### 8 Ekim 2026 eklemesi — Anadolu takvimi bir yıl kaydı; ay–mekân gerekçeleri (KARAR 617–621)
+
+⚠ **Yukarıdaki "Türkiye Versiyonu" tablosu tarihseldir.** AÇILIŞ 24–27 Eylül 2026 (KARAR 492) gerçekleşmedi; KARAR 617 ile SUPERSEDE. Güncel takvim ve — ilk kez yazıya geçen — gerekçeler:
+
+| Tarih | Evre | Lokasyon | Hava gerekçesi | Anlamlı gün |
+|---|---|---|---|---|
+| **Eylül 2027** (iç hedef 23–26, Perş–Paz) | AÇILIŞ | Ege (Urla / Alaçatı) | kayıt bulunamadı | Güz ekinoksu — 2027'de 23 Eylül |
+| **Kasım 2027** | İNİŞ | Göbeklitepe · Harran | Şanlıurfa hazirandan itibaren 40°C üstü; serin ay gerekir | kayıt bulunamadı |
+| **Şubat 2028** | UYANIŞ | Aphrodisias · Pamukkale | sıcak sular kışın; yazın kalabalık | kayıt bulunamadı |
+| **Nisan 2028** | DURUŞ | Tuz Gölü (Aksaray) | ayna etkisi ilkbaharda, yağmur sonrası; yazın göl çekilir, kuru tuz kalır | kayıt bulunamadı |
+| **Haziran 2028** (~21 Haziran) | GEÇİŞ | Yanartaş · Myra | kayıt bulunamadı | Yaz gündönümü |
+| **Ağustos 2028** | DÖNÜŞ | Konya · Kapadokya | yazın sıcak ve turistik — hava lehine değil | Pachamama ayı (`Ocak-Mufredat.md`) |
+
+*"Kayıt bulunamadı"* gerekçenin olmadığını söylemez; 8 Ekim taramasında yazılı bir izine rastlanmadığını söyler. Hava notlarının kaynağı Nisan 2026 keşif sohbeti, ekinoksunki Şubat 2026 tanıtım metnidir — ikisi de Claude.ai geçmişinde, korpusta değildi.
+
+**Kaydırma kuralı (KARAR 618).** Her mekânın iyi olduğu pencere dar, evre sırası sabit. İniş Urfa'da serin ayda, ardından Uyanış kışın, ardından Duruş ilkbaharda, ardından Geçiş gündönümünde olmak zorunda; zincir yalnız sonbaharda başlayınca kurulur. **Takvim birkaç ay kaydırılamaz; ancak bir tam yıl döner.** Ağustos 2026'da reddedilen Ekim kaydırması (KARAR 492 kaydı) ve Ekim 2026'da elenen "Nevruz'dan Nevruz'a" seçeneği aynı duvara çarptı.
+
+**Site dili (KARAR 619).** Sitede ay + yıl yazılır; gün başvuru sonrası paylaşılır. AÇILIŞ "güz ekinoksunda", GEÇİŞ "Yaz Gündönümü'nde" diye anılır.
+
+**Yolculuk online (KARAR 620).** Anadolu takviminden ayrıldı; başlangıç tarihi sayfada yazılmaz, takvim gösterir. Kontenjan, Direkt kayıt ve iki katmanlı oturum (KARAR 431) aynen.
+
+**Dünya Yolculuğu (KARAR 621).** Açılış **Mart 2028**; yukarıdaki kutsal takvim tablosunun her satırı bir yıl ileri okunur (dönüş Haziran 2029). Yalnız açılış ayı Kaan tarafından onaylandı; kalan yıllar türetilmiştir.
+
+⚠ **Aşağıdaki 12–19 Temmuz eklemesinde üç ifade bu kararlarla bayatladı, yerinde bırakıldı (KARAR 61):** KARAR 431 paragrafındaki *"Anadolu'ya paralel, Eylül 2026 – Ağustos 2027"* · KARAR 437 paragrafındaki *"Mart 2027"* · KARAR 429 paragrafındaki *"Eylül kohortunu riske atar"* (tarihsel gerekçe).
+
 ### 12–19 Temmuz 2026 eklemesi — Yolculuk: bir kavram, üç ürün (KARAR 429-432, 434-437, 440, 443; PARTİ 3/3)
 
 **Kavram + üç ürün (KARAR 429).** "Yolculuk" tek kavram, altında üç ürün: **Yolculuk (online)** — 7. buluşma kapısı, erişilebilir; **Anadolu Yolculuğu** — 11 ay yüz yüze; **Dünya Yolculuğu** — 15 ay. `/yolculuk` sayfası hem kavramı anlatır hem online ürünü satar hem iki türevin kapısıdır. Online ürün Anadolu'nun küçüğü değil. **KARAR 313'ün doğrudan revizyonu** (6 kapı, "yolculuk kapı değil yol"). Senaryo Y (Yolculuk adını online'a devredip Anadolu'yu yeniden adlandırma) **reddedildi** — Anadolu'nun arzu-kelimesini elinden alır, Eylül kohortunu riske atar. **Gerekçe erişim adaletidir, gelir değil.**
