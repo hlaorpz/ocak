@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 09.10.2026 09:00 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 09.10.2026 12:14 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `886a5bf` | `git log -1` |
+| canlı HEAD | `7ecc307` | `git log -1` |
 | HEAD tarihi | 2026-10-09 | `git log -1 --date=short` |
-| HEAD konusu | docs(ref): Anadolu takvimi Eylül 2027 + ay–mekân gerekçeleri (KARAR 617–621) | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: Site dili + Anadolu takvimi turu — KARAR 617–626, B221–B226, 492 SUPERSEDE | `git log -1 --format=%s` |
+| çalışma ağacı | **temiz** | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **75** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **2** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **76** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
