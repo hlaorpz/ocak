@@ -1,0 +1,1364 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OCAK — Kart Derleyici</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --komur:#1A1210;
+    --koz:#C44B2F;
+    --krem:#F2EAE2;
+    --altin:#D4A855;
+    --kul:#3D3532;
+    --duman:#5C5350;
+    --gri:#8A7E78;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--komur);
+    color:var(--krem);
+    font-family:"Jost",system-ui,sans-serif;
+    font-weight:300;
+    font-size:15px;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  a{color:var(--altin)}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+
+  header{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    padding-bottom:16px;margin-bottom:22px;
+    border-bottom:1px solid rgba(242,234,226,.10);
+  }
+  header h1{
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:400;
+    font-size:30px;margin:0;letter-spacing:.01em;color:var(--krem);
+  }
+  header .sub{color:var(--duman);font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:32px;align-items:start}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}}
+
+  /* ---- sahne ---- */
+  .sahne{position:sticky;top:20px}
+  @media (max-width:900px){.sahne{position:static}}
+  .tuval-kutu{
+    background:
+      repeating-conic-gradient(rgba(255,255,255,.02) 0% 25%, transparent 0% 50%) 0 0/22px 22px,
+      var(--komur);
+    border:1px solid rgba(242,234,226,.10);
+    border-radius:2px;
+    padding:16px;
+    display:flex;justify-content:center;
+  }
+  canvas#tuval{
+    max-width:100%;max-height:66vh;height:auto;display:block;
+    box-shadow:0 18px 50px rgba(0,0,0,.55);
+  }
+  .sahne-alt{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    margin-top:12px;flex-wrap:wrap;
+  }
+  .olcu{color:var(--duman);font-size:12px;letter-spacing:.08em}
+  .olcu b{color:var(--gri);font-weight:400}
+
+  /* ---- panel ---- */
+  .panel{display:flex;flex-direction:column;gap:2px}
+  .blok{
+    border:1px solid rgba(242,234,226,.10);
+    border-top:none;
+    padding:16px 16px 18px;
+  }
+  .blok:first-child{border-top:1px solid rgba(242,234,226,.10)}
+  .blok h2{
+    font-family:"Jost",sans-serif;font-weight:400;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--duman);margin:0;display:inline;
+  }
+
+  /* ---- açılır bloklar ---- */
+  details.blok{padding:0}
+  details.blok > summary{
+    list-style:none;cursor:pointer;user-select:none;
+    padding:11px 16px;display:flex;align-items:center;gap:8px;
+  }
+  details.blok > summary::-webkit-details-marker{display:none}
+  details.blok > summary::before{
+    content:"";width:5px;height:5px;flex:none;
+    border-right:1.5px solid var(--duman);border-bottom:1.5px solid var(--duman);
+    transform:rotate(-45deg);transition:transform .15s ease;
+  }
+  details.blok[open] > summary::before{transform:rotate(45deg)}
+  details.blok > summary:hover h2{color:var(--gri)}
+  details.blok[open] > summary h2{color:var(--gri)}
+  details.blok > *:not(summary){margin-left:16px;margin-right:16px}
+  details.blok > *:last-child{margin-bottom:15px}
+
+
+  label.satir{display:block;margin-bottom:13px}
+  label.satir:last-child{margin-bottom:0}
+  .etiket{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-size:12px;color:var(--gri);margin-bottom:6px;letter-spacing:.03em;
+  }
+  .etiket .deger{color:var(--duman);font-variant-numeric:tabular-nums}
+
+  textarea,input[type=text]{
+    width:100%;background:var(--komur);color:var(--krem);
+    border:1px solid rgba(242,234,226,.14);border-radius:2px;
+    padding:10px 11px;font-family:"Cormorant Garamond",serif;font-style:italic;
+    font-size:17px;line-height:1.45;resize:vertical;
+  }
+  input[type=text]{font-family:"Jost",sans-serif;font-style:normal;font-size:14px}
+  textarea:focus,input:focus{outline:none;border-color:var(--koz)}
+  textarea::placeholder{color:rgba(242,234,226,.28);font-style:italic}
+  input::placeholder{color:rgba(242,234,226,.28)}
+  textarea{min-height:92px}
+
+  input[type=range]{
+    width:100%;-webkit-appearance:none;appearance:none;background:transparent;margin:2px 0;
+  }
+  input[type=range]::-webkit-slider-runnable-track{height:1px;background:rgba(242,234,226,.22)}
+  input[type=range]::-moz-range-track{height:1px;background:rgba(242,234,226,.22)}
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+    background:var(--koz);margin-top:-6px;cursor:pointer;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:13px;height:13px;border:none;border-radius:50%;background:var(--koz);cursor:pointer;
+  }
+  input[type=range]:focus-visible{outline:1px solid var(--altin);outline-offset:4px}
+
+  .secim{display:flex;gap:0;flex-wrap:wrap}
+  .secim button{
+    flex:1;min-width:0;
+    background:transparent;color:var(--gri);
+    border:1px solid rgba(242,234,226,.14);
+    margin-left:-1px;
+    padding:8px 6px;font-family:"Jost",sans-serif;font-size:12px;font-weight:300;
+    letter-spacing:.06em;cursor:pointer;transition:background .15s,color .15s;
+  }
+  .secim button:first-child{margin-left:0}
+  .secim button:hover{color:var(--krem);background:rgba(242,234,226,.04)}
+  .secim button[aria-pressed=true]{
+    background:rgba(196,75,47,.16);color:var(--krem);border-color:rgba(196,75,47,.55);
+    position:relative;z-index:1;
+  }
+  .secim button:focus-visible{outline:1px solid var(--altin);outline-offset:2px}
+
+  .anahtar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:7px 0;font-size:13px;color:var(--gri);cursor:pointer;
+  }
+  .anahtar input{accent-color:var(--koz);width:15px;height:15px;cursor:pointer}
+
+  button.eylem{
+    width:100%;padding:12px;border:1px solid var(--koz);
+    background:rgba(196,75,47,.18);color:var(--krem);
+    font-family:"Jost",sans-serif;font-size:13px;font-weight:400;letter-spacing:.1em;
+    text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .15s;
+  }
+  button.eylem:hover{background:rgba(196,75,47,.34)}
+  button.eylem:focus-visible{outline:1px solid var(--altin);outline-offset:2px}
+  button.eylem.ikincil{border-color:rgba(242,234,226,.2);background:transparent;color:var(--gri)}
+  button.eylem.ikincil:hover{background:rgba(242,234,226,.06);color:var(--krem)}
+
+  /* ---- görsel bırakma ---- */
+  #birak{
+    border:1px dashed rgba(242,234,226,.22);border-radius:2px;
+    padding:20px 14px;text-align:center;color:var(--duman);font-size:13px;
+    cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  #birak:hover,#birak.uzerinde{border-color:var(--koz);color:var(--krem)}
+  #birak b{display:block;color:var(--gri);font-weight:400;margin-bottom:3px}
+
+  /* ---- karusel şeridi ---- */
+  .serit{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .serit button{
+    width:34px;height:34px;flex:0 0 auto;
+    background:transparent;border:1px solid rgba(242,234,226,.16);color:var(--duman);
+    font-family:"Jost",sans-serif;font-size:12px;cursor:pointer;border-radius:2px;
+  }
+  .serit button[aria-pressed=true]{border-color:var(--koz);color:var(--krem);background:rgba(196,75,47,.16)}
+  .serit button.dolu{color:var(--gri)}
+  .serit button:focus-visible{outline:1px solid var(--altin);outline-offset:2px}
+
+  .not{font-size:12px;line-height:1.55;color:var(--duman);margin:10px 0 0}
+  .not.uyari{color:var(--altin)}
+  .not.hata{color:var(--koz)}
+
+  .kural{border-left:1px solid rgba(196,75,47,.5);padding-left:12px;margin:0}
+  .kural li{font-size:12px;color:var(--duman);line-height:1.65;margin-bottom:5px;list-style:none}
+  .kural{padding-inline-start:12px}
+  .kural li b{color:var(--gri);font-weight:400}
+
+  #fontUyari{display:none}
+  #fontUyari.acik{display:block}
+  #fontDosya{font-size:12px;color:var(--duman);margin-top:8px}
+
+  /* ---- sıkılaştırma (en sonda, ezilmesin) ---- */
+  label.satir{margin-bottom:9px}
+  .etiket{margin-bottom:4px;font-size:11.5px}
+  input[type=range]{margin:0}
+  .not{margin:7px 0 0}
+  .anahtar{padding:5px 0}
+  .blok{padding:0}
+  header{padding-bottom:12px;margin-bottom:16px}
+  .wrap{padding:22px 20px 60px}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Kart Derleyici</h1>
+    <span class="sub">OCAK · söz kartı · karusel · story</span>
+  </header>
+
+  <div class="layout">
+    <!-- ============ SAHNE ============ -->
+    <div class="sahne">
+      <div class="tuval-kutu">
+        <canvas id="tuval" width="1080" height="1350"></canvas>
+      </div>
+      <div class="sahne-alt">
+        <span class="olcu">ÖLÇÜ <b id="olcuMetin">1080 × 1350</b> · KELİME <b id="kelimeSayac">0</b><b id="kaynakOlcu"></b><b id="kenarOlcu"></b><b id="merkezOlcu"></b></span>
+        <span class="olcu" id="kelimeUyari"></span>
+      </div>
+      <p class="not hata" id="fontUyari">
+        Cormorant Garamond yüklenemedi — kart yedek serifle çiziliyor ve marka tipografisini taşımaz.
+        Fontu <a href="https://fonts.google.com/specimen/Cormorant+Garamond" target="_blank" rel="noopener">indirip</a> buradan yükle:
+        <input type="file" id="fontDosya" accept=".ttf,.otf,.woff,.woff2">
+      </p>
+    </div>
+
+    <!-- ============ PANEL ============ -->
+    <div class="panel">
+
+      <details class="blok" open>
+        <summary><h2>Görsel</h2></summary>
+        <div id="birak" tabindex="0" role="button">
+          <b>Görseli sürükle, yapıştır ya da seç</b>
+          Midjourney çıktısı · Ctrl/⌘+V da çalışır
+        </div>
+        <input type="file" id="dosya" accept="image/*" hidden>
+        <button class="eylem ikincil" id="gorselKaldir" style="margin-top:10px" hidden>Görseli kaldır</button>
+        <p class="not" id="zeminNot" hidden>Görselsiz zemin — B86 kararı bu yüzeyde verilir.</p>
+      </details>
+
+      <details class="blok" open>
+        <summary><h2>Ön ayar</h2></summary>
+        <div style="display:flex;gap:6px">
+          <select id="onAyarSec" style="flex:1;min-width:0;background:var(--komur);color:var(--krem);border:1px solid rgba(242,234,226,.14);border-radius:2px;padding:9px 8px;font-family:'Jost',sans-serif;font-size:13px">
+            <option value="">— ön ayar seç —</option>
+          </select>
+          <button class="eylem ikincil" id="onAyarYukle" style="width:auto;padding:0 14px">Yükle</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="text" id="onAyarAd" placeholder="ön ayar adı" style="flex:1;min-width:0">
+          <button class="eylem ikincil" id="onAyarKaydet" style="width:auto;padding:0 14px">Kaydet</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="eylem ikincil" id="onAyarSil" style="flex:1">Seçiliyi sil</button>
+          <button class="eylem ikincil" id="onAyarTemizle" style="flex:1">Kendi kayıtlarımı temizle</button>
+        </div>
+        <p class="not" id="onAyarDurum" style="color:var(--altin)" hidden></p>
+        <p class="not">Aynı adla kaydedersen gömülü ön ayarın üstüne yazarsın; sildiğinde gömülü hâline döner. Kaydedilen: oran, renk, konum, hizalama, punto, satır/harf aralığı, grade, köşe imzası. Kadraj ve metin kaydedilmez — onlar karta özeldir.</p>
+        <details style="margin-top:10px">
+          <summary class="not" style="cursor:pointer">Dışa / içe aktar</summary>
+          <textarea id="onAyarJson" style="margin-top:8px;font-family:ui-monospace,monospace;font-style:normal;font-size:11px;min-height:70px" placeholder="Ön ayarların JSON'u burada görünür. Başka makineye taşımak için kopyala; almak için yapıştırıp Al'a bas."></textarea>
+          <button class="eylem ikincil" id="onAyarAl" style="margin-top:6px">Yapıştırılanı al</button>
+          <p class="not" id="depoUyari" hidden>Tarayıcı yerel depolamayı engelledi — ön ayarlar yalnız bu sekmede yaşar. Kalıcı saklamak için yukarıdaki JSON'u bir yere kopyala.</p>
+        </details>
+      </details>
+
+      <details class="blok">
+        <summary><h2>Biçim</h2></summary>
+        <label class="satir">
+          <div class="etiket"><span>Oran</span></div>
+          <div class="secim" id="oranSecim">
+            <button data-oran="4:5" aria-pressed="true">4:5 &nbsp;feed</button>
+            <button data-oran="9:16" aria-pressed="false">9:16 &nbsp;story</button>
+          </div>
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Kart</span></div>
+          <div class="secim" id="modSecim">
+            <button data-mod="tek" aria-pressed="true">Tek kart</button>
+            <button data-mod="karusel" aria-pressed="false">Karusel</button>
+          </div>
+        </label>
+        <div id="karuselAlan" hidden>
+          <label class="satir">
+            <div class="etiket"><span>Kart sayısı</span><span class="deger" id="kartSayiDeger">6</span></div>
+            <input type="range" id="kartSayi" min="2" max="8" step="1" value="6">
+          </label>
+          <div class="serit" id="serit"></div>
+          <button class="eylem ikincil" id="dagit">Crop'ları dağıt</button>
+          <label class="anahtar" style="margin-top:10px"><span>Kart 1 kapak olsun</span><input type="checkbox" id="kapakIstisna"></label>
+          <p class="not">Tek üretimden crop alınır — kart kart ayrı görsel yüklenmez. Dağıtım crop'ları karenin <b>üst bölgesinde</b> tutar; yalnız son kart aşağı sarkıp kor bandından pay alır. Metin her kartta karanlığa oturur.<br><b>Kart 1 kapak olsun</b> açıkken birinci kart <b>F2 karusel · kapak</b> tipografisiyle çizilir (üst konum, punto 95, işaret açık); kalan kartlar seçili ön ayarda kalır. Kadraj ayarları etkilenmez.</p>
+        </div>
+      </details>
+
+      <details class="blok" open>
+        <summary><h2>Metin</h2></summary>
+        <textarea id="metin" placeholder="İçindeki ateş sönmedi.&#10;Üstü küllendi sadece."></textarea>
+        <p class="not">Satır sonu satır sonudur. <b style="color:var(--koz)">*kelime*</b> gecede köz, gündüzde toprak rengine döner — tek kelimelik vurgu için.</p>
+
+        <label class="satir" style="margin-top:13px">
+          <div class="etiket"><span>Işık</span></div>
+          <div class="secim" id="temaSecim">
+            <button data-tema="gece" aria-pressed="true">Gece</button>
+            <button data-tema="gunduz" aria-pressed="false">Gündüz</button>
+          </div>
+        </label>
+        <p class="not" id="gunduzNot" hidden>Gündüz: metin kömür, vurgu toprak, işaret tek renk köz. Karartma, kenar ve perde krem tonuyla çalışır (açık zeminde çoğu zaman 0). Krem üstünde altın kullanılmaz.</p>
+
+        <label class="satir" style="margin-top:13px">
+          <div class="etiket"><span>Renk</span></div>
+          <div class="secim" id="renkSecim">
+            <button data-renk="krem" aria-pressed="true">Krem</button>
+            <button data-renk="altin" aria-pressed="false">Altın</button>
+            <button data-renk="komur" aria-pressed="false">Kömür</button>
+            <button data-renk="toprak" aria-pressed="false">Toprak</button>
+            <button data-renk="zeytin" aria-pressed="false">Zeytin</button>
+          </div>
+        </label>
+        <p class="not uyari" id="altinNot" hidden>Zirve kartı — haftada en fazla bir tane.</p>
+
+        <label class="satir">
+          <div class="etiket"><span>Konum</span></div>
+          <div class="secim" id="konumSecim">
+            <button data-konum="ust" aria-pressed="true">Üst</button>
+            <button data-konum="orta" aria-pressed="false">Orta</button>
+            <button data-konum="alt" aria-pressed="false">Alt</button>
+          </div>
+        </label>
+
+        <label class="satir">
+          <div class="etiket"><span>Metin kaydır</span><span class="deger" id="metinKaydirDeger">0.00</span></div>
+          <input type="range" id="metinKaydir" min="-0.12" max="0.30" step="0.01" value="0">
+        </label>
+
+        <label class="satir">
+          <div class="etiket"><span>Hizalama</span></div>
+          <div class="secim" id="hizaSecim">
+            <button data-hiza="orta" aria-pressed="true">Ortalı</button>
+            <button data-hiza="sol" aria-pressed="false">Sola</button>
+          </div>
+        </label>
+
+        <label class="satir">
+          <div class="etiket"><span>Punto</span><span class="deger" id="puntoDeger">95</span></div>
+          <input type="range" id="punto" min="34" max="150" step="1" value="95">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Satır aralığı</span><span class="deger" id="araDeger">1.28</span></div>
+          <input type="range" id="ara" min="1.05" max="2" step="0.01" value="1.28">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Harf aralığı</span><span class="deger" id="harfDeger">0.01</span></div>
+          <input type="range" id="harf" min="-0.02" max="0.14" step="0.005" value="0.01">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Alt blok oranı</span><span class="deger" id="altOranDeger">0.62</span></div>
+          <input type="range" id="altOran" min="0.35" max="1" step="0.01" value="0.62">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Bloklar arası</span><span class="deger" id="blokAraDeger">0.60</span></div>
+          <input type="range" id="blokAra" min="0" max="1.6" step="0.05" value="0.60">
+        </label>
+        <p class="not">Metinde <b style="color:var(--koz)">boş satır</b> bırakırsan altı ikinci blok olur — ana cümle büyük, alt cümle küçük. Oran 1.00'de fark yok.</p>
+      </details>
+
+      <details class="blok">
+        <summary><h2>Kadraj</h2></summary>
+        <label class="satir">
+          <div class="etiket"><span>Yakınlık</span><span class="deger" id="zoomDeger">1.00</span></div>
+          <input type="range" id="zoom" min="1" max="2.6" step="0.01" value="1">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Yatay</span><span class="deger" id="oxDeger">0</span></div>
+          <input type="range" id="ox" min="-1" max="1" step="0.01" value="0">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Dikey</span><span class="deger" id="oyDeger">0</span></div>
+          <input type="range" id="oy" min="-1" max="1" step="0.01" value="0">
+        </label>
+      </details>
+
+      <details class="blok">
+        <summary><h2>Grade</h2></summary>
+        <label class="satir" id="zeminGlowAlan">
+          <div class="etiket"><span>Zemin glow</span><span class="deger" id="zeminGlowDeger">0.55</span></div>
+          <input type="range" id="zeminGlow" min="0" max="1.4" step="0.05" value="0.55">
+        </label>
+        <label class="satir" id="glowKaydirAlan">
+          <div class="etiket"><span>Glow kaydır</span><span class="deger" id="glowKaydirDeger">0.00</span></div>
+          <input type="range" id="glowKaydir" min="-0.3" max="0.3" step="0.01" value="0">
+        </label>
+        <p class="not" id="zeminGlowNot"><b>Glow zeminde imza alta gider</b> — ışık metnin arkasında, üst köşede tutunacak doku yok. Yalnız görselsiz kartta. Işığın merkezi <b>metin bloğunun ortasına</b> kilitli; kaydırıcı yukarı (−) ya da aşağı (+) alır.</p>
+        <label class="satir">
+          <div class="etiket"><span>Karartma</span><span class="deger" id="karaDeger">0.00</span></div>
+          <input type="range" id="kara" min="0" max="0.7" step="0.01" value="0">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Kenar karartma</span><span class="deger" id="kenarDeger">0.63</span></div>
+          <input type="range" id="kenar" min="0" max="1" step="0.01" value="0.63">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Metin arkası</span><span class="deger" id="perdeDeger">0.35</span></div>
+          <input type="range" id="perde" min="0" max="0.9" step="0.01" value="0.35">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Grain</span><span class="deger" id="grainDeger">0.065</span></div>
+          <input type="range" id="grain" min="0" max="0.16" step="0.005" value="0.065">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Köşe imzası</span></div>
+          <div class="secim" id="imzaSecim">
+            <button data-imza="isaret" aria-pressed="true">İşaret</button>
+            <button data-imza="yok" aria-pressed="false">Yok</button>
+          </div>
+        </label>
+        <label class="satir" id="imzaYerAlan">
+          <div class="etiket"><span>İşaret — dikey</span></div>
+          <div class="secim" id="imzaDikeySecim">
+            <button data-imza-dikey="ust" aria-pressed="true">Metnin üstünde</button>
+            <button data-imza-dikey="alt" aria-pressed="false">Kart dibinde</button>
+          </div>
+        </label>
+        <label class="satir" id="imzaYatayAlan">
+          <div class="etiket"><span>İşaret — yatay</span></div>
+          <div class="secim" id="imzaYerSecim">
+            <button data-imza-yer="orta" aria-pressed="true">Ortada</button>
+            <button data-imza-yer="sag" aria-pressed="false">Sağda</button>
+          </div>
+        </label>
+        <label class="satir" id="imzaBoyAlan">
+          <div class="etiket"><span>İşaret boyu</span><span class="deger" id="imzaBoyDeger">0.070</span></div>
+          <input type="range" id="imzaBoy" min="0.04" max="0.14" step="0.005" value="0.07">
+        </label>
+        <label class="satir" id="imzaOpakAlan">
+          <div class="etiket"><span>İşaret opaklığı</span><span class="deger" id="imzaOpakDeger">0.85</span></div>
+          <input type="range" id="imzaOpak" min="0.25" max="1" step="0.05" value="0.85">
+        </label>
+        <label class="anahtar"><span>Kılavuz · güvenli alan</span><input type="checkbox" id="kilavuz"></label>
+        <label class="anahtar"><span>Kılavuz · üçte bir</span><input type="checkbox" id="kilavuzUcte"></label>
+        <p class="not">Kılavuz yalnız ekranda görünür, indirilen dosyaya girmez.</p>
+      </details>
+
+      <details class="blok" open>
+        <summary><h2>İndir</h2></summary>
+        <label class="satir">
+          <div class="etiket"><span>Kart adı</span></div>
+          <input type="text" id="ad">
+        </label>
+        <button class="eylem" id="indir">PNG indir</button>
+        <button class="eylem ikincil" id="indirHepsi" style="margin-top:8px" hidden>Karuselin tümünü indir</button>
+      </details>
+
+      <details class="blok">
+        <summary><h2>Standart</h2></summary>
+        <ul class="kural">
+          <li><b>Krem</b> #F2EAE2 varsayılan · <b>Altın</b> #D4A855 yalnız zirve kartta · <b>Köz</b> #C44B2F yalnız tek kelime</li>
+          <li>Söz kartı: en fazla <b>on dört-on altı kelime</b></li>
+          <li>Karusel kartı: en fazla <b>iki cümle</b></li>
+          <li>Kartta <b>handle ve tam logo yok</b> — köşede tek imza: OCAK işareti</li>
+          <li>Metin görselin <b>karanlık negatif alanına</b> oturur</li>
+          <li>Grain tek katman — telefon görüntüsüne ayrıca ekleme</li>
+        </ul>
+      </details>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6" };
+  var FONT = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
+  var fontHazir = false;
+
+  var tuval = document.getElementById("tuval");
+  var ctx = tuval.getContext("2d");
+
+  var gorsel = null;
+  var grainDeseni = null;
+  var blokSol = 0, blokSag = 0;
+  var sonUstY = 0, sonBlokY = 0;
+
+  var isaretGorsel = new Image();
+  var isaretHazir = false;
+  isaretGorsel.onload = function(){ isaretHazir = true; ciz(); };
+  isaretGorsel.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDggNjg4IiB3aWR0aD0iNzA4IiBoZWlnaHQ9IjY4OCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImtvciIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGN4PSIzNTQiIGN5PSIzMjEiIHI9IjIxMiI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgICAgc3RvcC1jb2xvcj0iI0Y0QUU3QyIgc3RvcC1vcGFjaXR5PSIwLjk1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC4yMCIgc3RvcC1jb2xvcj0iI0RBNkM0MiIgc3RvcC1vcGFjaXR5PSIwLjgyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40NCIgc3RvcC1jb2xvcj0iI0M0NEIyRiIgc3RvcC1vcGFjaXR5PSIwLjUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjcyIiBzdG9wLWNvbG9yPSIjQzQ0QjJGIiBzdG9wLW9wYWNpdHk9IjAuMTgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiAgICBzdG9wLWNvbG9yPSIjQzQ0QjJGIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICAKICAgIDxjbGlwUGF0aCBpZD0iY291bnRlciIgY2xpcFBhdGhVbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yOSw2NTYpIHNjYWxlKDEsLTEpIiBkPSJNNDAyIDhRNDcyIDggNTI5LjAgNDAuNVE1ODYgNzMgNjE5LjUgMTM2LjVRNjUzIDIwMCA2NTMgMjkxUTY1MyAzODYgNjE2LjUgNDU4LjVRNTgwIDUzMSA1MTQuMCA1NzIuNVE0NDggNjE0IDM1OSA2MTRRMjQzIDYxNCAxNzguMCA1NDIuMFExMTMgNDcwIDExMyAzNDZRMTEzIDI3NiAxMzMuNSAyMTQuNVExNTQgMTUzIDE5Mi41IDEwNi41UTIzMSA2MCAyODQuMCAzNC4wUTMzNyA4IDQwMiA4WiIvPjwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDxnIGNsaXAtcGF0aD0idXJsKCNjb3VudGVyKSI+PHJlY3Qgd2lkdGg9IjcwOCIgaGVpZ2h0PSI2ODgiIGZpbGw9InVybCgja29yKSIvPjwvZz4KICA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjksNjU2KSBzY2FsZSgxLC0xKSIgZD0iTTM2NiAtMTJRMjk0IC0xMiAyMzUuNSAxMy41UTE3NyAzOSAxMzUuNSA4NC4wUTk0IDEyOSA3MS41IDE4Ny41UTQ5IDI0NiA0OSAzMTJRNDkgMzkzIDgwLjUgNDU0LjBRMTEyIDUxNSAxNjQuMCA1NTUuNVEyMTYgNTk2IDI3OC4wIDYxNi4wUTM0MCA2MzYgNDAxIDYzNlE0NzUgNjM2IDUzMy41IDYwOS41UTU5MiA1ODMgNjMzLjAgNTM4LjBRNjc0IDQ5MyA2OTUuNSA0MzYuMFE3MTcgMzc5IDcxNyAzMTlRNzE3IDI0OSA2ODkuMCAxODkuMFE2NjEgMTI5IDYxMi41IDg0LjBRNTY0IDM5IDUwMC41IDEzLjVRNDM3IC0xMiAzNjYgLTEyWk00MDIgOFE0NzIgOCA1MjkuMCA0MC41UTU4NiA3MyA2MTkuNSAxMzYuNVE2NTMgMjAwIDY1MyAyOTFRNjUzIDM4NiA2MTYuNSA0NTguNVE1ODAgNTMxIDUxNC4wIDU3Mi41UTQ0OCA2MTQgMzU5IDYxNFEyNDMgNjE0IDE3OC4wIDU0Mi4wUTExMyA0NzAgMTEzIDM0NlExMTMgMjc2IDEzMy41IDIxNC41UTE1NCAxNTMgMTkyLjUgMTA2LjVRMjMxIDYwIDI4NC4wIDM0LjBRMzM3IDggNDAyIDhaIiBmaWxsPSIjRjJFQUUyIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz4KPC9zdmc+";
+
+  var isaretMono = new Image();
+  var isaretMonoHazir = false;
+  isaretMono.onload = function(){ isaretMonoHazir = true; ciz(); };
+  isaretMono.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDggNjg4IiB3aWR0aD0iNzA4IiBoZWlnaHQ9IjY4OCI+CiAgPHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI5LDY1Nikgc2NhbGUoMSwtMSkiIGQ9Ik0zNjYgLTEyUTI5NCAtMTIgMjM1LjUgMTMuNVExNzcgMzkgMTM1LjUgODQuMFE5NCAxMjkgNzEuNSAxODcuNVE0OSAyNDYgNDkgMzEyUTQ5IDM5MyA4MC41IDQ1NC4wUTExMiA1MTUgMTY0LjAgNTU1LjVRMjE2IDU5NiAyNzguMCA2MTYuMFEzNDAgNjM2IDQwMSA2MzZRNDc1IDYzNiA1MzMuNSA2MDkuNVE1OTIgNTgzIDYzMy4wIDUzOC4wUTY3NCA0OTMgNjk1LjUgNDM2LjBRNzE3IDM3OSA3MTcgMzE5UTcxNyAyNDkgNjg5LjAgMTg5LjBRNjYxIDEyOSA2MTIuNSA4NC4wUTU2NCAzOSA1MDAuNSAxMy41UTQzNyAtMTIgMzY2IC0xMlpNNDAyIDhRNDcyIDggNTI5LjAgNDAuNVE1ODYgNzMgNjE5LjUgMTM2LjVRNjUzIDIwMCA2NTMgMjkxUTY1MyAzODYgNjE2LjUgNDU4LjVRNTgwIDUzMSA1MTQuMCA1NzIuNVE0NDggNjE0IDM1OSA2MTRRMjQzIDYxNCAxNzguMCA1NDIuMFExMTMgNDcwIDExMyAzNDZRMTEzIDI3NiAxMzMuNSAyMTQuNVExNTQgMTUzIDE5Mi41IDEwNi41UTIzMSA2MCAyODQuMCAzNC4wUTMzNyA4IDQwMiA4WiIgZmlsbD0iI0M0NEIyRiIgZmlsbC1ydWxlPSJub256ZXJvIi8+Cjwvc3ZnPg==";
+
+  var S = {
+    tema:"gece", oran:"4:5", mod:"tek", renk:"krem", konum:"ust", hiza:"orta",
+    punto:95, ara:1.28, harf:0.01,
+    kara:0, kenar:0.63, perde:0.35, grain:0.065,
+    altOran:0.62, blokAra:0.60, metinKaydir:0, zeminGlow:0.55, glowKaydir:0,
+    imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85, kilavuz:false, kilavuzUcte:false,
+    kartSayi:6, aktif:0, kapakIstisna:false,
+    kartlar:[]
+  };
+
+  function yeniKart(){ return { metin:"", zoom:1, ox:0, oy:0 }; }
+  for (var i=0;i<8;i++) S.kartlar.push(yeniKart());
+
+  function aktifKart(){ return S.mod === "karusel" ? S.kartlar[S.aktif] : S.kartlar[0]; }
+  function olcu(){ return S.oran === "4:5" ? {w:1080,h:1350} : {w:1080,h:1920}; }
+
+  /* ---------- font ---------- */
+  function fontuDene(){
+    if (!document.fonts) { fontYok(); return; }
+    document.fonts.load('italic 400 100px "Cormorant Garamond"').then(function(){
+      fontHazir = document.fonts.check('italic 400 100px "Cormorant Garamond"');
+      if (!fontHazir) fontYok(); else document.getElementById("fontUyari").classList.remove("acik");
+      ciz();
+    }).catch(fontYok);
+  }
+  function fontYok(){
+    fontHazir = false;
+    document.getElementById("fontUyari").classList.add("acik");
+  }
+  document.getElementById("fontDosya").addEventListener("change", function(e){
+    var f = e.target.files && e.target.files[0];
+    if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var yuz = new FontFace("Cormorant Garamond", fr.result, {style:"italic"});
+        yuz.load().then(function(y){
+          document.fonts.add(y);
+          fontHazir = true;
+          document.getElementById("fontUyari").classList.remove("acik");
+          ciz();
+        });
+      } catch(err){ /* dosya okunamadı, yedek font sürer */ }
+    };
+    fr.readAsArrayBuffer(f);
+  });
+
+  /* ---------- grain ---------- */
+  function grainKur(){
+    var n = document.createElement("canvas");
+    n.width = n.height = 180;
+    var nc = n.getContext("2d");
+    var img = nc.createImageData(180,180);
+    for (var i=0;i<img.data.length;i+=4){
+      var v = 110 + Math.random()*90;
+      img.data[i] = img.data[i+1] = img.data[i+2] = v;
+      img.data[i+3] = 255;
+    }
+    nc.putImageData(img,0,0);
+    grainDeseni = ctx.createPattern(n,"repeat");
+  }
+
+  /* ---------- metin ---------- */
+  // "*kelime*" → köz rengi. Bir satır, renkli parçalara ayrılır.
+  function parcala(satir){
+    var out = [], buf = "", vurgu = false;
+    for (var i=0;i<satir.length;i++){
+      if (satir[i] === "*"){
+        if (buf) out.push({t:buf, v:vurgu});
+        buf = ""; vurgu = !vurgu;
+      } else buf += satir[i];
+    }
+    if (buf) out.push({t:buf, v:vurgu});
+    return out.length ? out : [{t:"", v:false}];
+  }
+
+  function harfliGenislik(c, metin, izle){
+    var g = 0;
+    for (var i=0;i<metin.length;i++) g += c.measureText(metin[i]).width + izle;
+    return g;
+  }
+  function harfliYaz(c, metin, x, y, izle){
+    for (var i=0;i<metin.length;i++){
+      c.fillText(metin[i], x, y);
+      x += c.measureText(metin[i]).width + izle;
+    }
+    return x;
+  }
+
+  // uzun satırı güvenli genişliğe göre böler, parça yapısını korur
+  function sar(c, parcalar, maxG, izle){
+    var satirlar = [], suan = [], suanG = 0;
+    parcalar.forEach(function(p){
+      var kelimeler = p.t.split(/(\s+)/);
+      kelimeler.forEach(function(k){
+        if (k === "") return;
+        var g = harfliGenislik(c, k, izle);
+        if (suanG + g > maxG && suanG > 0 && k.trim() !== ""){
+          satirlar.push(suan); suan = []; suanG = 0;
+        }
+        if (k.trim() === "" && suanG === 0) return;
+        suan.push({t:k, v:p.v}); suanG += g;
+      });
+    });
+    if (suan.length) satirlar.push(suan);
+    return satirlar.length ? satirlar : [[{t:"",v:false}]];
+  }
+
+  /* ---------- çizim ---------- */
+  /* Kapak istisnası — karuselde 1. kart kapak tipografisiyle çizilir.
+     Yalnız kapak ile iç kartı ayıran alanlar geçici olarak değiştirilir;
+     kadraj (zoom/ox/oy) zaten kart bazlı olduğu için dokunulmaz. */
+  var KAPAK_ALAN = {
+    konum:"ust", punto:95, ara:1.28, altOran:0.62, blokAra:0.60,
+    zeminGlow:0.55, kenar:0.63, perde:0.35, imza:"isaret", imzaDikey:"ust"
+  };
+  function kapakKarti(){
+    return S.mod === "karusel" && S.kapakIstisna && S.aktif === 0;
+  }
+  function ciz(){
+    if (!kapakKarti()) { cizHam(); return; }
+    var yedek = {};
+    Object.keys(KAPAK_ALAN).forEach(function(a){ yedek[a] = S[a]; S[a] = KAPAK_ALAN[a]; });
+    try { cizHam(); }
+    finally { Object.keys(yedek).forEach(function(a){ S[a] = yedek[a]; }); }
+  }
+
+  function cizHam(){
+    var o = olcu();
+    if (tuval.width !== o.w || tuval.height !== o.h){
+      tuval.width = o.w; tuval.height = o.h;
+      grainKur();
+    }
+    if (!grainDeseni) grainKur();
+
+    var W = o.w, H = o.h;
+    var k = aktifKart();
+
+    ctx.clearRect(0,0,W,H);
+
+    // zemin
+    var gunduz = S.tema === "gunduz";
+    var ortu = gunduz ? "242,234,226" : "26,18,16";
+    ctx.fillStyle = gunduz ? RENKLER.krem : RENKLER.komur;
+    ctx.fillRect(0,0,W,H);
+
+    // metin bloğu ölçüsü
+    var kenarBosluk = W*0.12;
+    var maxG = W - kenarBosluk*2;
+    var izle = S.punto * S.harf;
+    ctx.font = 'italic 400 ' + S.punto + 'px ' + FONT;
+    ctx.textBaseline = "alphabetic";
+
+    // boş satır = blok ayracı · ilk blok ana punto, sonrakiler alt oranda
+    var bloklar = (k.metin || "").replace(/\r/g,"").split(/\n\s*\n/);
+    var satirlar = [];
+    bloklar.forEach(function(blokMetin, bi){
+      var bp = bi === 0 ? S.punto : S.punto * S.altOran;
+      var bizle = bp * S.harf;
+      ctx.font = 'italic 400 ' + bp + 'px ' + FONT;
+      blokMetin.split("\n").forEach(function(g){
+        if (g.trim() === "") return;
+        sar(ctx, parcala(g), maxG, bizle).forEach(function(sat){
+          satirlar.push({ parca:sat, punto:bp, izle:bizle, blok:bi });
+        });
+      });
+    });
+
+    var blokY = 0;
+    satirlar.forEach(function(sr, i){
+      if (i > 0 && sr.blok !== satirlar[i-1].blok) blokY += S.punto * S.blokAra;
+      sr.ust = blokY;
+      blokY += sr.punto * S.ara;
+    });
+    var imzaYuk = 0;
+    if (S.imza === "isaret" && S.imzaDikey === "ust"){
+      imzaYuk = (W * S.imzaBoy) * (688/708) + S.punto * 0.75;
+    }
+    var ustY;
+    if (S.konum === "ust") ustY = H*0.115 + imzaYuk;
+    else if (S.konum === "orta") ustY = (H - blokY + imzaYuk)/2;
+    else ustY = H - blokY - H*0.135;
+    ustY += S.metinKaydir * H;
+
+    // görsel — cover + zoom + kaydırma
+    if (gorsel){
+      var oran = Math.max(W/gorsel.width, H/gorsel.height) * k.zoom;
+      var gw = gorsel.width*oran, gh = gorsel.height*oran;
+      var bosX = Math.max(0, gw-W)/2, bosY = Math.max(0, gh-H)/2;
+      var x = (W-gw)/2 + k.ox*bosX;
+      var y = (H-gh)/2 + k.oy*bosY;
+      ctx.drawImage(gorsel, x, y, gw, gh);
+    } else if (gunduz){
+      // gündüz: krem zemin, kenarlara doğru hafif keten
+      ctx.fillStyle = RENKLER.krem;
+      ctx.fillRect(0,0,W,H);
+      var gyd = H*0.45 + S.glowKaydir*H;
+      var kg = ctx.createRadialGradient(W/2, gyd, W*0.25, W/2, gyd, Math.max(W,H)*0.85);
+      kg.addColorStop(0, "rgba(217,203,182,0)");
+      kg.addColorStop(1, "rgba(217,203,182," + (0.85*S.zeminGlow).toFixed(3) + ")");
+      ctx.fillStyle = kg; ctx.fillRect(0,0,W,H);
+    } else {
+      ctx.fillStyle = RENKLER.komur;
+      ctx.fillRect(0,0,W,H);
+      var gy = (k.metin || "").trim() === ""
+        ? H*0.42
+        : (ustY - imzaYuk*0.45) + (blokY + imzaYuk*0.45)/2 + S.glowKaydir*H;
+      var gi = S.zeminGlow;
+      var zg = ctx.createRadialGradient(W/2, gy, W*0.02, W/2, gy, W*1.05);
+      zg.addColorStop(0,    "rgba(244,174,124," + (0.42*gi).toFixed(3) + ")");
+      zg.addColorStop(0.16, "rgba(218,108,66,"  + (0.30*gi).toFixed(3) + ")");
+      zg.addColorStop(0.40, "rgba(196,75,47,"   + (0.16*gi).toFixed(3) + ")");
+      zg.addColorStop(0.70, "rgba(196,75,47,"   + (0.05*gi).toFixed(3) + ")");
+      zg.addColorStop(1,    "rgba(196,75,47,0)");
+      ctx.fillStyle = zg; ctx.fillRect(0,0,W,H);
+    }
+
+    // genel karartma
+    if (S.kara > 0){
+      ctx.fillStyle = "rgba(" + ortu + "," + S.kara + ")";
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // kenar karartma
+    if (S.kenar > 0){
+      var vg = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.28, W/2, H/2, Math.max(W,H)*0.78);
+      vg.addColorStop(0, "rgba(" + ortu + ",0)");
+      vg.addColorStop(1, "rgba(" + ortu + "," + S.kenar + ")");
+      ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
+    }
+
+    // metin arkası perde
+    if (S.perde > 0 && k.metin.trim() !== ""){
+      var p0 = Math.max(0, ustY - S.punto*1.5);
+      var p1 = Math.min(H, ustY + blokY + S.punto*0.9);
+      var pg = ctx.createLinearGradient(0, p0, 0, p1);
+      pg.addColorStop(0, "rgba(" + ortu + ",0)");
+      pg.addColorStop(0.32, "rgba(" + ortu + "," + S.perde + ")");
+      pg.addColorStop(0.68, "rgba(" + ortu + "," + S.perde + ")");
+      pg.addColorStop(1, "rgba(" + ortu + ",0)");
+      ctx.fillStyle = pg;
+      ctx.fillRect(0, p0, W, p1-p0);
+    }
+
+    // metin
+    var anaRenk = RENKLER[S.renk];
+    blokSol = W; blokSag = 0;
+    satirlar.forEach(function(sr){
+      ctx.font = 'italic 400 ' + sr.punto + 'px ' + FONT;
+      var g = 0;
+      sr.parca.forEach(function(p){ g += harfliGenislik(ctx, p.t, sr.izle); });
+      var x = S.hiza === "orta" ? (W-g)/2 : kenarBosluk;
+      if (g > 0){ if (x < blokSol) blokSol = x; if (x+g > blokSag) blokSag = x+g; }
+      var y = ustY + sr.ust + sr.punto*(S.ara - 0.25);
+      sr.parca.forEach(function(p){
+        ctx.fillStyle = p.v ? (gunduz ? RENKLER.toprak : RENKLER.koz) : anaRenk;
+        x = harfliYaz(ctx, p.t, x, y, sr.izle);
+      });
+    });
+
+    // köşe imzası
+    if (S.imza === "isaret" && (gunduz ? isaretMonoHazir : isaretHazir)){
+      var iw = W * S.imzaBoy;
+      var ih = iw * (688/708);
+      var ix = S.imzaYer === "sag" ? (W - kenarBosluk - iw) : ((W - iw)/2);
+      var iy = S.imzaDikey === "ust" ? (ustY - imzaYuk) : (H - kenarBosluk - ih);
+      ctx.save();
+      ctx.globalAlpha = S.imzaOpak;
+      ctx.drawImage(gunduz ? isaretMono : isaretGorsel, ix, iy, iw, ih);
+      ctx.restore();
+    }
+
+    // grain
+    if (S.grain > 0 && grainDeseni){
+      ctx.save();
+      ctx.globalAlpha = S.grain;
+      ctx.globalCompositeOperation = "overlay";
+      ctx.fillStyle = grainDeseni;
+      ctx.fillRect(0,0,W,H);
+      ctx.restore();
+    }
+
+    // kılavuz · güvenli alan (yalnız ekran)
+    if (S.kilavuz){
+      ctx.save();
+      ctx.strokeStyle = "rgba(212,168,85,0.5)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([12,10]);
+      ctx.strokeRect(kenarBosluk, H*0.055, W-kenarBosluk*2, H-H*0.11);
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // kılavuz · üçte bir (yalnız ekran)
+    if (S.kilavuzUcte){
+      ctx.save();
+      ctx.strokeStyle = "rgba(212,168,85,0.30)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, H/3);   ctx.lineTo(W, H/3);
+      ctx.moveTo(0, 2*H/3); ctx.lineTo(W, 2*H/3);
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(196,75,47,0.45)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, ustY); ctx.lineTo(W, ustY);
+      ctx.moveTo(0, ustY+blokY); ctx.lineTo(W, ustY+blokY);
+      ctx.stroke();
+
+      // blok merkezi — üçte bire ne kadar yakın
+      var mrk = ustY + blokY/2;
+      var yakin = Math.abs(mrk - H/3) < H*0.02;
+      ctx.strokeStyle = yakin ? "rgba(212,168,85,0.95)" : "rgba(196,75,47,0.85)";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(kenarBosluk*0.35, mrk); ctx.lineTo(kenarBosluk*0.85, mrk);
+      ctx.moveTo(W-kenarBosluk*0.85, mrk); ctx.lineTo(W-kenarBosluk*0.35, mrk);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    sonUstY = ustY; sonBlokY = blokY;
+    olcuGuncelle();
+  }
+
+  function olcuGuncelle(){
+    var o = olcu();
+    document.getElementById("olcuMetin").textContent = o.w + " × " + o.h;
+    var m = (aktifKart().metin || "").replace(/\*/g," ").trim();
+    var kelime = m === "" ? 0 : m.split(/\s+/).length;
+    document.getElementById("kelimeSayac").textContent = kelime;
+    var u = document.getElementById("kelimeUyari");
+    if (S.mod === "tek" && kelime > 16){
+      u.textContent = "SÖZ KARTI SINIRI AŞILDI — 16 KELİME";
+      u.style.color = RENKLER.koz;
+    } else if (S.mod === "tek" && kelime > 14){
+      u.textContent = "SINIRDA";
+      u.style.color = RENKLER.altin;
+    } else { u.textContent = ""; }
+
+    var ko = document.getElementById("kaynakOlcu");
+    if (ko){
+      if (gorsel && gorsel.width){
+        var k0 = aktifKart();
+        var oranK = Math.max(o.w/gorsel.width, o.h/gorsel.height) * k0.zoom;
+        var tavan = Math.max(o.w/gorsel.width, o.h/gorsel.height);
+        var zTavan = tavan > 0 ? (1/tavan) : 0;
+        ko.textContent = " · KAYNAK " + gorsel.width + " × " + gorsel.height +
+          (oranK > 1 ? "  BÜYÜTÜYOR (zoom tavanı " + zTavan.toFixed(2) + ")" : "");
+        ko.style.color = oranK > 1 ? RENKLER.koz : "";
+      } else { ko.textContent = ""; }
+    }
+
+    var kn = document.getElementById("kenarOlcu");
+    if (kn){
+      if (blokSag > blokSol){
+        var sol = Math.round(blokSol), sag = Math.round(o.w - blokSag);
+        var fark = Math.abs(sag - sol);
+        kn.textContent = " · KENAR " + sol + " / " + sag + (fark > 2 ? " (fark " + fark + ")" : "");
+        kn.style.color = fark > 2 ? RENKLER.altin : "";
+      } else kn.textContent = "";
+    }
+
+    var mz = document.getElementById("merkezOlcu");
+    if (mz){
+      if (blokSag > blokSol){
+        var yuzde = 100 * (sonUstY + sonBlokY/2) / o.h;
+        mz.textContent = " · MERKEZ %" + yuzde.toFixed(1);
+        mz.style.color = Math.abs(yuzde - 33.3) < 2 ? RENKLER.altin : "";
+      } else mz.textContent = "";
+    }
+  }
+
+  /* ---------- kontroller ---------- */
+  function grup(id, alan, sonra){
+    var kap = document.getElementById(id);
+    kap.addEventListener("click", function(e){
+      var b = e.target.closest("button");
+      if (!b) return;
+      [].forEach.call(kap.querySelectorAll("button"), function(x){
+        x.setAttribute("aria-pressed", String(x === b));
+      });
+      S[alan] = b.dataset[alan];
+      if (sonra) sonra();
+      ciz();
+    });
+  }
+  grup("oranSecim","oran", adYansit);
+  grup("modSecim","mod", function(){ modDegisti(); adYansit(); });
+  grup("temaSecim","tema", function(){
+    // ışık değişince o ışığın güvenli varsayılanları
+    if (S.tema === "gunduz"){
+      S.renk = "komur"; S.kara = 0; S.kenar = 0; S.perde = 0; S.grain = 0.03; S.imzaOpak = 1; S.zeminGlow = 0.35;
+    } else {
+      S.renk = "krem"; S.kara = 0; S.kenar = 0.63; S.perde = 0.35; S.grain = 0.065; S.imzaOpak = 0.85; S.zeminGlow = 0.55;
+    }
+    arayuzYansit();
+  });
+  grup("renkSecim","renk", function(){
+    document.getElementById("altinNot").hidden = (S.renk !== "altin");
+  });
+  grup("konumSecim","konum");
+  grup("hizaSecim","hiza");
+
+  function kaydir(id, alan, basamak, kartAlani){
+    var el = document.getElementById(id);
+    var et = document.getElementById(id + "Deger");
+    el.addEventListener("input", function(){
+      var v = parseFloat(el.value);
+      if (kartAlani) aktifKart()[alan] = v; else S[alan] = v;
+      if (et) et.textContent = basamak === 0 ? String(Math.round(v)) : v.toFixed(basamak);
+      ciz();
+    });
+  }
+  kaydir("punto","punto",0);
+  kaydir("ara","ara",2);
+  kaydir("harf","harf",3);
+  kaydir("altOran","altOran",2);
+  kaydir("blokAra","blokAra",2);
+  kaydir("metinKaydir","metinKaydir",2);
+  kaydir("kara","kara",2);
+  kaydir("kenar","kenar",2);
+  kaydir("perde","perde",2);
+  kaydir("grain","grain",3);
+  kaydir("zeminGlow","zeminGlow",2);
+  kaydir("glowKaydir","glowKaydir",2);
+  kaydir("zoom","zoom",2,true);
+  kaydir("ox","ox",2,true);
+  kaydir("oy","oy",2,true);
+
+  /* ---------- görseli kaldır ---------- */
+  function gorselDurumu(){
+    document.getElementById("gorselKaldir").hidden = !gorsel;
+    document.getElementById("zeminNot").hidden = !!gorsel;
+    document.getElementById("zeminGlowAlan").hidden = !!gorsel;
+    document.getElementById("glowKaydirAlan").hidden = !!gorsel;
+    document.getElementById("zeminGlowNot").hidden = !!gorsel;
+  }
+  document.getElementById("gorselKaldir").addEventListener("click", function(){
+    gorsel = null;
+    gorselDurumu();
+    ciz();
+    seritCiz();
+  });
+
+  /* ---------- ön ayar ---------- */
+  var ON_AYAR_ALAN = ["tema","oran","renk","konum","hiza","punto","ara","harf","altOran","blokAra","metinKaydir","zeminGlow","glowKaydir","kara","kenar","perde","grain","imza","imzaDikey","imzaYer","imzaBoy","imzaOpak"];
+  var GOMULU = {
+    "Gündüz · söz kartı (fotoğraf ya da krem zemin)": {
+      tema:"gunduz", oran:"4:5", renk:"komur", konum:"orta", hiza:"orta",
+      punto:92, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.35, glowKaydir:0,
+      kara:0, kenar:0, perde:0, grain:0.03,
+      imza:"isaret", imzaDikey:"alt", imzaYer:"orta", imzaBoy:0.065, imzaOpak:1
+    },
+    "Gündüz · davet kartı (kalabalık zemin, krem perde)": {
+      tema:"gunduz", oran:"4:5", renk:"komur", konum:"orta", hiza:"orta",
+      punto:84, ara:1.30, harf:0.01, altOran:0.55, blokAra:0.70, metinKaydir:0,
+      zeminGlow:0.35, glowKaydir:0,
+      kara:0.10, kenar:0, perde:0.55, grain:0.03,
+      imza:"isaret", imzaDikey:"alt", imzaYer:"orta", imzaBoy:0.065, imzaOpak:1
+    },
+    "Gündüz · story 9:16": {
+      tema:"gunduz", oran:"9:16", renk:"komur", konum:"orta", hiza:"orta",
+      punto:88, ara:1.32, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.35, glowKaydir:0,
+      kara:0, kenar:0, perde:0, grain:0.03,
+      imza:"isaret", imzaDikey:"alt", imzaYer:"orta", imzaBoy:0.06, imzaOpak:1
+    },
+    "F1 söz kartı · fotoğraf zemin": {
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.55, glowKaydir:0,
+      kara:0, kenar:0.63, perde:0.35, grain:0.065,
+      imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
+    },
+    "F1 zirve kartı · altın": {
+      tema:"gece", oran:"4:5", renk:"altin", konum:"ust", hiza:"orta",
+      punto:95, ara:1.28, harf:0.02, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.62, glowKaydir:0,
+      kara:0, kenar:0.66, perde:0.40, grain:0.065,
+      imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
+    },
+    "F1 söz kartı · glow zemin": {
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0.10,
+      zeminGlow:0.55, glowKaydir:-0.05,
+      kara:0, kenar:0.63, perde:0.30, grain:0.065,
+      imza:"isaret", imzaDikey:"alt", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.90
+    },
+    "F2 karusel · kapak": {
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.55, glowKaydir:0,
+      kara:0, kenar:0.63, perde:0.35, grain:0.065,
+      imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
+    },
+    "F2 karusel · iç kart": {
+      tema:"gece", oran:"4:5", renk:"krem", konum:"orta", hiza:"orta",
+      punto:64, ara:1.42, harf:0.01, altOran:1, blokAra:0.55, metinKaydir:0,
+      zeminGlow:0.45, glowKaydir:0,
+      kara:0, kenar:0.60, perde:0.40, grain:0.065,
+      imza:"yok", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
+    },
+    "F4 story · 9:16": {
+      tema:"gece", oran:"9:16", renk:"krem", konum:"orta", hiza:"orta",
+      punto:88, ara:1.32, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      zeminGlow:0.55, glowKaydir:0,
+      kara:0, kenar:0.60, perde:0.38, grain:0.065,
+      imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.062, imzaOpak:0.85
+    }
+  };
+  function tumOnAyarlar(){
+    var t = {};
+    Object.keys(GOMULU).forEach(function(a){ t[a] = GOMULU[a]; });
+    Object.keys(onAyarlar).forEach(function(a){ t[a] = onAyarlar[a]; });
+    return t;
+  }
+  var DEPO = "ocak-kart-onayar";
+  var depoCalisir = true;
+  var onAyarlar = {};
+
+  function depoOku(){
+    try {
+      var ham = window.localStorage.getItem(DEPO);
+      onAyarlar = ham ? JSON.parse(ham) : {};
+    } catch(e){
+      depoCalisir = false;
+      onAyarlar = {};
+      var du = document.getElementById("depoUyari");
+      if (du) du.hidden = false;
+    }
+  }
+  function depoYaz(){
+    jsonYansit();
+    if (!depoCalisir) return;
+    try { window.localStorage.setItem(DEPO, JSON.stringify(onAyarlar)); }
+    catch(e){
+      depoCalisir = false;
+      var du = document.getElementById("depoUyari");
+      if (du) du.hidden = false;
+    }
+  }
+  function jsonYansit(){
+    var t = document.getElementById("onAyarJson");
+    if (t && document.activeElement !== t) t.value = JSON.stringify(onAyarlar, null, 2);
+  }
+  function listeYansit(sec){
+    var sel = document.getElementById("onAyarSec");
+    var tum = tumOnAyarlar();
+    sel.innerHTML = '<option value="">— ön ayar seç —</option>';
+    var sira = Object.keys(GOMULU).concat(
+      Object.keys(onAyarlar).filter(function(a){ return !GOMULU[a]; }).sort()
+    );
+    sira.forEach(function(ad){
+      var o = document.createElement("option");
+      o.value = ad;
+      o.textContent = ad + (GOMULU[ad] && !onAyarlar[ad] ? "  ·  gömülü" : "");
+      sel.appendChild(o);
+    });
+    if (sec && tum[sec]) sel.value = sec;
+    jsonYansit();
+  }
+  function onAyarTopla(){
+    var v = {};
+    ON_AYAR_ALAN.forEach(function(a){ v[a] = S[a]; });
+    return v;
+  }
+  function onAyarUygula(v){
+    S.tema = "gece"; // tema taşımayan eski ön ayarlar gece sayılır
+    ON_AYAR_ALAN.forEach(function(a){ if (v[a] !== undefined) S[a] = v[a]; });
+    arayuzYansit();
+    ciz();
+  }
+  function arayuzYansit(){
+    [["temaSecim","tema"],["oranSecim","oran"],["renkSecim","renk"],["konumSecim","konum"],["hizaSecim","hiza"]].forEach(function(p){
+      var kap = document.getElementById(p[0]);
+      [].forEach.call(kap.querySelectorAll("button"), function(b){
+        b.setAttribute("aria-pressed", String(b.dataset[p[1]] === S[p[1]]));
+      });
+    });
+    [["punto",0],["ara",2],["harf",3],["altOran",2],["blokAra",2],["metinKaydir",2],["zeminGlow",2],["glowKaydir",2],["kara",2],["kenar",2],["perde",2],["grain",3]].forEach(function(p){
+      var el = document.getElementById(p[0]);
+      var et = document.getElementById(p[0] + "Deger");
+      if (el) el.value = S[p[0]];
+      if (et) et.textContent = p[1] === 0 ? String(Math.round(S[p[0]])) : Number(S[p[0]]).toFixed(p[1]);
+    });
+    [].forEach.call(document.getElementById("imzaSecim").querySelectorAll("button"), function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.imza === S.imza));
+    });
+    [].forEach.call(document.getElementById("imzaYerSecim").querySelectorAll("button"), function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.imzaYer === S.imzaYer));
+    });
+    [].forEach.call(document.getElementById("imzaDikeySecim").querySelectorAll("button"), function(b){
+      b.setAttribute("aria-pressed", String(b.dataset.imzaDikey === S.imzaDikey));
+    });
+    [["imzaBoy",3],["imzaOpak",2]].forEach(function(p){
+      var el = document.getElementById(p[0]);
+      var et = document.getElementById(p[0] + "Deger");
+      if (el) el.value = S[p[0]];
+      if (et) et.textContent = Number(S[p[0]]).toFixed(p[1]);
+    });
+    imzaAlanlari();
+    document.getElementById("altinNot").hidden = (S.renk !== "altin");
+    document.getElementById("gunduzNot").hidden = (S.tema !== "gunduz");
+  }
+
+  function durumYaz(mesaj){
+    var d = document.getElementById("onAyarDurum");
+    if (!d) return;
+    d.textContent = mesaj;
+    d.hidden = !mesaj;
+  }
+
+  document.getElementById("onAyarKaydet").addEventListener("click", function(){
+    var ad = document.getElementById("onAyarAd").value.trim();
+    if (!ad){ document.getElementById("onAyarAd").focus(); return; }
+    onAyarlar[ad] = onAyarTopla();
+    depoYaz();
+    listeYansit(ad);
+    document.getElementById("onAyarAd").value = "";
+    durumYaz("kaydedildi: " + ad);
+  });
+  function onAyarYukleAd(ad){
+    var tum = tumOnAyarlar();
+    if (ad && tum[ad]){ onAyarUygula(tum[ad]); adYansit(); durumYaz("yüklendi: " + ad); return true; }
+    return false;
+  }
+  document.getElementById("onAyarYukle").addEventListener("click", function(){
+    if (!onAyarYukleAd(document.getElementById("onAyarSec").value)) durumYaz("önce listeden bir ön ayar seç");
+  });
+  document.getElementById("onAyarSec").addEventListener("change", function(e){
+    if (!onAyarYukleAd(e.target.value)) durumYaz("");
+  });
+  document.getElementById("onAyarSil").addEventListener("click", function(){
+    var ad = document.getElementById("onAyarSec").value;
+    if (!ad) return;
+    if (GOMULU[ad] && !onAyarlar[ad]){ durumYaz("gömülü ön ayar silinemez"); return; }
+    delete onAyarlar[ad];
+    depoYaz();
+    listeYansit();
+    durumYaz(GOMULU[ad] ? ("gömülü hâline döndü: " + ad) : ("silindi: " + ad));
+  });
+  document.getElementById("onAyarTemizle").addEventListener("click", function(){
+    var n = Object.keys(onAyarlar).length;
+    onAyarlar = {};
+    depoYaz();
+    listeYansit();
+    durumYaz(n ? (n + " kayıt temizlendi — gömülüler duruyor") : "temizlenecek kendi kaydın yok");
+  });
+  document.getElementById("onAyarAl").addEventListener("click", function(){
+    var t = document.getElementById("onAyarJson");
+    try {
+      var v = JSON.parse(t.value);
+      if (v && typeof v === "object"){
+        onAyarlar = v;
+        depoYaz();
+        listeYansit();
+      }
+    } catch(e){
+      t.style.borderColor = RENKLER.koz;
+      setTimeout(function(){ t.style.borderColor = ""; }, 1200);
+    }
+  });
+
+  depoOku();
+  listeYansit();
+
+  function imzaAlanlari(){
+    var g = (S.imza === "isaret");
+    document.getElementById("imzaYerAlan").hidden = !g;
+    document.getElementById("imzaYatayAlan").hidden = !g;
+    document.getElementById("imzaBoyAlan").hidden = !g;
+    document.getElementById("imzaOpakAlan").hidden = !g;
+  }
+  grup("imzaSecim","imza", imzaAlanlari);
+  grup("imzaYerSecim","imzaYer");
+  grup("imzaDikeySecim","imzaDikey");
+  kaydir("imzaBoy","imzaBoy",3);
+  kaydir("imzaOpak","imzaOpak",2);
+  imzaAlanlari();
+  document.getElementById("kilavuz").addEventListener("change", function(e){ S.kilavuz = e.target.checked; ciz(); });
+  document.getElementById("kilavuzUcte").addEventListener("change", function(e){ S.kilavuzUcte = e.target.checked; ciz(); });
+
+  var metinEl = document.getElementById("metin");
+  metinEl.addEventListener("input", function(){ aktifKart().metin = metinEl.value; ciz(); seritCiz(); });
+
+  /* ---------- karusel ---------- */
+  function modDegisti(){
+    var kar = S.mod === "karusel";
+    document.getElementById("karuselAlan").hidden = !kar;
+    document.getElementById("indirHepsi").hidden = !kar;
+    S.aktif = 0;
+    metinEl.value = aktifKart().metin;
+    kadrajYansit();
+    seritCiz();
+  }
+  document.getElementById("kapakIstisna").addEventListener("change", function(e){
+    S.kapakIstisna = e.target.checked;
+    seritCiz(); ciz();
+  });
+  document.getElementById("kartSayi").addEventListener("input", function(e){
+    S.kartSayi = parseInt(e.target.value,10);
+    document.getElementById("kartSayiDeger").textContent = S.kartSayi;
+    if (S.aktif >= S.kartSayi) S.aktif = S.kartSayi-1;
+    seritCiz(); metinEl.value = aktifKart().metin; kadrajYansit(); ciz();
+  });
+  function seritCiz(){
+    var s = document.getElementById("serit");
+    s.innerHTML = "";
+    for (var i=0;i<S.kartSayi;i++){
+      (function(n){
+        var b = document.createElement("button");
+        b.textContent = "K" + (n+1);
+        b.setAttribute("aria-pressed", String(n === S.aktif));
+        if (S.kartlar[n].metin.trim() !== "") b.classList.add("dolu");
+        b.addEventListener("click", function(){
+          S.aktif = n;
+          metinEl.value = aktifKart().metin;
+          kadrajYansit(); seritCiz(); ciz();
+        });
+        s.appendChild(b);
+      })(i);
+    }
+  }
+  function kadrajYansit(){
+    var k = aktifKart();
+    document.getElementById("zoom").value = k.zoom;
+    document.getElementById("zoomDeger").textContent = k.zoom.toFixed(2);
+    document.getElementById("ox").value = k.ox;
+    document.getElementById("oxDeger").textContent = k.ox.toFixed(2);
+    document.getElementById("oy").value = k.oy;
+    document.getElementById("oyDeger").textContent = k.oy.toFixed(2);
+  }
+  document.getElementById("dagit").addEventListener("click", function(){
+    var n = S.kartSayi;
+    for (var i=0;i<n;i++){
+      var t = n === 1 ? 0.5 : i/(n-1);
+      // oy pozitif = kaynağın ÜST bölgesi görünür (bkz. çizimdeki y hesabı).
+      // Metin üst negatif alana oturduğu için crop'lar üstte tutulur; yalnız
+      // son kart aşağı sarkıp kor bandından pay alır — seride ritim olsun diye.
+      // Kaynak 4:5 ve tuvalle aynı oranda olduğu için gezinme payı yalnız
+      // zoom'dan doğar. 1968px genişlikte kaynakta büyütme eşiği zoom 1.82;
+      // 1.62–1.76 bandı payı açar, büyütmeye girmez.
+      S.kartlar[i].zoom = 1.62 + (i%2)*0.14;
+      S.kartlar[i].ox = (t*2-1) * 0.75;
+      S.kartlar[i].oy = 0.80 - 0.60 * Math.pow(t, 2.2);
+    }
+    kadrajYansit(); ciz();
+  });
+
+  /* ---------- görsel yükleme ---------- */
+  var birak = document.getElementById("birak");
+  var dosya = document.getElementById("dosya");
+  birak.addEventListener("click", function(){ dosya.click(); });
+  birak.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); dosya.click(); }
+  });
+  dosya.addEventListener("change", function(e){ if (e.target.files[0]) yukle(e.target.files[0]); });
+  ["dragenter","dragover"].forEach(function(t){
+    birak.addEventListener(t, function(e){ e.preventDefault(); birak.classList.add("uzerinde"); });
+  });
+  ["dragleave","drop"].forEach(function(t){
+    birak.addEventListener(t, function(e){ e.preventDefault(); birak.classList.remove("uzerinde"); });
+  });
+  birak.addEventListener("drop", function(e){
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) yukle(f);
+  });
+  window.addEventListener("paste", function(e){
+    var it = e.clipboardData && e.clipboardData.items;
+    if (!it) return;
+    for (var i=0;i<it.length;i++){
+      if (it[i].type.indexOf("image") === 0){ yukle(it[i].getAsFile()); break; }
+    }
+  });
+  function yukle(f){
+    var fr = new FileReader();
+    fr.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        gorsel = im;
+        birak.innerHTML = "<b>Görsel yüklendi</b>" + im.width + " × " + im.height + " · değiştirmek için tıkla";
+        gorselDurumu();
+        ciz();
+      };
+      im.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  }
+
+  /* ---------- indirme ---------- */
+  function bugun(){
+    var d = new Date();
+    var iki = function(n){ return (n<10?"0":"") + n; };
+    return d.getFullYear() + "-" + iki(d.getMonth()+1) + "-" + iki(d.getDate());
+  }
+  function turAdi(){
+    var sec = document.getElementById("onAyarSec");
+    var ad = sec && sec.value ? sec.value : "";
+    if (/karusel/i.test(ad)) return "karusel";
+    if (/story/i.test(ad))   return "story";
+    if (/zirve/i.test(ad))   return "zirve-karti";
+    if (/söz kartı/i.test(ad)) return "soz-karti";
+    return S.mod === "karusel" ? "karusel" : (S.oran === "9:16" ? "story" : "soz-karti");
+  }
+  function onerilenAd(){ return "ocak-" + turAdi() + "-" + bugun(); }
+  function adYansit(){
+    var el = document.getElementById("ad");
+    if (el) el.placeholder = onerilenAd();
+  }
+  function kartAdi(){
+    var v = (document.getElementById("ad").value || "").trim();
+    return v ? v.replace(/\s+/g,"-") : onerilenAd();
+  }
+  function indirTuval(isim){
+    var kilavuzVardi = S.kilavuz, ucteVardi = S.kilavuzUcte;
+    if (kilavuzVardi || ucteVardi){ S.kilavuz = false; S.kilavuzUcte = false; ciz(); }
+    tuval.toBlob(function(b){
+      var u = URL.createObjectURL(b);
+      var a = document.createElement("a");
+      a.href = u; a.download = isim + ".png";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
+      if (kilavuzVardi) S.kilavuz = true;
+      if (ucteVardi) S.kilavuzUcte = true;
+      if (kilavuzVardi || ucteVardi) ciz();
+    }, "image/png");
+  }
+  document.getElementById("indir").addEventListener("click", function(){
+    var ad = kartAdi();
+    indirTuval(S.mod === "karusel" ? ad + "-k" + (S.aktif+1) : ad);
+  });
+  document.getElementById("indirHepsi").addEventListener("click", function(){
+    var ad = kartAdi();
+    var eski = S.aktif, i = 0;
+    (function sirala(){
+      if (i >= S.kartSayi){
+        S.aktif = eski; metinEl.value = aktifKart().metin; kadrajYansit(); seritCiz(); ciz();
+        return;
+      }
+      S.aktif = i; ciz();
+      indirTuval(ad + "-k" + (i+1));
+      i++;
+      setTimeout(sirala, 550);
+    })();
+  });
+
+  /* ---------- açılış ---------- */
+  grainKur();
+  gorselDurumu();
+  adYansit();
+  seritCiz();
+  ciz();
+  fontuDene();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ciz);
+})();
+</script>
