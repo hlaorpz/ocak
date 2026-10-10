@@ -78,7 +78,15 @@ export type OdemeBildirGirdi = {
   // kurarsa ölçüm adımı sessizce atlanır, mail yolu etkilenmez.
   /** Kayıtlar `Beklenen Tutar`. Tarayıcıdaki `purchase` olayı da bu alanı kullanıyor. */
   tutar?: number;
-  /** Etkinlikler `Para Birimi` select ham değeri. Boşsa ölçüm adımı `TRY` varsaymaz, kapı tutar. */
+  /**
+   * Etkinlikler `Para Birimi` select HAM değeri — boş olabilir.
+   *
+   * ⚠ Bu satır 11 Eki 2026'ya kadar "Boşsa ölçüm adımı `TRY` varsaymaz, kapı
+   * tutar" diyordu ve YANLIŞTI: kapı para birimine hiç bakmıyordu, boş değer
+   * Meta'ya `currency: ''` olarak gidiyor ve olay geçersiz sayılıyordu
+   * (`OCAK-9CL9`). Artık `purchaseOlayi` `paraBirimiNormalle` ile `TRY`ye
+   * düşürüyor — kodun geri kalanıyla aynı varsayılan.
+   */
   paraBirimiHam?: string;
   /** Kayıtlar `Ölçüm Rızası` (Checkbox). İşaretli değilse olay GİTMEZ. */
   olcumRizasi?: boolean;

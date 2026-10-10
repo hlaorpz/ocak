@@ -41,6 +41,11 @@
  *      bu turda yapılmadı.
  */
 import { createHash } from 'node:crypto';
+// ⚠ Para birimi normalleştirmesi İŞ B'nin modülünden geliyor, burada İKİNCİ
+// BİR KOPYA yazılmıyor. Hatanın kökü tam da buydu (aşağıda, `purchaseOlayi`).
+// `olcum.ts` tarayıcı tarafı bir modül ama üst seviyede `window`a dokunmuyor
+// — sunucudan import etmek güvenli, ölçüldü (SSR build 0 hata).
+import { paraBirimiNormalle } from './olcum.ts';
 
 /**
  * Graph API sürümü — Kaan verdi (9 Eki 2026): v26.0, 29 Temmuz 2026 sürümü.
@@ -121,6 +126,24 @@ export type PurchaseGirdisi = {
  *
  * Para birimi küçük harf gider: Meta `currency` için ISO-4217'yi küçük harf
  * bekliyor. Tutar `number` kalır, kuruş korunur (KARAR 240).
+ *
+ * ── ⚠ `currency` BOŞ GİDEMEZ — 11 Eki 2026 canlı hatası ──
+ * İlk hâli `g.paraBirimi.trim().toLowerCase()` yazıyordu, yani Notion'daki
+ * `Para Birimi` alanı boşsa `currency: ''` gönderiyordu. Meta boş dizeyi
+ * "eksik" sayıyor: `OCAK-9CL9` test olayında `value: 300` ulaştı,
+ * `currency` missing göründü ve Events Manager
+ * `s2s_invalid_purchase_event_actions` tanısı düştü.
+ *
+ * Kök sebep, kodun geri kalanıyla TUTARSIZLIKTI: `api/kayit.ts:221` boş alanı
+ * `'TRY'`ye düşürüyor, `posta.ts`in `tutarMetni`'si `TL`ye düşürüyor,
+ * tarayıcıdaki `purchase` olayı `paraBirimiNormalle` ile `TRY`ye düşürüyor —
+ * YALNIZ bu modül ham değeri olduğu gibi gönderiyordu. Ölçüm (10 Eki, canlı
+ * Notion): 29 etkinliğin 6'sında alan boş, 23'ünde `TRY`, TRY dışı **0**.
+ *
+ * Artık `paraBirimiNormalle` kullanılıyor: dolu ve geçerli bir kod varsa O
+ * gider (şema `USD` ve `EUR`a açık), yoksa `TRY`. Fallback sabit yazılmadı,
+ * İŞ B'nin zaten test edilmiş kuralı çağrıldı — iki yerde iki kural, bu
+ * hatanın kendisiydi.
  */
 export function purchaseOlayi(g: PurchaseGirdisi): Record<string, unknown> {
   const kayitId = g.kayitId.trim();
@@ -139,7 +162,7 @@ export function purchaseOlayi(g: PurchaseGirdisi): Record<string, unknown> {
     },
     custom_data: {
       value: g.tutar,
-      currency: g.paraBirimi.trim().toLowerCase(),
+      currency: paraBirimiNormalle(g.paraBirimi).toLowerCase(),
     },
   };
 }

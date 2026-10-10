@@ -247,7 +247,121 @@ describe('Koşul 5 — yükte yalnız Kayıt ID, tutar, para birimi, zaman', () 
   it('para birimi küçük harfe iniyor, TRY dışı değer korunuyor', () => {
     expect((purchaseOlayi({ ...G, paraBirimi: 'EUR' }) as any).custom_data.currency).toBe('eur');
     expect((purchaseOlayi({ ...G, paraBirimi: ' try ' }) as any).custom_data.currency).toBe('try');
+    // Şema `USD`ye de açık (Notion select: TRY · USD · EUR).
+    expect((purchaseOlayi({ ...G, paraBirimi: 'usd' }) as any).custom_data.currency).toBe('usd');
   });
+});
+
+/**
+ * ── REGRESYON · 11 Eki 2026 canlı hatası ──
+ *
+ * Meta Events Manager `s2s_invalid_purchase_event_actions`:
+ * *"purchase event sent from your server is missing a value parameter."*
+ * Test olayı `OCAK-9CL9` (havale, 11 Eki 00:40): `value: 300` ULAŞTI,
+ * `currency` **missing** göründü.
+ *
+ * Kök sebep: `purchaseOlayi` ham `Para Birimi`yi gönderiyordu ve kayda bağlı
+ * iki etkinliğin de alanı Notion'da BOŞTU → `currency: ''` → Meta "eksik"
+ * saydı. Ölçüm (10 Eki, canlı Notion): 29 etkinliğin 6'sı boş, 23'ü `TRY`,
+ * TRY dışı 0.
+ *
+ * Aşağıdaki testler iki şeyi kilitliyor: boş alan ASLA boş `currency`
+ * üretmez, ve dolu bir alan EZİLMEZ.
+ */
+describe('REGRESYON — `currency` boş gidemez (OCAK-9CL9, 11 Eki 2026)', () => {
+  const G = { kayitId: 'OCAK-9CL9', tutar: 300, anSaniye: AN };
+
+  it('Notion alanı BOŞKEN `currency` TRY\'ye düşüyor — boş dize GİTMİYOR', () => {
+    for (const bos of ['', '   ']) {
+      const cd = (purchaseOlayi({ ...G, paraBirimi: bos }) as any).custom_data;
+      expect(cd.currency, JSON.stringify(bos)).toBe('try');
+      expect(cd.value).toBe(300);
+    }
+  });
+
+  it('hatanın TAM senaryosu: havale + boş Para Birimi → value VE currency dolu', () => {
+    const cd = (purchaseOlayi({ ...G, paraBirimi: '' }) as any).custom_data;
+    expect(cd).toEqual({ value: 300, currency: 'try' });
+  });
+
+  it('bozuk/çöp değer de TRY\'ye düşüyor — geçersiz kod Meta\'ya gitmiyor', () => {
+    for (const cop of ['Türk Lirası', 'TL', 'T', '₺', 'TRYX']) {
+      expect((purchaseOlayi({ ...G, paraBirimi: cop }) as any).custom_data.currency, cop).toBe('try');
+    }
+  });
+
+  it('`custom_data` HER ZAMAN iki alanı da taşıyor — hiçbir girdide eksilmiyor', () => {
+    for (const pb of ['', '  ', 'TRY', 'eur', 'USD', 'çöp']) {
+      const cd = (purchaseOlayi({ ...G, paraBirimi: pb }) as any).custom_data;
+      expect(Object.keys(cd).sort(), pb).toEqual(['currency', 'value']);
+      expect(typeof cd.value, pb).toBe('number');
+      expect(cd.currency, pb).toMatch(/^[a-z]{3}$/);
+    }
+  });
+
+  it('gövdeye kadar taşınıyor — uca giden JSON\'da currency dolu', () => {
+    const govde = purchaseGovdesi({ ...G, paraBirimi: '' }, metaAyarlariniOku(AYAR_ENV)!);
+    const olay = (govde.data as Record<string, any>[])[0];
+    expect(olay.custom_data).toEqual({ value: 300, currency: 'try' });
+    expect(JSON.stringify(govde)).toContain('"currency":"try"');
+  });
+
+  it('DOLU alan EZİLMİYOR — fallback yalnız boşlukta devreye giriyor', () => {
+    expect((purchaseOlayi({ ...G, paraBirimi: 'EUR' }) as any).custom_data.currency).toBe('eur');
+  });
+
+  it('kural İŞ B ile AYNI kaynaktan — iki yerde iki kural bu hatanın kendisiydi', async () => {
+    const { paraBirimiNormalle } = await import('./olcum');
+    for (const pb of ['', 'TRY', 'EUR', 'çöp']) {
+      expect((purchaseOlayi({ ...G, paraBirimi: pb }) as any).custom_data.currency).toBe(
+        paraBirimiNormalle(pb).toLowerCase(),
+      );
+    }
+  });
+});
+
+/**
+ * ── DEDUPE · tarayıcı `eventID` ↔ sunucu `event_id` ──
+ *
+ * Kart ödemesinde aynı satın alma İKİ yoldan bildiriliyor: tarayıcıdan
+ * (`/odeme/tamam` → GTM Purchase etiketi, `eventID: {{DLV - kayit_id}}`) ve
+ * sunucudan (callback → `odemeBildir` → `purchaseBildir`). İki kimlik
+ * ayrışırsa aynı ciro Meta'da İKİ KEZ sayılır.
+ *
+ * Her iki taraf da değeri Notion `Kayıt ID` title alanından alıyor ve ikisi
+ * de o değerle Notion sorgusu YAPMADAN olay atmıyor — yani kimlikler sessizce
+ * ayrışamaz. Aşağıdaki test iki modülün kurucusunu doğrudan karşılaştırıyor.
+ */
+describe('DEDUPE — iki yolun olay kimliği AYNI', () => {
+  it('`purchaseOlayi.event_id` ile tarayıcının `purchase.kayit_id` birebir eşit', async () => {
+    const { purchaseYuku } = await import('./olcum');
+    for (const ref of ['OCAK-9CL9', 'OCAK-1234', 'OCAK-ABCD']) {
+      const sunucu = purchaseOlayi({ kayitId: ref, tutar: 300, paraBirimi: 'TRY', anSaniye: AN }) as any;
+      const tarayici = purchaseYuku({ kayitId: ref, deger: 300, paraBirimi: 'TRY' });
+      expect(sunucu.event_id, ref).toBe(tarayici.kayit_id);
+      expect(sunucu.event_id, ref).toBe(ref);
+    }
+  });
+
+  it('boşluk hijyeni iki tarafta da AYNI — biri trim\'leyip öteki trim\'lemezse ayrışırlardı', async () => {
+    const { purchaseYuku } = await import('./olcum');
+    const kirli = '  OCAK-9CL9  ';
+    const sunucu = purchaseOlayi({ kayitId: kirli, tutar: 1, paraBirimi: 'TRY', anSaniye: AN }) as any;
+    expect(sunucu.event_id).toBe(purchaseYuku({ kayitId: kirli, deger: 1 }).kayit_id);
+    expect(sunucu.event_id).toBe('OCAK-9CL9');
+  });
+
+  it('`event_id` HASH DEĞİL — `external_id` hash\'li, ikisi karışmamalı', () => {
+    const olay = purchaseOlayi({ kayitId: 'OCAK-9CL9', tutar: 1, paraBirimi: 'TRY', anSaniye: AN }) as any;
+    expect(olay.event_id).toBe('OCAK-9CL9');
+    expect(olay.user_data.external_id).not.toBe(olay.event_id);
+    expect(olay.user_data.external_id).toMatch(/^[0-9a-f]{64}$/);
+  });
+});
+
+/** Zarf: gövdenin olayı saran kısmı — akış anahtarı, token, uç adresi. */
+describe('gövde ve zarf — akış anahtarı · token · uç', () => {
+  const G = { kayitId: 'OCAK-1234', tutar: 937.5, paraBirimi: 'TRY', anSaniye: AN };
 
   it('gövde (TEST akışı): olay + test kodu + token', () => {
     const govde = purchaseGovdesi(G, metaAyarlariniOku(AYAR_ENV)!);
