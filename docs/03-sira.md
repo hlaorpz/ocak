@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 8 Ekim 2026 · **Site dili + Anadolu takvimi turu**
+**Son güncelleme:** 10 Ekim 2026 · **B118 ölçüm katmanı + piksel kimliği turu**
 
 ---
 
@@ -15,6 +15,8 @@ Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 
 **✅ B193 kapandı (7 Eki).** Sıranın önündeki iş artık **B118** (rıza banner'ı).
 ⚠ **B215 — 12 Ekim 15:00'ten önce** (test satırları + 1 TL iadeleri).
+
+**✅ B118 kapandı (10 Eki).** **Sıradaki iş (ölçüm/reklam hattı, 10 Eki):** (1) ilk **gerçek** ödemede doğrulama (Kaan) — Events Manager → OCAK Web: Purchase `value` + `currency` taşıyor, Diagnostics'te `s2s_invalid_purchase_event_actions` yeni olay almıyor, kart ödemesinde Purchase *Browser + Server* tekilleşmiş; Notion `Ölçüm Gitti` işaretli, değilse Vercel log'unda `[meta-olcum]` satırı → (2) **test kampanyası** (Kaan; plan ayrı sohbette) → (3) **B228** çift Lead kök nedeni (CC) → (4) **B227** test fixture'ı (CC). Yan işler: `tools/ocak-kart-derleyici.html` commit bekliyor — kartlara elle görsel atama modu, 9 Eki (CC) · repo iCloud'a bağlı Masaüstü'nden taşınmalı; `dist/` içinde çakışma kopyaları var (CC teşhisi, 9 Eki) · Etkinlikler `Para Birimi` 29 kaydın 6'sında boş (CC ölçümü, 10 Eki). Alan **Etkinlikler** DB'de, Kayıtlar'da değil; görünümde gizli olabilir. Kod boşu TRY sayıyor, veri yine de doldurulur (Kaan). **Meta Business temizliği (19 Ekim'den sonra, Kaan):** "Test" uygulaması `1946151586054575` ve "Kaan Sonat" uygulaması `1645031097179689` — ikisi de hiç olay almamış; başka projede kullanılmadığı teyit edilmeden silinmez, uygulama silme geri alınmaz · boş "Kaan" işletme portföyü · reklam hesabı `1634729551037322` OCAK portföyünün dışında ("Other assets"); OCAK Web'e **bağlandı, sahiplenilmedi**, taşıma ayrı karar (KARAR 635) · portföy erişimlerinin gözden geçirilmesi. ⚠ `861407993595884` ("Ocak" uygulaması) **kalır** — WhatsApp ve Instagram ona bağlı; "Link to dataset" ve "Get Started"a dokunulmaz.
 
 **Sıradaki iş (kod/altyapı hattı, 8 Eki):** **Başvuru → kayıt köprüsü → havale otomatik eşleştirme → B68.** ✅ n8n ödeme onayı **düştü** (B211, 8 Eki — n8n yalnız saat, mantık `/api/bildirim-tara`'da). B69'un konusu düştü (aşağıda).
 ✅ Kuyruğun başındaki **B64 düştü** (11 Eyl, kapandı) — 20 Ağustos'tan beri değişmeyen

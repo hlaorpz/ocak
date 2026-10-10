@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 8 Ekim 2026 · **Site dili + Anadolu takvimi turu**
+**Son güncelleme:** 10 Ekim 2026 · **B118 ölçüm katmanı + piksel kimliği turu**
 
 ---
 
@@ -2130,9 +2130,9 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Sınır:** marka sesi kanonu (`10-marka.md` · `20-ref-icerik-dili.md`) bağlayıcıdır —
   reçete vermez, kürsü kurmaz.
 
-## B118 — Çerez rızası: metin ile fiili davranış çelişiyor
+## B118 — Çerez rızası: metin ile fiili davranış çelişiyor ✅
 
-- [ ] **Sahip:** Kaan (karar) + CC (uygulama)
+- [x] **Sahip:** Kaan (karar) + CC (uygulama)
 - **Kaynak:** claude.ai reklam/KVKK sohbeti (özet, 19 Ağu).
 - **İçerik:** Gizlilik metni analitik/pazarlama çerezlerini rızaya bağlıyor; rızayı toplayan banner yok,
   dolayısıyla ölçüm etiketleri onaydan önce çalışıyor.
@@ -2141,14 +2141,16 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Bağ:** B16 (ilk hafta paketi) içindeki Consent Mode v2 ayağı budur; bu madde onu daraltır ve sahiplendirir.
 - ⚠ **1 Eki — aciliyet değişti.** robots Allow (KARAR 599) ile site aranabilir; etiketler hâlâ
   rızasız çalışıyor, artan trafik de rızasız ölçülüyor. B193'ten sonra sıradaki budur.
+- ✅ **KAPANDI (9–10 Eki).** Banner ve metin aynı turda gitti, atomik şart tuttu. Kapı sert: kabul edilmeden GTM yüklenmez, reddeden kadından üçüncü taraf isteği **0** (Claude.ai Chrome ölçümü, 9 Eki, `55bbce7` canlıyken). B16'nın Consent Mode v2 ayağı bu kapıyla **daraldı**: rızasız modelleme pingi kullanılmaz (**KARAR 627**). Gizlilik metninin **hukuk teyidi 14 Eki** bekliyor; metin değişirse ayrı satır. Tur: `90-kronoloji/2026-10.md` 10 Eki kaydı.
 
-## B119 — Bülten bölümü e-posta ölçümünü söylemiyor
+## B119 — Bülten bölümü e-posta ölçümünü söylemiyor ✅
 
-- [ ] **Sahip:** Kaan
+- [x] **Sahip:** Kaan
 - **Kaynak:** claude.ai reklam/KVKK sohbeti (özet, 19 Ağu).
 - **İçerik:** Açılma/tıklama ölçümü açık; aydınlatma metninin bülten bölümü bunu belirtmiyor.
   Bir cümle yeterli: etkileşim verisinin işlendiği + amacı.
 - **Bağ:** B118 ile aynı turda gider (tek metin dokunuşu, iki eksik).
+- ✅ **KAPANDI (10 Eki).** B118 turunda gizlilik metnine girdi (`02554a2`): `src/pages/gizlilik.astro:141-142` — *"Ateş Mektupları'nda e-postanın açılıp açılmadığı ve içindeki bağlantılara tıklanıp tıklanmadığı, mektupları iyileştirmek amacıyla ölçülür."* Bülten bölümünün hemen altında, e-posta verisini anlatan paragrafı izliyor. **Hukuk teyidi 14 Eki** bekliyor (B118 ile aynı metin); uzman düzeltirse ayrı satır.
 
 ## B120 — Seans arşivinin ilk dönem yolu kararsız
 
@@ -3983,3 +3985,36 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ölçüm:** Claude.ai Notion bağlantısı, Etkinlikler DB, SQL `instr("Detay", …)` + `"Kayıt Var"`, 8 Eki. ~19:25 UTC'de altı kayıtta eski dize vardı, `Kayıt Var` işaretliydi; ~19:27'de gövdeler yeni hâlde, ~19:30'da `Kayıt Var` altısında işaretsiz. Korpus satırları: `docs_ara` regex `Tema ve pratik kaydedilir|Açık Kapı kaydedilir|kaydı hemen ardından|sonradan izle`, `f2bd9df`. ⚠ Notion kapalı yüzey — CC doğrulamaya çalışmaz.
 - **Kapanış şartı:** (c) üç korpus satırı güncellenir ya da düşüş notu alır · deploy + bir etkinlik sayfası gözle.
 - **Bağ:** KARAR 626 · KARAR 547 · 558 · B167
+
+## B227 — Meta piksel kimliği korpusta ve test fixture'ında yanlış
+
+- [ ] **Sahip:** CC (fixture + korpus) · **Tetikleyici:** bir sonraki ölçüm dokunuşu
+- **Ne:** `861407993595884` korpusta yedi satırda "Meta Pixel" diye geçiyor; bu numara Meta **uygulama** kimliği (WhatsApp/Instagram). Doğru web veri kümesi **OCAK Web `1003852792761114`** (KARAR 633).
+- **Hata kaynağı:** `90-kronoloji/2026-05.md:2723` *"Sonuçta Pixel ID `861407993595884` aldı"*. Ağustos kaydı (`2026-08.md:3337`) aynı numaranın WhatsApp app'i olduğunu fark etti, Mayıs satırı düzelmedi; iki kayıt o tarihten beri çelişiyordu.
+- **Yanlış etiketli satırlar (CC grep, 10 Eki, `docs/` + `src/`):** `20-ref-site.md:78` (bu patch'te düzeltildi) · `90-kronoloji/2026-05.md:2723` · `90-kronoloji/00-devir.md:321` · `_arsiv/ocak-kronoloji-v1.md:2813 · 5090 · 5567` · `_arsiv/ocak-pilot-v52.md:268`. Kronoloji ve arşiv satırlarına **dokunulmaz** (append-only, KARAR 61); bu borç onların düzeltme notudur.
+- **Doğru etiketli, dokunulmayacak:** `20-ref-bot.md:469 · 1047` · `90-kronoloji/2026-07.md:1163` · `2026-08.md:3337` · iki arşiv satırı.
+- **Kod:** üretim kodunda **0** satır, kimlik `process.env.META_PIXEL_ID`'den okunuyor (KARAR 632). `src/lib/meta-olcum.test.ts` fixture'ında: `:27 · :50 · :88 · :97 · :276 · :279 · :305` (CC raporu "6 satır" dedi, listede yedi numara var; fixture değişirken grep ile yeniden say). Test sabiti, ürüne gitmez, ama korpus hatasını taşır.
+- **Kapanış şartı:** fixture `1003852792761114`'e ya da açıkça sahte bir değere çevrilir (ayrı kod commit'i, testler yeşil).
+- **Bağ:** KARAR 146 · 632 · 633
+
+## B228 — Lead ve GA4 form_submit tek gönderimde iki kez tetikleniyor
+
+- [ ] **Sahip:** CC (teşhis) + Kaan (GTM) · **Tetikleyici:** Lead'e optimize edilen ilk kampanyadan önce
+- **Ölçüm (Kaan, Tag Assistant + Meta Test events, 10 Eki ~17:27 ve ~17:29 UTC):** `Meta Pixel - Lead` ve `GA4 Event - form_submit` hem `gtm.formSubmit` hem `form_submit` olayında *Succeeded*. Meta her kayıtta **iki Lead** aldı, bir saniye arayla. Lead etiketinin kodu tek satır (`fbq('track','Lead',{form_type:'{{DLV - form_type}}'})`); tetikleyici `Custom Event - form_submit`, olay adı `form_submit`, *All Custom Events*. Kök neden **bulunmadı**.
+- **Geçici çözüm (Kaan, 10 Eki):** iki etikette *Tag firing options: Once per page*; GTM'de yayında.
+- **Kapanış şartı:** kök neden yazılır; Preview'da tek form gönderimi tek Lead ve tek GA4 `form_submit` üretir.
+- ⚠ GTM ve Meta kapalı yüzey — CC doğrulamaya çalışmaz; teşhisi koddan (`form_submit` push'u ve GA4 enhanced measurement form olayları) yürütür.
+
+## B229 — Sunucu ve tarayıcı Purchase'ı farklı `action_source` taşıyor
+
+- [ ] **Sahip:** CC · **Tetikleyici:** gizlilik metninin hukuk teyidi (14 Eki)
+- **Ne:** sunucu `action_source: 'other'`, tarayıcı `website`. Tekilleştirme `event_name` + `event_id` ile yapıldığı için çift sayım yok; Meta tutarlılık öneriyor.
+- **Kapanış şartı:** hukuk teyidinden sonra sunucu `website`'a geçer ya da `other`'ın gerekçesi yazılır.
+- **Bağ:** KARAR 634
+
+## B230 — `20-ref-*` ölçüm katmanını bilmiyor
+
+- [ ] **Sahip:** Claude.ai (yazım) → CC (uygulama)
+- **Ne:** `20-ref-site.md` tracking bölümü GTM v5 envanterini, rıza kapısını ve sunucu Purchase'ı yazmıyor. `20-ref-notion.md` Kayıtlar'ın yeni alanlarını bilmiyor: `UTM Kaynak` · `UTM Ortam` · `UTM Kampanya` · `UTM İçerik` · `Ölçüm Rızası` · `Ölçüm Gitti` (Kaan, 9–10 Eki). Etkinlikler `Para Birimi` alanının sunucu olayını beslediğini de bilmiyor.
+- **Kapanış şartı:** iki dosyaya ölçüm katmanı bölümü girer.
+- **Bağ:** B220 (aynı sınıf) · KARAR 627–635

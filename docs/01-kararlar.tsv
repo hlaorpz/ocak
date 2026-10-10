@@ -625,3 +625,12 @@ no	tarih	baslik	durum	iliski	kaynak
 624	2026-10-08	Eşik Açık Kapısı'nın devamı açık seridir — "Eşikte Üç Akşam": üç çember tek tek kaydolunur, Açık Kapı ön koşul olmaz, Yolculuk'un beş eşiğini sıralamaz	ONERI	↔44	2026-10.md#k624
 625	2026-10-08	Claude.ai Notion Sayfalar gövdesine yalnız Kaan'ın konu bazlı açık onayıyla yazar — bul-değiştir + yeniden okuma; Etkinlikler Detay alanına yazmaz	AKTIF		2026-10.md#k625
 626	2026-10-08	Açık Kapı'da kayıt yoktur — gelemeyecek kadın buluşmadan önce selam@ocak.biz'e yazar, dilediği bir Açık Kapı için ücretsiz katılım kodu alır; kodu ekip elle gönderir	AKTIF	←547 · ↔558 · ↔623	2026-10.md#k626
+627	2026-10-09	Rıza kapısı serttir — kabul edilmeden GTM hiç yüklenmez; reddeden kadından üçüncü taraf isteği çıkmaz, Consent Mode'un rızasız modelleme pingi kullanılmaz	AKTIF		2026-10.md#k627
+628	2026-10-09	Purchase iki yoldan gider — tarayıcıdan yalnız kart ödemesinde (/odeme/tamam), havale yalnız sunucudan; iki yolun olay kimliği Kayıt ID'dir	AKTIF		2026-10.md#k628
+629	2026-10-09	UTM yeni alanlara yazılır (UTM Kaynak · Ortam · Kampanya · İçerik), ilk dokunuş kazanır; Kayıt Kaynağı kanal bilgisidir, dokunulmaz	AKTIF		2026-10.md#k629
+630	2026-10-09	Kişisel veri dataLayer'a girmez — olaylar yalnız Kayıt ID, tutar, para birimi, etkinlik slug'ı ve yöntem taşır	AKTIF		2026-10.md#k630
+631	2026-10-09	Ölçüm kaydı asla düşürmez — UTM, rıza ya da Meta gönderimi başarısız olursa kayıt, ödeme ve bildirim yolu yürür (fail-open)	AKTIF		2026-10.md#k631
+632	2026-10-09	KARAR 146 sürer — kod yalnız GTM'i ve dataLayer'ı bilir; piksel ve GA4 kimliği koda girmez, sunucu tarafı kimliği env'den okur	AKTIF	↔146	2026-10.md#k632
+633	2026-10-10	Meta web veri kümesi "OCAK Web" 1003852792761114'tür — 861407993595884 Meta uygulama kimliğidir (WhatsApp/Instagram), piksel olarak kullanılmaz	AKTIF	↔146 · ↔632	2026-10.md#k633
+634	2026-10-10	Sunucu Purchase (CAPI) kuralları — Graph v26.0; yalnız Ölçüm Rızası varsa; Ölçüm Gitti ile tek sefer; event_id Kayıt ID, external_id SHA-256(Kayıt ID); para birimi tek kuraldan (boşsa TRY); test kodu isteğe bağlı; action_source şimdilik other	AKTIF	←628 · ↔631	2026-10.md#k634
+635	2026-10-10	Meta hesap düzeni — CAPI anahtarı yalnız OCAK Web'e yetkili; portföy geneli "Conversions API with Meta" ve otomatik olaylar kapalı; reklam hesabı veri kümesine bağlanır, portföye sahiplenme ayrı karardır	AKTIF	↔633	2026-10.md#k635

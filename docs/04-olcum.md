@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 09.10.2026 12:14 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 10.10.2026 21:32 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `7ecc307` | `git log -1` |
-| HEAD tarihi | 2026-10-09 | `git log -1 --date=short` |
-| HEAD konusu | docs: Site dili + Anadolu takvimi turu — KARAR 617–626, B221–B226, 492 SUPERSEDE | `git log -1 --format=%s` |
-| çalışma ağacı | **temiz** | `git status --porcelain` |
+| canlı HEAD | `5cbbb1b` | `git log -1` |
+| HEAD tarihi | 2026-10-11 | `git log -1 --date=short` |
+| HEAD konusu | fix(olcum): Meta Purchase'ta boş currency — OCAK-9CL9 (B118 İŞ D) | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 7 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **2** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **76** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **83** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -45,22 +45,22 @@
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 191 |
-| `docs/02-borclar.md` | 3985 |
-| `docs/03-sira.md` | 968 |
+| `docs/00-durum.md` | 194 |
+| `docs/02-borclar.md` | 4020 |
+| `docs/03-sira.md` | 970 |
 | `docs/05-harita.md` | 187 |
-| `docs/01-kararlar.tsv` | 627 |
+| `docs/01-kararlar.tsv` | 636 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **191** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **194** — ✅ altında
 
 ## BORÇ SAYIMI
 
 | alan | değer | kaynak |
 |---|---|---|
-| toplam madde | 226 | `grep -cE '^## B'` |
-| damgalı (kapandı/çözüldü/geri çekildi) | 60 | `^## B` başlıklarında `[✅❌]` |
+| toplam madde | 230 | `grep -cE '^## B'` |
+| damgalı (kapandı/çözüldü/geri çekildi) | 62 | `^## B` başlıklarında `[✅❌]` |
 | iş değil (ertelendi/planlı) | 2 | `^## B` başlıklarında `[⏸🔵]` |
-| **açık** | **164** | toplam − damgalı − iş değil |
+| **açık** | **166** | toplam − damgalı − iş değil |
 | mükerrer başlık | 0 | `^## B[0-9]+` → `uniq -d` |
 
 *Ölçüt başlıktaki **damga**dır, kelimenin kendisi değil (10 Ağu B01 kaydı).*
@@ -69,8 +69,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **626** | — |
-| satır sayısı (başlık dahil) | 627 | — |
+| son KARAR numarası | **635** | — |
+| satır sayısı (başlık dahil) | 636 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |
