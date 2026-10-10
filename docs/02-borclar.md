@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ekim 2026 · **Pazarlama planı v2 kapanış turu**
+**Son güncelleme:** 11 Ekim 2026 · **Gündüz görselleri ve kart derleyici v2 turu**
 
 ---
 
@@ -4046,10 +4046,29 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 
 ## B234 — Gündüz kart aracı üç sürümde, hangisinin kanonik olduğu kararsız
 
-- [ ] **Sahip:** Claude.ai (Midjourney sohbeti) + CC · **Tetikleyici:** ilk gündüz kartı derleyiciyle basılmadan önce
+- [x] **Sahip:** Claude.ai (Midjourney sohbeti) + CC · **Tetikleyici:** ilk gündüz kartı derleyiciyle basılmadan önce
 - **Ne:** gündüz kartını basabilen üç şey var, biri kanonik değil:
   (a) `tools/ocak-kart-derleyici.html` — depodaki derleyici; 9 Ekim'den beri commit bekleyen yerel değişikliği var (`03-sira.md`, ölçüm/reklam hattı yan işleri). Gündüz ışığı yok (Kaan, 9 Eki: *"Kart derleyici gündüz kartı basamıyor"*).
   (b) `pazarlama-ekler/araclar/OCAK-kart-derleyici-gunduz-onerisi.html` — Claude.ai, 10–11 Ekim gecesi, Kaan'ın sohbete verdiği derleyici HTML'inin üstüne "Işık: Gece / Gündüz" seçici, kömür/toprak/zeytin metin rengi, gündüzde toprak vurgu, tek renk köz işaret ve üç gündüz ön ayarı. **Kaan kullanmadı.** Kaan'ın verdiği HTML'in (a) ile aynı olup olmadığı ölçülmedi.
   (c) `pazarlama-ekler/araclar/ocak_kart.py` — Python kart basıcı (Pillow); 10 Ekim setindeki 44 kart onunla basıldı. İşareti Cormorant Garamond Light "O" ile yaklaşık çizer; (b) ise derleyicinin gömülü SVG'sinden türetilmiş tek renk köz işareti kullanır (`pazarlama-ekler/isaret/`).
 - **Kapanış şartı:** biri kanonik seçilir ve yerine konur; diğerleri arşive iner; işaret dosyalarının kanonik yeri yazılır.
 - **Bağ:** KARAR 522 · 637 · B86 · B143
+- ✅ **KAPANDI (11 Eki, KARAR 652).** Kanonik: (a), derleyici v2 (`4886492 · d3162ef`). (b)'nin gündüz teması ile (a)'nın commit bekleyen "kart başına görsel" değişikliği üç yönlü birleştirildi; ikisi de aynı commit'li sürümden türemişti (md5 `cbb156d5…`, CC ölçümü 11 Eki). (b)'nin üç gündüz ön ayarı (metin ortada, işaret altta) alınmadı: gündüz artık gecenin dizgisini okuyor. **Gece çıktısı değişmedi:** on karşılaştırmada farklı piksel 0 (Claude.ai, başsız Chromium, `Math.random` sabit). İşaretin kanonik yeri: derleyicide gömülü iki SVG (korlu ve tek renk köz; krem sürüm köz sürümünden çalışma anında türetilir); dosya kopyaları `pazarlama-ekler/isaret/`. (b) ve (c) **yerinde duruyor**, arşive inmedi → **B235**.
+
+## B235 — Korpus ve basılı kartlar eski basıcıyı anlatıyor
+
+- [ ] **Sahip:** Claude.ai (yazım, basım) + Kaan (karar) → CC (uygulama)
+- **Ne:** KARAR 652 derleyiciyi kanonik yaptı; dört yer hâlâ Python basıcının (`ocak_kart.py`) dünyasında:
+  (1) `docs/skills/ocak-kart/SKILL.md` — `ocak_kart.py` komutlarını ve onun zemin adlarını (`kirec`, `zeytin-golgesi`) anlatıyor.
+  (2) `docs/pazarlama/GORSEL-gunduz-paleti-ve-MJ.md` bölüm 3 ve 9, `icerik/` dosyalarının "Üretim ve skill" satırları — vurgu Toprak `#B4654A`, işaret "O" harfi, basıcı `ocak_kart.py` diyor.
+  (3) `pazarlama-ekler/kartlar-2026-10-10/` — 44 kart Python basıcının biçiminde: işaret harf olarak ve büyük, punto 66–78, harf aralığı yok. Derleyici biçiminde değil (derleyici: punto 95, harf aralığı 0.01, işaret genişliğin %7'si; ölçüm: iki aracın kaynak kodu, 11 Eki). `icerik/` dosyalarında bu kartlar "Hazır" yazıyor.
+  (4) `pazarlama-ekler/araclar/OCAK-kart-derleyici-gunduz-onerisi.html`, `ocak_kart.py`, `kartlari_bas.py` yerinde; arşive inmedi (yolları 1 ve 2'deki dosyalarda geçiyor).
+- **Kapanış şartı:** skill derleyiciye göre yeniden yazılır · 44 kart derleyiciyle yeniden basılır ya da "eski biçim, yayınlanmaz" diye işaretlenir · 2'deki satırlar düzeltilir · 4'teki üç dosya arşive iner.
+- **Bağ:** B234 · KARAR 652 · 653
+
+## B236 — Gündüz zeminleri ızgara çözünürlüğünde; iki kireç zemini kaba dokulu
+
+- [ ] **Sahip:** Kaan (üretim) → Claude.ai (ölçüm)
+- **Ne:** z12–z15 Midjourney ızgara karesi olarak indi: dördü de **960×1200** (yöntem: PIL `Image.size`, 10 Eki); kart 1080×1350, derleyici büyütüyor ve "BÜYÜTÜYOR" uyarısı veriyor. Gece zeminleri 1968×2464'tü. v8.1 arayüzünde büyütmenin yeri bulunamadı (kare üstünde Vary subtle · Vary strong · Animate göründü). Ayrıca z14 ve z15 kaba dokulu: derleyicinin ölçtüğü ince doku sertliği 23,2 ve 20,4; z12 12,6, z13 13,8 (yöntem `31-zemin.md` gündüz bölümünde). Derleyici bu ikisini yumuşatarak basıyor; daha sakin bir kireç duvar üretilmedi.
+- **Kapanış şartı:** karta giden zeminlerin yüksek çözünürlüklü sürümü iner ve ölçümler yeniden yazılır · sertliği 17'nin altında bir düz kireç zemini üretilir ya da yumuşatma kalıcı çözüm olarak kabul edilir.
+- **Bağ:** B141 · B170 · KARAR 650

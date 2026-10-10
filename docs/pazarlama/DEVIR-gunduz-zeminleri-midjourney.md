@@ -1,6 +1,8 @@
 # Devir · Gündüz zeminleri için Midjourney sohbeti
 
 > **Kurucu seçildi (10 Ekim 2026, Kaan).** Gündüz çapası: `https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png` · Bu dosyadaki bütün istemlerde `--sref` bu adresle yazılıdır; `GUNDUZ-URL` geçen yerler bu adres demektir. Karenin kopyası depoda: `pazarlama-ekler/araclar/zemin/gunduz-kurucu.png` (960×1200). Kaan seçti; **mühürlenmedi** — mühür ve gündüz zeminleri Midjourney sohbetinin işi (`03-sira.md`, KARAR ADAYLARI).
+>
+> **11 Ekim 2026 — mühürlendi (KARAR 650) ve `--sw` 25 oldu (KARAR 651).** Bu dosyadaki D1 gövdesi üretimde koyu çıktı; çalışan istemler, zemin envanteri (z12–z15) ve gündüz ölçütleri `docs/31-zemin.md` → **GÜNDÜZ ZEMİNLERİ**. Kart aracı `tools/ocak-kart-derleyici.html`'dir (KARAR 652); bu dosyadaki `ocak_kart.py` anlatısı ve "vurgu Toprak" kuralı tarihçedir — vurgu `#A04F36` (KARAR 653). Düzeltilmemiş satırlar: **B235**.
 
 Bu dosyayı yeni sohbetin ilk mesajına ekle. Tek başına yeter; başka dosya gerekmez.
 
@@ -91,12 +93,12 @@ Kilitli kuyruk: `--style raw --v 8.1 --chaos 5`. Karusel iç kartları tek üret
 sunlit limewashed wall in the early morning, raking light from the left with the source out of frame, one long soft diagonal shadow in the lower third, warm cream plaster with fine trowel texture, upper two thirds calm and almost empty, muted earth tones, quiet, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 60 --chaos 5 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, furniture, people, faces, text, watermark
 ```
 
-Kurucu seçildikten sonra aynı istem `--sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60` ile.
+Kurucu seçildikten sonra aynı istem `--sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25` ile.
 
 **D2 · Zeytin dalı gölgesi (söz kartları, story zeminleri)**
 
 ```
-shadow of an olive branch falling across a sunlit limewashed wall, late morning, warm cream plaster, soft-edged leaf shadows in the lower third, upper two thirds calm and empty, muted olive and clay tones, quiet, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 70 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, flowers, people, faces, text, watermark
+shadow of an olive branch falling across a sunlit limewashed wall, late morning, warm cream plaster, soft-edged leaf shadows in the lower third, upper two thirds calm and empty, muted olive and clay tones, quiet, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 70 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, flowers, people, faces, text, watermark
 ```
 
 Story için aynı istem `--ar 9:16`.
@@ -104,7 +106,7 @@ Story için aynı istem `--ar 9:16`.
 **D3 · Eşiğin sabahı (Çember daveti; C03 kapısının gündüzü)**
 
 ```
-old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 50 --no pure white, blown highlights, blue tones, teal, grey light, night, flames, people, faces, text, watermark
+old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, night, flames, people, faces, text, watermark
 ```
 
 Gece V03 gövdesi figür üretmişti (B183: "invitation without a figure" kavramı çağırıyor). Bu istemde o ifade yok; yine de her karede kapı aralığı gözle kontrol edilir.
@@ -112,7 +114,7 @@ Gece V03 gövdesi figür üretmişti (B183: "invitation without a figure" kavram
 **D4 · Sabah masası (Yanına Al, pratik kartları)**
 
 ```
-still life on unbleached linen in soft morning light from the left: an unlit cream candle with a blackened wick, a closed notebook with a pencil, a small tulip-shaped glass of amber tea with faint steam, a sprig of olive, long soft shadows, warm cream and clay tones, calm empty space above, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, flowers, people, faces, text, watermark
+still life on unbleached linen in soft morning light from the left: an unlit cream candle with a blackened wick, a closed notebook with a pencil, a small tulip-shaped glass of amber tea with faint steam, a sprig of olive, long soft shadows, warm cream and clay tones, calm empty space above, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, flowers, people, faces, text, watermark
 ```
 
 Tek kart için; karusel zemini olarak kullanılmaz (nesne zemin). Tercih edilen kaynak telefonla gerçek çekimdir.
@@ -120,7 +122,7 @@ Tek kart için; karusel zemini olarak kullanılmaz (nesne zemin). Tercih edilen 
 **D5 · Tek nesne (Bir Kadın Vardı, K1)**
 
 ```
-[NESNE] resting on a sunlit limewashed ledge, single object, morning light from the left, one long soft shadow, warm cream plaster background, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, flowers, people, faces, text, watermark
+[NESNE] resting on a sunlit limewashed ledge, single object, morning light from the left, one long soft shadow, warm cream plaster background, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, flowers, people, faces, text, watermark
 ```
 
 | Kadın | `[NESNE]` |
@@ -153,7 +155,7 @@ Gece ölçütlerinin (üstKaranlık, ton, luma; `31-zemin.md`) gündüz eşleri.
 ## D7 · Boş minder (çember)
 
 ```
-an empty round floor cushion on a worn kilim in a sunlit room, morning light from the left, long soft shadow, warm cream plaster wall behind, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
+an empty round floor cushion on a worn kilim in a sunlit room, morning light from the left, long soft shadow, warm cream plaster wall behind, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
 ```
 
 ## Kart basıcı

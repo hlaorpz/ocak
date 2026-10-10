@@ -21,7 +21,7 @@ Midjourney nesnesi gelirse K1'in alt yarısına oturur: divit kalem ve boş bir 
 D5 nesne (K1 için; kurucu 10 Ekim’de seçildi; adres istemde yazılı):
 
 ```
-an old dip pen beside a blank sheet of handmade paper resting on a sunlit limewashed ledge, single object, morning light from the left, one long soft shadow, warm cream plaster background, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
+an old dip pen beside a blank sheet of handmade paper resting on a sunlit limewashed ledge, single object, morning light from the left, one long soft shadow, warm cream plaster background, generous empty space above, muted earth tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
 ```
 
 ## Ekran metni

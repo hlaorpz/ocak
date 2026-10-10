@@ -648,3 +648,7 @@ no	tarih	baslik	durum	iliski	kaynak
 647	2026-10-09	Yanına bir kadın al — 19 Ekim Açık Kapı'ya kayıtlı kadın bir kadın getirir, ikinci yer ücretsiz; kod ekip tarafından elle verilir	AKTIF	↔626	2026-10.md#k647
 648	2026-10-09	19 Ekim Açık Kapı'nın kapanış teklifi 28 Ekim çemberidir	AKTIF		2026-10.md#k648
 649	2026-10-09	TikTok altı haftalık deneydir — yalnız videolar; karar 22 Kasım'da üç ölçütle (bir video 10.000 izlenmenin üstünde · utm_source=tiktok ile en az 50 ziyaret · TikTok'tan gelen bir kayıt; biri evetse sürer)	AKTIF		2026-10.md#k649
+650	2026-10-11	Gündüz kurucusu mühürlendi — z12 gündüz istemlerinin tek `--sref` çapasıdır; gece çapası z01 gündüz istemine bağlanmaz	AKTIF	↔542 · ↔637	2026-10.md#k650
+651	2026-10-11	Gündüz `--sref` ağırlığı `--sw 25`'tir — 60, kurucunun gölge kamasını kompozisyona taşıdı; gölgesi istenen istemin `--no` listesine gölge kelimesi girmez	AKTIF	↔650	2026-10.md#k651
+652	2026-10-11	Kart derleyici tek ve kanonik kart aracıdır (`tools/ocak-kart-derleyici.html`); gündüz kartı gecenin dizgisini aynen kullanır — konum, punto, aralık, işaret yeri ortak; değişen yalnız renk ve karartma. Python basıcı ve "gündüz önerisi" kopyası kanonik değildir	AKTIF	↔522 · ↔637 · B234 kapandı	2026-10.md#k652
+653	2026-10-11	Gündüz kartında metin Kömür, vurgu `#A04F36`, işaret tek renk köz ve %20 büyük (harf kalınlaştırılmaz); açık zeminde yazı bir kademe kalın (500); fotoğrafta krem perde; toprak ve zeytin zeminde metin, işaret ve bant krem, vurgu yok	AKTIF	↔637 · ↔652	2026-10.md#k653

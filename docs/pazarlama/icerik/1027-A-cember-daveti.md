@@ -17,13 +17,13 @@ D3: aralık ahşap kapı, içeri giren gün ışığı. Bugünkü ızgaradaki ge
 D3 aralık kapı, gündüz:
 
 ```
-old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 50 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark, night, flames
+old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark, night, flames
 ```
 
 Story için 9:16:
 
 ```
-old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 9:16 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 50 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark, night, flames
+old wooden door of an Anatolian village house slightly ajar in the morning, seen from inside a dim plastered room, a blade of warm daylight falling through the gap onto a worn stone threshold, empty threshold, door small in the lower third, calm warm plaster wall filling the upper two thirds, soft shadows, coarse film grain --ar 9:16 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark, night, flames
 ```
 
 ## Ekran metni

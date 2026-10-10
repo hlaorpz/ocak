@@ -17,7 +17,7 @@ Tercih: gerçek fotoğraf (Advaita'nın masası, sabah ışığı, bir bardak ç
 D4 sabah masası:
 
 ```
-still life on unbleached linen in soft morning light from the left: an unlit cream candle with a blackened wick, a matchbox, a closed notebook with a pencil, a pair of headphones, a glass of water, long soft shadows, warm cream and clay tones, calm empty space above, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
+still life on unbleached linen in soft morning light from the left: an unlit cream candle with a blackened wick, a matchbox, a closed notebook with a pencil, a pair of headphones, a glass of water, long soft shadows, warm cream and clay tones, calm empty space above, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 90 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
 ```
 
 ## Tercih ve alternatif

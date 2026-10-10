@@ -17,7 +17,7 @@ Zeytin gölgesi zemini (kodla ya da D2). K1 sayı kartı; sonraki kartlarda bire
 D2 zemin (isteğe bağlı; kodla çizilmiş zemin hazır):
 
 ```
-shadow of an olive branch falling across a sunlit limewashed wall, late morning, warm cream plaster, soft-edged leaf shadows in the lower third, upper two thirds calm and empty, muted olive and clay tones, quiet, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 70 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 60 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
+shadow of an olive branch falling across a sunlit limewashed wall, late morning, warm cream plaster, soft-edged leaf shadows in the lower third, upper two thirds calm and empty, muted olive and clay tones, quiet, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 70 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, blue tones, teal, grey light, pink, lilac, neon, flowers, lotus, mandala, crystals, people, faces, text, watermark
 ```
 
 ## Ekran metni
