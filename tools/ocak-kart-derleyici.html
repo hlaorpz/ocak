@@ -263,9 +263,9 @@
         <label class="satir">
           <div class="etiket"><span>2 · Kart</span></div>
           <div class="secim" id="turSecim">
-            <button data-tur="soz" aria-pressed="true">Söz kartı</button>
-            <button data-tur="karusel" aria-pressed="false">Karusel</button>
-            <button data-tur="story" aria-pressed="false">Story</button>
+            <button data-tur="soz" aria-pressed="true">Söz kartı · 4:5</button>
+            <button data-tur="story" aria-pressed="false">Story · 9:16</button>
+            <button data-tur="karusel" aria-pressed="false">Karusel · 4:5</button>
           </div>
         </label>
         <label class="satir">
@@ -352,7 +352,9 @@
           <div class="etiket"><span>Kart adı</span></div>
           <input type="text" id="ad">
         </label>
-        <button class="eylem" id="indir">PNG indir</button>
+        <p class="not" id="adNot" style="margin-top:0;margin-bottom:10px"></p>
+        <button class="eylem" id="indirIkisi">4:5 + 9:16 birlikte indir</button>
+        <button class="eylem ikincil" id="indir" style="margin-top:8px">Yalnız bunu indir</button>
         <button class="eylem ikincil" id="indirHepsi" style="margin-top:8px" hidden>Karuselin tümünü indir</button>
       </details>
 
@@ -1105,9 +1107,9 @@
   function turEsle(){ S.tur = S.mod === "karusel" ? "karusel" : (S.oran === "9:16" ? "story" : "soz"); }
   grup("oranSecim","oran", function(){ turEsle(); arayuzYansit(); adYansit(); });
   grup("modSecim","mod", function(){ turEsle(); modDegisti(); arayuzYansit(); adYansit(); });
-  grup("temaSecim","tema", kur);
-  grup("turSecim","tur", kur);
-  grup("zeminSecim","zemin", kur);
+  grup("temaSecim","tema", isikZeminDegisti);
+  grup("turSecim","tur", turDegisti);
+  grup("zeminSecim","zemin", isikZeminDegisti);
 
   /* ---------- hızlı kur: ışık × kart × zemin ----------
      Gündüz, gecenin eşidir: dizgi (konum, punto, aralık, işaret yeri) gece ön ayarından
@@ -1186,6 +1188,35 @@
   kaydir("zoom","zoom",2,true);
   kaydir("ox","ox",2,true);
   kaydir("oy","oy",2,true);
+
+  /* ---------- biçim hafızası: aynı kart, iki biçim ----------
+     Söz kartı (4:5) ile story (9:16) aynı metnin iki biçimidir. Biri üzerinde yapılan ince ayar
+     (kadraj, metin kaydırma, punto…) öbürüne geçince kaybolmaz; geri dönünce yerinde durur.
+     Işık, zemin ya da görsel değişince hafıza silinir: iki biçim de yeniden kurulur. */
+  var oncekiTur = "soz", bicimDurum = {};
+  function durumAl(){ var k = S.kartlar[0]; return { ayar:onAyarTopla(), zoom:k.zoom, ox:k.ox, oy:k.oy }; }
+  function durumVer(d){
+    ON_AYAR_ALAN.forEach(function(a){ if (d.ayar[a] !== undefined) S[a] = d.ayar[a]; });
+    var k = S.kartlar[0]; k.zoom = d.zoom; k.ox = d.ox; k.oy = d.oy;
+  }
+  function turDegisti(){
+    var yeni = S.tur;
+    if (oncekiTur !== "karusel" && oncekiTur !== yeni) bicimDurum[oncekiTur] = durumAl();
+    if (yeni !== "karusel" && bicimDurum[yeni]){
+      durumVer(bicimDurum[yeni]);
+      if (S.mod !== "tek"){ S.mod = "tek"; modDegisti(); }
+      var sec = document.getElementById("onAyarSec"); if (sec) sec.value = "";
+      arayuzYansit(); adYansit(); gorselDurumu();
+    } else {
+      kur();
+      if (yeni !== "karusel" && oncekiTur !== "karusel" && oncekiTur !== yeni){
+        var k = S.kartlar[0]; k.zoom = 1; k.ox = 0; k.oy = 0;   // yeni biçim kendi kadrajıyla başlar
+      }
+    }
+    kadrajYansit();
+    oncekiTur = yeni;
+  }
+  function isikZeminDegisti(){ bicimDurum = {}; kur(); }
 
   /* ---------- görseli kaldır ---------- */
   function gorselDurumu(){
@@ -1448,6 +1479,8 @@
     var kar = S.mod === "karusel";
     document.getElementById("karuselAlan").hidden = !kar;
     document.getElementById("indirHepsi").hidden = !kar;
+    document.getElementById("indirIkisi").hidden = kar;
+    oncekiTur = S.tur;
     S.aktif = 0;
     metinYansit();
     kadrajYansit();
@@ -1602,6 +1635,7 @@
         gorsel = im;
         birak.innerHTML = "<b>Görsel yüklendi</b>" + im.width + " × " + im.height + " · değiştirmek için tıkla";
         gorselSertlik = dokuSertligi(im);
+        bicimDurum = {};
         if (S.zemin !== "gorsel"){ S.zemin = "gorsel"; kur(); }
         else if (S.tema === "gunduz"){ S.yumusat = gorselSertlik > SERT_ESIK ? GUNDUZ_YUMUSAT : 0; arayuzYansit(); }
         var sn = document.getElementById("sertlikNot");
@@ -1629,15 +1663,23 @@
     var sec = document.getElementById("onAyarSec");
     var ad = sec && sec.value ? sec.value : "";
     if (/zirve/i.test(ad))   return "zirve-karti";
-    return S.tur === "karusel" ? "karusel" : (S.tur === "story" ? "story" : "soz-karti");
+    return S.tur === "karusel" ? "karusel" : "kart";
   }
   function onerilenAd(){ return "ocak-" + turAdi() + "-" + bugun(); }
   function adYansit(){
     var el = document.getElementById("ad");
     if (el) el.placeholder = onerilenAd();
+    var an = document.getElementById("adNot");
+    if (an){
+      var taban = kartAdi();
+      an.textContent = S.mod === "karusel"
+        ? "Dosyalar: " + taban + "-k1.png, " + taban + "-k2.png …"
+        : "Dosyalar: " + taban + "-4x5.png (feed) ve " + taban + "-9x16.png (story)";
+    }
   }
   function kartAdi(){
     var v = (document.getElementById("ad").value || "").trim();
+    v = v.replace(/\.(png|jpe?g)$/i, "").replace(/-(4x5|9x16)$/i, "");
     return v ? v.replace(/\s+/g,"-") : onerilenAd();
   }
   function indirTuval(isim){
@@ -1656,7 +1698,25 @@
   }
   document.getElementById("indir").addEventListener("click", function(){
     var ad = kartAdi();
-    indirTuval(S.mod === "karusel" ? ad + "-k" + (S.aktif+1) : ad);
+    indirTuval(S.mod === "karusel" ? ad + "-k" + (S.aktif+1) : ad + bicimEki());
+  });
+  function bicimEki(){ return S.oran === "9:16" ? "-9x16" : "-4x5"; }
+  document.getElementById("ad").addEventListener("input", adYansit);
+  /* aynı kartı iki biçimde indir: önce 4:5, sonra 9:16; sonunda başladığı biçime döner */
+  function biciminiAc(t){
+    if (S.tur !== t){ S.tur = t; turDegisti(); }
+    ciz();
+  }
+  document.getElementById("indirIkisi").addEventListener("click", function(){
+    if (S.mod !== "tek") return;
+    var ad = kartAdi(), bas = S.tur, sira = ["soz","story"], i = 0;
+    (function adim(){
+      if (i >= sira.length){ biciminiAc(bas); return; }
+      biciminiAc(sira[i]);
+      indirTuval(ad + bicimEki());
+      i++;
+      setTimeout(adim, 700);
+    })();
   });
   document.getElementById("indirHepsi").addEventListener("click", function(){
     var ad = kartAdi();
