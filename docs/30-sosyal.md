@@ -3,6 +3,13 @@
 **Hazırlayan:** Fable · 19 Ağustos 2026 · v2.1 (v2: 19 Temmuz · v1: 12 Temmuz)
 **Metin kaynağı:** `ocak-site-dump-fable-2026-08-19.md` (canlı prod, sha=3683ca4, 49 route). Site metniyle çelişki görürsen site kazanır.
 
+> ⚠ **TARİHSEL — 11 Ekim 2026.** Bu dosya Ağustos 2026'nın ilk 30 gün planıdır. Yerini Ekim 2026
+> pazarlama paketine bıraktı: **`docs/pazarlama/`** (giriş `00-OKU.md`; kararlar KARAR 636–649).
+> Bu dosyada "Eylül 2026" ve "Mart 2027" geçen satırlar KARAR 617 · 620 · 621 ile geçersizdir
+> (Anadolu kohortu Eylül 2027, Dünya Yolculuğu Mart 2028); yerinde bırakıldı (KARAR 61).
+> Story araçları, highlight ve Advaita'nın görünürlüğü konusunda bu dosyayla çelişen satırlarda
+> KARAR 639 · 640 · 646 geçerlidir. **B221** bu notla kapandı.
+
 **KISALTMA (24 Ağustos 2026 · sıfır dolgulu):** kart `C01`–`C24` · görsel prompt
 `V01`–`V09` · zemin `z01`–. Sıfır dolgu iki sebeple: (1) `V8` Midjourney motor sürümü,
 `C1` VSCO preseti — homograflar; `V08`/`C01` ayrışır. (2) `C1` deseni `C10`–`C19`

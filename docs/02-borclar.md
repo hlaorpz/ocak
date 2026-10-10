@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 10 Ekim 2026 · **B118 ölçüm katmanı + piksel kimliği turu**
+**Son güncelleme:** 11 Ekim 2026 · **Pazarlama planı v2 kapanış turu**
 
 ---
 
@@ -3936,12 +3936,13 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   `TARAMA_SIR` · `ODEME_LINK_SIR` adları (değerleri değil, KARAR 97), MailerLite'ın yeni
   rolü, eski on iki alanlık envanterin tarihçeye inmesi.
 
-## B221 — `30-sosyal.md` Eylül 2026 kohortunu duyuruyor
-- [ ] **Sahip:** Claude.ai + Kaan · **Tetikleyici:** sıradaki içerik sohbeti (sosyal planın yenilenmesi)
+## B221 — `30-sosyal.md` Eylül 2026 kohortunu duyuruyor ✅ KAPANDI (11 Eki)
+- [x] **Sahip:** Claude.ai + Kaan · **Tetikleyici:** sıradaki içerik sohbeti (sosyal planın yenilenmesi)
 - **Ne:** plan iki yolculuğun Eylül 2026'da yola çıktığını ve Dünya Yolculuğu'nun Mart 2027'de açıldığını söylüyor. İkisi de artık yanlış (KARAR 617 · 620 · 621).
 - **Ölçüm:** `docs_ara` regex `24–27 Eylül|Eylül kohort|Eylül 2026|Mart 2027`, MCP damgası `7be7de0`, Claude.ai 8 Eki → `30-sosyal.md` satır **71 · 155 · 289 · 670 · 904**.
 - **Kapanış şartı:** plan yenilenir ya da bu satırlar düşüş notu alır; aynı regex `30-sosyal.md`'de yalnız tarihsel bağlamda eşleşir.
 - **Bağ:** KARAR 617 · 620 · 621 · KARAR 451
+- ✅ **Kapanış (11 Eki — pazarlama v2 turu):** kapanış şartının ikinci yolu. `30-sosyal.md`'nin başına tarihsel not kondu: dosya yerini `docs/pazarlama/`'ya bıraktı, "Eylül 2026" ve "Mart 2027" geçen satırlar KARAR 617 · 620 · 621 ile geçersiz, yerinde (KARAR 61). Plan yenilendi: `docs/pazarlama/` (KARAR 636–649). Ölçüm: `grep -nE '24–27 Eylül|Eylül kohort|Eylül 2026|Mart 2027' docs/30-sosyal.md` → satır **8** (notun kendisi) · **78 · 162 · 296 · 677 · 911** (notun altında kalanlar; eski ölçümün 71 · 155 · 289 · 670 · 904'ü yedi satırlık notun girmesiyle tam +7 kaydı — başka satır oynamadı).
 
 ## B222 — Korpusta Eylül 2026 kohort tarihinin kalıntıları
 - [ ] **Sahip:** Claude.ai (sonraki patch)
@@ -4018,3 +4019,37 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ne:** `20-ref-site.md` tracking bölümü GTM v5 envanterini, rıza kapısını ve sunucu Purchase'ı yazmıyor. `20-ref-notion.md` Kayıtlar'ın yeni alanlarını bilmiyor: `UTM Kaynak` · `UTM Ortam` · `UTM Kampanya` · `UTM İçerik` · `Ölçüm Rızası` · `Ölçüm Gitti` (Kaan, 9–10 Eki). Etkinlikler `Para Birimi` alanının sunucu olayını beslediğini de bilmiyor.
 - **Kapanış şartı:** iki dosyaya ölçüm katmanı bölümü girer.
 - **Bağ:** B220 (aynı sınıf) · KARAR 627–635
+
+## B231 — Bir Kadın Vardı: iki kartta ikinci kaynak yok, fotoğraf hakları ölçülmedi
+
+- [ ] **Sahip:** Claude.ai (pazarlama sohbeti) · **Tetikleyici:** 24 Ekim (Halet Çambel) ve 31 Ekim (Mualla Eyüboğlu) yayınından önce
+- **Ne:** `docs/pazarlama/icerik/1024-O-halet-cambel.md` (taşınmaya karşı çıkışı, 1960 müzesi) ve `1031-O-mualla-eyuboglu.md` (1942, 1947 sıtma, Rumelihisarı) ayrıntıları tek kaynaktan. Mualla Eyüboğlu dosyasında "Kurmak ve Onarmak" sergi adı sanılmıştı, kitap adı olarak düzeltildi (Bianet). Serinin hiçbir kartı için fotoğraf lisansı ölçülmedi.
+- **Ölçüm:** Claude.ai web araması, 9 Ekim 2026. Kaynak adresleri gönderi dosyalarının "Notlar ve kaynak" bölümünde.
+- **Kapanış şartı:** her ayrıntı için ikinci bağımsız kaynak dosyaya yazılır ya da ayrıntı karttan düşer; fotoğraf için KARAR 642'nin beş sorusu cevaplanır. Teyit gelmezse dosyalarda tanımlı yedek söz kartı çıkar (1024 → söz kartı 6, 1031 → söz kartı 13).
+- **Bağ:** KARAR 641 · 642
+
+## B232 — Külün Altından sözleri ve özel gün tarihleri teyitsiz
+
+- [ ] **Sahip:** Claude.ai (pazarlama sohbeti) · **Tetikleyici:** ilgili kartın yayınından önce
+- **Ne (a):** `docs/pazarlama/icerik/havuz/kulun-altindan-seri.md`'deki sözlerin okuması TDK Atasözleri ve Deyimler Sözlüğü'nden kontrol edilmedi.
+- **Ne (b):** `docs/pazarlama/STRATEJI/ozel-gunler.md`'deki halk takvimi ve dinî gün tarihleri (Hıdırellez, Nevruz, kandiller vb.) bir kaynakla teyit edilmedi.
+- **Kapanış şartı:** (a) her söz sözlükte bulunur ya da "sözlükte yok" notuyla seriden çıkar · (b) her tarih kaynağıyla yazılır.
+- **Bağ:** KARAR 641 · 644
+
+## B233 — 22, 26, 28 Ekim davet metinleri etkinlik gövdeleriyle karşılaştırılmadı
+
+- [ ] **Sahip:** Claude.ai (Notion okuması) · **Tetikleyici:** 20 Ekim, ilk davet paylaşılmadan önce
+- **Ne:** `docs/pazarlama/icerik/` altındaki davet dosyaları (`1022-A-ates-seninle-geldi` · `1025-A-istek-mi-ihtiyac-mi` · `1027-A-cember-daveti`) tema, saat ve gövde sözlerini Notion Etkinlikler `Detay` alanından teyit etmeden yazıldı. Takvim 8 Ekim korpus ölçümünden.
+- **Ölçüm:** yapılmadı. Notion kapalı yüzey — CC doğrulamaya çalışmaz.
+- **Kapanış şartı:** üç etkinliğin gövdesi okunur; ayrışma varsa gönderi dosyası düzeltilir (gövde kazanır).
+- **Bağ:** B223 · KARAR 626 · 643
+
+## B234 — Gündüz kart aracı üç sürümde, hangisinin kanonik olduğu kararsız
+
+- [ ] **Sahip:** Claude.ai (Midjourney sohbeti) + CC · **Tetikleyici:** ilk gündüz kartı derleyiciyle basılmadan önce
+- **Ne:** gündüz kartını basabilen üç şey var, biri kanonik değil:
+  (a) `tools/ocak-kart-derleyici.html` — depodaki derleyici; 9 Ekim'den beri commit bekleyen yerel değişikliği var (`03-sira.md`, ölçüm/reklam hattı yan işleri). Gündüz ışığı yok (Kaan, 9 Eki: *"Kart derleyici gündüz kartı basamıyor"*).
+  (b) `pazarlama-ekler/araclar/OCAK-kart-derleyici-gunduz-onerisi.html` — Claude.ai, 10–11 Ekim gecesi, Kaan'ın sohbete verdiği derleyici HTML'inin üstüne "Işık: Gece / Gündüz" seçici, kömür/toprak/zeytin metin rengi, gündüzde toprak vurgu, tek renk köz işaret ve üç gündüz ön ayarı. **Kaan kullanmadı.** Kaan'ın verdiği HTML'in (a) ile aynı olup olmadığı ölçülmedi.
+  (c) `pazarlama-ekler/araclar/ocak_kart.py` — Python kart basıcı (Pillow); 10 Ekim setindeki 44 kart onunla basıldı. İşareti Cormorant Garamond Light "O" ile yaklaşık çizer; (b) ise derleyicinin gömülü SVG'sinden türetilmiş tek renk köz işareti kullanır (`pazarlama-ekler/isaret/`).
+- **Kapanış şartı:** biri kanonik seçilir ve yerine konur; diğerleri arşive iner; işaret dosyalarının kanonik yeri yazılır.
+- **Bağ:** KARAR 522 · 637 · B86 · B143

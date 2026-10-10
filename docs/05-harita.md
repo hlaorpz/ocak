@@ -1,6 +1,6 @@
 # OCAK — DOKÜMAN HARİTASI
 
-**Son güncelleme:** 11 Eylül 2026 · ölçüm / yargı ayrımı turu (KARAR 578–582) · önceki: 11 Ağustos 2026 · B47
+**Son güncelleme:** 11 Ekim 2026 · pazarlama v2 turu (yeni dosya: `pazarlama/`) · önceki: 11 Eylül 2026 · ölçüm / yargı ayrımı turu (KARAR 578–582)
 
 > Bu dosya **liste değildir.** Dosya listesi iki yerde zaten var ve ikisi de geçerli:
 > `CLAUDE.md` sonundaki *Doküman haritası* paragrafı (CC'nin oturum başında gördüğü) ve
@@ -139,6 +139,22 @@ Denetçi: `scripts/baslik-denetim.mjs` — bulursa dosya + satır + sebep basar,
   bayatlar. Panzehir KARAR 494: baştan yazma kararı dört-kova ölçümüyle verilir.
 - **Ayna:** `~/Desktop/Social_Media_v2.1.md` — 19 Ağustos'ta repoya alındı, otorite
   artık repodadır (KARAR 471).
+
+### `pazarlama/` — pazarlama paketi (Ekim 2026)
+- **Taşır:** 19 Ekim Açık Kapı ve genel OCAK pazarlamasının uygulama malzemesi — gün gün
+  takvim (`TAKVIM.md`), tarihli gönderi dosyaları (`icerik/`, ad kalıbı `AAGG-Hat-ad`),
+  seriler ve havuz, kampanya ve reklam detayı, strateji notları, gündüz paleti ve Midjourney
+  devri, fikir havuzu. `belgeler/` altında Claude Docs belgelerinin dışa aktarılmış kopyaları
+  ve sohbetin tam kaydı. Giriş `00-OKU.md`.
+- **Taşımaz:** karar (→ ledger, KARAR 636–649) ve borç (→ `02-borclar.md`). Görsel ve araç da
+  taşımaz: kartlar, kart basıcı, fontlar, işaret SVG'leri, kurucu kare ve PDF'ler depo
+  kökündeki **`pazarlama-ekler/`**'dedir; MCP orayı servis etmez (yalnız `docs` · `scripts`).
+- **Yazar:** Claude.ai üretir, CC yazar.
+- **Bozulma biçimi:** (1) `belgeler/`'deki Claude Docs kopyaları **aynadır** (KARAR 471
+  sınıfı): canlı belge Claude Docs'ta değişir, kopya sessizce bayatlar. Dosya adındaki `rev`
+  dışa aktarılan sürümdür; çelişkide canlı belge kazanır, kopya yeniden dışa aktarılır.
+  (2) Gönderi dosyaları yayın durumunu tutmaz; bir gönderinin çıkıp çıkmadığı dosyadan
+  okunmaz. (3) `30-sosyal.md` ile çelişirse bu paket ve 11 Ekim kararları geçerlidir.
 
 ### `90-kronoloji/YYYY-AA.md` — append-only tarihçe
 - **Taşır:** ne oldu, neden oldu, hangi ölçüm neyi gösterdi. Gerekçenin tek otoritesi.

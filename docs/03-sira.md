@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 10 Ekim 2026 · **B118 ölçüm katmanı + piksel kimliği turu**
+**Son güncelleme:** 11 Ekim 2026 · **Pazarlama planı v2 kapanış turu**
 
 ---
 
@@ -11,7 +11,9 @@
 **Sıradaki iş (içerik hattı, 23 Ağu):** **Sayfalar DB dokuz sayfa → sonra tek seferde deploy.**
 Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 
-**Sıradaki iş (içerik hattı, 8 Eki):** **sosyal medya planının yenilenmesi** (`30-sosyal.md`, **B221**) → ***Eşikte Üç Akşam*** için Advaita onayı + tarih (KARAR 624, `ONERI`) → dört çember gövdesi + bekçi dosyası (**B223**). ⚠ Hepsinden önce: 8 Ekim Notion değişikliklerinin **canlı teyidi** (**B225**) ve `ocak-etkinlik` skill'indeki eski kayıt satırı (**B226**, KARAR 626) — reklam `/acik-kapi`'ye iniyor.
+**Sıradaki iş (içerik hattı, 8 Eki):** ✅ **sosyal medya planının yenilenmesi** (11 Eki — `docs/pazarlama/`, B221 kapandı) (`30-sosyal.md`, **B221**) → ***Eşikte Üç Akşam*** için Advaita onayı + tarih (KARAR 624, `ONERI`) → dört çember gövdesi + bekçi dosyası (**B223**). ⚠ Hepsinden önce: 8 Ekim Notion değişikliklerinin **canlı teyidi** (**B225**) ve `ocak-etkinlik` skill'indeki eski kayıt satırı (**B226**, KARAR 626) — reklam `/acik-kapi`'ye iniyor.
+
+**Sıradaki iş (pazarlama hattı, 11 Eki):** paket `docs/pazarlama/` — giriş `00-OKU.md`, sohbetin tam kaydı `belgeler/sohbet-kaydi-2026-10-09-11.md`, gün gün iş `TAKVIM.md`. (1) Yayın takvime göre sürer; 10 Ekim'de hiçbir şey yayınlanmadı (Kaan). Tarihe bağlı iş düşer, tarihsiz iş sıraya döner (KARAR 638) → (2) **19 Ekim Açık Kapı** kampanyası `ACIK-KAPI-19-EKIM/00-kampanya.md`; reklam aşağıdaki "ölçüm/reklam hattı" paragrafının kapısından geçer → (3) **20 Ekim retrosu** (Kaan + Claude.ai): Kasım'ın haftalık reklam tavanı · üç ışıktan (gece, gündüz, insan) hangisinin öne geçeceği · günde iki gönderinin sürüp sürmeyeceği → (4) **TikTok kararı 22 Kasım** (KARAR 649). İki yeni Claude.ai sohbeti: **pazarlama** (giriş yukarıdaki iki dosya) ve **Midjourney** (`DEVIR-gunduz-zeminleri-midjourney.md`; gündüz zeminleri, gündüz kurucunun mührü — aday A-9 — ve gündüz kart aracı, **B234**). Açık teyitler: **B231** · **B232** · **B233**. Canlı belgeler Claude Docs'ta; korpustaki kopyaları 11 Ekim dışa aktarımıdır.
 
 **✅ B193 kapandı (7 Eki).** Sıranın önündeki iş artık **B118** (rıza banner'ı).
 ⚠ **B215 — 12 Ekim 15:00'ten önce** (test satırları + 1 TL iadeleri).
@@ -964,6 +966,10 @@ soruyu ve ölçülmüş zeminini tutar.
 | **A-3** | **Açık Kapı çekim mekaniği** — ücretsizliği ne görünür kılar (rozet vb.) | ⚠ **"Davet ≠ Satış" bağlayıcı** (KORUNACAK İFADE #7, `10-marka.md:164`); aciliyet/funnel dili üretilemez. Fiyatın sayfada geçmemesi ayrıca KARAR 432 (KALICI) — "sembolik" de "yatırım" da denmez |
 | **A-4** | **Alt yönlendirme kutuları** doğru hedefe mi gidiyor | **Önce ölçüm, sonra karar.** İddia doğrulanmadı; bugün elde hiçbir sayı yok. Ölçülene kadar aday bile sayılmaz |
 | **A-5** | **Arşiv şifre modeli** — tek şifre mi, dönem bazlı mı | **B120'nin içinde yaşıyor** (`02-borclar.md`), orada açık karar olarak işaretli. Ayrı mühür gerekir. Etik duvar değişmez: fiziksel çember ve paylaşım turu kaydedilmez (KARAR 57, KALICI) |
+| **A-6** | **Sitenin gündüz teması** — gündüz paleti (KARAR 637) siteye taşınsın mı | `docs/pazarlama/STRATEJI/site-uyarlama.md`: yedi uyarlama fikri ve WCAG kontrast hesabı (Claude.ai, 9 Eki; kömür/krem 15,5 · toprak/krem 3,6 · zeytin/krem 4,1 · köz/krem 4,0 · altın/krem 1,9). Sitede uygulanabilirliği **ölçülmedi**. Kaynak: pazarlama sohbeti, 9 Eki |
+| **A-7** | **"İlk Eşik" (18–28 yaş) ve "Kızınla Gel" kapıları** açılsın mı | `docs/pazarlama/STRATEJI/kitle-ve-genc-kadinlar.md`. Plan: en erken Ocak 2027, önce ana Açık Kapı dolsun. TikTok deneyi (KARAR 649) genç kitlenin ilgisini önceden gösterir |
+| **A-8** | **Ayın ilk akşamı, ilk kez gelene ücretsiz** olsun mu | Fiyat kararıdır (Kaan). Plan belgesinin "henüz karar olmayanlar" satırı; ölçüm yok. ⚠ Fiyat sayfada geçmez (KARAR 432) |
+| **A-9** | **Gündüz kurucunun mühürlenmesi** | Kaan seçti (10 Eki): `https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png`; kopyası `pazarlama-ekler/araclar/zemin/gunduz-kurucu.png` (960×1200). Emsal: gece kurucunun mührü KARAR 542. Mühür, `--sref` turu ve gündüz zeminleri Midjourney sohbetinin işi (Kaan, 11 Eki) |
 
 > **A-2 ile A-3 aynı sınıra bakıyor.** İkisi de KORUNACAK İFADELER listesine dokunuyor —
 > biri metnin kendisine (#1), öbürü sınırına (#7). Liste on maddedir ve mühürlüdür;

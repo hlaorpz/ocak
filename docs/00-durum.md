@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 10 Ekim 2026 · **B118 ölçüm katmanı + piksel kimliği turu** · dönem HEAD `5cbbb1b`
+**Son güncelleme:** 11 Ekim 2026 · **Pazarlama planı v2 kapanış turu** · dönem HEAD `7341ffb`
 
 ---
 
@@ -29,6 +29,7 @@
 | Notion DB, schema, yazım sözleşmesi | `20-ref-notion.md` |
 | bot, n8n, WhatsApp, Meta | `20-ref-bot.md` |
 | sosyal medya ilk 30 gün — kart kart uygulama | `30-sosyal.md` |
+| pazarlama — Ekim 2026 planı, gün gün takvim, gönderi dosyaları, Açık Kapı kampanyası | `pazarlama/00-OKU.md` (görsel ve araç: depo kökü `pazarlama-ekler/`) |
 
 ---
 
@@ -67,7 +68,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`5cbbb1b`** (10 Eki, B118 ölçüm turu — bir önceki dönem `a56488d`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `9c3576c..5cbbb1b` — tam liste ADIM 0'da ölçüldü, `90-kronoloji/2026-10.md` 10 Eki kaydında. Bilinen dördü: `55bbce7` (kaynak etiketi + ölçüm rızası + şehir) · `ad2f36f` + `2b5bd49` (sunucudan Meta Purchase) · `5cbbb1b` (boş `currency`). Önceki dönemin (`a56488d`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
+| `main` dönem HEAD | **`7341ffb`** (11 Eki, pazarlama v2 kapanış turu — bir önceki dönem `5cbbb1b`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). Bu dönem **kod içermedi**: `5cbbb1b..7341ffb` yalnız doküman ve korpus dışı ekler (`pazarlama-ekler/`). Önceki dönemin (`5cbbb1b`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -136,19 +137,11 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **9–11 Ekim — Pazarlama planı v2 (Claude.ai sohbeti):** kod commit'i yok. 19 Ekim Açık Kapı ve genel pazarlama paketi korpusa girdi (`pazarlama/`, giriş `00-OKU.md`; sohbetin tam kaydı `pazarlama/belgeler/`), üç skill (`ocak-gonderi` · `ocak-kart` · `ocak-yorum`), görseller ve araçlar korpus dışı `pazarlama-ekler/`'de. **KARAR 636–649** · **B231–B234** açıldı · **B221 ✅**. → `90-kronoloji/2026-10.md`
 - **9–10 Ekim — B118 ölçüm katmanı + piksel kimliği turu:** kod `9c3576c..5cbbb1b`. Rıza bandı + gizlilik metni, `dataLayer` olayları, UTM ve rıza alanları, sunucudan Meta Purchase. Meta tarafında piksel kimliğinin yanlış olduğu bulundu; **OCAK Web** veri kümesi açıldı, GTM v5 yayında, reklam hesabı bağlandı. **B118 ✅** · **KARAR 627–635** · **B227–B230**. → `90-kronoloji/2026-10.md`
 - **8 Ekim — Site dili + Anadolu takvimi turu:** kod commit'i yok. `/acik-kapi` davet sayfası olarak yeniden yazıldı, `/cember` "aylık" kimliğini bıraktı, Anadolu Yolculuğu ilk kohortu **Eylül 2027**'ye kaydı (KARAR 492 → SUPERSEDE), online Yolculuk Anadolu takviminden ayrıldı, **Açık Kapı'da kayıt kalktı** — gelemeyene ücretsiz kod (KARAR 626), *Eşikte Üç Akşam* serisi `ONERI`. Notion Sayfalar DB'de on sekiz sayfa değişti — yazımların bir kısmını **Claude.ai** yaptı (KARAR 625). ⚠ **Canlı teyit alınmadı** (**B225**); korpusta üç satır eski kayıt sözünü taşıyor (**B226**). **KARAR 617–626** · **B221–B226**. → `90-kronoloji/2026-10.md`
 - **8 Ekim — Zoom host turu:** `a56488d`. Online oda artık `ZOOM_HOST_EMAIL`'deki kullanıcı adına açılıyor (`users/me` kalktı); canlıda doğrulandı. **KARAR 616** · B78 ve B205'e ölçüm eklendi. → `90-kronoloji/2026-10.md`
-- **7–8 Ekim — B211 bildirim hattı turu:** `4f38887` … `9767fee`. **B193 ✅ · B211 ✅** · B72 · B192 · B206 ✅.
-  Kayıt/ödeme mailleri MailerLite'tan Resend'e geçti; süre sayan her şey `/api/bildirim-tara` + n8n saati;
-  ödeme ekranları yeniden yazıldı. **605–615** · B215–B220 açıldı. → `90-kronoloji/2026-10.md`
-- **7 Ekim — Search Console + DNS envanteri turu:** kod commit'i yok. Domain property doğrulandı, DNS envanteri ilk kez ölçüldü, sitemap `Couldn't fetch` teşhis edildi (**B212**), MCP damgası yalan söylüyor (**B213** — ❌ **aynı gün çürüdü**, damga doğruydu; bayat olan deploy'du → **B97**), `mail.ocak.biz` zinciri teyitsiz (**B214**). → `90-kronoloji/2026-10.md`
-- **6 Ekim — N-Kolay kimlik köprüsü turu:** `2e7e5b5` + `f1a41b4`. Hat **açıldı** — gerçek
-  kart işlemi uçtan uca geçti. **B201 çürüdü**, **B202 ✅**, **B203** kısmi, **601 · 602 · 603**.
-  Aynı gün Notion API kesintisi (B209). → `90-kronoloji/2026-10.md`
-- **1 Ekim — LANSMAN (robots Allow turu):** `d203581` + `520e5fe` — site aranabilir (**KARAR 599**) + duyuru (Kaan). Aynı tur
-  **B193**'ü teşhis etti: production'da kart seçimi mock ekrana iniyor, öncülü düştü. → `90-kronoloji/2026-10.md`
-- **1 Ekim — hamburger Takvim turu:** `2640f49` — Takvim menünün son öğesi, mobilde ayraçlı (**KARAR 600**). → `90-kronoloji/2026-10.md`
+- **1–8 Ekim** (B211 bildirim hattı · Search Console + DNS · N-Kolay kimlik köprüsü · LANSMAN robots Allow · hamburger Takvim) → `90-kronoloji/2026-10.md` (11 Eki tahliyesi, KARAR 457 · 61)
 - **11 Eylül · 24 Ağustos · 19 Ağustos ve öncesi** (N-Kolay sağlayıcı turu · MJ görsel ·
   Sayfalar metin + DEPLOY · B turu · üç format) → `90-kronoloji/2026-08.md` · `2026-09.md`
 
@@ -170,6 +163,7 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | N-Kolay iptal/iade servisi (**B200** kısmi — okuma kuruldu) · ✅ bildirim halkası **B211** kapandı (8 Eki) | CC |
 | Arama görünürlüğü — sitemap `Couldn't fetch` (**B212**), 0 indeks · MCP checkout tazeliği (**B97** — B213 çürüdü, devraldı) | Kaan + CC |
 | Reklam ölçümü — ilk **gerçek** ödemede Purchase doğrulaması · çift Lead kök nedeni (**B228**) · `action_source` (**B229**) · Meta Business temizliği (`03-sira.md`) | Kaan + CC |
+| Pazarlama — 19 Ekim Açık Kapı kampanyası, iki hatlı takvim, 20 Ekim retrosu (`pazarlama/`) · gündüz zeminleri ve gündüz kart aracı (Midjourney sohbeti, **B234**) | Kaan + Advaita · Claude.ai |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
 | Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |

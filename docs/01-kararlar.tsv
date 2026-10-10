@@ -634,3 +634,17 @@ no	tarih	baslik	durum	iliski	kaynak
 633	2026-10-10	Meta web veri kümesi "OCAK Web" 1003852792761114'tür — 861407993595884 Meta uygulama kimliğidir (WhatsApp/Instagram), piksel olarak kullanılmaz	AKTIF	↔146 · ↔632	2026-10.md#k633
 634	2026-10-10	Sunucu Purchase (CAPI) kuralları — Graph v26.0; yalnız Ölçüm Rızası varsa; Ölçüm Gitti ile tek sefer; event_id Kayıt ID, external_id SHA-256(Kayıt ID); para birimi tek kuraldan (boşsa TRY); test kodu isteğe bağlı; action_source şimdilik other	AKTIF	←628 · ↔631	2026-10.md#k634
 635	2026-10-10	Meta hesap düzeni — CAPI anahtarı yalnız OCAK Web'e yetkili; portföy geneli "Conversions API with Meta" ve otomatik olaylar kapalı; reklam hesabı veri kümesine bağlanır, portföye sahiplenme ayrı karardır	AKTIF	↔633	2026-10.md#k635
+636	2026-10-09	Pazarlama paketi v2'de Kaan'ın yorumsuz bıraktığı madde onaydır; Advaita onayı gereken maddeler onaylı sayılır — kapsam bu paket ve bu sohbetin kararları	AKTIF		2026-10.md#k636
+637	2026-10-09	Gündüz paleti — gece paletinin yanında Krem zemin, Keten #D9CBB6, Toprak #B4654A, Zeytin #6E7453, metin Kömür; açık zeminde işaret tek renk köz; ızgara ritmi gece · gündüz · insan; 10 Ekim'de başlar, reklamda ilk günden üçüncü kol	AKTIF	↔522	2026-10.md#k637
+638	2026-10-09	Sosyal takvim tek, hat iki — Hat O (OCAK genel, sabah) ve Hat A (Açık Kapı daveti, akşam); 19 Ekim'e kadar günde iki gönderi, sonra günde bir; Çekirdek ve Ek katmanı; tarihe bağlı iş yapılamazsa düşer, tarihsiz iş sıraya döner	AKTIF	↔493	2026-10.md#k638
+639	2026-10-09	Story'de anket, soru kutusu ve link çıkartması kalıcı olarak serbest; geri sayım çıkartması, çekiliş, emoji kaydırıcı, bilgi yarışması kullanılmaz	AKTIF		2026-10.md#k639
+640	2026-10-09	Instagram'da dört highlight açılır — Açık Kapı, Çember, Advaita, Sorular	AKTIF		2026-10.md#k640
+641	2026-10-09	Dört yeni içerik sütunu — Bir Kadın Vardı (gerçek kadın, tek özellik), Külün Altından (bu dilin sözleri), OCAK söz kartları, Sabah Ocağı pratikleri	AKTIF		2026-10.md#k641
+642	2026-10-09	Bir Kadın Vardı'da fotoğraf hakkına bakılır — beş soru evet ise fotoğraflı, değilse fotoğrafsız; yapay zekâ ile portre üretilmez	AKTIF	↔641	2026-10.md#k642
+643	2026-10-09	Çember reklamla da duyurulur — önce geri dönüş kitlesi, sonra soğuk kitle denemesi; kontenjan yalnız bilgi cümlesidir	AKTIF		2026-10.md#k643
+644	2026-10-09	Milli günlerde, kadınla ve Türkiye'yle ilgili özel günlerde tek kart, tek cümle; davet, link ve reklam yok; 10 Kasım'da başka paylaşım ve reklam yok	AKTIF		2026-10.md#k644
+645	2026-10-09	Yorum düzeni — @ocak.biz kendi gönderilerindeki yorumları beğenir ve "biz" sesiyle cevaplar; Advaita kendi hesabından kendi adıyla yazar; @ocak.biz Advaita'nın ağzından yazmaz	AKTIF		2026-10.md#k645
+646	2026-10-09	Advaita'nın yüzlü işleri yapılır; her yüzlü işin yanında aynı işin yüz görünmeyen alternatifi tanımlıdır (tercih ve alternatif birlikte yazılır); belgelerde Advaita hakkında olumsuz tercih dili kullanılmaz	AKTIF		2026-10.md#k646
+647	2026-10-09	Yanına bir kadın al — 19 Ekim Açık Kapı'ya kayıtlı kadın bir kadın getirir, ikinci yer ücretsiz; kod ekip tarafından elle verilir	AKTIF	↔626	2026-10.md#k647
+648	2026-10-09	19 Ekim Açık Kapı'nın kapanış teklifi 28 Ekim çemberidir	AKTIF		2026-10.md#k648
+649	2026-10-09	TikTok altı haftalık deneydir — yalnız videolar; karar 22 Kasım'da üç ölçütle (bir video 10.000 izlenmenin üstünde · utm_source=tiktok ile en az 50 ziyaret · TikTok'tan gelen bir kayıt; biri evetse sürer)	AKTIF		2026-10.md#k649
