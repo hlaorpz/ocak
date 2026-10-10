@@ -186,7 +186,20 @@
   }
   .serit button[aria-pressed=true]{border-color:var(--koz);color:var(--krem);background:rgba(196,75,47,.16)}
   .serit button.dolu{color:var(--gri)}
+  .serit button.gorselli{border-bottom:2px solid var(--altin)}
   .serit button:focus-visible{outline:1px solid var(--altin);outline-offset:2px}
+
+  .secim button .nokta{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid rgba(242,234,226,.3)}
+  .secim button[hidden]{display:none}
+  details.ic{border-top:1px solid rgba(242,234,226,.08)}
+  details.ic > summary{cursor:pointer;user-select:none;list-style:none;padding:10px 0;font-size:12px;letter-spacing:.06em;color:var(--gri)}
+  details.ic > summary::-webkit-details-marker{display:none}
+  details.ic > summary::before{content:"+";display:inline-block;width:14px;color:var(--duman)}
+  details.ic[open] > summary::before{content:"–"}
+  details.ic[open]{padding-bottom:12px}
+  details.ic label.satir:last-child{margin-bottom:9px}
+  details.blok > textarea, details.blok > button.eylem, details.blok > #birak{width:calc(100% - 32px)}
+  #karuselAlan{margin-top:12px}
 
   .not{font-size:12px;line-height:1.55;color:var(--duman);margin:10px 0 0}
   .not.uyari{color:var(--altin)}
@@ -215,7 +228,7 @@
 <div class="wrap">
   <header>
     <h1>Kart Derleyici</h1>
-    <span class="sub">OCAK · söz kartı · karusel · story</span>
+    <span class="sub">OCAK · gece ve gündüz · söz kartı · karusel · story</span>
   </header>
 
   <div class="layout">
@@ -239,58 +252,34 @@
     <div class="panel">
 
       <details class="blok" open>
-        <summary><h2>Görsel</h2></summary>
-        <div id="birak" tabindex="0" role="button">
-          <b>Görseli sürükle, yapıştır ya da seç</b>
-          Midjourney çıktısı · Ctrl/⌘+V da çalışır
-        </div>
-        <input type="file" id="dosya" accept="image/*" hidden>
-        <button class="eylem ikincil" id="gorselKaldir" style="margin-top:10px" hidden>Görseli kaldır</button>
-        <p class="not" id="zeminNot" hidden>Görselsiz zemin — B86 kararı bu yüzeyde verilir.</p>
-      </details>
-
-      <details class="blok" open>
-        <summary><h2>Ön ayar</h2></summary>
-        <div style="display:flex;gap:6px">
-          <select id="onAyarSec" style="flex:1;min-width:0;background:var(--komur);color:var(--krem);border:1px solid rgba(242,234,226,.14);border-radius:2px;padding:9px 8px;font-family:'Jost',sans-serif;font-size:13px">
-            <option value="">— ön ayar seç —</option>
-          </select>
-          <button class="eylem ikincil" id="onAyarYukle" style="width:auto;padding:0 14px">Yükle</button>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <input type="text" id="onAyarAd" placeholder="ön ayar adı" style="flex:1;min-width:0">
-          <button class="eylem ikincil" id="onAyarKaydet" style="width:auto;padding:0 14px">Kaydet</button>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="eylem ikincil" id="onAyarSil" style="flex:1">Seçiliyi sil</button>
-          <button class="eylem ikincil" id="onAyarTemizle" style="flex:1">Kendi kayıtlarımı temizle</button>
-        </div>
-        <p class="not" id="onAyarDurum" style="color:var(--altin)" hidden></p>
-        <p class="not">Aynı adla kaydedersen gömülü ön ayarın üstüne yazarsın; sildiğinde gömülü hâline döner. Kaydedilen: oran, renk, konum, hizalama, punto, satır/harf aralığı, grade, köşe imzası. Kadraj ve metin kaydedilmez — onlar karta özeldir.</p>
-        <details style="margin-top:10px">
-          <summary class="not" style="cursor:pointer">Dışa / içe aktar</summary>
-          <textarea id="onAyarJson" style="margin-top:8px;font-family:ui-monospace,monospace;font-style:normal;font-size:11px;min-height:70px" placeholder="Ön ayarların JSON'u burada görünür. Başka makineye taşımak için kopyala; almak için yapıştırıp Al'a bas."></textarea>
-          <button class="eylem ikincil" id="onAyarAl" style="margin-top:6px">Yapıştırılanı al</button>
-          <p class="not" id="depoUyari" hidden>Tarayıcı yerel depolamayı engelledi — ön ayarlar yalnız bu sekmede yaşar. Kalıcı saklamak için yukarıdaki JSON'u bir yere kopyala.</p>
-        </details>
-      </details>
-
-      <details class="blok">
-        <summary><h2>Biçim</h2></summary>
+        <summary><h2>Kart</h2></summary>
         <label class="satir">
-          <div class="etiket"><span>Oran</span></div>
-          <div class="secim" id="oranSecim">
-            <button data-oran="4:5" aria-pressed="true">4:5 &nbsp;feed</button>
-            <button data-oran="9:16" aria-pressed="false">9:16 &nbsp;story</button>
+          <div class="etiket"><span>1 · Işık</span></div>
+          <div class="secim" id="temaSecim">
+            <button data-tema="gece" aria-pressed="true">Gece</button>
+            <button data-tema="gunduz" aria-pressed="false">Gündüz</button>
           </div>
         </label>
         <label class="satir">
-          <div class="etiket"><span>Kart</span></div>
-          <div class="secim" id="modSecim">
-            <button data-mod="tek" aria-pressed="true">Tek kart</button>
-            <button data-mod="karusel" aria-pressed="false">Karusel</button>
+          <div class="etiket"><span>2 · Kart</span></div>
+          <div class="secim" id="turSecim">
+            <button data-tur="soz" aria-pressed="true">Söz kartı</button>
+            <button data-tur="karusel" aria-pressed="false">Karusel</button>
+            <button data-tur="story" aria-pressed="false">Story</button>
           </div>
         </label>
+        <label class="satir">
+          <div class="etiket"><span>3 · Zemin</span></div>
+          <div class="secim" id="zeminSecim">
+            <button data-zemin="gorsel" aria-pressed="true">Görsel</button>
+            <button data-zemin="glow" data-isik="gece" aria-pressed="false">Glow</button>
+            <button data-zemin="krem" data-isik="gunduz" aria-pressed="false" hidden><i class="nokta" style="background:#F2EAE2"></i>Krem</button>
+            <button data-zemin="keten" data-isik="gunduz" aria-pressed="false" hidden><i class="nokta" style="background:#D9CBB6"></i>Keten</button>
+            <button data-zemin="toprak" data-isik="gunduz" aria-pressed="false" hidden><i class="nokta" style="background:#B4654A"></i>Toprak</button>
+            <button data-zemin="zeytin" data-isik="gunduz" aria-pressed="false" hidden><i class="nokta" style="background:#6E7453"></i>Zeytin</button>
+          </div>
+        </label>
+        <p class="not" id="kurNot"></p>
         <div id="karuselAlan" hidden>
           <label class="satir">
             <div class="etiket"><span>Kart sayısı</span><span class="deger" id="kartSayiDeger">6</span></div>
@@ -299,22 +288,91 @@
           <div class="serit" id="serit"></div>
           <button class="eylem ikincil" id="dagit">Crop'ları dağıt</button>
           <label class="anahtar" style="margin-top:10px"><span>Kart 1 kapak olsun</span><input type="checkbox" id="kapakIstisna"></label>
-          <p class="not">Tek üretimden crop alınır — kart kart ayrı görsel yüklenmez. Dağıtım crop'ları karenin <b>üst bölgesinde</b> tutar; yalnız son kart aşağı sarkıp kor bandından pay alır. Metin her kartta karanlığa oturur.<br><b>Kart 1 kapak olsun</b> açıkken birinci kart <b>F2 karusel · kapak</b> tipografisiyle çizilir (üst konum, punto 95, işaret açık); kalan kartlar seçili ön ayarda kalır. Kadraj ayarları etkilenmez.</p>
+          <button class="eylem ikincil" id="kartGorselSec" style="margin-top:10px">Kart başına görsel yükle</button>
+          <input type="file" id="dosyaCoklu" accept="image/*" multiple hidden>
+          <button class="eylem ikincil" id="kartGorselKaldir" style="margin-top:8px" hidden>Kart görsellerini kaldır</button>
+          <p class="not" id="kartGorselDurum" style="color:var(--altin)" hidden></p>
+          <details class="ic" style="margin-top:10px">
+            <summary>Karusel nasıl çalışır</summary>
+            <p class="not" style="margin-top:0">Tek üretimden crop alınır — kart kart ayrı görsel yüklenmez. Dağıtım crop'ları karenin <b>üst bölgesinde</b> tutar; yalnız son kart aşağı sarkıp kor bandından pay alır. Metin her kartta karanlığa oturur.<br><b>Kart 1 kapak olsun</b> açıkken birinci kart <b>F2 karusel · kapak</b> tipografisiyle çizilir (üst konum, punto 95, işaret açık); kalan kartlar seçili ön ayarda kalır. Kadraj ayarları etkilenmez.<br><b>Kart başına görsel</b> — crop'lar dışarıda kesildiyse: dosyaları birlikte seç (ya da karusel modunda birlikte sürükle). Ada göre sıralanır (k1, k2 … k10), sırayla K1…Kn'e oturur, kart sayısı dosya sayısına eşitlenir, o kartların kadrajı sıfırlanır. Altı altın çizgili kart kendi görselini taşır; <b>Crop'ları dağıt</b> o kartlara dokunmaz.</p>
+          </details>
         </div>
       </details>
 
       <details class="blok" open>
-        <summary><h2>Metin</h2></summary>
-        <textarea id="metin" placeholder="İçindeki ateş sönmedi.&#10;Üstü küllendi sadece."></textarea>
-        <p class="not">Satır sonu satır sonudur. <b style="color:var(--koz)">*kelime*</b> köz rengine döner — tek kelimelik ateş vurgusu için.</p>
+        <summary><h2>Görsel</h2></summary>
+        <div id="birak" tabindex="0" role="button">
+          <b>Görseli sürükle, yapıştır ya da seç</b>
+          Midjourney çıktısı · Ctrl/⌘+V da çalışır
+        </div>
+        <input type="file" id="dosya" accept="image/*" hidden>
+        <button class="eylem ikincil" id="gorselKaldir" style="margin-top:10px" hidden>Görseli kaldır</button>
+        <p class="not" id="zeminNot" hidden>Görsel yok — düz zemin çiziliyor.</p>
+        <label class="satir" style="margin-top:12px">
+          <div class="etiket"><span>Görseli yumuşat</span><span class="deger" id="yumusatDeger">0.00</span></div>
+          <input type="range" id="yumusat" min="0" max="1" step="0.05" value="0">
+        </label>
+        <p class="not" id="sertlikNot" hidden></p>
+      </details>
 
-        <label class="satir" style="margin-top:13px">
+      <details class="blok" open>
+        <summary><h2>Metin</h2></summary>
+        <textarea id="metin" placeholder="İçindeki ateş sönmedi.&#10;&#10;Üstü küllendi sadece."></textarea>
+        <p class="not">Satır sonu satır sonudur. <b style="color:var(--koz)">Boş satır</b> bırakırsan altı küçük ikinci blok olur. <b style="color:var(--koz)">*kelime*</b> vurgudur: gecede köz, gündüzde toprak.</p>
+        <label class="satir" style="margin-top:11px">
+          <div class="etiket"><span>Alt bant (isteğe bağlı)</span></div>
+          <input type="text" id="bant" placeholder="Açık Kapı · 19 Ekim Pazartesi · 21:00 · online">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Metni aşağı / yukarı al</span><span class="deger" id="metinKaydirDeger">0.00</span></div>
+          <input type="range" id="metinKaydir" min="-0.12" max="0.30" step="0.01" value="0">
+        </label>
+
+      </details>
+
+      <details class="blok">
+        <summary><h2>Kadraj</h2></summary>
+        <label class="satir">
+          <div class="etiket"><span>Yakınlık</span><span class="deger" id="zoomDeger">1.00</span></div>
+          <input type="range" id="zoom" min="1" max="2.6" step="0.01" value="1">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Yatay</span><span class="deger" id="oxDeger">0</span></div>
+          <input type="range" id="ox" min="-1" max="1" step="0.01" value="0">
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Dikey</span><span class="deger" id="oyDeger">0</span></div>
+          <input type="range" id="oy" min="-1" max="1" step="0.01" value="0">
+        </label>
+      </details>
+
+      <details class="blok" open>
+        <summary><h2>İndir</h2></summary>
+        <label class="satir">
+          <div class="etiket"><span>Kart adı</span></div>
+          <input type="text" id="ad">
+        </label>
+        <button class="eylem" id="indir">PNG indir</button>
+        <button class="eylem ikincil" id="indirHepsi" style="margin-top:8px" hidden>Karuselin tümünü indir</button>
+      </details>
+
+      <details class="blok">
+        <summary><h2>İnce ayar</h2></summary>
+        <p class="not" style="margin-top:0">Işık, kart ya da zemin değişince buradaki değerler o kartın standardına döner. Kalıcı olsun istediğin ayarı aşağıda <b>Ön ayar</b> olarak kaydet.</p>
+
+        <details class="ic">
+          <summary>Yazı</summary>
+        <label class="satir">
           <div class="etiket"><span>Renk</span></div>
           <div class="secim" id="renkSecim">
             <button data-renk="krem" aria-pressed="true">Krem</button>
             <button data-renk="altin" aria-pressed="false">Altın</button>
+            <button data-renk="komur" aria-pressed="false">Kömür</button>
+            <button data-renk="toprak" aria-pressed="false">Toprak</button>
+            <button data-renk="zeytin" aria-pressed="false">Zeytin</button>
           </div>
         </label>
+        <p class="not" id="gunduzNot" hidden>Gündüz: krem üstünde altın kullanılmaz; karartma, kenar ve perde krem tonuyla çalışır.</p>
         <p class="not uyari" id="altinNot" hidden>Zirve kartı — haftada en fazla bir tane.</p>
 
         <label class="satir">
@@ -327,15 +385,17 @@
         </label>
 
         <label class="satir">
-          <div class="etiket"><span>Metin kaydır</span><span class="deger" id="metinKaydirDeger">0.00</span></div>
-          <input type="range" id="metinKaydir" min="-0.12" max="0.30" step="0.01" value="0">
-        </label>
-
-        <label class="satir">
           <div class="etiket"><span>Hizalama</span></div>
           <div class="secim" id="hizaSecim">
             <button data-hiza="orta" aria-pressed="true">Ortalı</button>
             <button data-hiza="sol" aria-pressed="false">Sola</button>
+          </div>
+        </label>
+        <label class="satir">
+          <div class="etiket"><span>Yazı kalınlığı</span></div>
+          <div class="secim" id="agirlikSecim">
+            <button data-agirlik="400" aria-pressed="true">İnce</button>
+            <button data-agirlik="500" aria-pressed="false">Orta</button>
           </div>
         </label>
 
@@ -360,26 +420,10 @@
           <input type="range" id="blokAra" min="0" max="1.6" step="0.05" value="0.60">
         </label>
         <p class="not">Metinde <b style="color:var(--koz)">boş satır</b> bırakırsan altı ikinci blok olur — ana cümle büyük, alt cümle küçük. Oran 1.00'de fark yok.</p>
-      </details>
+        </details>
 
-      <details class="blok">
-        <summary><h2>Kadraj</h2></summary>
-        <label class="satir">
-          <div class="etiket"><span>Yakınlık</span><span class="deger" id="zoomDeger">1.00</span></div>
-          <input type="range" id="zoom" min="1" max="2.6" step="0.01" value="1">
-        </label>
-        <label class="satir">
-          <div class="etiket"><span>Yatay</span><span class="deger" id="oxDeger">0</span></div>
-          <input type="range" id="ox" min="-1" max="1" step="0.01" value="0">
-        </label>
-        <label class="satir">
-          <div class="etiket"><span>Dikey</span><span class="deger" id="oyDeger">0</span></div>
-          <input type="range" id="oy" min="-1" max="1" step="0.01" value="0">
-        </label>
-      </details>
-
-      <details class="blok">
-        <summary><h2>Grade</h2></summary>
+        <details class="ic">
+          <summary>Işık ve doku</summary>
         <label class="satir" id="zeminGlowAlan">
           <div class="etiket"><span>Zemin glow</span><span class="deger" id="zeminGlowDeger">0.55</span></div>
           <input type="range" id="zeminGlow" min="0" max="1.4" step="0.05" value="0.55">
@@ -405,6 +449,10 @@
           <div class="etiket"><span>Grain</span><span class="deger" id="grainDeger">0.065</span></div>
           <input type="range" id="grain" min="0" max="0.16" step="0.005" value="0.065">
         </label>
+        </details>
+
+        <details class="ic">
+          <summary>İşaret ve kılavuz</summary>
         <label class="satir">
           <div class="etiket"><span>Köşe imzası</span></div>
           <div class="secim" id="imzaSecim">
@@ -437,26 +485,62 @@
         <label class="anahtar"><span>Kılavuz · güvenli alan</span><input type="checkbox" id="kilavuz"></label>
         <label class="anahtar"><span>Kılavuz · üçte bir</span><input type="checkbox" id="kilavuzUcte"></label>
         <p class="not">Kılavuz yalnız ekranda görünür, indirilen dosyaya girmez.</p>
-      </details>
+        </details>
 
-      <details class="blok" open>
-        <summary><h2>İndir</h2></summary>
+        <details class="ic">
+          <summary>Biçim (elle)</summary>
         <label class="satir">
-          <div class="etiket"><span>Kart adı</span></div>
-          <input type="text" id="ad">
+          <div class="etiket"><span>Oran</span></div>
+          <div class="secim" id="oranSecim">
+            <button data-oran="4:5" aria-pressed="true">4:5 &nbsp;feed</button>
+            <button data-oran="9:16" aria-pressed="false">9:16 &nbsp;story</button>
+          </div>
         </label>
-        <button class="eylem" id="indir">PNG indir</button>
-        <button class="eylem ikincil" id="indirHepsi" style="margin-top:8px" hidden>Karuselin tümünü indir</button>
+        <label class="satir">
+          <div class="etiket"><span>Kart</span></div>
+          <div class="secim" id="modSecim">
+            <button data-mod="tek" aria-pressed="true">Tek kart</button>
+            <button data-mod="karusel" aria-pressed="false">Karusel</button>
+          </div>
+        </label>
+        </details>
+
+        <details class="ic">
+          <summary>Ön ayar · kaydet / yükle</summary>
+        <div style="display:flex;gap:6px">
+          <select id="onAyarSec" style="flex:1;min-width:0;background:var(--komur);color:var(--krem);border:1px solid rgba(242,234,226,.14);border-radius:2px;padding:9px 8px;font-family:'Jost',sans-serif;font-size:13px">
+            <option value="">— ön ayar seç —</option>
+          </select>
+          <button class="eylem ikincil" id="onAyarYukle" style="width:auto;padding:0 14px">Yükle</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="text" id="onAyarAd" placeholder="ön ayar adı" style="flex:1;min-width:0">
+          <button class="eylem ikincil" id="onAyarKaydet" style="width:auto;padding:0 14px">Kaydet</button>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="eylem ikincil" id="onAyarSil" style="flex:1">Seçiliyi sil</button>
+          <button class="eylem ikincil" id="onAyarTemizle" style="flex:1">Kendi kayıtlarımı temizle</button>
+        </div>
+        <p class="not" id="onAyarDurum" style="color:var(--altin)" hidden></p>
+        <p class="not">Aynı adla kaydedersen gömülü ön ayarın üstüne yazarsın; sildiğinde gömülü hâline döner. Kaydedilen: oran, renk, konum, hizalama, punto, satır/harf aralığı, grade, köşe imzası. Kadraj ve metin kaydedilmez — onlar karta özeldir.</p>
+        <details style="margin-top:10px">
+          <summary class="not" style="cursor:pointer">Dışa / içe aktar</summary>
+          <textarea id="onAyarJson" style="margin-top:8px;font-family:ui-monospace,monospace;font-style:normal;font-size:11px;min-height:70px" placeholder="Ön ayarların JSON'u burada görünür. Başka makineye taşımak için kopyala; almak için yapıştırıp Al'a bas."></textarea>
+          <button class="eylem ikincil" id="onAyarAl" style="margin-top:6px">Yapıştırılanı al</button>
+          <p class="not" id="depoUyari" hidden>Tarayıcı yerel depolamayı engelledi — ön ayarlar yalnız bu sekmede yaşar. Kalıcı saklamak için yukarıdaki JSON'u bir yere kopyala.</p>
+        </details>
+        </details>
       </details>
 
       <details class="blok">
         <summary><h2>Standart</h2></summary>
         <ul class="kural">
-          <li><b>Krem</b> #F2EAE2 varsayılan · <b>Altın</b> #D4A855 yalnız zirve kartta · <b>Köz</b> #C44B2F yalnız tek kelime</li>
-          <li>Söz kartı: en fazla <b>on dört-on altı kelime</b></li>
-          <li>Karusel kartı: en fazla <b>iki cümle</b></li>
-          <li>Kartta <b>handle ve tam logo yok</b> — köşede tek imza: OCAK işareti</li>
-          <li>Metin görselin <b>karanlık negatif alanına</b> oturur</li>
+          <li><b>Gece:</b> metin krem · vurgu köz · işaret korlu halka. <b>Altın</b> yalnız zirve kartta</li>
+          <li><b>Gündüz:</b> metin kömür · vurgu toprak · işaret tek renk köz. Toprak ve zeytin zeminde metin ve işaret krem</li>
+          <li>Gece ile gündüz <b>aynı dizgiyi</b> kullanır: konum, punto, aralık ve işaret yeri ortak; değişen yalnız renk ve karartma</li>
+          <li>Söz kartı: en fazla <b>on dört-on altı kelime</b> · karusel kartı: en fazla <b>iki cümle</b></li>
+          <li>Kartta <b>handle ve tam logo yok</b> — tek imza: OCAK işareti</li>
+          <li>Beyaz yok; krem üstünde altın yok</li>
           <li>Grain tek katman — telefon görüntüsüne ayrıca ekleme</li>
         </ul>
       </details>
@@ -469,7 +553,7 @@
 (function(){
   "use strict";
 
-  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210" };
+  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6", vurguGunduz:"#A04F36" };
   var FONT = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
   var fontHazir = false;
 
@@ -486,8 +570,21 @@
   isaretGorsel.onload = function(){ isaretHazir = true; ciz(); };
   isaretGorsel.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDggNjg4IiB3aWR0aD0iNzA4IiBoZWlnaHQ9IjY4OCI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImtvciIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGN4PSIzNTQiIGN5PSIzMjEiIHI9IjIxMiI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgICAgc3RvcC1jb2xvcj0iI0Y0QUU3QyIgc3RvcC1vcGFjaXR5PSIwLjk1Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC4yMCIgc3RvcC1jb2xvcj0iI0RBNkM0MiIgc3RvcC1vcGFjaXR5PSIwLjgyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40NCIgc3RvcC1jb2xvcj0iI0M0NEIyRiIgc3RvcC1vcGFjaXR5PSIwLjUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjcyIiBzdG9wLWNvbG9yPSIjQzQ0QjJGIiBzdG9wLW9wYWNpdHk9IjAuMTgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiAgICBzdG9wLWNvbG9yPSIjQzQ0QjJGIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICAKICAgIDxjbGlwUGF0aCBpZD0iY291bnRlciIgY2xpcFBhdGhVbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yOSw2NTYpIHNjYWxlKDEsLTEpIiBkPSJNNDAyIDhRNDcyIDggNTI5LjAgNDAuNVE1ODYgNzMgNjE5LjUgMTM2LjVRNjUzIDIwMCA2NTMgMjkxUTY1MyAzODYgNjE2LjUgNDU4LjVRNTgwIDUzMSA1MTQuMCA1NzIuNVE0NDggNjE0IDM1OSA2MTRRMjQzIDYxNCAxNzguMCA1NDIuMFExMTMgNDcwIDExMyAzNDZRMTEzIDI3NiAxMzMuNSAyMTQuNVExNTQgMTUzIDE5Mi41IDEwNi41UTIzMSA2MCAyODQuMCAzNC4wUTMzNyA4IDQwMiA4WiIvPjwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDxnIGNsaXAtcGF0aD0idXJsKCNjb3VudGVyKSI+PHJlY3Qgd2lkdGg9IjcwOCIgaGVpZ2h0PSI2ODgiIGZpbGw9InVybCgja29yKSIvPjwvZz4KICA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjksNjU2KSBzY2FsZSgxLC0xKSIgZD0iTTM2NiAtMTJRMjk0IC0xMiAyMzUuNSAxMy41UTE3NyAzOSAxMzUuNSA4NC4wUTk0IDEyOSA3MS41IDE4Ny41UTQ5IDI0NiA0OSAzMTJRNDkgMzkzIDgwLjUgNDU0LjBRMTEyIDUxNSAxNjQuMCA1NTUuNVEyMTYgNTk2IDI3OC4wIDYxNi4wUTM0MCA2MzYgNDAxIDYzNlE0NzUgNjM2IDUzMy41IDYwOS41UTU5MiA1ODMgNjMzLjAgNTM4LjBRNjc0IDQ5MyA2OTUuNSA0MzYuMFE3MTcgMzc5IDcxNyAzMTlRNzE3IDI0OSA2ODkuMCAxODkuMFE2NjEgMTI5IDYxMi41IDg0LjBRNTY0IDM5IDUwMC41IDEzLjVRNDM3IC0xMiAzNjYgLTEyWk00MDIgOFE0NzIgOCA1MjkuMCA0MC41UTU4NiA3MyA2MTkuNSAxMzYuNVE2NTMgMjAwIDY1MyAyOTFRNjUzIDM4NiA2MTYuNSA0NTguNVE1ODAgNTMxIDUxNC4wIDU3Mi41UTQ0OCA2MTQgMzU5IDYxNFEyNDMgNjE0IDE3OC4wIDU0Mi4wUTExMyA0NzAgMTEzIDM0NlExMTMgMjc2IDEzMy41IDIxNC41UTE1NCAxNTMgMTkyLjUgMTA2LjVRMjMxIDYwIDI4NC4wIDM0LjBRMzM3IDggNDAyIDhaIiBmaWxsPSIjRjJFQUUyIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz4KPC9zdmc+";
 
+  var isaretMono = new Image();
+  var isaretMonoHazir = false;
+  isaretMono.onload = function(){ isaretMonoHazir = true; ciz(); };
+  isaretMono.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDggNjg4IiB3aWR0aD0iNzA4IiBoZWlnaHQ9IjY4OCI+CiAgPHBhdGggdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTI5LDY1Nikgc2NhbGUoMSwtMSkiIGQ9Ik0zNjYgLTEyUTI5NCAtMTIgMjM1LjUgMTMuNVExNzcgMzkgMTM1LjUgODQuMFE5NCAxMjkgNzEuNSAxODcuNVE0OSAyNDYgNDkgMzEyUTQ5IDM5MyA4MC41IDQ1NC4wUTExMiA1MTUgMTY0LjAgNTU1LjVRMjE2IDU5NiAyNzguMCA2MTYuMFEzNDAgNjM2IDQwMSA2MzZRNDc1IDYzNiA1MzMuNSA2MDkuNVE1OTIgNTgzIDYzMy4wIDUzOC4wUTY3NCA0OTMgNjk1LjUgNDM2LjBRNzE3IDM3OSA3MTcgMzE5UTcxNyAyNDkgNjg5LjAgMTg5LjBRNjYxIDEyOSA2MTIuNSA4NC4wUTU2NCAzOSA1MDAuNSAxMy41UTQzNyAtMTIgMzY2IC0xMlpNNDAyIDhRNDcyIDggNTI5LjAgNDAuNVE1ODYgNzMgNjE5LjUgMTM2LjVRNjUzIDIwMCA2NTMgMjkxUTY1MyAzODYgNjE2LjUgNDU4LjVRNTgwIDUzMSA1MTQuMCA1NzIuNVE0NDggNjE0IDM1OSA2MTRRMjQzIDYxNCAxNzguMCA1NDIuMFExMTMgNDcwIDExMyAzNDZRMTEzIDI3NiAxMzMuNSAyMTQuNVExNTQgMTUzIDE5Mi41IDEwNi41UTIzMSA2MCAyODQuMCAzNC4wUTMzNyA4IDQwMiA4WiIgZmlsbD0iI0M0NEIyRiIgZmlsbC1ydWxlPSJub256ZXJvIi8+Cjwvc3ZnPg==";
+
+  var isaretMonoKrem = new Image();
+  var isaretMonoKremHazir = false;
+  isaretMonoKrem.onload = function(){ isaretMonoKremHazir = true; ciz(); };
+  try {
+    isaretMonoKrem.src = "data:image/svg+xml;base64," +
+      btoa(atob(isaretMono.src.split(",")[1]).replace(/#C44B2F/gi, "#F2EAE2"));
+  } catch(e){ /* türetilemezse koyu düz zeminde işaret çizilmez */ }
+
   var S = {
-    oran:"4:5", mod:"tek", renk:"krem", konum:"ust", hiza:"orta",
+    tema:"gece", tur:"soz", zemin:"gorsel", agirlik:"400", yumusat:0, oran:"4:5", mod:"tek", renk:"krem", konum:"ust", hiza:"orta",
     punto:95, ara:1.28, harf:0.01,
     kara:0, kenar:0.63, perde:0.35, grain:0.065,
     altOran:0.62, blokAra:0.60, metinKaydir:0, zeminGlow:0.55, glowKaydir:0,
@@ -496,10 +593,15 @@
     kartlar:[]
   };
 
-  function yeniKart(){ return { metin:"", zoom:1, ox:0, oy:0 }; }
+  function yeniKart(){ return { metin:"", bant:"", zoom:1, ox:0, oy:0, gorsel:null }; }
   for (var i=0;i<8;i++) S.kartlar.push(yeniKart());
 
   function aktifKart(){ return S.mod === "karusel" ? S.kartlar[S.aktif] : S.kartlar[0]; }
+  /* Kart başına görsel yalnız karusel modunda yaşar; yoksa ortak görsele düşer. */
+  function etkinGorsel(){
+    var k = aktifKart();
+    return (S.mod === "karusel" && k && k.gorsel) ? k.gorsel : gorsel;
+  }
   function olcu(){ return S.oran === "4:5" ? {w:1080,h:1350} : {w:1080,h:1920}; }
 
   /* ---------- font ---------- */
@@ -510,6 +612,10 @@
       if (!fontHazir) fontYok(); else document.getElementById("fontUyari").classList.remove("acik");
       ciz();
     }).catch(fontYok);
+  }
+  if (document.fonts && document.fonts.load){
+    document.fonts.load('400 27px "Jost"').then(function(){ ciz(); }).catch(function(){});
+    document.fonts.load('italic 500 100px "Cormorant Garamond"').then(function(){ ciz(); }).catch(function(){});
   }
   function fontYok(){
     fontHazir = false;
@@ -546,6 +652,104 @@
     }
     nc.putImageData(img,0,0);
     grainDeseni = ctx.createPattern(n,"repeat");
+  }
+
+  /* ---------- görseli yumuşat ----------
+     Sert sıva dokusu metnin altında gürültü yapar. Görsel önce küçültülür, sonra tuvale
+     yumuşatılarak büyütülür; üstüne gelen grain ince taneyi geri verir. */
+  var gorselSertlik = 0;
+  function dokuSertligi(im){
+    // 540 px genişliğe indirilmiş gri kopya ile onun bulanık hâli arasındaki farkın standart sapması,
+    // metnin oturduğu bantta (yüksekliğin %12–%50'si). Kaba sıva yüksek, pürüzsüz duvar düşük çıkar.
+    try {
+      var w = 540, h = Math.max(2, Math.round(im.height * w / im.width));
+      var a = document.createElement("canvas"); a.width = w; a.height = h;
+      var ac = a.getContext("2d", { willReadFrequently:true }); ac.imageSmoothingEnabled = true; ac.imageSmoothingQuality = "high";
+      ac.drawImage(yumusakKopya(im, w, h), 0, 0);
+      var kw = Math.max(2, Math.round(w/8)), kh = Math.max(2, Math.round(h/8));
+      var b = document.createElement("canvas"); b.width = w; b.height = h;
+      var bc = b.getContext("2d", { willReadFrequently:true }); bc.imageSmoothingEnabled = true; bc.imageSmoothingQuality = "high";
+      bc.drawImage(yumusakKopya(a, kw, kh), 0, 0, w, h);
+      var y0 = Math.round(h*0.12), y1 = Math.round(h*0.50);
+      var pa = ac.getImageData(0, y0, w, y1-y0).data, pb = bc.getImageData(0, y0, w, y1-y0).data;
+      var n = pa.length/4, top = 0, top2 = 0;
+      for (var i=0;i<pa.length;i+=4){
+        var f = (0.2126*pa[i] + 0.7152*pa[i+1] + 0.0722*pa[i+2]) - (0.2126*pb[i] + 0.7152*pb[i+1] + 0.0722*pb[i+2]);
+        top += f; top2 += f*f;
+      }
+      yumusakOnbellek.kaynak = null;
+      return Math.sqrt(Math.max(0, top2/n - (top/n)*(top/n)));
+    } catch(e){ return 0; }
+  }
+  var yumusakOnbellek = { kaynak:null, w:0, h:0, tuval:null };
+  function yumusakKopya(im, w, h){
+    var o = yumusakOnbellek;
+    if (o.kaynak === im && o.w === w && o.h === h) return o.tuval;
+    var adim = document.createElement("canvas"), aw = im.width, ah = im.height, kay = im;
+    // yarıya indirerek in: tek adımda büyük küçültme dişli çıkar
+    while (aw/2 > w){
+      var t = document.createElement("canvas");
+      aw = Math.round(aw/2); ah = Math.round(ah/2); t.width = aw; t.height = ah;
+      var tc = t.getContext("2d"); tc.imageSmoothingEnabled = true; tc.imageSmoothingQuality = "high";
+      tc.drawImage(kay, 0, 0, aw, ah); kay = t;
+    }
+    adim.width = w; adim.height = h;
+    var ac = adim.getContext("2d"); ac.imageSmoothingEnabled = true; ac.imageSmoothingQuality = "high";
+    ac.drawImage(kay, 0, 0, w, h);
+    o.kaynak = im; o.w = w; o.h = h; o.tuval = adim;
+    return adim;
+  }
+
+  /* ---------- dokulu düz zemin (gündüz) ----------
+     Çok ölçekli yumuşak gürültü rengi ±%5–6 oynatır (mala izi), sol üst biraz aydınlık,
+     kenarlar çok hafif koyu. Çeyrek çözünürlükte üretilir, tuvale yumuşatılarak büyütülür.
+     Aynı zemin + oran için bir kez üretilir; kart değişse de doku yerinde kalır. */
+  var dokuOnbellek = {};
+  function dokuluZemin(ad, W, H, kenarGuc){
+    var anahtar = ad + "|" + W + "x" + H + "|" + kenarGuc;
+    if (dokuOnbellek[anahtar]) return dokuOnbellek[anahtar];
+    var w = Math.round(W/4), h = Math.round(H/4);
+    var top = new Float32Array(w*h);
+    [[6,0.30],[14,0.34],[40,0.24],[110,0.12]].forEach(function(o){
+      var gh = Math.max(2, Math.floor(H / Math.floor(1350/o[0])) + 2);
+      var gw = Math.max(2, Math.floor(W / Math.floor(1080/o[0])) + 2);
+      var izg = new Float32Array(gw*gh);
+      for (var i=0;i<izg.length;i++) izg[i] = Math.random();
+      for (var y=0;y<h;y++){
+        var fy = y/(h-1)*(gh-1), y0 = Math.floor(fy), y1 = Math.min(gh-1, y0+1), ty = fy-y0;
+        ty = ty*ty*(3-2*ty);
+        for (var x=0;x<w;x++){
+          var fx = x/(w-1)*(gw-1), x0 = Math.floor(fx), x1 = Math.min(gw-1, x0+1), tx = fx-x0;
+          tx = tx*tx*(3-2*tx);
+          var ust = izg[y0*gw+x0]*(1-tx) + izg[y0*gw+x1]*tx;
+          var alt = izg[y1*gw+x0]*(1-tx) + izg[y1*gw+x1]*tx;
+          top[y*w+x] += o[1] * (ust*(1-ty) + alt*ty);
+        }
+      }
+    });
+    var mn = Infinity, mx = -Infinity;
+    for (var j=0;j<top.length;j++){ if (top[j] < mn) mn = top[j]; if (top[j] > mx) mx = top[j]; }
+    var aralik = mx - mn;
+    var hex = RENKLER[ad], taban = [parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16)];
+    var doku = ad === "krem" ? 0.045 : (ad === "keten" ? 0.075 : 0.09);
+    var kenar = 0.07 * (kenarGuc / 0.35);
+    var k = document.createElement("canvas"); k.width = w; k.height = h;
+    var kc = k.getContext("2d"), img = kc.createImageData(w, h);
+    for (var yy=0;yy<h;yy++){
+      for (var xx=0;xx<w;xx++){
+        var n = yy*w+xx;
+        var g = aralik > 1e-6 ? (top[n]-mn)/aralik : 0.5;
+        var u = xx/w, v = yy/h;
+        var carp = (1 + 0.045*(1-u) - 0.035*v) * (1 + doku*(g-0.5)*2) * (1 - kenar*(((u-0.5)*(u-0.5) + (v-0.5)*(v-0.5))*2));
+        img.data[n*4]   = Math.max(0, Math.min(255, taban[0]*carp));
+        img.data[n*4+1] = Math.max(0, Math.min(255, taban[1]*carp));
+        img.data[n*4+2] = Math.max(0, Math.min(255, taban[2]*carp));
+        img.data[n*4+3] = 255;
+      }
+    }
+    kc.putImageData(img, 0, 0);
+    dokuOnbellek[anahtar] = k;
+    return k;
   }
 
   /* ---------- metin ---------- */
@@ -609,6 +813,7 @@
     if (!kapakKarti()) { cizHam(); return; }
     var yedek = {};
     Object.keys(KAPAK_ALAN).forEach(function(a){ yedek[a] = S[a]; S[a] = KAPAK_ALAN[a]; });
+    if (S.tema === "gunduz"){ S.kenar = 0; S.perde = yedek.perde; S.zeminGlow = 0.35; }
     try { cizHam(); }
     finally { Object.keys(yedek).forEach(function(a){ S[a] = yedek[a]; }); }
   }
@@ -627,14 +832,18 @@
     ctx.clearRect(0,0,W,H);
 
     // zemin
-    ctx.fillStyle = RENKLER.komur;
+    var gunduz = S.tema === "gunduz";
+    var duzZemin = S.zemin !== "gorsel";
+    var koyuDuz = gunduz && (S.zemin === "toprak" || S.zemin === "zeytin");
+    var ortu = (gunduz && !koyuDuz) ? "242,234,226" : "26,18,16";
+    ctx.fillStyle = gunduz ? RENKLER.krem : RENKLER.komur;
     ctx.fillRect(0,0,W,H);
 
     // metin bloğu ölçüsü
     var kenarBosluk = W*0.12;
     var maxG = W - kenarBosluk*2;
     var izle = S.punto * S.harf;
-    ctx.font = 'italic 400 ' + S.punto + 'px ' + FONT;
+    ctx.font = 'italic ' + S.agirlik + ' ' + S.punto + 'px ' + FONT;
     ctx.textBaseline = "alphabetic";
 
     // boş satır = blok ayracı · ilk blok ana punto, sonrakiler alt oranda
@@ -643,7 +852,7 @@
     bloklar.forEach(function(blokMetin, bi){
       var bp = bi === 0 ? S.punto : S.punto * S.altOran;
       var bizle = bp * S.harf;
-      ctx.font = 'italic 400 ' + bp + 'px ' + FONT;
+      ctx.font = 'italic ' + S.agirlik + ' ' + bp + 'px ' + FONT;
       blokMetin.split("\n").forEach(function(g){
         if (g.trim() === "") return;
         sar(ctx, parcala(g), maxG, bizle).forEach(function(sat){
@@ -669,13 +878,23 @@
     ustY += S.metinKaydir * H;
 
     // görsel — cover + zoom + kaydırma
-    if (gorsel){
-      var oran = Math.max(W/gorsel.width, H/gorsel.height) * k.zoom;
-      var gw = gorsel.width*oran, gh = gorsel.height*oran;
+    var eg = duzZemin ? null : etkinGorsel();
+    if (eg){
+      var oran = Math.max(W/eg.width, H/eg.height) * k.zoom;
+      var gw = eg.width*oran, gh = eg.height*oran;
       var bosX = Math.max(0, gw-W)/2, bosY = Math.max(0, gh-H)/2;
       var x = (W-gw)/2 + k.ox*bosX;
       var y = (H-gh)/2 + k.oy*bosY;
-      ctx.drawImage(gorsel, x, y, gw, gh);
+      if (S.yumusat > 0){
+        var yk = 1 + S.yumusat * 3;
+        ctx.drawImage(yumusakKopya(eg, Math.max(2, Math.round(gw/yk)), Math.max(2, Math.round(gh/yk))), x, y, gw, gh);
+      } else {
+        ctx.drawImage(eg, x, y, gw, gh);
+      }
+    } else if (gunduz){
+      // gündüz düz zemin: krem · keten · toprak · zeytin — tek renk, mala dokulu
+      var zr = (S.zemin === "keten" || S.zemin === "toprak" || S.zemin === "zeytin") ? S.zemin : "krem";
+      ctx.drawImage(dokuluZemin(zr, W, H, S.zeminGlow), 0, 0, W, H);
     } else {
       ctx.fillStyle = RENKLER.komur;
       ctx.fillRect(0,0,W,H);
@@ -694,15 +913,15 @@
 
     // genel karartma
     if (S.kara > 0){
-      ctx.fillStyle = "rgba(26,18,16," + S.kara + ")";
+      ctx.fillStyle = "rgba(" + ortu + "," + S.kara + ")";
       ctx.fillRect(0,0,W,H);
     }
 
     // kenar karartma
     if (S.kenar > 0){
       var vg = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*0.28, W/2, H/2, Math.max(W,H)*0.78);
-      vg.addColorStop(0, "rgba(26,18,16,0)");
-      vg.addColorStop(1, "rgba(26,18,16," + S.kenar + ")");
+      vg.addColorStop(0, "rgba(" + ortu + ",0)");
+      vg.addColorStop(1, "rgba(" + ortu + "," + S.kenar + ")");
       ctx.fillStyle = vg; ctx.fillRect(0,0,W,H);
     }
 
@@ -711,39 +930,58 @@
       var p0 = Math.max(0, ustY - S.punto*1.5);
       var p1 = Math.min(H, ustY + blokY + S.punto*0.9);
       var pg = ctx.createLinearGradient(0, p0, 0, p1);
-      pg.addColorStop(0, "rgba(26,18,16,0)");
-      pg.addColorStop(0.32, "rgba(26,18,16," + S.perde + ")");
-      pg.addColorStop(0.68, "rgba(26,18,16," + S.perde + ")");
-      pg.addColorStop(1, "rgba(26,18,16,0)");
+      pg.addColorStop(0, "rgba(" + ortu + ",0)");
+      pg.addColorStop(0.32, "rgba(" + ortu + "," + S.perde + ")");
+      pg.addColorStop(0.68, "rgba(" + ortu + "," + S.perde + ")");
+      pg.addColorStop(1, "rgba(" + ortu + ",0)");
       ctx.fillStyle = pg;
       ctx.fillRect(0, p0, W, p1-p0);
     }
 
     // metin
     var anaRenk = RENKLER[S.renk];
+    var vurguRenk = !gunduz ? RENKLER.koz : (koyuDuz ? RENKLER.krem : RENKLER.vurguGunduz);
     blokSol = W; blokSag = 0;
     satirlar.forEach(function(sr){
-      ctx.font = 'italic 400 ' + sr.punto + 'px ' + FONT;
+      ctx.font = 'italic ' + S.agirlik + ' ' + sr.punto + 'px ' + FONT;
       var g = 0;
       sr.parca.forEach(function(p){ g += harfliGenislik(ctx, p.t, sr.izle); });
       var x = S.hiza === "orta" ? (W-g)/2 : kenarBosluk;
       if (g > 0){ if (x < blokSol) blokSol = x; if (x+g > blokSag) blokSag = x+g; }
       var y = ustY + sr.ust + sr.punto*(S.ara - 0.25);
       sr.parca.forEach(function(p){
-        ctx.fillStyle = p.v ? RENKLER.koz : anaRenk;
+        ctx.fillStyle = p.v ? vurguRenk : anaRenk;
         x = harfliYaz(ctx, p.t, x, y, sr.izle);
       });
     });
 
+    // alt bant — Jost, küçük, metnin altında (gece ve gündüzde aynı yer)
+    var bantM = (k.bant || "").trim();
+    if (bantM){
+      var bantP = Math.round(27 * W / 1080);
+      var bantIzle = 1.5;
+      ctx.font = '400 ' + bantP + 'px "Jost", system-ui, sans-serif';
+      var bantG = harfliGenislik(ctx, bantM, bantIzle);
+      var bantX = S.hiza === "orta" ? (W - bantG)/2 : kenarBosluk;
+      var bantY = ustY + blokY + H*0.028 + bantP;
+      ctx.save();
+      ctx.globalAlpha = koyuDuz ? 1 : 0.74;   // toprak/zeytin zeminde krem zaten 3,6–4,1; saydamlık kaldırmaz
+      ctx.fillStyle = anaRenk === RENKLER.altin ? RENKLER.krem : anaRenk;
+      harfliYaz(ctx, bantM, bantX, bantY, bantIzle);
+      ctx.restore();
+    }
+
     // köşe imzası
-    if (S.imza === "isaret" && isaretHazir){
+    var isaretR  = !gunduz ? isaretGorsel : (koyuDuz ? isaretMonoKrem : isaretMono);
+    var isaretOk = !gunduz ? isaretHazir  : (koyuDuz ? isaretMonoKremHazir : isaretMonoHazir);
+    if (S.imza === "isaret" && isaretOk){
       var iw = W * S.imzaBoy;
       var ih = iw * (688/708);
       var ix = S.imzaYer === "sag" ? (W - kenarBosluk - iw) : ((W - iw)/2);
       var iy = S.imzaDikey === "ust" ? (ustY - imzaYuk) : (H - kenarBosluk - ih);
       ctx.save();
       ctx.globalAlpha = S.imzaOpak;
-      ctx.drawImage(isaretGorsel, ix, iy, iw, ih);
+      ctx.drawImage(isaretR, ix, iy, iw, ih);
       ctx.restore();
     }
 
@@ -818,12 +1056,13 @@
 
     var ko = document.getElementById("kaynakOlcu");
     if (ko){
-      if (gorsel && gorsel.width){
+      var kg = etkinGorsel();
+      if (kg && kg.width){
         var k0 = aktifKart();
-        var oranK = Math.max(o.w/gorsel.width, o.h/gorsel.height) * k0.zoom;
-        var tavan = Math.max(o.w/gorsel.width, o.h/gorsel.height);
+        var oranK = Math.max(o.w/kg.width, o.h/kg.height) * k0.zoom;
+        var tavan = Math.max(o.w/kg.width, o.h/kg.height);
         var zTavan = tavan > 0 ? (1/tavan) : 0;
-        ko.textContent = " · KAYNAK " + gorsel.width + " × " + gorsel.height +
+        ko.textContent = " · KAYNAK " + kg.width + " × " + kg.height + (kg !== gorsel ? " (kart görseli)" : "") +
           (oranK > 1 ? "  BÜYÜTÜYOR (zoom tavanı " + zTavan.toFixed(2) + ")" : "");
         ko.style.color = oranK > 1 ? RENKLER.koz : "";
       } else { ko.textContent = ""; }
@@ -863,8 +1102,57 @@
       ciz();
     });
   }
-  grup("oranSecim","oran", adYansit);
-  grup("modSecim","mod", function(){ modDegisti(); adYansit(); });
+  function turEsle(){ S.tur = S.mod === "karusel" ? "karusel" : (S.oran === "9:16" ? "story" : "soz"); }
+  grup("oranSecim","oran", function(){ turEsle(); arayuzYansit(); adYansit(); });
+  grup("modSecim","mod", function(){ turEsle(); modDegisti(); arayuzYansit(); adYansit(); });
+  grup("temaSecim","tema", kur);
+  grup("turSecim","tur", kur);
+  grup("zeminSecim","zemin", kur);
+
+  /* ---------- hızlı kur: ışık × kart × zemin ----------
+     Gündüz, gecenin eşidir: dizgi (konum, punto, aralık, işaret yeri) gece ön ayarından
+     aynen alınır; yalnız renk ve karartma katmanları değişir. Böylece iki ışık aynı elden çıkar. */
+  var KUR_GECE = {
+    soz:     "F1 söz kartı · fotoğraf zemin",
+    sozGlow: "F1 söz kartı · glow zemin",
+    karusel: "F2 karusel · iç kart",
+    story:   "F4 story · 9:16"
+  };
+  var GUNDUZ_PERDE = 0.30, GUNDUZ_YUMUSAT = 0.35, GUNDUZ_ISARET_ORAN = 1.2, SERT_ESIK = 17;
+  var ZEMIN_GECE = ["gorsel","glow"], ZEMIN_GUNDUZ = ["gorsel","krem","keten","toprak","zeytin"];
+  function kur(){
+    var gunduz = S.tema === "gunduz";
+    if ((gunduz ? ZEMIN_GUNDUZ : ZEMIN_GECE).indexOf(S.zemin) < 0) S.zemin = "gorsel";
+    var ad = S.tur === "karusel" ? KUR_GECE.karusel
+           : S.tur === "story"   ? KUR_GECE.story
+           : (!gunduz && S.zemin === "glow") ? KUR_GECE.sozGlow : KUR_GECE.soz;
+    var v = GOMULU[ad];
+    ON_AYAR_ALAN.forEach(function(a){ if (v[a] !== undefined) S[a] = v[a]; });
+    if (gunduz){
+      S.tema = "gunduz";
+      S.renk = (S.zemin === "toprak" || S.zemin === "zeytin") ? "krem" : "komur";
+      var koyuZ = (S.zemin === "toprak" || S.zemin === "zeytin"), gorselZ = (S.zemin === "gorsel");
+      S.kara = 0; S.kenar = 0; S.imzaOpak = 1; S.zeminGlow = 0.35; S.glowKaydir = 0;
+      // Açık zeminde koyu yazı, koyu zeminde açık yazıdan ince görünür: bir kademe kalın basılır.
+      S.agirlik = koyuZ ? "400" : "500";
+      // Gecedeki koyu perdenin eşi: fotoğrafta metnin arkasına krem perde; düz zeminde gerekmez.
+      S.perde = gorselZ ? GUNDUZ_PERDE : 0;
+      S.yumusat = (gorselZ && gorselSertlik > SERT_ESIK) ? GUNDUZ_YUMUSAT : 0;
+      if (S.imza === "isaret") S.imzaBoy = Math.round(S.imzaBoy * GUNDUZ_ISARET_ORAN * 1000) / 1000;
+    } else {
+      S.tema = "gece";
+      S.agirlik = "400"; S.yumusat = 0;
+    }
+    var yeniMod = S.tur === "karusel" ? "karusel" : "tek";
+    var modDegisiyor = yeniMod !== S.mod;
+    S.mod = yeniMod;
+    if (modDegisiyor){
+      if (yeniMod === "karusel"){ S.kapakIstisna = true; document.getElementById("kapakIstisna").checked = true; }
+      modDegisti();
+    }
+    var sec = document.getElementById("onAyarSec"); if (sec) sec.value = "";
+    arayuzYansit(); adYansit(); gorselDurumu();
+  }
   grup("renkSecim","renk", function(){
     document.getElementById("altinNot").hidden = (S.renk !== "altin");
   });
@@ -891,6 +1179,8 @@
   kaydir("kenar","kenar",2);
   kaydir("perde","perde",2);
   kaydir("grain","grain",3);
+  kaydir("yumusat","yumusat",2);
+  grup("agirlikSecim","agirlik");
   kaydir("zeminGlow","zeminGlow",2);
   kaydir("glowKaydir","glowKaydir",2);
   kaydir("zoom","zoom",2,true);
@@ -900,10 +1190,13 @@
   /* ---------- görseli kaldır ---------- */
   function gorselDurumu(){
     document.getElementById("gorselKaldir").hidden = !gorsel;
-    document.getElementById("zeminNot").hidden = !!gorsel;
-    document.getElementById("zeminGlowAlan").hidden = !!gorsel;
-    document.getElementById("glowKaydirAlan").hidden = !!gorsel;
-    document.getElementById("zeminGlowNot").hidden = !!gorsel;
+    var eg = S.zemin !== "gorsel" ? null : etkinGorsel();
+    document.getElementById("zeminNot").hidden = !!eg;
+    document.getElementById("zeminGlowAlan").hidden = !!eg;
+    document.getElementById("glowKaydirAlan").hidden = !!eg;
+    document.getElementById("zeminGlowNot").hidden = !!eg;
+    var kgk = document.getElementById("kartGorselKaldir");
+    if (kgk) kgk.hidden = !S.kartlar.some(function(k){ return !!k.gorsel; });
   }
   document.getElementById("gorselKaldir").addEventListener("click", function(){
     gorsel = null;
@@ -913,45 +1206,45 @@
   });
 
   /* ---------- ön ayar ---------- */
-  var ON_AYAR_ALAN = ["oran","renk","konum","hiza","punto","ara","harf","altOran","blokAra","metinKaydir","zeminGlow","glowKaydir","kara","kenar","perde","grain","imza","imzaDikey","imzaYer","imzaBoy","imzaOpak"];
+  var ON_AYAR_ALAN = ["tema","oran","renk","konum","hiza","punto","ara","harf","altOran","blokAra","metinKaydir","zeminGlow","glowKaydir","kara","kenar","perde","grain","imza","imzaDikey","imzaYer","imzaBoy","imzaOpak","agirlik","yumusat"];
   var GOMULU = {
     "F1 söz kartı · fotoğraf zemin": {
-      oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
       punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
       zeminGlow:0.55, glowKaydir:0,
       kara:0, kenar:0.63, perde:0.35, grain:0.065,
       imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
     },
     "F1 zirve kartı · altın": {
-      oran:"4:5", renk:"altin", konum:"ust", hiza:"orta",
+      tema:"gece", oran:"4:5", renk:"altin", konum:"ust", hiza:"orta",
       punto:95, ara:1.28, harf:0.02, altOran:0.62, blokAra:0.60, metinKaydir:0,
       zeminGlow:0.62, glowKaydir:0,
       kara:0, kenar:0.66, perde:0.40, grain:0.065,
       imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
     },
     "F1 söz kartı · glow zemin": {
-      oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
       punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0.10,
       zeminGlow:0.55, glowKaydir:-0.05,
       kara:0, kenar:0.63, perde:0.30, grain:0.065,
       imza:"isaret", imzaDikey:"alt", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.90
     },
     "F2 karusel · kapak": {
-      oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
+      tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
       punto:95, ara:1.28, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
       zeminGlow:0.55, glowKaydir:0,
       kara:0, kenar:0.63, perde:0.35, grain:0.065,
       imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
     },
     "F2 karusel · iç kart": {
-      oran:"4:5", renk:"krem", konum:"orta", hiza:"orta",
+      tema:"gece", oran:"4:5", renk:"krem", konum:"orta", hiza:"orta",
       punto:64, ara:1.42, harf:0.01, altOran:1, blokAra:0.55, metinKaydir:0,
       zeminGlow:0.45, glowKaydir:0,
       kara:0, kenar:0.60, perde:0.40, grain:0.065,
       imza:"yok", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85
     },
     "F4 story · 9:16": {
-      oran:"9:16", renk:"krem", konum:"orta", hiza:"orta",
+      tema:"gece", oran:"9:16", renk:"krem", konum:"orta", hiza:"orta",
       punto:88, ara:1.32, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
       zeminGlow:0.55, glowKaydir:0,
       kara:0, kenar:0.60, perde:0.38, grain:0.065,
@@ -1015,18 +1308,33 @@
     return v;
   }
   function onAyarUygula(v){
+    S.tema = "gece"; // tema taşımayan eski ön ayarlar gece sayılır
+    S.agirlik = "400"; S.yumusat = 0; // bu alanları taşımayan eski ön ayarlar
     ON_AYAR_ALAN.forEach(function(a){ if (v[a] !== undefined) S[a] = v[a]; });
+    turEsle();
+    if ((S.tema === "gunduz" ? ZEMIN_GUNDUZ : ZEMIN_GECE).indexOf(S.zemin) < 0) S.zemin = "gorsel";
     arayuzYansit();
     ciz();
   }
   function arayuzYansit(){
-    [["oranSecim","oran"],["renkSecim","renk"],["konumSecim","konum"],["hizaSecim","hiza"]].forEach(function(p){
+    [].forEach.call(document.getElementById("zeminSecim").querySelectorAll("button[data-isik]"), function(b){
+      b.hidden = (b.dataset.isik !== S.tema);
+    });
+    var kn = document.getElementById("kurNot");
+    if (kn){
+      var koyu = S.tema === "gunduz" && (S.zemin === "toprak" || S.zemin === "zeytin");
+      kn.textContent = S.tema === "gece"
+        ? "Gece: metin krem, vurgu köz, işaret korlu halka."
+        : (koyu ? "Gündüz · koyu düz zemin: metin ve işaret krem; vurgu ayrışmaz."
+                : "Gündüz: metin kömür, vurgu toprak, işaret tek renk köz.");
+    }
+    [["temaSecim","tema"],["agirlikSecim","agirlik"],["turSecim","tur"],["zeminSecim","zemin"],["modSecim","mod"],["oranSecim","oran"],["renkSecim","renk"],["konumSecim","konum"],["hizaSecim","hiza"]].forEach(function(p){
       var kap = document.getElementById(p[0]);
       [].forEach.call(kap.querySelectorAll("button"), function(b){
         b.setAttribute("aria-pressed", String(b.dataset[p[1]] === S[p[1]]));
       });
     });
-    [["punto",0],["ara",2],["harf",3],["altOran",2],["blokAra",2],["metinKaydir",2],["zeminGlow",2],["glowKaydir",2],["kara",2],["kenar",2],["perde",2],["grain",3]].forEach(function(p){
+    [["punto",0],["ara",2],["harf",3],["altOran",2],["blokAra",2],["metinKaydir",2],["zeminGlow",2],["glowKaydir",2],["kara",2],["kenar",2],["perde",2],["grain",3],["yumusat",2]].forEach(function(p){
       var el = document.getElementById(p[0]);
       var et = document.getElementById(p[0] + "Deger");
       if (el) el.value = S[p[0]];
@@ -1049,6 +1357,7 @@
     });
     imzaAlanlari();
     document.getElementById("altinNot").hidden = (S.renk !== "altin");
+    document.getElementById("gunduzNot").hidden = (S.tema !== "gunduz");
   }
 
   function durumYaz(mesaj){
@@ -1130,6 +1439,9 @@
 
   var metinEl = document.getElementById("metin");
   metinEl.addEventListener("input", function(){ aktifKart().metin = metinEl.value; ciz(); seritCiz(); });
+  var bantEl = document.getElementById("bant");
+  bantEl.addEventListener("input", function(){ aktifKart().bant = bantEl.value; ciz(); });
+  function metinYansit(){ metinEl.value = aktifKart().metin; bantEl.value = aktifKart().bant || ""; }
 
   /* ---------- karusel ---------- */
   function modDegisti(){
@@ -1137,7 +1449,7 @@
     document.getElementById("karuselAlan").hidden = !kar;
     document.getElementById("indirHepsi").hidden = !kar;
     S.aktif = 0;
-    metinEl.value = aktifKart().metin;
+    metinYansit();
     kadrajYansit();
     seritCiz();
   }
@@ -1149,7 +1461,7 @@
     S.kartSayi = parseInt(e.target.value,10);
     document.getElementById("kartSayiDeger").textContent = S.kartSayi;
     if (S.aktif >= S.kartSayi) S.aktif = S.kartSayi-1;
-    seritCiz(); metinEl.value = aktifKart().metin; kadrajYansit(); ciz();
+    seritCiz(); metinYansit(); kadrajYansit(); ciz();
   });
   function seritCiz(){
     var s = document.getElementById("serit");
@@ -1160,14 +1472,16 @@
         b.textContent = "K" + (n+1);
         b.setAttribute("aria-pressed", String(n === S.aktif));
         if (S.kartlar[n].metin.trim() !== "") b.classList.add("dolu");
+        if (S.kartlar[n].gorsel){ b.classList.add("gorselli"); b.title = "Kendi görseli var"; }
         b.addEventListener("click", function(){
           S.aktif = n;
-          metinEl.value = aktifKart().metin;
+          metinYansit();
           kadrajYansit(); seritCiz(); ciz();
         });
         s.appendChild(b);
       })(i);
     }
+    gorselDurumu();
   }
   function kadrajYansit(){
     var k = aktifKart();
@@ -1188,6 +1502,7 @@
       // Kaynak 4:5 ve tuvalle aynı oranda olduğu için gezinme payı yalnız
       // zoom'dan doğar. 1968px genişlikte kaynakta büyütme eşiği zoom 1.82;
       // 1.62–1.76 bandı payı açar, büyütmeye girmez.
+      if (S.kartlar[i].gorsel) continue; // kendi görseli olan kartın kadrajı dışarıda kesildi
       S.kartlar[i].zoom = 1.62 + (i%2)*0.14;
       S.kartlar[i].ox = (t*2-1) * 0.75;
       S.kartlar[i].oy = 0.80 - 0.60 * Math.pow(t, 2.2);
@@ -1210,8 +1525,67 @@
     birak.addEventListener(t, function(e){ e.preventDefault(); birak.classList.remove("uzerinde"); });
   });
   birak.addEventListener("drop", function(e){
-    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    var fl = e.dataTransfer.files;
+    if (fl && fl.length > 1 && S.mod === "karusel"){ kartGorselleriYukle(fl); return; }
+    var f = fl && fl[0];
     if (f) yukle(f);
+  });
+
+  /* ---------- kart başına görsel (karusel) ---------- */
+  var dosyaCoklu = document.getElementById("dosyaCoklu");
+  function kartGorselDurum(mesaj){
+    var el = document.getElementById("kartGorselDurum");
+    el.textContent = mesaj || ""; el.hidden = !mesaj;
+  }
+  function kartGorselleriYukle(liste){
+    var dosyalar = Array.prototype.filter.call(liste, function(f){ return f.type.indexOf("image") === 0; });
+    dosyalar.sort(function(a, b){
+      return a.name.localeCompare(b.name, undefined, { numeric:true, sensitivity:"base" });
+    });
+    if (dosyalar.length < 2){ kartGorselDurum("En az iki görsel seç — tek görsel için üstteki Görsel alanını kullan."); return; }
+    var fazla = dosyalar.length > 8 ? dosyalar.length - 8 : 0;
+    dosyalar = dosyalar.slice(0, 8);
+    var n = dosyalar.length, biten = 0, hatali = 0;
+    dosyalar.forEach(function(f, i){
+      var fr = new FileReader();
+      var bitti = function(){
+        biten++;
+        if (biten < n) return;
+        S.kartSayi = n;
+        if (S.zemin !== "gorsel"){ S.zemin = "gorsel"; kur(); }
+        document.getElementById("kartSayi").value = n;
+        document.getElementById("kartSayiDeger").textContent = n;
+        if (S.aktif >= n) S.aktif = n - 1;
+        metinYansit();
+        kadrajYansit(); seritCiz(); ciz();
+        kartGorselDurum((n - hatali) + " görsel K1–K" + n + " sırasına oturdu: " +
+          dosyalar.map(function(d){ return d.name; }).join(" · ") +
+          (hatali ? " — " + hatali + " dosya okunamadı" : "") +
+          (fazla ? " — " + fazla + " dosya alınmadı (en fazla sekiz kart)" : ""));
+      };
+      fr.onerror = function(){ hatali++; bitti(); };
+      fr.onload = function(){
+        var im = new Image();
+        im.onerror = function(){ hatali++; bitti(); };
+        im.onload = function(){
+          var k = S.kartlar[i];
+          k.gorsel = im; k.zoom = 1; k.ox = 0; k.oy = 0;
+          bitti();
+        };
+        im.src = fr.result;
+      };
+      fr.readAsDataURL(f);
+    });
+  }
+  document.getElementById("kartGorselSec").addEventListener("click", function(){ dosyaCoklu.click(); });
+  dosyaCoklu.addEventListener("change", function(e){
+    if (e.target.files && e.target.files.length) kartGorselleriYukle(e.target.files);
+    e.target.value = "";
+  });
+  document.getElementById("kartGorselKaldir").addEventListener("click", function(){
+    S.kartlar.forEach(function(k){ k.gorsel = null; });
+    kartGorselDurum("");
+    seritCiz(); ciz();
   });
   window.addEventListener("paste", function(e){
     var it = e.clipboardData && e.clipboardData.items;
@@ -1227,6 +1601,16 @@
       im.onload = function(){
         gorsel = im;
         birak.innerHTML = "<b>Görsel yüklendi</b>" + im.width + " × " + im.height + " · değiştirmek için tıkla";
+        gorselSertlik = dokuSertligi(im);
+        if (S.zemin !== "gorsel"){ S.zemin = "gorsel"; kur(); }
+        else if (S.tema === "gunduz"){ S.yumusat = gorselSertlik > SERT_ESIK ? GUNDUZ_YUMUSAT : 0; arayuzYansit(); }
+        var sn = document.getElementById("sertlikNot");
+        if (sn){
+          sn.hidden = false;
+          sn.textContent = "Doku sertliği " + gorselSertlik.toFixed(1) + (gorselSertlik > SERT_ESIK
+            ? " — kaba doku; gündüzde yumuşatma kendiliğinden " + GUNDUZ_YUMUSAT.toFixed(2) + " gelir."
+            : " — sakin doku; yumuşatma gerekmez.");
+        }
         gorselDurumu();
         ciz();
       };
@@ -1244,11 +1628,8 @@
   function turAdi(){
     var sec = document.getElementById("onAyarSec");
     var ad = sec && sec.value ? sec.value : "";
-    if (/karusel/i.test(ad)) return "karusel";
-    if (/story/i.test(ad))   return "story";
     if (/zirve/i.test(ad))   return "zirve-karti";
-    if (/söz kartı/i.test(ad)) return "soz-karti";
-    return S.mod === "karusel" ? "karusel" : (S.oran === "9:16" ? "story" : "soz-karti");
+    return S.tur === "karusel" ? "karusel" : (S.tur === "story" ? "story" : "soz-karti");
   }
   function onerilenAd(){ return "ocak-" + turAdi() + "-" + bugun(); }
   function adYansit(){
@@ -1282,7 +1663,7 @@
     var eski = S.aktif, i = 0;
     (function sirala(){
       if (i >= S.kartSayi){
-        S.aktif = eski; metinEl.value = aktifKart().metin; kadrajYansit(); seritCiz(); ciz();
+        S.aktif = eski; metinYansit(); kadrajYansit(); seritCiz(); ciz();
         return;
       }
       S.aktif = i; ciz();
@@ -1294,6 +1675,7 @@
 
   /* ---------- açılış ---------- */
   grainKur();
+  arayuzYansit();
   gorselDurumu();
   adYansit();
   seritCiz();
