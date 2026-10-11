@@ -3,7 +3,7 @@
 <title>OCAK — Kart Derleyici</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
   :root{
@@ -559,7 +559,8 @@
 (function(){
   "use strict";
 
-  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6", vurguGunduz:"#B4401F" };
+  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6", vurguGunduz:"#A8371C" };
+  var GUNDUZ_VURGU_AGIRLIK = "600";   // açık zeminde vurgu satırı yarım kademe daha kalın
   var FONT = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
   var fontHazir = false;
 
@@ -638,6 +639,7 @@
   if (document.fonts && document.fonts.load){
     document.fonts.load('400 27px "Jost"').then(function(){ ciz(); }).catch(function(){});
     document.fonts.load('italic 500 100px "Cormorant Garamond"').then(function(){ ciz(); }).catch(function(){});
+    document.fonts.load('italic 600 100px "Cormorant Garamond"').then(function(){ ciz(); }).catch(function(){});
   }
   function fontYok(){
     fontHazir = false;
@@ -801,23 +803,62 @@
     return x;
   }
 
-  // uzun satırı güvenli genişliğe göre böler, parça yapısını korur
-  function sar(c, parcalar, maxG, izle){
-    var satirlar = [], suan = [], suanG = 0;
+  // uzun satırı güvenli genişliğe göre böler, parça yapısını korur.
+  // Sarma gerekiyorsa satırlar dengelenir: tek kelime alt satıra düşmez.
+  function sar(c, parcalar, maxG, izle, fontOf){
+    var kel = [];
     parcalar.forEach(function(p){
-      var kelimeler = p.t.split(/(\s+)/);
-      kelimeler.forEach(function(k){
+      if (fontOf) c.font = fontOf(p.v);
+      p.t.split(/(\s+)/).forEach(function(k){
         if (k === "") return;
-        var g = harfliGenislik(c, k, izle);
-        if (suanG + g > maxG && suanG > 0 && k.trim() !== ""){
-          satirlar.push(suan); suan = []; suanG = 0;
-        }
-        if (k.trim() === "" && suanG === 0) return;
-        suan.push({t:k, v:p.v}); suanG += g;
+        kel.push({ t:k, v:p.v, g:harfliGenislik(c, k, izle), bos:(k.trim() === "") });
       });
     });
+    var satirlar = [], suan = [], suanG = 0;
+    kel.forEach(function(k){
+      if (suanG + k.g > maxG && suanG > 0 && !k.bos){
+        satirlar.push(suan); suan = []; suanG = 0;
+      }
+      if (k.bos && suanG === 0) return;
+      suan.push(k); suanG += k.g;
+    });
     if (suan.length) satirlar.push(suan);
+    if (satirlar.length > 1) satirlar = dengele(kel, satirlar.length, maxG) || satirlar;
+    satirlar = satirlar.map(function(st){ return st.map(function(k){ return { t:k.t, v:k.v }; }); });
     return satirlar.length ? satirlar : [[{t:"",v:false}]];
+  }
+  // N satıra, satır genişliklerinin karelerinin toplamı en küçük olacak biçimde böler
+  function dengele(kel, N, maxG){
+    var soz = [], onBos = [];
+    kel.forEach(function(k){
+      if (k.bos){ if (soz.length) onBos[soz.length] = k; }
+      else soz.push(k);
+    });
+    var n = soz.length;
+    if (n < N) return null;
+    function gen(i, j){   // soz[i..j-1] tek satırda
+      var g = 0;
+      for (var a=i;a<j;a++){ g += soz[a].g; if (a > i && onBos[a]) g += onBos[a].g; }
+      return g;
+    }
+    var INF = 1e18, dp = [], iz = [];
+    for (var s=0;s<=N;s++){ dp.push([]); iz.push([]); for (var j=0;j<=n;j++){ dp[s].push(INF); iz[s].push(-1); } }
+    dp[0][0] = 0;
+    for (s=1;s<=N;s++) for (j=s;j<=n;j++) for (var i=s-1;i<j;i++){
+      if (dp[s-1][i] >= INF) continue;
+      var g = gen(i, j);
+      if (g > maxG && j - i > 1) continue;
+      var m = dp[s-1][i] + g*g;
+      if (m < dp[s][j]){ dp[s][j] = m; iz[s][j] = i; }
+    }
+    if (dp[N][n] >= INF) return null;
+    var out = [], j2 = n;
+    for (s=N;s>=1;s--){
+      var i2 = iz[s][j2], st = [];
+      for (var a=i2;a<j2;a++){ if (a > i2 && onBos[a]) st.push(onBos[a]); st.push(soz[a]); }
+      out.unshift(st); j2 = i2;
+    }
+    return out;
   }
 
   /* ---------- çizim ---------- */
@@ -865,6 +906,9 @@
     var kenarBosluk = W*0.12;
     var maxG = W - kenarBosluk*2;
     var izle = S.punto * S.harf;
+    // açık gündüz zemininde vurgu yarım kademe daha kalın; gecede ve koyu düz zeminde metinle aynı
+    var vAgirlik = (gunduz && !koyuDuz) ? GUNDUZ_VURGU_AGIRLIK : S.agirlik;
+    function yaziFont(punto, v){ return 'italic ' + (v ? vAgirlik : S.agirlik) + ' ' + punto + 'px ' + FONT; }
     ctx.font = 'italic ' + S.agirlik + ' ' + S.punto + 'px ' + FONT;
     ctx.textBaseline = "alphabetic";
 
@@ -877,7 +921,7 @@
       ctx.font = 'italic ' + S.agirlik + ' ' + bp + 'px ' + FONT;
       blokMetin.split("\n").forEach(function(g){
         if (g.trim() === "") return;
-        sar(ctx, parcala(g), maxG, bizle).forEach(function(sat){
+        sar(ctx, parcala(g), maxG, bizle, function(v){ return yaziFont(bp, v); }).forEach(function(sat){
           satirlar.push({ parca:sat, punto:bp, izle:bizle, blok:bi });
         });
       });
@@ -967,12 +1011,13 @@
     satirlar.forEach(function(sr){
       ctx.font = 'italic ' + S.agirlik + ' ' + sr.punto + 'px ' + FONT;
       var g = 0;
-      sr.parca.forEach(function(p){ g += harfliGenislik(ctx, p.t, sr.izle); });
+      sr.parca.forEach(function(p){ ctx.font = yaziFont(sr.punto, p.v); g += harfliGenislik(ctx, p.t, sr.izle); });
       var x = S.hiza === "orta" ? (W-g)/2 : kenarBosluk;
       if (g > 0){ if (x < blokSol) blokSol = x; if (x+g > blokSag) blokSag = x+g; }
       var y = ustY + sr.ust + sr.punto*(S.ara - 0.25);
       sr.parca.forEach(function(p){
         ctx.fillStyle = p.v ? vurguRenk : anaRenk;
+        ctx.font = yaziFont(sr.punto, p.v);
         x = harfliYaz(ctx, p.t, x, y, sr.izle);
       });
     });
@@ -1144,7 +1189,7 @@
     karusel: "F2 karusel · iç kart",
     story:   "F4 story · 9:16"
   };
-  var GUNDUZ_PERDE = 0.30, GUNDUZ_YUMUSAT = 0.35, GUNDUZ_ISARET_KALIN = 10, SERT_ESIK = 17;
+  var GUNDUZ_PERDE = 0.42, GUNDUZ_YUMUSAT = 0.60, GUNDUZ_ISARET_KALIN = 10, SERT_ESIK = 17;
   var ZEMIN_GECE = ["gorsel","glow"], ZEMIN_GUNDUZ = ["gorsel","krem","keten","toprak","zeytin"];
   function kur(){
     var gunduz = S.tema === "gunduz";
