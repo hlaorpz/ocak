@@ -7,7 +7,7 @@ description: OCAK söz, davet ve karusel kartlarını basar (gündüz ya da gece
 
 Kartı **kart derleyici** basar: `tools/ocak-kart-derleyici.html` (tek ve kanonik araç, KARAR 652). Tarayıcıda açılan tek dosyadır; basan Kaan'dır. Bu skill kartın **reçetesini** hazırlar, basılan kartı **denetler**. `ocak_kart.py` kanonik değildir (KARAR 654); onunla kart basılmaz.
 
-Güncel gündüz kuralları ledger'da KARAR 653'ün halefindedir (`docs_karar(653)` → `iliski` sütunundaki `→`). Bu dosyadaki değerler 11 Ekim 2026 derleyicisinden (v4) okundu; çelişkide derleyici dosyası kazanır (KARAR 102).
+Güncel gündüz kuralları ledger'da KARAR 656'nın halefindedir (`docs_karar(656)` → `iliski` sütunundaki `→`). Bu dosyadaki değerler 11 Ekim 2026 derleyicisinden (v5) okundu; çelişkide derleyici dosyası kazanır (KARAR 102).
 
 ## Önce denetle
 
@@ -23,7 +23,7 @@ Kaan'a şu sırayla, kopyalanır biçimde ver:
 1. **Işık:** Gece ya da Gündüz.
 2. **Kart:** Söz kartı · 4:5, Karusel ya da Story · 9:16.
 3. **Zemin:** Görsel (dosya adıyla) · gecede Glow · gündüzde Krem, Keten, Toprak, Zeytin.
-4. **Metin:** kod bloğu içinde, satır satır. Satır sonu satırı böler. **Boş satır yeni blok açar ve alt blok küçük basılır.** Vurgu `*yıldız*` arasında.
+4. **Metin:** kod bloğu içinde, satır satır. Satır sonu satırı böler. **Boş satır yeni blok açar ve alt blok küçük basılır.** Vurgu `*yıldız*` arasında. Uzun satırı elle kırmak gerekmez: derleyici sığmayan satırı dengeli böler, tek kelime alt satıra düşmez. Elle kırılan yere dokunmaz; anlam bir yerden kırılmayı istiyorsa elle kır.
 5. **Alt bant** (varsa): `Açık Kapı · 19 Ekim Pazartesi · 21:00 · online`
 6. **Kart adı:** gönderi adıyla aynı, uzantısız: `AAGG-Hat-ad` (zemin eki eklenebilir: `-kirec`, `-kalem`).
 7. **İndir:** tek kartta "4:5 + 9:16 birlikte indir" → `<ad>-4x5.png` ve `<ad>-9x16.png`. Karuselde "Karuselin tümünü indir" → `<ad>-k1.png`, `-k2`…
@@ -38,13 +38,13 @@ Reçeteye yazılmaz; bilinir, sonuçta aranır.
 | | Gece | Gündüz, açık zemin | Gündüz, toprak · zeytin |
 |---|---|---|---|
 | Metin | Krem | Kömür, bir kademe kalın (500) | Krem |
-| Vurgu | Köz `#C44B2F` | `#B4401F` | yok |
+| Vurgu | Köz `#C44B2F` | `#A8371C`, yarı kalın (600) | yok |
 | İşaret | korlu halka | tek renk köz, yarım kademe kalın | tek renk krem |
 | Alt bant | krem | kömür | krem, tam opak |
 
 - Dizgi iki ışıkta aynıdır: konum, punto, aralık, işaretin yeri ve boyu. Gece ↔ gündüz geçişinde yazı kaymaz.
 - 9:16'da blok kartın ortasında değil yukarısında durur.
-- Gündüz fotoğrafında metnin arkasına krem perde gelir. Sert dokulu görsel kendiliğinden yumuşatılır (panelde sertlik değeri yazar, eşik 17).
+- Gündüz fotoğrafında metnin arkasına krem perde gelir. Sert dokulu görsel kendiliğinden yumuşatılır (panelde sertlik değeri yazar, eşik 17; z14 ve z15 böyledir).
 - Altın yalnız gece zirve kartında metin rengidir (`F1 zirve kartı · altın` ön ayarı).
 - Korlu işaret yalnız gece zemininde kullanılır.
 

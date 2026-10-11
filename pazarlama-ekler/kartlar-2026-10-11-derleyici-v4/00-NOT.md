@@ -13,3 +13,5 @@ Aynı adların v3 baskıları `kartlar-2026-10-11-derleyici/` içindedir: işare
 İki karşılaştırma görseli:
 - `v4-karsilastirma.jpg` — soldan sağa: 4:5 gece · 4:5 gündüz · 9:16 gece · 9:16 gündüz (dördü v4) · en sağda v3'ün 9:16'sı.
 - `v4-kirmizi-adaylari.jpg` — kireç zeminde dört vurgu adayı (`#A04F36` · `#B4401F` · `#A8371C` · `#9E3319`), sol üstte gece kartı, sağ altta `#B4401F` z12'de.
+
+**11 Eki, v5 turu:** bu klasördeki altı kart v4 biçimindedir ve yayınlanmaz; güncel baskılar `../kartlar-2026-10-11-derleyici-v5/` (KARAR 658).

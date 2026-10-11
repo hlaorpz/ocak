@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v4 turu**
+**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v5 turu**
 
 ---
 
@@ -4067,6 +4067,7 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Bağ:** B234 · KARAR 652 · 653
 - **11 Eki, v4 turu:** derleyicinin gündüz değerleri değişti — vurgu `#B4401F`, işaret gece boyunda ve açık zeminde yarım kademe kalın (KARAR 656; 653 SUPERSEDE). (2)'deki satırlar düzeltilirken hedef bu değerlerdir. `pazarlama-ekler/kartlar-2026-10-11-derleyici/` içindeki altı kart v3 biçiminde kaldı; v4 baskıları `pazarlama-ekler/kartlar-2026-10-11-derleyici-v4/`. Kaan artık kartları derleyiciyle kendi basıyor; (1) kapanana kadar `ocak-kart` skill'inin komutlarıyla kart **basılmaz**. Kapanış şartı değişmedi.
 - **11 Eki — (1) karşılandı:** `docs/skills/ocak-kart/SKILL.md` derleyiciye göre yeniden yazıldı; skill artık reçete hazırlar ve basılan kartı denetler, komut çalıştırmaz. Kalan şartlar: 44 kartın yeniden basımı · (2)'deki satırlar · (4)'teki üç dosyanın arşive inmesi.
+- **11 Eki, v5 turu:** gündüz değerleri bir kez daha değişti — vurgu `#A8371C` ve yarı kalın (KARAR 658; 656 SUPERSEDE); sığmayan satır dengeli bölünür (KARAR 659). (2)'deki satırlar düzeltilirken hedef bu değerlerdir. `kartlar-2026-10-11-derleyici-v4/` içindeki altı kart da eskidi; güncel baskılar `pazarlama-ekler/kartlar-2026-10-11-derleyici-v5/`. Skill v5'e göre güncellendi. Kapanış şartı değişmedi.
 
 ## B236 — Gündüz zeminleri ızgara çözünürlüğünde; iki kireç zemini kaba dokulu
 
@@ -4074,3 +4075,4 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ne:** z12–z15 Midjourney ızgara karesi olarak indi: dördü de **960×1200** (yöntem: PIL `Image.size`, 10 Eki); kart 1080×1350, derleyici büyütüyor ve "BÜYÜTÜYOR" uyarısı veriyor. Gece zeminleri 1968×2464'tü. v8.1 arayüzünde büyütmenin yeri bulunamadı (kare üstünde Vary subtle · Vary strong · Animate göründü). Ayrıca z14 ve z15 kaba dokulu: derleyicinin ölçtüğü ince doku sertliği 23,2 ve 20,4; z12 12,6, z13 13,8 (yöntem `31-zemin.md` gündüz bölümünde). Derleyici bu ikisini yumuşatarak basıyor; daha sakin bir kireç duvar üretilmedi.
 - **Kapanış şartı:** karta giden zeminlerin yüksek çözünürlüklü sürümü iner ve ölçümler yeniden yazılır · sertliği 17'nin altında bir düz kireç zemini üretilir ya da yumuşatma kalıcı çözüm olarak kabul edilir.
 - **Bağ:** B141 · B170 · KARAR 650
+- **11 Eki, v5 turu:** Kaan z14 ve z15'in dokusunu basılı kartta güçlü buldu. Derleyicinin yumuşatması 0,35 → 0,60, metin arkası krem perde 0,30 → 0,42 oldu (KARAR 658). Bu bir ara çözümdür; kapanış şartındaki "sertliği 17'nin altında bir düz kireç zemini" hâlâ üretilmedi.

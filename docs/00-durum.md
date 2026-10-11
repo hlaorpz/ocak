@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v4 turu** · dönem HEAD `f606c93`
+**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v5 turu** · dönem HEAD `cf26945`
 
 ---
 
@@ -68,7 +68,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`f606c93`** (11 Eki, kart derleyici v4 turu — bir önceki dönem `d3162ef`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `f606c93` (`tools/ocak-kart-derleyici.html` — derleyici v4). `d3162ef..f606c93` aralığının tam listesi `90-kronoloji/2026-10.md` 11 Eki v4 kaydında. Önceki dönemin (`d3162ef`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
+| `main` dönem HEAD | **`cf26945`** (11 Eki, kart derleyici v5 turu — bir önceki dönem `f606c93`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `cf26945` (`tools/ocak-kart-derleyici.html` — derleyici v5). `f606c93..cf26945` aralığının tam listesi `90-kronoloji/2026-10.md` 11 Eki v5 kaydında. Önceki dönemin (`f606c93`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -137,6 +137,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **11 Ekim — Kart derleyici v5 turu:** kod `cf26945`. Kaan v4 kartlarına bakıp üç kusur söyledi (tek kelime alt satıra düşüyor · kırmızı zayıf · doku güçlü). Düzeldi: sığmayan satır dengeli bölünür (gece dahil) · gündüz vurgusu yarı kalın ve `#A8371C` · sert duvar daha çok yumuşatılır (**KARAR 658 · 659**; KARAR 656 → SUPERSEDE). Altı kart v5 ile yeniden basıldı; `ocak-kart` skill'i güncellendi. ⚠ Yarı kalın vurgu gerçek tarayıcıda henüz görülmedi. → `90-kronoloji/2026-10.md`
 - **11 Ekim — Kart derleyici v4 turu:** kod `f606c93`. Kaan derleyiciyi ilk kez tarayıcıda denedi; üç şey düzeldi: gündüz işareti gece boyuna döndü ve açık zeminde yarım kademe kalın · gündüz vurgusu `#B4401F` · 9:16'da blok yukarıda, gece dahil (**KARAR 656 · 657**; KARAR 653 → SUPERSEDE). Altı kart v4 ile yeniden basıldı. Kaan kartları artık derleyiciyle kendi basıyor. ⚠ `ocak-kart` skill'i hâlâ eski basıcıyı anlatıyor (**B235**). → `90-kronoloji/2026-10.md`
 - **10–11 Ekim — Gündüz görselleri ve kart derleyici v2 turu:** kod `4886492 · d3162ef`. Gündüz `--sref` çapası mühürlendi (**z12**, KARAR 650); `--sw 25` (KARAR 651). Dört gündüz zemini envantere girdi (z12–z15). Kart derleyici tek ve kanonik araç oldu: gündüz, gecenin dizgisini aynen kullanır (KARAR 652); gündüz renk ve ağırlık kuralları KARAR 653. **B234 ✅.** Derleyiciyle altı kart basıldı. ⚠ Paketteki 44 kart ve `ocak-kart` skill'i eski basıcının biçiminde (**B235**); zeminler ızgara çözünürlüğünde (**B236**). → `90-kronoloji/2026-10.md`
 - **9–11 Ekim — Pazarlama planı v2 (Claude.ai sohbeti):** kod commit'i yok. 19 Ekim Açık Kapı ve genel pazarlama paketi korpusa girdi (`pazarlama/`, giriş `00-OKU.md`; sohbetin tam kaydı `pazarlama/belgeler/`), üç skill (`ocak-gonderi` · `ocak-kart` · `ocak-yorum`), görseller ve araçlar korpus dışı `pazarlama-ekler/`'de. **KARAR 636–649** · **B231–B234** açıldı · **B221 ✅**. → `90-kronoloji/2026-10.md`

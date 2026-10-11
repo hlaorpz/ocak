@@ -5,6 +5,8 @@
 > **11 Ekim 2026 — mühürlendi (KARAR 650) ve `--sw` 25 oldu (KARAR 651).** Bu dosyadaki D1 gövdesi üretimde koyu çıktı; çalışan istemler, zemin envanteri (z12–z15) ve gündüz ölçütleri `docs/31-zemin.md` → **GÜNDÜZ ZEMİNLERİ**. Kart aracı `tools/ocak-kart-derleyici.html`'dir (KARAR 652); bu dosyadaki `ocak_kart.py` anlatısı ve "vurgu Toprak" kuralı tarihçedir — vurgu `#A04F36` (KARAR 653). Düzeltilmemiş satırlar: **B235**.
 >
 > **11 Ekim 2026, v4 turu — vurgu `#B4401F` oldu (KARAR 656; 653 SUPERSEDE).** İşaret gecedeki boyunda, açık zeminde yarım kademe kalın; 9:16'da blok yukarıda (KARAR 657). Yukarıdaki satırın `#A04F36`'sı tarihçedir.
+>
+> **11 Ekim 2026, v5 turu — vurgu `#A8371C` ve yarı kalın (KARAR 658; 656 SUPERSEDE).** Sığmayan satır dengeli bölünür (KARAR 659). Yukarıdaki satırın `#B4401F`'si tarihçedir.
 
 Gece sistemi değişmedi: z01 çapası, V01–V09, `31-zemin.md`. Bu dosya onun yanına gelen gündüz sistemini tarif eder. Karar (Kaan, 9 Ekim): gündüz paleti onaylı ve 10 Ekim'de başlar; Instagram dolmadan girmesi isteniyor. Hangi ışığın öne geçeceği 20 Ekim retrosunun verisiyle belli olur.
 
