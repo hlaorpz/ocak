@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.10.2026 05:47 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.10.2026 05:50 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `f606c93` | `git log -1` |
+| canlı HEAD | `2d06616` | `git log -1` |
 | HEAD tarihi | 2026-10-11 | `git log -1 --date=short` |
-| HEAD konusu | feat(kart): derleyici v4 — gündüz işareti gece boyunda ve yarım kademe kalın, vurgu #B4401F, 9:16'da blok yukarıda | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 10 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: kart derleyici v4 turu — KARAR 656–657 · 653 SUPERSEDE · v4 kartları · G4–G5 istemleri | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 3 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **92** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **2** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **93** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -46,7 +46,7 @@
 | dosya | satır |
 |---|---|
 | `docs/00-durum.md` | 190 |
-| `docs/02-borclar.md` | 4075 |
+| `docs/02-borclar.md` | 4076 |
 | `docs/03-sira.md` | 982 |
 | `docs/05-harita.md` | 203 |
 | `docs/01-kararlar.tsv` | 658 |
