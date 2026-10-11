@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.10.2026 00:02 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.10.2026 04:41 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `d3162ef` | `git log -1` |
+| canlı HEAD | `e1ade66` | `git log -1` |
 | HEAD tarihi | 2026-10-11 | `git log -1 --date=short` |
-| HEAD konusu | feat(kart): derleyici — 4:5 + 9:16 birlikte indirme, biçim hafızası, dosya adında biçim | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 25 kayıt | `git status --porcelain` |
+| HEAD konusu | docs: gündüz görselleri ve kart derleyici v2 turu — KARAR 650–653 · B234 ✅ · B235–B236 · z12–z15 | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 3 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **2** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **88** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **3** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **89** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -47,9 +47,9 @@
 |---|---|
 | `docs/00-durum.md` | 189 |
 | `docs/02-borclar.md` | 4074 |
-| `docs/03-sira.md` | 978 |
+| `docs/03-sira.md` | 980 |
 | `docs/05-harita.md` | 203 |
-| `docs/01-kararlar.tsv` | 654 |
+| `docs/01-kararlar.tsv` | 656 |
 
 `00-durum.md` tavanı (**≤200**, KARAR 457): **189** — ✅ altında
 
@@ -69,8 +69,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **653** | — |
-| satır sayısı (başlık dahil) | 654 | — |
+| son KARAR numarası | **655** | — |
+| satır sayısı (başlık dahil) | 656 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |
