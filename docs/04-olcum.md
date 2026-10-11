@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.10.2026 04:41 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.10.2026 04:48 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `e1ade66` | `git log -1` |
+| canlı HEAD | `ad00f1f` | `git log -1` |
 | HEAD tarihi | 2026-10-11 | `git log -1 --date=short` |
-| HEAD konusu | docs: gündüz görselleri ve kart derleyici v2 turu — KARAR 650–653 · B234 ✅ · B235–B236 · z12–z15 | `git log -1 --format=%s` |
+| HEAD konusu | docs: CC-BRIEF-2 İş A ve İş C karara bağlandı — KARAR 654–655 | `git log -1 --format=%s` |
 | çalışma ağacı | **kirli** — 3 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **3** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **89** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **90** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 

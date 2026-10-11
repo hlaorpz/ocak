@@ -143,7 +143,7 @@ Sohbetlerde ve korpusta arada kalan fikirler ile bu oturumda eklenenler. Her sat
 | F8 | Search Console takibi; sitemap "Couldn't fetch" | S7, K (B212) | Hayır | Ayrı hat |
 | F9 | Aralık takvimi 10 Kasım'a kadar girilir | YENİ | Evet (plan) | Takvim 18 Kasım'da bitiyor |
 | F10 | `30-sosyal.md` yeniden yazımı | K (B221) | Evet (plan) | 20 Ekim retrosundan sonra |
-| F11 | Kart derleyiciye gündüz ön ayarı | YENİ | Evet (`CC-BRIEF-2`) | Arada `araclar/ocak_kart.py` basıyor |
+| F11 | Kart derleyiciye gündüz ön ayarı | YENİ | Evet (`CC-BRIEF-2`) | ✅ `4886492` + `d3162ef` ile yapıldı (KARAR 652–653); `ocak_kart.py` kanonik değil (KARAR 654) |
 | F12 | Instagram DM'e bot | K (proje belleği) | Hayır | App Review bekliyor |
 
 ## G · Eski iki plandan alınanlar (12 ve 19 Ekim Uygulama Planları)
