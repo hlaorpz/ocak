@@ -1,6 +1,6 @@
 # AÇIK BORÇLAR
 
-**Son güncelleme:** 11 Ekim 2026 · **Gündüz görselleri ve kart derleyici v2 turu**
+**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v4 turu**
 
 ---
 
@@ -4065,6 +4065,7 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
   (4) `pazarlama-ekler/araclar/OCAK-kart-derleyici-gunduz-onerisi.html`, `ocak_kart.py`, `kartlari_bas.py` yerinde; arşive inmedi (yolları 1 ve 2'deki dosyalarda geçiyor).
 - **Kapanış şartı:** skill derleyiciye göre yeniden yazılır · 44 kart derleyiciyle yeniden basılır ya da "eski biçim, yayınlanmaz" diye işaretlenir · 2'deki satırlar düzeltilir · 4'teki üç dosya arşive iner.
 - **Bağ:** B234 · KARAR 652 · 653
+- **11 Eki, v4 turu:** derleyicinin gündüz değerleri değişti — vurgu `#B4401F`, işaret gece boyunda ve açık zeminde yarım kademe kalın (KARAR 656; 653 SUPERSEDE). (2)'deki satırlar düzeltilirken hedef bu değerlerdir. `pazarlama-ekler/kartlar-2026-10-11-derleyici/` içindeki altı kart v3 biçiminde kaldı; v4 baskıları `pazarlama-ekler/kartlar-2026-10-11-derleyici-v4/`. Kaan artık kartları derleyiciyle kendi basıyor; (1) kapanana kadar `ocak-kart` skill'inin komutlarıyla kart **basılmaz**. Kapanış şartı değişmedi.
 
 ## B236 — Gündüz zeminleri ızgara çözünürlüğünde; iki kireç zemini kaba dokulu
 

@@ -9,3 +9,5 @@ Altı dosya, `tools/ocak-kart-derleyici.html` ile (KARAR 652 · 653), Claude.ai'
 | `1012-O-fatma-aliye-k1-kalem-4x5.jpg` · `-9x16.jpg` | z13 | Gündüz · Söz kartı / Story · metin kaydır 0.04 (story −0.06, yatay −0.34) |
 
 Aynı adların `-kirec` / `-kalem` eki taşımayan sürümleri `kartlar-2026-10-10/` içindedir ve Python basıcının eski biçimindedir (B235).
+
+**11 Eki, v4 turu:** bu klasördeki altı kart v3 biçimindedir ve yayınlanmaz; güncel baskılar `../kartlar-2026-10-11-derleyici-v4/` (KARAR 656).

@@ -104,3 +104,21 @@ flat limewashed wall seen straight on, sunlight filling the upper three quarters
 ⚠ G3'ün `--no` listesinde `deep shadows, large shadow` **bilerek** duruyor: düz zemin isteniyordu. KARAR 651'in "gölge kelimesi girmez" hükmü gölgesi istenen istemler içindir (kurucu, nesne, sahne). ⚠ G3 kaba doku verdi (sertlik 20–23); bir sonraki denemede gövdeye pürüzsüz ince sıva ve birkaç adım geriden bakış tarifi eklenir (denenmedi).
 
 **Düz renk zeminler fotoğraf değildir** ve bu envantere girmez: krem, keten, toprak, zeytin derleyicide çizilir (tek renk + mala dokusu). Kalıcıdırlar, yedek değil (`docs/pazarlama/GORSEL-gunduz-paleti-ve-MJ.md` bölüm 9).
+
+## KOŞULMAMIŞ İSTEMLER (11 Ekim 2026)
+
+İkisi de **hiç koşulmadı**; ilk tur kanaryadır. G2 gövdesinin kalıbıyla ve KARAR 651'in iki kuralıyla yazıldı (`--sw 25` · gölgesi istenen istemin `--no` listesinde gölge kelimesi yok). Seçim kaynak dosyadan ölçülür (yukarıdaki gündüz ölçütleri). ⚠ Claude.ai bu iki istemin ilk hâlini 11 Ekim sohbetinde vermişti; o metin sohbetin bağlam sıkıştırmasında kayboldu, buradaki hâl aynı kurallarla yeniden yazıldı.
+
+G4 — zeytin dalı gölgesi (`1014-O`, 14 Ekim):
+
+```
+soft shadow of an olive branch falling across a sunlit limewashed wall, late morning, bright warm cream plaster with fine trowel texture, soft-edged leaf shadows in the lower third only, upper two thirds evenly sunlit and empty, pale cream and warm sand tones, fine film grain --ar 4:5 --style raw --v 8.1 --stylize 70 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, window frame, cross, yellow cast, mustard, blue tones, teal, grey light, pink, lilac, flowers, people, faces, text, watermark
+```
+
+G5 — tek nesne, çanak (`1017-O` kapağı, 17 Ekim):
+
+```
+a small rough unglazed clay bowl resting on a limewashed ledge, the wall behind in full even morning sun, bright warm cream plaster, upper two thirds of the frame evenly sunlit and empty, only a short soft shadow beside the bowl, pale cream and warm sand tones, coarse film grain --ar 4:5 --style raw --v 8.1 --stylize 80 --chaos 5 --sref https://cdn.midjourney.com/f683971a-a55b-41f1-94ce-3d73a9d7646a/0_2.png --sw 25 --no pure white, blown highlights, cross, crucifix, window frame, blue tones, teal, grey light, flowers, people, faces, text, watermark
+```
+
+Story için aynı istemler `--ar 9:16`. Sabah masası, eşik ve boş minder istemleri yazılmadı; `docs/pazarlama/GORSEL-gunduz-paleti-ve-MJ.md` içindeki D3 ve D4 gövdeleri `--sw 25` ile duruyor ama KARAR 651'in `--no` kuralından geçirilmedi.

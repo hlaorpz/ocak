@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 11.10.2026 04:48 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 11.10.2026 05:47 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `ad00f1f` | `git log -1` |
+| canlı HEAD | `f606c93` | `git log -1` |
 | HEAD tarihi | 2026-10-11 | `git log -1 --date=short` |
-| HEAD konusu | docs: CC-BRIEF-2 İş A ve İş C karara bağlandı — KARAR 654–655 | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 3 kayıt | `git status --porcelain` |
+| HEAD konusu | feat(kart): derleyici v4 — gündüz işareti gece boyunda ve yarım kademe kalın, vurgu #B4401F, 9:16'da blok yukarıda | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 10 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **90** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **92** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -45,13 +45,13 @@
 
 | dosya | satır |
 |---|---|
-| `docs/00-durum.md` | 189 |
-| `docs/02-borclar.md` | 4074 |
-| `docs/03-sira.md` | 980 |
+| `docs/00-durum.md` | 190 |
+| `docs/02-borclar.md` | 4075 |
+| `docs/03-sira.md` | 982 |
 | `docs/05-harita.md` | 203 |
-| `docs/01-kararlar.tsv` | 656 |
+| `docs/01-kararlar.tsv` | 658 |
 
-`00-durum.md` tavanı (**≤200**, KARAR 457): **189** — ✅ altında
+`00-durum.md` tavanı (**≤200**, KARAR 457): **190** — ✅ altında
 
 ## BORÇ SAYIMI
 
@@ -69,8 +69,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **655** | — |
-| satır sayısı (başlık dahil) | 656 | — |
+| son KARAR numarası | **657** | — |
+| satır sayısı (başlık dahil) | 658 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |
