@@ -480,6 +480,10 @@
           <div class="etiket"><span>İşaret boyu</span><span class="deger" id="imzaBoyDeger">0.070</span></div>
           <input type="range" id="imzaBoy" min="0.04" max="0.14" step="0.005" value="0.07">
         </label>
+        <label class="satir" id="imzaKalinAlan">
+          <div class="etiket"><span>İşaret kalınlığı (gündüz)</span><span class="deger" id="imzaKalinDeger">0</span></div>
+          <input type="range" id="imzaKalin" min="0" max="24" step="1" value="0">
+        </label>
         <label class="satir" id="imzaOpakAlan">
           <div class="etiket"><span>İşaret opaklığı</span><span class="deger" id="imzaOpakDeger">0.85</span></div>
           <input type="range" id="imzaOpak" min="0.25" max="1" step="0.05" value="0.85">
@@ -538,7 +542,7 @@
         <summary><h2>Standart</h2></summary>
         <ul class="kural">
           <li><b>Gece:</b> metin krem · vurgu köz · işaret korlu halka. <b>Altın</b> yalnız zirve kartta</li>
-          <li><b>Gündüz:</b> metin kömür · vurgu toprak · işaret tek renk köz. Toprak ve zeytin zeminde metin ve işaret krem</li>
+          <li><b>Gündüz:</b> metin kömür · vurgu koyu köz · işaret tek renk köz. Toprak ve zeytin zeminde metin ve işaret krem</li>
           <li>Gece ile gündüz <b>aynı dizgiyi</b> kullanır: konum, punto, aralık ve işaret yeri ortak; değişen yalnız renk ve karartma</li>
           <li>Söz kartı: en fazla <b>on dört-on altı kelime</b> · karusel kartı: en fazla <b>iki cümle</b></li>
           <li>Kartta <b>handle ve tam logo yok</b> — tek imza: OCAK işareti</li>
@@ -555,7 +559,7 @@
 (function(){
   "use strict";
 
-  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6", vurguGunduz:"#A04F36" };
+  var RENKLER = { krem:"#F2EAE2", altin:"#D4A855", koz:"#C44B2F", komur:"#1A1210", toprak:"#B4654A", zeytin:"#6E7453", keten:"#D9CBB6", vurguGunduz:"#B4401F" };
   var FONT = '"Cormorant Garamond", Georgia, "Times New Roman", serif';
   var fontHazir = false;
 
@@ -585,12 +589,28 @@
       btoa(atob(isaretMono.src.split(",")[1]).replace(/#C44B2F/gi, "#F2EAE2"));
   } catch(e){ /* türetilemezse koyu düz zeminde işaret çizilmez */ }
 
+  /* Açık zeminde işaret: aynı harf, aynı renk, kenarına ince çizgi — yarım kademe kalın.
+     Gece işaretine ve koyu düz zemine uygulanmaz. Birim: işaretin 708'lik çizim ızgarası. */
+  var isaretKalinDepo = {};
+  function isaretKalinGorsel(renk, sw){
+    var anahtar = renk + "|" + sw, c = isaretKalinDepo[anahtar];
+    if (c) return c.hazir ? c.img : null;
+    c = isaretKalinDepo[anahtar] = { img:new Image(), hazir:false };
+    c.img.onload = function(){ c.hazir = true; ciz(); };
+    try {
+      c.img.src = "data:image/svg+xml;base64," + btoa(
+        atob(isaretMono.src.split(",")[1]).replace(/#C44B2F/gi, renk)
+          .replace('fill-rule="nonzero"', 'fill-rule="nonzero" stroke="' + renk + '" stroke-width="' + sw + '" stroke-linejoin="round"'));
+    } catch(e){ /* türetilemezse ince işaret çizilir */ }
+    return null;
+  }
+
   var S = {
     tema:"gece", tur:"soz", zemin:"gorsel", agirlik:"400", yumusat:0, oran:"4:5", mod:"tek", renk:"krem", konum:"ust", hiza:"orta",
     punto:95, ara:1.28, harf:0.01,
     kara:0, kenar:0.63, perde:0.35, grain:0.065,
     altOran:0.62, blokAra:0.60, metinKaydir:0, zeminGlow:0.55, glowKaydir:0,
-    imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85, kilavuz:false, kilavuzUcte:false,
+    imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.07, imzaOpak:0.85, imzaKalin:0, kilavuz:false, kilavuzUcte:false,
     kartSayi:6, aktif:0, kapakIstisna:false,
     kartlar:[]
   };
@@ -976,6 +996,10 @@
     // köşe imzası
     var isaretR  = !gunduz ? isaretGorsel : (koyuDuz ? isaretMonoKrem : isaretMono);
     var isaretOk = !gunduz ? isaretHazir  : (koyuDuz ? isaretMonoKremHazir : isaretMonoHazir);
+    if (gunduz && S.imzaKalin > 0 && isaretOk){
+      var kalinG = isaretKalinGorsel(koyuDuz ? "#F2EAE2" : "#C44B2F", S.imzaKalin);
+      if (kalinG) isaretR = kalinG;
+    }
     if (S.imza === "isaret" && isaretOk){
       var iw = W * S.imzaBoy;
       var ih = iw * (688/708);
@@ -1120,7 +1144,7 @@
     karusel: "F2 karusel · iç kart",
     story:   "F4 story · 9:16"
   };
-  var GUNDUZ_PERDE = 0.30, GUNDUZ_YUMUSAT = 0.35, GUNDUZ_ISARET_ORAN = 1.2, SERT_ESIK = 17;
+  var GUNDUZ_PERDE = 0.30, GUNDUZ_YUMUSAT = 0.35, GUNDUZ_ISARET_KALIN = 10, SERT_ESIK = 17;
   var ZEMIN_GECE = ["gorsel","glow"], ZEMIN_GUNDUZ = ["gorsel","krem","keten","toprak","zeytin"];
   function kur(){
     var gunduz = S.tema === "gunduz";
@@ -1140,10 +1164,11 @@
       // Gecedeki koyu perdenin eşi: fotoğrafta metnin arkasına krem perde; düz zeminde gerekmez.
       S.perde = gorselZ ? GUNDUZ_PERDE : 0;
       S.yumusat = (gorselZ && gorselSertlik > SERT_ESIK) ? GUNDUZ_YUMUSAT : 0;
-      if (S.imza === "isaret") S.imzaBoy = Math.round(S.imzaBoy * GUNDUZ_ISARET_ORAN * 1000) / 1000;
+      // İşaret gecedeki boyunda kalır (dizgi kaymasın); açık zeminde yarım kademe kalın basılır.
+      S.imzaKalin = koyuZ ? 0 : GUNDUZ_ISARET_KALIN;
     } else {
       S.tema = "gece";
-      S.agirlik = "400"; S.yumusat = 0;
+      S.agirlik = "400"; S.yumusat = 0; S.imzaKalin = 0;
     }
     var yeniMod = S.tur === "karusel" ? "karusel" : "tek";
     var modDegisiyor = yeniMod !== S.mod;
@@ -1237,7 +1262,7 @@
   });
 
   /* ---------- ön ayar ---------- */
-  var ON_AYAR_ALAN = ["tema","oran","renk","konum","hiza","punto","ara","harf","altOran","blokAra","metinKaydir","zeminGlow","glowKaydir","kara","kenar","perde","grain","imza","imzaDikey","imzaYer","imzaBoy","imzaOpak","agirlik","yumusat"];
+  var ON_AYAR_ALAN = ["tema","oran","renk","konum","hiza","punto","ara","harf","altOran","blokAra","metinKaydir","zeminGlow","glowKaydir","kara","kenar","perde","grain","imza","imzaDikey","imzaYer","imzaBoy","imzaOpak","agirlik","yumusat","imzaKalin"];
   var GOMULU = {
     "F1 söz kartı · fotoğraf zemin": {
       tema:"gece", oran:"4:5", renk:"krem", konum:"ust", hiza:"orta",
@@ -1276,7 +1301,7 @@
     },
     "F4 story · 9:16": {
       tema:"gece", oran:"9:16", renk:"krem", konum:"orta", hiza:"orta",
-      punto:88, ara:1.32, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:0,
+      punto:88, ara:1.32, harf:0.01, altOran:0.62, blokAra:0.60, metinKaydir:-0.07,
       zeminGlow:0.55, glowKaydir:0,
       kara:0, kenar:0.60, perde:0.38, grain:0.065,
       imza:"isaret", imzaDikey:"ust", imzaYer:"orta", imzaBoy:0.062, imzaOpak:0.85
@@ -1357,7 +1382,7 @@
       kn.textContent = S.tema === "gece"
         ? "Gece: metin krem, vurgu köz, işaret korlu halka."
         : (koyu ? "Gündüz · koyu düz zemin: metin ve işaret krem; vurgu ayrışmaz."
-                : "Gündüz: metin kömür, vurgu toprak, işaret tek renk köz.");
+                : "Gündüz: metin kömür, vurgu koyu köz, işaret tek renk köz.");
     }
     [["temaSecim","tema"],["agirlikSecim","agirlik"],["turSecim","tur"],["zeminSecim","zemin"],["modSecim","mod"],["oranSecim","oran"],["renkSecim","renk"],["konumSecim","konum"],["hizaSecim","hiza"]].forEach(function(p){
       var kap = document.getElementById(p[0]);
@@ -1380,7 +1405,7 @@
     [].forEach.call(document.getElementById("imzaDikeySecim").querySelectorAll("button"), function(b){
       b.setAttribute("aria-pressed", String(b.dataset.imzaDikey === S.imzaDikey));
     });
-    [["imzaBoy",3],["imzaOpak",2]].forEach(function(p){
+    [["imzaBoy",3],["imzaOpak",2],["imzaKalin",0]].forEach(function(p){
       var el = document.getElementById(p[0]);
       var et = document.getElementById(p[0] + "Deger");
       if (el) el.value = S[p[0]];
@@ -1458,12 +1483,14 @@
     document.getElementById("imzaYatayAlan").hidden = !g;
     document.getElementById("imzaBoyAlan").hidden = !g;
     document.getElementById("imzaOpakAlan").hidden = !g;
+    document.getElementById("imzaKalinAlan").hidden = !g || S.tema !== "gunduz";
   }
   grup("imzaSecim","imza", imzaAlanlari);
   grup("imzaYerSecim","imzaYer");
   grup("imzaDikeySecim","imzaDikey");
   kaydir("imzaBoy","imzaBoy",3);
   kaydir("imzaOpak","imzaOpak",2);
+  kaydir("imzaKalin","imzaKalin",0);
   imzaAlanlari();
   document.getElementById("kilavuz").addEventListener("change", function(e){ S.kilavuz = e.target.checked; ciz(); });
   document.getElementById("kilavuzUcte").addEventListener("change", function(e){ S.kilavuzUcte = e.target.checked; ciz(); });
