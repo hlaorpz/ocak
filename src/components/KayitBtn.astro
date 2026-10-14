@@ -18,6 +18,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { FORMAT_KATEGORI, type EtkinlikKategori } from '../lib/etkinlik-kategori';
 import type { KayitFormat } from '../lib/kayit';
+import { kayitLinkiParamEkle } from '../lib/etkinlik-onsecim';
 
 type EtkinlikProp = CollectionEntry<'etkinlikler'>['data'];
 
@@ -44,7 +45,12 @@ if (etkinlik) {
   slug = format;
 }
 
-const href = slug ? `/${slug}/kayit` : null;
+// 14 Eki — Mod A etkinliği BİLİYOR, o yüzden kayıt formuna hangi tarihi
+// açacağını da söyler: `?etkinlik=<slug>`. Mod B (nötr format düğmesi) bir
+// etkinlik bilmiyor → parametresiz kalır. Sluğu olmayan etkinlikte helper
+// zaten dokunmuyor.
+const hamHref = slug ? `/${slug}/kayit` : null;
+const href = hamHref ? kayitLinkiParamEkle(hamHref, etkinlik?.slug) : null;
 const takvimHref = digerTarihlerHref ?? (slug ? `/takvim#${slug}` : null);
 ---
 {href && (

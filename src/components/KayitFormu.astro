@@ -77,6 +77,13 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     aciklamalar: parseRichTextLines(e.data.kayitSorulariAciklamalari),
     // Eyeball #4 Fix 2c: davet metni için etkinlik başlığı (Notion Başlık).
     baslik: e.data.baslik,
+    // 14 Eki — ön seçim çapası. `<option value>` Notion sayfa ID'si taşıyor;
+    // etkinliği bilen linkler ise sluğla geliyor (`?etkinlik=<slug>`), çünkü
+    // slug paylaşılabilir ve Instagram'da okunur. İkisini bağlayan tek şey bu
+    // attribute — yoksa slug'dan seçeneğe köprü kurulamaz (ölçüm: canlı kayıt
+    // sayfasında `data-slug` 0'dı, bu yüzden hiçbir parametre tutmuyordu).
+    // Notion "Slug" boş olabilir (loader WARN basar) → boş attribute basılmaz.
+    slug: e.data.slug ?? '',
   };
 }
 ---
@@ -231,6 +238,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
                     data-sorular={JSON.stringify(d.sorular)}
                     data-aciklamalar={JSON.stringify(d.aciklamalar)}
                     data-baslik={d.baslik}
+                    data-slug={d.slug || undefined}
                     disabled={d.dolu}
                   >
                     {d.baslik ? `${d.baslik} · ${d.tarih}` : d.tarih}{d.dolu ? ' — Dolu' : ''}
@@ -1631,6 +1639,7 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
   // B118 İŞ C — kaynak etiketi + ölçüm rızası gövdeye katılıyor.
   import { KAYNAK_ANAHTARI, kayitKaynakYuku } from '../lib/kaynak';
   import { RIZA_ANAHTARI, gtmYuklensinMi } from '../lib/riza';
+  import { ETKINLIK_PARAM, onSecimIndexi } from '../lib/etkinlik-onsecim';
 
   /**
    * `sessionStorage`/`localStorage` okumasını tek yerde topluyor.
@@ -2092,6 +2101,36 @@ function etkinlikData(e: CollectionEntry<'etkinlikler'>) {
     refreshKademeTutarlari();
     refreshOdemeBlok();
     renderNiyetSorulari([]);
+
+    // 14 Eki — `?etkinlik=` ile gelen ön seçim. Etkinliği bilen her kayıt
+    // düğmesi parametreyi taşıyor (`kayitLinkiParamEkle`); burası onu okuyan uç.
+    //
+    // NEDEN İSTEMCİDE, SSR'DA DEĞİL — ölçülmüş gerekçe: yedi kayıt route'u
+    // prerender ve canlıda edge'den dönüyor (`x-vercel-cache: HIT`, age ~13,7
+    // saat ölçüldü 14 Eki). `prerender = false`'a çevirmek (a) o cache'i
+    // öldürür — telefondan gelen kadın için en kötü takas, (b) içeriği
+    // TAZELEŞTİRMEZ: koleksiyon build-time, ISR yok ("prerender = false ≠
+    // taze içerik", 00-durum SESSİZ KIRILMA). Parametre okuma zaten durum
+    // değiştirmiyor, yalnız seçiyor — istemci doğru katman.
+    //
+    // Boot'un SONUNDA duruyor, başında değil: `select.value` set edildikten
+    // sonra `change` dispatch edilir ve mevcut handler kademe tutarlarını,
+    // Niyet sorularını, ödeme bloğunu, promoyu ve submit metnini kendisi
+    // tazeler — ön seçim için ikinci bir senkron yolu açılmaz.
+    {
+      const param = new URLSearchParams(window.location.search).get(ETKINLIK_PARAM);
+      const secenekler = Array.from(select.options).map((o) => ({
+        value: o.value,
+        slug: o.dataset.slug ?? '',
+      }));
+      const idx = onSecimIndexi(param, secenekler);
+      // `disabled` seçenek = Dolu etkinlik; ön seçim onu seçmeye çalışmaz
+      // (tarayıcı zaten kabul etmez, sessizce boşta kalır).
+      if (idx !== null && !select.options[idx].disabled) {
+        select.selectedIndex = idx;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
 
     // Ek brief §1 + Not 2 — geçersiz zorunlu alanı GÖRÜNÜR yap.
     //

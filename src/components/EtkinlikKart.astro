@@ -17,6 +17,7 @@
 // `mekanDetay` meta'da yok (KARAR 285/287 adres gizliliği).
 import type { CollectionEntry } from 'astro:content';
 import { formatEtiket, mekanTipi } from '../lib/etkinlik-kategori';
+import { kayitLinkiParamEkle } from '../lib/etkinlik-onsecim';
 
 type EtkinlikData = CollectionEntry<'etkinlikler'>['data'];
 
@@ -55,6 +56,15 @@ const {
 
 const BaslikTag = baslikTag ?? (variant === 'satir' ? 'span' : 'h3');
 const mTipi = mekanTipi(etkinlik.mekan);
+
+// 14 Eki — kartın "Yerini ayır"ı kayıt formuna hangi tarihi açacağını taşır.
+// ⚠ Bu href KODDAN DEĞİL, Notion "Kayıt Linki" alanından geliyor (elle yazılan
+// bir URL). Bu yüzden ekleme koşullu: boşsa ya da site dışı bir adresse
+// parametre eklenmez, zaten query taşıyorsa birleştirilir ve elle yazılmış bir
+// `etkinlik` değeri EZİLMEZ (kurallar `kayitLinkiParamEkle`'de, testli).
+// Pratikte alan `/[format]/kayit` taşıyor (ölçüm: /takvim'de 12 kart linki,
+// hepsi göreli), ama kural veriye değil koda yazıldı.
+const kartKayitHref = kayitLinkiParamEkle(etkinlik.kayitUrl, etkinlik.slug);
 
 const AY_KISA = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 function tarihRozeti(iso: string): { gun: string; ay: string } {
@@ -119,7 +129,7 @@ const kartClass = [
     </div>
 
     {etkinlik.kayitUrl && showKayitLink && (
-      <a class="ocak-etkinlik-kart__kayit" href={etkinlik.kayitUrl}>
+      <a class="ocak-etkinlik-kart__kayit" href={kartKayitHref}>
         Yerini ayır <span aria-hidden="true">→</span>
       </a>
     )}

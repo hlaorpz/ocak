@@ -653,6 +653,7 @@ export function etkinlikAdiFormatla(
  * `toplam` zaten katmanA + katmanB.
  */
 import type { KodSonuc } from './kodlar';
+import { kayitLinkiParamEkle } from './etkinlik-onsecim';
 
 export type IndirimSonuc = {
   /** İndirim sonrası katman A (tam-burs'da 0). */
@@ -714,7 +715,7 @@ export function uygulaIndirim(
 export function resolveMiniCtaBtn(
   html: string,
   rawSlug: string,
-  opts: { kayitTipi?: 'Direkt' | 'Başvuru' } = {},
+  opts: { kayitTipi?: 'Direkt' | 'Başvuru'; etkinlikSlug?: string } = {},
 ): string {
   if (!html.includes('__MINI_CTA_BUTON__')) return html;
   const slug = rawSlug.replace(/^\/+|\/+$/g, '');
@@ -722,8 +723,13 @@ export function resolveMiniCtaBtn(
     return html.replaceAll('__MINI_CTA_BUTON__', '');
   }
   const metin = opts.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
+  // 14 Eki — etkinlik detay dalı bir etkinlik BİLİYOR → `?etkinlik=<slug>`
+  // taşır. Format sayfası kapanışındaki nötr düğme bilmiyor (`etkinlikSlug`
+  // geçilmez) → parametresiz kalır; o düğme "sıradaki" demiyor, "bu formata
+  // kaydol" diyor ve hangi tarih olduğunu seçmek kadında kalır.
+  const kayitHref = kayitLinkiParamEkle(`/${slug}/kayit`, opts.etkinlikSlug);
   const buton =
-    `<a class="ocak-kayit-cta__buton" href="/${slug}/kayit" data-kayit-cta-button>` +
+    `<a class="ocak-kayit-cta__buton" href="${kayitHref}" data-kayit-cta-button>` +
     `${metin} <span aria-hidden="true">→</span></a>`;
   const tumu = opts.kayitTipi
     ? `<p class="ocak-kayit-cta__tumu"><a href="/takvim#${slug}">Diğer tarihler <span aria-hidden="true">→</span></a></p>`

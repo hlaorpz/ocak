@@ -217,7 +217,9 @@ const etkinlikler = defineCollection({
           detayHtml = resolveMiniCtaBtn(
             resolveNotionPageLinks(rendered.html, {}, `etkinlik/${fm.slug ?? fm.notion_id}`),
             kayitSlug,
-            { kayitTipi: fm.kayitTipi },
+            // 14 Eki — etkinlik detayındaki mini-cta düğmesi de ön seçim
+            // taşır. Slug boşsa helper dokunmuyor (loader yukarıda WARN bastı).
+            { kayitTipi: fm.kayitTipi, etkinlikSlug: fm.slug ?? '' },
           );
         }
 
