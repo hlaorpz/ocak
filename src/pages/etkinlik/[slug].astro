@@ -30,6 +30,7 @@ import OlcumSayfa from '../../components/OlcumSayfa.astro';
 import { formatEtkinlikTarihi, bugunTR } from '../../lib/format-etkinlik';
 import { FORMAT_NOTION_FORMAT, type KayitFormat } from '../../lib/kayit';
 import { FORMAT_KATEGORI } from '../../lib/etkinlik-kategori';
+import { kayitLinkiParamEkle } from '../../lib/etkinlik-onsecim';
 
 export async function getStaticPaths() {
   const tumu = await getCollection('etkinlikler');
@@ -116,6 +117,23 @@ const description =
 
 const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
 
+// 14 Eki — HERO DÜĞMESİ. Ölçüm: masaüstünde (1512×815) sayfa altındaki
+// "Yerini ayır" y=3703, telefonda (390×844) y=3887 — ilk ekranın 4,5–4,6 katı
+// aşağıda. Instagram'dan gelen kadın tarihi hero'da görüyor ama kaydolacak
+// düğmeyi görmüyor. Düğme tarih satırının hemen altına, hero'nun İÇİNE giriyor
+// (hero 844 px yüksek; altına konan section y=907'de, ilk ekranın dışında).
+// Sayfanın altındaki düğme yerinde KALIR — kaldırılmadı, ikizlendi.
+//
+// Geçmiş etkinlikte basılmaz: o sayfada kayıt diye bir şey yok, aşağıdaki
+// `gecmisMi` dalı "Sıradaki {kategori}" yönlendirmesine düşüyor.
+// Metin alt düğmeyle aynı sözlükten (KayitBtn Mod A): Direkt→"Yerini ayır",
+// Başvuru→"Başvur". Href de aynı — ön seçim parametresi dahil.
+const heroKayitHref =
+  !gecmisMi && kayitSlugu
+    ? kayitLinkiParamEkle(`/${kayitSlugu}/kayit`, etkinlik.slug)
+    : undefined;
+const heroKayitMetin = etkinlik.kayitTipi === 'Başvuru' ? 'Başvur' : 'Yerini ayır';
+
 // brief-kayit-buton-FINAL Faz 4: güncel etkinlik CTA'sı KayitBtn primitive'e
 // devredildi (Mod A — etkinliğin Kayıt Tipi'nden metin türer + "Diğer tarihler
 // →" tümü linki). Geçmiş etkinlik özel akış (format sayfasına yönlendirme
@@ -131,6 +149,8 @@ const kategoriAdi = KATEGORI_ADI[etkinlik.tip] ?? etkinlik.tip;
     title={etkinlik.baslik}
     subtitle={`${tarihMetni} · ${mekanMetni}`}
     showScroll={false}
+    kayitHref={heroKayitHref}
+    kayitMetin={heroKayitHref ? heroKayitMetin : undefined}
   />
 
   {etkinlik.detayHtml && (
