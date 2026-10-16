@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v5 turu** · dönem HEAD `cf26945`
+**Son güncelleme:** 14 Ekim 2026 · **Kayıt yolu turu** · dönem HEAD `fffed28`
 
 ---
 
@@ -68,7 +68,7 @@ yapıştırması, tur içinde MCP çekmesi. MCP **git deposunu** okur, yerel dis
 
 | | |
 |---|---|
-| `main` dönem HEAD | **`cf26945`** (11 Eki, kart derleyici v5 turu — bir önceki dönem `f606c93`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `cf26945` (`tools/ocak-kart-derleyici.html` — derleyici v5). `f606c93..cf26945` aralığının tam listesi `90-kronoloji/2026-10.md` 11 Eki v5 kaydında. Önceki dönemin (`f606c93`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
+| `main` dönem HEAD | **`fffed28`** (14 Eki, kayıt yolu turu — bir önceki dönem `cf26945`) — canlı HEAD değil, dönemin son commit'i · kapanış commit'inden bir önceki (KARAR 474). **Canlı HEAD üretilendir** → `docs/04-olcum.md` (KARAR 580). ⚠ **Bu dönem KOD içerdi:** `dfd450e` + `fffed28` (kayıt yolu — ön seçim ve hero düğmesi). `cf26945..fffed28` aralığının tam listesi `90-kronoloji/2026-10.md` 14 Eki kaydında. Önceki dönemin (`cf26945`) satırı `90-kronoloji/2026-10.md`'ye indi (KARAR 61) |
 | Dal modeli | **`main` tek çalışma + production dalıdır** (push otomatik canlı). Yanında yaşayan tek uzak dal **`nkolay-test`** — ödeme Preview ortamı; `ODEME_CALLBACK_SIR`'ı production'dan **ayrıdır** (KARAR 575), bu yüzden AÇILIŞ'a kadar **bilerek duruyor** ve o şart `03-sira.md`'ye yazıldı. ⚠ `astro-iskelet` · `davet-mail-baglam` · `etkinlik-kayit-penceresi` · `liste-ailesi` **silindi** (11 Eyl): her biri için `git log main..origin/<dal>` **boş** döndü — main'de olmayan tek bir commit taşımıyorlardı. `kurtarma-2026-08-19` tag'i de kalktı (`688bee5`, `merge-base --is-ancestor` ile main'in atası olduğu doğrulandı). Yeni çivi: `kurtarma-2026-09-11-b64-dal-temizligi` (yerel). Dal sayısı **buraya yazılmaz** → `docs/04-olcum.md` |
 | Çalışma dizini | **`~/Desktop/hlaorpz/ocak`** · remote `hlaorpz/ocak` (B01, 10 Ağu) — tek klon (KARAR 463) |
 | Test | → `docs/04-olcum.md` (`--test` ayağı). ⚠ Test dosyası **`src/lib/` ya da `src/components/` altında yaşar** — `src/pages/` altına konursa Astro onu route olarak derler, **build düşer, vitest yeşil kalır** (KARAR 574) |
@@ -128,6 +128,13 @@ Hepsi "site bozulmaz, özellik sessizce düşer" sınıfı. Metinleri işaret ed
   collection'dan okur, ISR yok → her metin değişikliği deploy ister, **doğrulama canlıda.**
 - **Statik çıktı `dist/client/`'ta** — `dist/` grep'i boş dizinde **her zaman 0** döner;
   "temiz" sahte olabilir. → KARAR 566 · 567
+- **Görsel kural wrapper'a bağlıysa başka yerde eşleşmez** — `atmosfer.css`'in köz dolu
+  düğme kuralı `section[data-section="kayit-btn"] > …` doğrudan-çocuk seçicisidir; aynı
+  class'ı başka bir kaba koymak **çıplak link** verir. 14 Eki'de hero düğmesi bu yüzden
+  kopyalandı. → **B237**
+- **`npm run preview` bu depoda çalışmaz** — `@astrojs/vercel` adapter'ı preview komutunu
+  desteklemiyor. Telefon/ağ eyeball'u için `npx astro dev --host`; o kaynaktan derler,
+  `dist/` teyidi ayrıca alınır. → `90-kronoloji/2026-10.md` 14 Eki kaydı
 
 ⚠ **`02-borclar.md` bir yapılacaklar listesi değildir** — fark edilmiş ama kapatılmamış
 tutarsızlıkların defteridir. Ürün işi (ödeme, WhatsApp, Instagram, mail akışları) oraya
@@ -137,6 +144,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **14 Ekim — Kayıt yolu turu:** kod `dfd450e` + `fffed28`. Instagram'dan gelen kadın tarihi etkinlik sayfasında görüyor ama kayıt düğmesini görmüyordu, düğmeye bastığında da form **boş** açılıyordu. İkisi de kapandı: etkinliği bilen her kayıt düğmesi `?etkinlik=` taşıyor ve kayıt formu o tarihi seçili açıyor (**KARAR 660** — parametre tip-duyarlı, eski davet linkleri kırılmadı; okuma istemcide, çünkü kayıt route'ları prerender ve edge'den dönüyor) · etkinlik sayfasının hero'suna tarih satırının altına köz dolu düğme girdi, alt düğme yerinde kaldı. Kaan'ın dört pazarlama kararı da mühürlendi (**661–664**: story zamanlaması · Reels standardı · öne çıkan kapakları · Instagram linkleri). **B237 açıldı** — köz düğme stili iki yerde yaşıyor. ⚠ **`/acik-kapi` yalnız ölçüldü, değişmedi:** telefonda kart y=1456, düğme y=1672, ekran 844 — ikisi de ilk ekranda değil (`03-sira.md`, Kaan kararı). ⚠ **Telefon göz kontrolü alınmadı** (16 Eki itibarıyla). → `90-kronoloji/2026-10.md`
 - **11 Ekim — Kart derleyici v5 turu:** kod `cf26945`. Kaan v4 kartlarına bakıp üç kusur söyledi (tek kelime alt satıra düşüyor · kırmızı zayıf · doku güçlü). Düzeldi: sığmayan satır dengeli bölünür (gece dahil) · gündüz vurgusu yarı kalın ve `#A8371C` · sert duvar daha çok yumuşatılır (**KARAR 658 · 659**; KARAR 656 → SUPERSEDE). Altı kart v5 ile yeniden basıldı; `ocak-kart` skill'i güncellendi. ⚠ Yarı kalın vurgu gerçek tarayıcıda henüz görülmedi. → `90-kronoloji/2026-10.md`
 - **11 Ekim — Kart derleyici v4 turu:** kod `f606c93`. Kaan derleyiciyi ilk kez tarayıcıda denedi; üç şey düzeldi: gündüz işareti gece boyuna döndü ve açık zeminde yarım kademe kalın · gündüz vurgusu `#B4401F` · 9:16'da blok yukarıda, gece dahil (**KARAR 656 · 657**; KARAR 653 → SUPERSEDE). Altı kart v4 ile yeniden basıldı. Kaan kartları artık derleyiciyle kendi basıyor. ⚠ `ocak-kart` skill'i hâlâ eski basıcıyı anlatıyor (**B235**). → `90-kronoloji/2026-10.md`
 - **10–11 Ekim — Gündüz görselleri ve kart derleyici v2 turu:** kod `4886492 · d3162ef`. Gündüz `--sref` çapası mühürlendi (**z12**, KARAR 650); `--sw 25` (KARAR 651). Dört gündüz zemini envantere girdi (z12–z15). Kart derleyici tek ve kanonik araç oldu: gündüz, gecenin dizgisini aynen kullanır (KARAR 652); gündüz renk ve ağırlık kuralları KARAR 653. **B234 ✅.** Derleyiciyle altı kart basıldı. ⚠ Paketteki 44 kart ve `ocak-kart` skill'i eski basıcının biçiminde (**B235**); zeminler ızgara çözünürlüğünde (**B236**). → `90-kronoloji/2026-10.md`

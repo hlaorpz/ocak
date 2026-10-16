@@ -4076,3 +4076,12 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** karta giden zeminlerin yüksek çözünürlüklü sürümü iner ve ölçümler yeniden yazılır · sertliği 17'nin altında bir düz kireç zemini üretilir ya da yumuşatma kalıcı çözüm olarak kabul edilir.
 - **Bağ:** B141 · B170 · KARAR 650
 - **11 Eki, v5 turu:** Kaan z14 ve z15'in dokusunu basılı kartta güçlü buldu. Derleyicinin yumuşatması 0,35 → 0,60, metin arkası krem perde 0,30 → 0,42 oldu (KARAR 658). Bu bir ara çözümdür; kapanış şartındaki "sertliği 17'nin altında bir düz kireç zemini" hâlâ üretilmedi.
+
+## B237 — Köz dolu düğme stili iki yerde yaşıyor
+
+- [ ] **Sahip:** CC
+- **Ne:** Etkinlik sayfasının hero'suna köz dolu "Yerini ayır" düğmesi girdi (14 Eki, `fffed28`). Stili `atmosfer.css`'ten **gelemedi**: oradaki kural `section[data-section="kayit-btn"][class^="ocak-"] > .ocak-kayit-cta__buton` — **doğrudan çocuk** seçici, hero içinde hiç eşleşmiyor; aynı class'ı hero'ya koymak çıplak bir link verirdi ("kod var ≠ output var" sınıfı sessiz fakirleşme). Ayrıca o kural `display: block; width: 100%`, hero düğmesi ise içerik genişliğinde olmalıydı. Sonuç: `Hero.astro` içinde `.hero__kayit` adıyla **ikinci bir kopya** — ember dolu zemin, coal metin, uppercase, `0.22em` harf aralığı, aynı hover parlaması, mobilde aynı `1rem 2.5rem` kademesi. Class adı bilerek ayrı tutuldu ki "`ocak-kayit-cta__buton` gibi görünüp stilsiz kalan" bir ikiz doğmasın.
+- **Risk:** ember düğme dili `atmosfer.css`'te güncellenirse hero düğmesi sessizce eski dilde kalır. İki yüzey aynı anda bakılmadığı için fark gözle yakalanmaz.
+- **Kapanış şartı:** ikisi tek kaynaktan beslensin — ya ortak bir custom property kümesi (`--kayit-btn-*`) ya da seçicisi wrapper'a bağlı olmayan bir class — **ya da** iki kopyanın bilinçli kabulü ölçülüp doktrine alınsın ("kabul edildi" yolu, `03-sira.md` madde 2).
+- **Bağ:** KARAR 660 turu · `atmosfer.css:1754` ↔ `Hero.astro` `.hero__kayit`
+- **Ölçüm (14 Eki):** hero düğmesi 390×844'te `y=555–610`, genişlik 198 px (kap 342 px); zemin `rgb(196,75,47)` = `--ember`, metin `rgb(26,18,16)` = `--coal` — alt düğmeyle birebir aynı. ⚠ Computed `display` **`block`** döner (flex blokification), beyan `inline-block`; genişlik `align-items: center` sayesinde içerik kadar kalıyor.
