@@ -49,3 +49,15 @@ ocak-site-dump-fable-*.md
 
 # skill zip çıktısı (skill-sync.sh üretir, claude.ai'ye elle yüklenir)
 /docs/_uretilen/skill-zip/
+
+# pazarlama-ekler kart partileri — YALNIZ YEREL (Kaan'ın diski), repo'ya gitmez.
+# Gerekçe: parti başına 2–21 MB binary; 17 Eki'de beş parti toplam ~33 MB.
+# `05-harita.md` bu partileri "yalnız yerel" diye işaretler — oradaki yollar taze
+# klonda çözülmez ve bunu söylemek zorundadır.
+#
+# ⚠ ZATEN İZLENEN partiler izlenmeye DEVAM EDER — .gitignore takip edilen dosyayı
+# geri almaz: kartlar-2026-10-10 · -11-derleyici · -v4 · -v5 ·
+# kartlar-kurucu-2026-10-11-kullanilmadi. Bu desen yalnız YENİ partileri tutar.
+#
+# Bir parti bilerek commit'lenecekse kapı açık: `git add -f <yol>`
+pazarlama-ekler/kartlar-*/

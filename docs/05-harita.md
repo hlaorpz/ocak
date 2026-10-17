@@ -152,14 +152,17 @@ Denetçi: `scripts/baslik-denetim.mjs` — bulursa dosya + satır + sebep basar,
   Adı anılması gereken tek PDF — **Advaita'nın reklam devri:**
   `pazarlama-ekler/kartlar-2026-10-12-reklam/OCAK-reklamlar-Advaita-icin-2026-10-16.pdf`
   (12 sayfa, 1.752 KB; `/Type/Page` sayımı ve `ls` ile ölçüldü 17 Eki).
-  ⚠ **Bu yol taze klonda çözülmez:** `pazarlama-ekler/` kısmen izleniyor (17 Eki'de 125
-  dosya `git ls-files`'ta) ama PDF'in dizini — `kartlar-2026-10-12-reklam/`, 21 MB —
-  **untracked.** Onunla birlikte dört kart partisi daha öyle (`kartlar-2026-10-15-adimiz-1`
-  · `-fatma-aliye` · `-2026-10-16-adimiz-2` · `-2026-10-17-cumartesi`, toplam ~12 MB).
-  Yani bu satır **Kaan'ın diskindeki** bir dosyayı adlandırıyor, deponun içindekini değil.
-  Partilerin commit'lenmesi mi yoksa `.gitignore`'a alınması mı gerektiği **açık karar** —
-  21 MB'lık binary'yi sormadan commit'lemek de, haritanın boşa düşen yol taşıması da
-  kabul edilebilir değil.
+  ⚠ **YALNIZ YEREL — bu yol taze klonda çözülmez.** Kart partileri 17 Eki'de
+  `.gitignore`'a alındı (`pazarlama-ekler/kartlar-*/`, Kaan kararı): parti başına 2–21 MB
+  binary, beş parti ~33 MB. Bu satır **Kaan'ın diskindeki** dosyayı adlandırıyor, deponun
+  içindekini değil — bir yolu adlandırmak onu depoya koymaz ve bunu söylemek zorundayız.
+- **Yalnız yerel olanlar** (desenin tuttuğu, 17 Eki): `kartlar-2026-10-12-reklam/` (21 MB,
+  Advaita PDF'i burada) · `kartlar-2026-10-15-adimiz-1/` · `-2026-10-15-fatma-aliye/` ·
+  `-2026-10-16-adimiz-2/` · `-2026-10-17-cumartesi/`. **İzlenmeye devam edenler**
+  (desen geriye işlemez): `araclar/` · `belgeler-pdf/` · `isaret/` · `ornekler/` ·
+  `kartlar-2026-10-10/` · `-11-derleyici/` · `-v4/` · `-v5/` ·
+  `kartlar-kurucu-2026-10-11-kullanilmadi/` — 125 dosya. Bir parti bilerek commit'lenecekse
+  kapı açık: `git add -f <yol>`.
 - **Yazar:** Claude.ai üretir, CC yazar.
 - **Bozulma biçimi:** (1) `belgeler/`'deki Claude Docs kopyaları **aynadır** (KARAR 471
   sınıfı): canlı belge Claude Docs'ta değişir, kopya sessizce bayatlar. Dosya adındaki `rev`
