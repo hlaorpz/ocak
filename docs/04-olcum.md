@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 17.10.2026 16:28 (Europe/Istanbul) · bayraklar: `(yok)`
+**Koşum:** 17.10.2026 16:56 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,16 +18,16 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `588127d` | `git log -1` |
-| HEAD tarihi | 2026-10-16 | `git log -1 --date=short` |
-| HEAD konusu | docs: kayıt yolu turu — KARAR 660–664 · B237 · ön seçim, hero düğmesi, /acik-kapi ölçümü | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 12 kayıt | `git status --porcelain` |
+| canlı HEAD | `f8d5a77` | `git log -1` |
+| HEAD tarihi | 2026-10-17 | `git log -1 --date=short` |
+| HEAD konusu | feat(olcum): Vercel Web Analytics açıldı — rızadan bağımsız payda + aydınlatma satırı | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 3 kayıt | `git status --porcelain` |
 | uzak dal sayısı | **2** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
 | `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **101** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/nkolay-test` | main **104** commit önde · **1** commit geride | `git rev-list --count` |
 
 ## TEST
 
@@ -46,9 +46,9 @@
 | dosya | satır |
 |---|---|
 | `docs/00-durum.md` | 200 |
-| `docs/02-borclar.md` | 4133 |
-| `docs/03-sira.md` | 1000 |
-| `docs/05-harita.md` | 219 |
+| `docs/02-borclar.md` | 4135 |
+| `docs/03-sira.md` | 1002 |
+| `docs/05-harita.md` | 222 |
 | `docs/01-kararlar.tsv` | 669 |
 
 `00-durum.md` tavanı (**≤200**, KARAR 457): **200** — ✅ altında
