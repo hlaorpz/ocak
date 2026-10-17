@@ -4085,3 +4085,49 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** ikisi tek kaynaktan beslensin — ya ortak bir custom property kümesi (`--kayit-btn-*`) ya da seçicisi wrapper'a bağlı olmayan bir class — **ya da** iki kopyanın bilinçli kabulü ölçülüp doktrine alınsın ("kabul edildi" yolu, `03-sira.md` madde 2).
 - **Bağ:** KARAR 660 turu · `atmosfer.css:1754` ↔ `Hero.astro` `.hero__kayit`
 - **Ölçüm (14 Eki):** hero düğmesi 390×844'te `y=555–610`, genişlik 198 px (kap 342 px); zemin `rgb(196,75,47)` = `--ember`, metin `rgb(26,18,16)` = `--coal` — alt düğmeyle birebir aynı. ⚠ Computed `display` **`block`** döner (flex blokification), beyan `inline-block`; genişlik `align-items: center` sayesinde içerik kadar kalıyor.
+## B238 — 22 Ekim etkinliğinin slug'ı 15 Ekim tarihini taşıyor
+
+- [ ] **Sahip:** Kaan (Notion) + CC (varsa yönlendirme)
+- **Ne:** Etkinlikler DB'sinde "Ateş Seninle Geldi" kaydının `Slug` alanı `ates-seninle-geldi-2026-10-15`, `Tarih` alanı ise **2026-10-22**. Kanonik adres `/etkinlik/ates-seninle-geldi-2026-10-15` — yani URL etkinliğin tarihini yanlış söylüyor. ⚠ **Tek kayıt değil ve tesadüf değil:** tarih taşıyan beş slug'ın **beşinde de** fark tam olarak **+7 gün**. Bu bırakılmış bir slug değil, sistematik bir kayma — ya slug "bir hafta önceki" bir şablondan üretiliyor ya da etkinlikler kurulduktan sonra topluca bir hafta ileri alındı ve slug'lar güncellenmedi. Kök neden ölçülmedi; iki ihtimalden hangisi olduğu Kaan'ın Notion geçmişinden okunur.
+- **Risk:** Reklam ve story linkleri bu adresi taşıyor (KARAR 664). Slug değiştirilirse dolaşımdaki her link kırılır; değiştirilmezse adres kalıcı olarak yanlış tarihi söyler. Üçüncü risk: aynı formatın bir sonraki kaydı 22 Ekim slug'ını almak isterse çakışma doğar.
+- **Kapanış şartı:** üç yoldan biri seçilsin — (a) slug olduğu gibi kabul edilsin ve doktrine "slug tarih taşımaz, yalnız kimliktir" diye yazılsın · (b) slug düzeltilip eski adresten yenisine kalıcı yönlendirme konsun · (c) slug alanı tarihten tamamen ayrılsın (üretim kuralı değişsin). (a) en ucuz, (c) en kalıcı.
+- **Bağ:** KARAR 664 (Instagram linkleri etkinliğin kendi sayfasına) · KARAR 666
+- **Ölçüm (17 Eki):** Etkinlikler DB, `Yayınla = __YES__` olan **on iki** kayıt. Beşinin slug'ı tarih taşıyor, beşinde de fark **+7 gün** (`python3`, `date.fromisoformat` farkı; fark kümesi `{7}` — tek değer):
+
+| `Slug` | slug tarihi | `date:Tarih:start` | fark |
+|---|---|---|---|
+| `ates-seninle-geldi-2026-10-15` | 2026-10-15 | **2026-10-22** | +7 |
+| `ellerin-dolu-2026-10-21` | 2026-10-21 | **2026-10-28** | +7 |
+| `neyi-bekliyorsun-2026-10-28` | 2026-10-28 | **2026-11-04** | +7 |
+| `yer-acmak-2026-11-04` | 2026-11-04 | **2026-11-11** | +7 |
+| `hangi-tohumu-ekeceksin-2026-11-11` | 2026-11-11 | **2026-11-18** | +7 |
+
+  Kalan yedi kaydın slug'ı tarih taşımıyor (`bir-esikte-duruyorsun`, `istek-mi-ihtiyac-mi`, `dusundugum-hissettigim-yaptigim`, `kakao-seremonisi-online`, `bu-ses-kimin`, `nereye-kadar-senin`, `rituel-tasarimi`) — onlarda bu kusur doğamaz. **Tarih taşımayan slug, kusuru yapısal olarak imkânsız kılıyor; (c) yolunun lehine ölçülmüş argüman budur.**
+
+## B239 — Notion SQL köprüsü bayat satır servis ediyor
+
+- [ ] **Sahip:** CC (yöntem) + Claude.ai (aynı tuzağa düşmeme)
+- **Ne:** `mcp__claude_ai_Notion__notion-query-data-sources` SQL modu, Kayıtlar DB'sinde **aynı oturumda aynı kayıt için iki farklı `Ödeme Durumu`** döndürüyor. 16 Eki vakası: `OCAK-E2TM` bir sorguda `Beklemede`, aynı tabloyu başka sıralamayla okuyan sorguda `İptal / Kart — süre doldu`. Sayfanın kendisi (`notion-fetch`, `3f8b61eb…2ceb`) `İptal` diyor ve `page_last_edited_at` = `2026-10-13T12:55:12Z` — yer tutma bitişinden (12:54:00Z) **72 saniye sonra**. Yani tarama hiç atlamamıştı.
+- **Risk:** Olmayan bir hata gerçek sanılıyor. Bu tur `/api/bildirim-tara`'ya ait olmayan bir kusur ona yazılmak üzereydi; brief'e "15 Ekim gecesi hâlâ Beklemede görünüyordu" diye girmişti. Ters yönü daha tehlikeli: bayat satır **kapanmış** görünürse açık bir iş kapalı sanılır.
+- **Teşhis imzası:** `COUNT(*)` ile listelenen satır sayısı uyuşmaz (vakada 31 vs 28) ve bayat satırlar `url` sütunu istendiğinde geri gelmez.
+- **Kapanış şartı:** tek kayıt yargısının `notion-fetch` + `page_last_edited_at` ile kurulması doktrine girsin; toplu sayım için SQL meşru kalsın. Ayrıca çelişki görüldüğünde refleksin "tanımları karşılaştır" değil **"tazeliği karşılaştır"** olması yazılsın — CLAUDE.md §4 bu durumda yanlış yöne gönderiyor.
+- **Bağ:** KARAR 102 (gerçeklik spec'i ezer) · KARAR 470 (iki ölçüm çelişirse) · B240
+- **Ölçüm (16–17 Eki):** iki sorgu şekli, iki yanıt, bir sayfa okuması. 17 Eki'de tekrar: 41 satır · 41 tekil `Kayıt ID` · mükerrer sayfa yok — yani köprü mükerrer kayıt üretmiyor, **bayat durum** servis ediyor.
+
+## B240 — Ziyaretçi düzeyi payda yok; rıza kaybının payı ölçülemiyor
+
+- [ ] **Sahip:** CC (sayaç) + Kaan (onay)
+- **Ne:** Rıza bandının **gösterilme ve kabul oranı hiçbir yere yazılmıyor.** Karar tamamen istemcide, `localStorage`'da (`src/lib/riza.ts`); sunucuda ne sayaç ne log var. Vercel Web Analytics bu projede **kapalı** (API `404: Web Analytics not found`). Sonuç: 11–14 Eki'nin ~304 link tıklaması ile Meta'nın 53 sayfa görüntülemesi arasındaki farkın ne kadarı rıza kaybı, ne kadarı hemen çıkma, ne kadarı yavaş yükleme — **ayrıştırılamıyor.**
+- **Risk:** Bütçe kararı ölçülemeyen bir paydaya bakıyor. KARAR 668 bu riski bütçe tarafında kapattı (karar ödenmiş kayda bağlandı) ama **kreatif kıyaslaması** hâlâ Pixel'e bakıyor: rızasız ziyaretçi hiçbir kreatifte sayılmadığı için kıyas yanlı olabilir ve yanlılığın yönü bilinmiyor.
+- **Kapanış şartı:** rızadan bağımsız, kimliksiz, toplu bir payda sayacı kurulsun — en ucuz yol Vercel Web Analytics'in açılması (çerezsiz, toplu). Açılırsa aydınlatma metnine satır gerekip gerekmediği **kontrol edilip sonucu yazılsın**; gerekiyorsa `/gizlilik` güncellenir.
+- **Bağ:** KARAR 627 (rıza kapısı serttir) · KARAR 668 · B239
+- **Ölçüm (17 Eki, production `www.ocak.biz`, Chrome):** `/etkinlik/ates-seninle-geldi-2026-10-15`, rıza kaydı silinip yeniden yüklendi → GTM betiği **yok**, `_ga`/`_fbp`/`_fbc` **yok**, üçüncü taraf host yalnız `fonts.googleapis.com` ve `vercel.live`; `dataLayer`'da `view_content` duruyor ama okuyan yok. Rıza kabulünde aynı sayfa: GTM `GTM-W6L2NSDS` yüklü, dört çerez yazılı, `connect.facebook.net` · `www.facebook.com` · `www.google-analytics.com` çağrılı. Bant 78 px, viewport'un %9,4'ü, formu örtmüyor (`--riza-bant-h` 78px, `body` alt dolgusu 78px; onay kutuları y=2084 ve y=2118). **Mekanizmanın temiz kanıtı:** `UTM Kaynak=meta` olan 4 kayıttan 3'ünde `Ölçüm Rızası` işaretli (5EJ9 · DULC · UJUD), 1'inde değil (TPUR) — Meta 3 lead bildirdi. 4 ile 3 arasındaki fark **tam olarak** rızasız kayıt. ⚠ Instagram uygulama içi tarayıcı **ölçülmedi** (Chrome o webview'i süremiyor, `03-sira.md`).
+
+## B241 — Havale kayıtlarında `Ödenen Tutar` boş kalıyor, ciro eksik okunuyor
+
+- [ ] **Sahip:** Kaan (elle yazım) ya da CC (otomatik yazım)
+- **Ne:** Havaleyi Kaan elle `Ödendi`'ye çekerken `Ödenen Tutar` alanını doldurmuyor; `Beklenen Tutar` dolu kalıyor. 19 Ekim etkinliğinde üç kayıt böyle: `OCAK-U88W` (300) · `OCAK-NY7U` (450) · `OCAK-VL39` (300). `Ödenen Tutar` üzerinden alınan her toplam bu üç kayıt için **0** sayıyor.
+- **Risk:** Ciro eksik okunuyor ve eksiklik sessiz. Bu tur tam olarak buna düştü: devir notunun "15 Eki gece 17 kayıt, 5.025 TL" satırı `Ödenen Tutar` toplamıydı — tutar doğru ama **18** kaydın toplamı ve üç havale boşu yüzünden gerçek cironun 1.050 TL altında. KARAR 668 bütçe kararını ödenmiş kayda bağladığı için bu alan artık **karar girdisi**; eksik okunması doğrudan yanlış bütçe kararı demek.
+- **Kapanış şartı:** iki yoldan biri — (a) havale `Ödendi`'ye çekilirken `Ödenen Tutar`ın da yazılması alışkanlığa/kontrol listesine girsin · (b) ciro sayımı `Ödenen Tutar` yerine `COALESCE(Ödenen, Beklenen)` tanımıyla yapılsın ve bu tanım yazılı olsun. (b) geçmişi de düzeltir, (a) veriyi düzeltir; ikisi birlikte en sağlamı.
+- **Bağ:** KARAR 668 · B239 (ikisi de "rakamın tanımı" sınıfı)
+- **Ölçüm (17 Eki, sayfa okuması):** `OCAK-NY7U` (`3f8b61eb…4071`) ve `OCAK-VL39` (`3fab61eb…1d89`) sayfalarında `Ödenen Tutar` **anahtarı hiç yok**; `Ödeme Durumu` `Ödendi`, `Ödeme Yöntemi` `Havale`, `Beklenen Tutar` 450 ve 300. 19 Ekim etkinliği toplamı: 25 ödenmiş kayıt · `Ödenen Tutar` 6.750 TL · `Beklenen Tutar` 7.800 TL — fark **1.050 TL**, üç boş alan.

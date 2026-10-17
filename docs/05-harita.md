@@ -149,12 +149,28 @@ Denetçi: `scripts/baslik-denetim.mjs` — bulursa dosya + satır + sebep basar,
 - **Taşımaz:** karar (→ ledger, KARAR 636–649) ve borç (→ `02-borclar.md`). Görsel ve araç da
   taşımaz: kartlar, kart basıcı, fontlar, işaret SVG'leri, kurucu kare ve PDF'ler depo
   kökündeki **`pazarlama-ekler/`**'dedir; MCP orayı servis etmez (yalnız `docs` · `scripts`).
+  Adı anılması gereken tek PDF — **Advaita'nın reklam devri:**
+  `pazarlama-ekler/kartlar-2026-10-12-reklam/OCAK-reklamlar-Advaita-icin-2026-10-16.pdf`
+  (12 sayfa, 1.752 KB; `/Type/Page` sayımı ve `ls` ile ölçüldü 17 Eki).
+  ⚠ **Bu yol taze klonda çözülmez:** `pazarlama-ekler/` kısmen izleniyor (17 Eki'de 125
+  dosya `git ls-files`'ta) ama PDF'in dizini — `kartlar-2026-10-12-reklam/`, 21 MB —
+  **untracked.** Onunla birlikte dört kart partisi daha öyle (`kartlar-2026-10-15-adimiz-1`
+  · `-fatma-aliye` · `-2026-10-16-adimiz-2` · `-2026-10-17-cumartesi`, toplam ~12 MB).
+  Yani bu satır **Kaan'ın diskindeki** bir dosyayı adlandırıyor, deponun içindekini değil.
+  Partilerin commit'lenmesi mi yoksa `.gitignore`'a alınması mı gerektiği **açık karar** —
+  21 MB'lık binary'yi sormadan commit'lemek de, haritanın boşa düşen yol taşıması da
+  kabul edilebilir değil.
 - **Yazar:** Claude.ai üretir, CC yazar.
 - **Bozulma biçimi:** (1) `belgeler/`'deki Claude Docs kopyaları **aynadır** (KARAR 471
   sınıfı): canlı belge Claude Docs'ta değişir, kopya sessizce bayatlar. Dosya adındaki `rev`
   dışa aktarılan sürümdür; çelişkide canlı belge kazanır, kopya yeniden dışa aktarılır.
   (2) Gönderi dosyaları yayın durumunu tutmaz; bir gönderinin çıkıp çıkmadığı dosyadan
   okunmaz. (3) `30-sosyal.md` ile çelişirse bu paket ve 11 Ekim kararları geçerlidir.
+  (4) **Advaita PDF'inin bölüm 8'i kurulumdan önce yazıldı** ve *planlananı* anlatıyor
+  (22 Ekim seti, "bizi tanıyanlar" sıcak seti). Gerçekleşen dağılım **KARAR 665**'tir ve
+  22 Ekim **kapandı** (KARAR 666). PDF Advaita'nın elinde bir devir belgesidir, güncel
+  kaynak değil — çelişkide ledger kazanır. (5) `reklam-detay.md`'nin 600–1.000 eşiği
+  **KARAR 667** ile mühürlendi; plan belgesi artık o satırın aynasıdır, otoritesi değil.
 
 ### `90-kronoloji/YYYY-AA.md` — append-only tarihçe
 - **Taşır:** ne oldu, neden oldu, hangi ölçüm neyi gösterdi. Gerekçenin tek otoritesi.

@@ -695,6 +695,20 @@ kuyruğun önüne geçmezler. **Hiçbiri mühürlenmedi — ledger `523`'te sabi
 
 ---
 
+### 📣 REKLAM HATTI — 16–17 Ekim turundan
+
+Beşi de bu turda açıldı; ikisi tarih baskılı (19 Eki 19:00 kampanya bitişi).
+
+| # | iş | kim | ön koşul | not |
+|---|---|---|---|---|
+| **R-1** | **Sabah 10:00 beş satırlık reklam özeti — n8n botu.** Beş satır: harcama · tıklama · kayıt başlatan · ödeyen · en iyi reklam. Kaynak: Ads Manager API + Notion Kayıtlar → WhatsApp | CC (bot) · Kaan (onay) | Ads Manager API erişimi | ⚠ **Şimdilik elle** — kim baktıysa yazar. Kaan: *"ileride"*. Bot gelene kadar KARAR 667'nin dört satırlık biçimi elle uygulanır |
+| **R-2** | **Events Manager Purchase doğrulaması.** Beklenen: `event_id` = Kayıt ID ile **5 Purchase** (`WCX8` · `85LG` · `5FEL` · `VL39` · `DULC`) **ve** `U4NX` · `PNM2` · `25MJ`'nin **bulunmaması** | Kaan | — | Kapalı yüzey, CC bakamaz. `VL39` havale olduğu için **CAPI-only** görünür — dedupe kaçağı değil (KARAR 634). Beklenti `90-kronoloji/2026-10.md` 16–17 Eki kaydında yazılı; iki yarının ikisi de tutarsa hat doğrulanmış olur |
+| **R-3** | **Instagram uygulama içi tarayıcıda rıza bandı testi.** Bant görünüyor mu, kaç saniyede, formu örtüyor mu | Kaan (telefon) | — | Chrome MCP o webview'i süremiyor — **B240'ın ölçülemeyen ayağı.** Reklam trafiğinin çoğu bu tarayıcıdan geliyor, yani bandın oradaki davranışı 304→53 farkının en olası parçası |
+| **R-4** | **22 Ekim etkinliği: yapılır / kayar kararı** | Kaan | — | Reklamları kapandı (KARAR 666), ödenmiş kayıt 0. Karar verilince **B238**'in (slug/tarih +7 gün) hangi yoldan kapanacağı da netleşir |
+| **R-5** | **Kod önerileri — onay verildi, zamanlama ayrıldı** | CC | Kaan'ın "koş" demesi | **Vercel Web Analytics: şimdi** (Meta sinyaline dokunmaz; kalan iki günde payda verir; ⚠ aydınlatma metnine satır gerekip gerekmediği **kontrol edilip sonucu yazılacak**). **Lead CAPI: 19 Eki 19:00 sonrası** (kampanya ortasında optimizasyon sinyali değiştirilmiyor; rıza koşulu ve `event_id` tekilleştirmesi aynen). İkisi de **B240**'ı kapatmaya çalışır |
+
+---
+
 ## DOKÜMAN KUYRUĞU
 
 | # | iş | kim | nerede | ön koşul | nasıl açılır |

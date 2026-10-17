@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 14 Ekim 2026 · **Kayıt yolu turu** · dönem HEAD `fffed28`
+**Son güncelleme:** 17 Ekim 2026 · **Reklam turu ve ölçüm teşhisi** · dönem HEAD `588127d`
 
 ---
 
@@ -144,6 +144,7 @@ girmez; o kuyruk başka yerde yaşar.
 
 ## BU DÖNEM NE OLDU
 
+- **16–17 Ekim — Reklam turu ve ölçüm teşhisi:** kod commit'i yok, doküman turu. İlk reklam turu (11–14 Eki, 3.000 TL) **tek ödenmiş kayıt** getirdi — kayıt başı 3.000 TL, planın "1.000 üstü kes" eşiğinin üç katı; o tek kadın da 19 Ekim'e değil 9 Kasım'a kaydoldu. Kazanan iki kreatifin ikisi de kül zemin. En güçlü sinyal organikti: Advaita'nın kurgusuz davet reels'i (75 beğeni, bir günde). İkinci tur bunun üstüne kuruldu — ek 2.000 TL, yalnız `advaita-davet` ve `ayna-gecis-kul`, bitiş 19 Eki 19:00 (**KARAR 665–668**; 667 `reklam-detay.md`'nin eşiğini mühürledi, 668 bütçeyi Pixel'den ödenmiş kayda bağladı). ⚠ **665 planın eşiğini bilerek aşıyor**, gerekçesi ledger'da yazılı. **Üç iddia geri alındı** (KARAR 102): tarama atlaması yoktu — `E2TM` yer tutma bitişinden **72 saniye sonra** iptal edilmişti, bayat SQL satırı yanılttı (**B239**) · 15 Eki kart ödemesi 5 değil **6** · "17 kayıt" **18**'di (tutar doğru, tanım farkı → **B241**). Ölçüm kaybı hipotezi **doğrulandı**: rıza kabul edilmeden Meta'ya tek istek çıkmıyor; `meta` etiketli 4 kayıttan rızalı 3'ü Meta'nın bildirdiği 3 lead'e birebir denk (**B240**). **B238–B241 açıldı.** ⚠ Purchase teyidi ve Instagram bandı Kaan'da (`03-sira.md` R-1…R-5). → `90-kronoloji/2026-10.md`
 - **14 Ekim — Kayıt yolu turu:** kod `dfd450e` + `fffed28`. Instagram'dan gelen kadın tarihi etkinlik sayfasında görüyor ama kayıt düğmesini görmüyordu, düğmeye bastığında da form **boş** açılıyordu. İkisi de kapandı: etkinliği bilen her kayıt düğmesi `?etkinlik=` taşıyor ve kayıt formu o tarihi seçili açıyor (**KARAR 660** — parametre tip-duyarlı, eski davet linkleri kırılmadı; okuma istemcide, çünkü kayıt route'ları prerender ve edge'den dönüyor) · etkinlik sayfasının hero'suna tarih satırının altına köz dolu düğme girdi, alt düğme yerinde kaldı. Kaan'ın dört pazarlama kararı da mühürlendi (**661–664**: story zamanlaması · Reels standardı · öne çıkan kapakları · Instagram linkleri). **B237 açıldı** — köz düğme stili iki yerde yaşıyor. ⚠ **`/acik-kapi` yalnız ölçüldü, değişmedi:** telefonda kart y=1456, düğme y=1672, ekran 844 — ikisi de ilk ekranda değil (`03-sira.md`, Kaan kararı). ⚠ **Telefon göz kontrolü alınmadı** (16 Eki itibarıyla). → `90-kronoloji/2026-10.md`
 - **11 Ekim — Kart derleyici v5 turu:** kod `cf26945`. Kaan v4 kartlarına bakıp üç kusur söyledi (tek kelime alt satıra düşüyor · kırmızı zayıf · doku güçlü). Düzeldi: sığmayan satır dengeli bölünür (gece dahil) · gündüz vurgusu yarı kalın ve `#A8371C` · sert duvar daha çok yumuşatılır (**KARAR 658 · 659**; KARAR 656 → SUPERSEDE). Altı kart v5 ile yeniden basıldı; `ocak-kart` skill'i güncellendi. ⚠ Yarı kalın vurgu gerçek tarayıcıda henüz görülmedi. → `90-kronoloji/2026-10.md`
 - **11 Ekim — Kart derleyici v4 turu:** kod `f606c93`. Kaan derleyiciyi ilk kez tarayıcıda denedi; üç şey düzeldi: gündüz işareti gece boyuna döndü ve açık zeminde yarım kademe kalın · gündüz vurgusu `#B4401F` · 9:16'da blok yukarıda, gece dahil (**KARAR 656 · 657**; KARAR 653 → SUPERSEDE). Altı kart v4 ile yeniden basıldı. Kaan kartları artık derleyiciyle kendi basıyor. ⚠ `ocak-kart` skill'i hâlâ eski basıcıyı anlatıyor (**B235**). → `90-kronoloji/2026-10.md`
@@ -173,8 +174,8 @@ Sayı ve detay `02-borclar.md`'de; burada yalnız cephe adı + sahip.
 | CC kod kuyruğu (hash listener, Turnstile, Safari banding, ilk hafta paketi) | CC |
 | N-Kolay iptal/iade servisi (**B200** kısmi — okuma kuruldu) · ✅ bildirim halkası **B211** kapandı (8 Eki) | CC |
 | Arama görünürlüğü — sitemap `Couldn't fetch` (**B212**), 0 indeks · MCP checkout tazeliği (**B97** — B213 çürüdü, devraldı) | Kaan + CC |
-| Reklam ölçümü — ilk **gerçek** ödemede Purchase doğrulaması · çift Lead kök nedeni (**B228**) · `action_source` (**B229**) · Meta Business temizliği (`03-sira.md`) | Kaan + CC |
-| Pazarlama — 19 Ekim Açık Kapı kampanyası, iki hatlı takvim, 20 Ekim retrosu (`pazarlama/`) · gündüz görselleri: kalan zeminler (zeytin gölgesi, çanak, masa, eşik, minder) ve eski biçimli kartların yeniden basımı (**B235** · **B236**) | Kaan + Advaita · Claude.ai |
+| Reklam ölçümü — Purchase beklentisi **yazıldı**, Events Manager teyidi Kaan'da (`03-sira.md` R-2) · ziyaretçi düzeyi payda yok (**B240**) · havale `Ödenen Tutar` boş (**B241**) · çift Lead kök nedeni (**B228**) · `action_source` (**B229**) · Meta Business temizliği | Kaan + CC |
+| Pazarlama — reklam ilk turu kapandı (3.000 TL, ödenmiş kayıt **1**, kayıt başı 3.000 TL), ikinci tur 19 Eki 19:00'da biter (**KARAR 665–668**) · 20 Ekim retrosu · 22 Ekim yapılır/kayar Kaan'da · gündüz görselleri: kalan zeminler ve eski biçimli kartların yeniden basımı (**B235** · **B236**) | Kaan + Advaita · Claude.ai |
 | İçerik tarama turları (Uluslararası sweep, "sembolik ücret") | Claude.ai → Notion |
 | Sığ çapa onarımı **B36-a ✅** — iş B36-b'ye devretti | — |
 | Sığ çapa onarımı **B36-b** (desen dışı) + KARAR 87 ayrıştırma (B35) | Claude.ai |
