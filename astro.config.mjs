@@ -32,7 +32,44 @@ export default defineConfig({
   // ⚠ Bu bayrağı geri `true` yapmak callback'i kırar.
   security: { checkOrigin: false },
   adapter: vercel({
-    webAnalytics: { enabled: false }, // Lansman sonrası açılabilir
+    // AÇILDI 17 Eki 2026 (B240, `03-sira.md` R-5, Kaan onayı).
+    //
+    // ⚠ Vercel TARAFI ZATEN AÇIKTI: proje kaydında `webAnalytics.enabledAt` =
+    // 2026-07-01T21:54:11Z, `disabledAt` yok. Eksik olan tek şey bu bayraktı —
+    // yani istemci betiği. API'nin `404: Web Analytics not found` yanıtı
+    // "kapalı" DEĞİL "hiç veri gelmemiş" demek; teşhiste ilk okuyuşta bu
+    // karıştırıldı ve "özellik kapalı" diye yazıldı (kronolojide düzeltildi).
+    //
+    // ── Neden gerekti ──
+    // Rıza kapısı sert (KARAR 627): kabul edilmeden GTM hiç yüklenmiyor, yani
+    // Pixel ve GA4 **rızalı alt kümeyi** sayıyor. 11–14 Eki reklam turunda
+    // ~304 link tıklamasına karşı Meta 53 sayfa görüntülemesi gördü ve farkın
+    // ne kadarı rıza kaybı olduğu ÖLÇÜLEMEDİ — ziyaretçi düzeyinde payda yoktu.
+    // Bu, rızadan bağımsız ve kimliksiz bir payda veriyor.
+    //
+    // ── Neden rıza kapısının ARKASINA konmadı ──
+    // Konsa amacını yitirirdi: ölçülmesi gereken şey tam olarak **kabul etmeyen**
+    // ziyaretçi. Dayanak, rıza değil meşru menfaat — ve bu ancak araç kimlik
+    // taşımadığı sürece savunulabilir, o yüzden kapsam genişletilmemeli:
+    // `beforeSend`/custom event YOK, yalnız otomatik sayfa görüntülemesi.
+    //
+    // ── Ölçülen sözleşme (KARAR 603) ──
+    // Enjekte edilen betik PRODUCTION'da birinci taraf yolda:
+    // `/_vercel/insights/script.js` (`node_modules/@astrojs/vercel/dist/lib/
+    // web-analytics.js` okundu) — üçüncü taraf host YOK, CDN yok. Vercel beyanı
+    // (`vercel.com/docs/analytics/privacy-policy`, 2026-06-26): üçüncü taraf
+    // çerez kullanılmaz, ziyaretçi "a hash created from the incoming request"
+    // ile tanınır, kayıt anonim, oturum ömrü 24 saatte atılır. Toplanan alanlar:
+    // zaman damgası · URL · dinamik yol · referrer · filtrelenmiş query ·
+    // coğrafya (ülke/bölge/şehir) · OS · tarayıcı · cihaz tipi.
+    // ⚠ "üçüncü taraf çerez yok" ≠ "hiç çerez yok" — beyan bu ikisini
+    // ayırmıyor. **Deploy sonrası ölçülecek** (`03-sira.md` R-5): canlıda
+    // `document.cookie` ve çağrılan host listesi.
+    //
+    // ⚠ Aydınlatma metni BU COMMIT'TE güncellendi (`src/pages/gizlilik.astro`):
+    // eski "analitik çerezler yalnızca onay vermeniz hâlinde çalışır" cümlesi
+    // bu araçla GERÇEĞE AYKIRI hâle geliyordu. Hukuki lafzın teyidi Kaan'da.
+    webAnalytics: { enabled: true },
   }),
   integrations: [
     sitemap({

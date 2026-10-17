@@ -314,7 +314,31 @@ import Layout from '../layouts/Layout.astro';
       Ziyaretçilerin siteyi nasıl kullandığına dair bilgi toplar ve deneyimi
       iyileştirmek için kullanılır. Görüntülenen sayfalar, tıklamalar ve sayfa içi
       hareketler gibi bilgileri içerir. OCAK'ta bu amaçla Google Analytics (GA4)
-      ve Google Tag Manager kullanılır.
+      ve Google Tag Manager kullanılır. Bu iki araç <strong>yalnızca onay
+      vermeniz hâlinde</strong> çalışır.
+    </p>
+
+    {/* ⚠ 17 Eki 2026 — Vercel Web Analytics açıldı (B240). Bu paragraf ONUN
+        yüzünden var ve kapsamı bilerek dar: araç rızadan BAĞIMSIZ çalıştığı
+        için beyan edilmek zorunda. Üstteki paragrafa "yalnızca onay vermeniz
+        hâlinde" cümlesi eklendi ki iki araç sınıfı karışmasın — eskiden o
+        cümle bütün analitiği kapsıyordu ve bu araçla gerçeğe aykırı olurdu
+        (B118'in 9 Eki'deki aynı hatası, aynı çözüm: cümle DEĞİŞTİ, yanına
+        eklenmedi). */}
+    <p><strong>Onaydan Bağımsız Toplu Ölçüm</strong></p>
+
+    <p>
+      Sitenin kaç kez görüntülendiğini toplu olarak sayabilmek için Vercel Web
+      Analytics kullanılır. Bu ölçüm <strong>onayınıza bağlı değildir</strong>;
+      meşru menfaatimize dayanır ve çerez tercihinizden bağımsız çalışır.
+      Buna karşılık sizi tanımlamaz: üçüncü taraf çerez kullanılmaz, ziyaretçi
+      yalnızca isteğinizden üretilen bir özet (hash) ile sayılır, kayıtlar
+      anonimdir ve oturum bilgisi kalıcı olarak saklanmaz. Toplanan bilgiler
+      ziyaret zamanı, görüntülenen adres, siteye geldiğiniz kaynak, ülke/bölge/
+      şehir düzeyinde konum, işletim sistemi, tarayıcı ve cihaz türüdür. Adınız,
+      e-postanız, telefonunuz ve benzeri kimlik bilgileriniz bu ölçüme
+      <strong>girmez</strong>; farklı siteler arasında izlenmeniz için
+      kullanılmaz ve reklam amacıyla kullanılmaz.
     </p>
 
     <p><strong>Hedefleme / Pazarlama Çerezleri</strong></p>
@@ -340,12 +364,15 @@ import Layout from '../layouts/Layout.astro';
       çerezleri yalnızca onay vermeniz hâlinde çalışır. Onayınızı her sayfanın
       altındaki "Çerez tercihleri" bağlantısından dilediğiniz an geri
       alabilirsiniz. Verileriniz çerezler aracılığıyla otomatik yöntemlerle
-      toplanır.
+      toplanır. Yukarıda anlatılan <strong>onaydan bağımsız toplu ölçüm</strong>
+      bunun istisnasıdır: çerez kullanmaz, sizi tanımlamaz ve meşru menfaate
+      dayanır.
     </p>
 
     <p>
       Onay vermeniz hâlinde kullanılan araçlar: Google Tag Manager, Google
-      Analytics ve Meta Pixel.
+      Analytics ve Meta Pixel. Onaydan bağımsız çalışan tek araç Vercel Web
+      Analytics'tir ve yalnızca toplu sayfa görüntülemesi sayar.
     </p>
 
     <h3>Çerezleri Nasıl Kontrol Edebilirsiniz?</h3>
@@ -365,6 +392,6 @@ import Layout from '../layouts/Layout.astro';
       tarayıcıların yardım sayfalarına başvurabilirsiniz.
     </p>
 
-    <p><em>Son güncelleme: 9 Ekim 2026</em></p>
+    <p><em>Son güncelleme: 17 Ekim 2026</em></p>
   </article>
 </Layout>

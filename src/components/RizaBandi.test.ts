@@ -21,6 +21,7 @@ const BANT = readFileSync(join(KOK, 'components/RizaBandi.astro'), 'utf-8');
 const LAYOUT = readFileSync(join(KOK, 'layouts/Layout.astro'), 'utf-8');
 const FOOTER = readFileSync(join(KOK, 'components/Footer.astro'), 'utf-8');
 const GIZLILIK = readFileSync(join(KOK, 'pages/gizlilik.astro'), 'utf-8');
+const ASTRO_CONFIG = readFileSync(join(KOK, '..', 'astro.config.mjs'), 'utf-8');
 
 /**
  * ⚠ YOKLUK ölçütleri yorumlara DEĞİL, basılan yüzeye karşı yazılır
@@ -40,6 +41,16 @@ function yuzey(kaynak: string): string {
     .split('\n')
     .filter((satir) => !/^\s*\/\//.test(satir))
     .join('\n');
+}
+
+/**
+ * `.mjs` kaynağından YORUMLARI atar — `yuzey()` Astro söz dizimine özgü
+ * (`{/* ... *\/}`), config dosyası için işe yaramıyor. Gerekçe yorumları bu
+ * repoda uzun ve kasıtlı; bir dizenin "yok" olduğunu ölçerken onlara bakmak
+ * doğru koda kırmızı yakar.
+ */
+function kodu(kaynak: string): string {
+  return kaynak.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/^\s*\/\/.*$/gm, ' ');
 }
 
 const LAYOUT_YUZEY = yuzey(LAYOUT);
@@ -212,6 +223,53 @@ describe('Footer — geri alma yüzeyi HER sayfada', () => {
   });
 });
 
+describe('B240 ATOMİKLİK — onaydan bağımsız ölçüm ile beyanı aynı commit\'te', () => {
+  /**
+   * Vercel Web Analytics rıza kapısının ARKASINDA DEĞİL (17 Eki, B240): ölçülmesi
+   * gereken şey tam olarak kabul etmeyen ziyaretçi. Dayanak rıza değil meşru
+   * menfaat — ve bu ancak **beyan edildiği** sürece savunulabilir.
+   *
+   * Bu blok o bağı kilitliyor: bayrak açıksa beyan da orada olmak zorunda.
+   * Biri sessizce düşerse sayfa yanlış söylemiş olur.
+   */
+  it('bayrak açıkken aydınlatma metninde onaydan bağımsız ölçüm beyanı VAR', () => {
+    const acik = /webAnalytics:\s*\{\s*enabled:\s*true\s*\}/.test(ASTRO_CONFIG);
+    if (!acik) return; // kapatılırsa beyan zorunluluğu da düşer
+    const duz = GIZLILIK.replace(/\s+/g, ' ');
+    expect(duz).toContain('Onaydan Bağımsız Toplu Ölçüm');
+    expect(duz).toContain('Vercel Web Analytics');
+    expect(duz).toContain('onayınıza bağlı değildir');
+    expect(duz).toContain('meşru menfaat');
+  });
+
+  it('eski "bütün analitik onayla çalışır" cümlesi iki araç sınıfına AYRILDI', () => {
+    // ⚠ Bu, B118'in 9 Eki'de düştüğü tuzağın aynısı: rızadan bağımsız bir araç
+    // eklenince "analitik yalnızca onayla çalışır" cümlesi gerçeğe aykırı olur.
+    // Çözüm aynı — cümle DEĞİŞTİ, yanına eklenmedi: GA4/GTM'i adlandıran
+    // paragraf artık kapsamını kendi söylüyor.
+    const duz = GIZLILIK.replace(/\s+/g, ' ');
+    // ⚠ `<strong>` düzleştirilmiş metinde DURUYOR — ölçüt markup'ı saymak
+    // zorunda, yoksa doğru metne kırmızı yanar (ilk yazımda yandı).
+    expect(duz).toContain(
+      'Google Analytics (GA4) ve Google Tag Manager kullanılır. Bu iki araç <strong>yalnızca onay vermeniz hâlinde</strong> çalışır.',
+    );
+    // Onaylı araç listesi, onaydan bağımsız olanı da adıyla ayırıyor.
+    expect(duz).toContain('Onaydan bağımsız çalışan tek araç Vercel Web Analytics');
+  });
+
+  it('ölçüm kapsamı dar — custom event ve beforeSend yok', () => {
+    // Meşru menfaat savunması "araç kimlik taşımıyor"a dayanıyor. Custom event
+    // ya da `beforeSend` girerse kapsam genişler ve dayanak zayıflar.
+    //
+    // ⚠ Bu ölçüt ilk yazımında KIRMIZI YANDI ve doğru koda itiraz etti: config'in
+    // kendi yorumu "`beforeSend`/custom event YOK" diye yazıyor, yani aranan dize
+    // KORUNMASI GEREKEN gerekçe metninde geçiyor. Bu dosyanın en başındaki uyarının
+    // aynısı (CLAUDE.md §3): yokluk yorumlara değil, KODA karşı ölçülür.
+    expect(kodu(ASTRO_CONFIG)).not.toMatch(/beforeSend/);
+    expect(yuzey(GIZLILIK)).not.toMatch(/custom event/i);
+  });
+});
+
 describe('B118 ATOMİKLİK — bant ile gizlilik metni aynı commit\'te', () => {
   it('cümle 1: onay şartı + geri alma yolu', () => {
     const duz = GIZLILIK.replace(/\s+/g, ' ');
@@ -266,6 +324,11 @@ describe('B118 ATOMİKLİK — bant ile gizlilik metni aynı commit\'te', () => 
     ]) {
       expect(GIZLILIK.replace(/\s+/g, ' ')).toContain(cumle);
     }
-    expect(GIZLILIK).toContain('Son güncelleme: 9 Ekim 2026');
+    // ⚠ Burada TARİH LİTERALİ kilitliydi (`Son güncelleme: 9 Ekim 2026`) ve
+    // 17 Eki'de Vercel Web Analytics beyanı eklenince **doğru koda kırmızı
+    // yandı.** Kilidin niyeti "sayfanın bir güncelleme damgası var" — damganın
+    // değeri değil; metin her meşru güncellemede tarihini değiştirmek zorunda.
+    // Desen kilitli kalıyor, değer serbest (KARAR 470 · CLAUDE.md §3).
+    expect(GIZLILIK).toMatch(/Son güncelleme: \d{1,2} \p{L}+ \d{4}/u);
   });
 });
