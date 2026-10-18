@@ -31,7 +31,7 @@ Tek takvim, iki hat. Bu sayfa her günün işini tek satırda gösterir; ayrınt
 | Cum 16 | `1016-O-el-yazisi-mektup` · fotoğraf · **çıkmadı** | `1016-A-advaita-davet` · reels · **çıkmadı** (Advaita'nın kendi daveti → #14) | Mektup yakın plan · sesli cevap 1 | LinkedIn: Kaan ve Advaita'nın kişisel paylaşımı |
 | Cmt 17 | `1017-O-fureya-koral` · karusel · **hazır** · **çıkmadı** | `1017-A-kameran-kapali` · reels ya da kart · **çıktı 16 Eki → YAYIN-KAYDI #17** | Kapak · Advaita kısa cevap 5 | "Bir Dakika" sessiz reels'i (21:00) |
 | Paz 18 | `1018-O-yanina-al` · kart · **hazır** | `1018-A-yarin-aksam` · reels ya da kart | Anket 5 · "Yarın akşam 21:00" | Advaita'nın yirmi kişisel mesajının ikinci turu |
-| Pzt 19 | `1019-O-bir-esikte-duruyorsun` · 09:00 kart | `1019-A-bu-aksam` · 12:30 reels | "Bu akşam 21:00. Kapı aralık." · 16:00 gelen mumlar · 19:00'dan sonra yok | Yok; akşam Açık Kapı |
+| Pzt 19 | `1019-O-bir-esikte-duruyorsun` · 09:00 kart | `1019-A-bu-aksam` · 12:30 reels | "Bu akşam 21:00. Kapı aralık." · 16:00 gelen mumlar · 19:00'dan sonra yok | Yok; akşam Açık Kapı · **18 Eki akşamı eklendi:** `1019-O-uc-yer-acildi` · 09:30 kart, Kaan zamanlar · story 11:00 "DM'den yer yaz" · DM'ler elle, talepler 19:00'da kapanır (KARAR 676) |
 
 **Gerçekleşen (18 Ekim taraması, `YAYIN-KAYDI.md`).** Kalın notlar hesapta görülene göredir. Plan dışında çıkanlar: #6 Kız Çocukları (11 Eki) · #9 Eşik Kadını kimdir? (13 Eki) · #10 Kadın çemberi nedir (13 Eki) · #12 Hiç katılmadım (14 Eki) · #13 Kadın Çiftçiler Günü (15 Eki) · #14 Advaita'nın kurgusuz daveti (15 Eki, onun hesabı) · #15 Adımız 1/3 (15 Eki) · #16 Adımız 2/3 (16 Eki). 17 Ekim'de hiçbir şey çıkmadı (Kaan). 18 Ekim 15:10 itibarıyla bugünün iki satırı da açık. Hesapta 18 Ekim sabahı on yedi gönderi var.
 

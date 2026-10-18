@@ -32,7 +32,9 @@ Sosyal medya işi üç dosyadan yürür. Kural burada kısa durur. Yanında kara
 | Açık Kapı kaydedilmez; "kayıt izlenir" türü söz yok | 626 | `01-kararlar.tsv` |
 | Hashtag: kartta yazan neyse o, fazlası eklenmez. Story'de hashtag yok | — | `30-sosyal.md` §3 madde 9 |
 | Ayraç `·` (U+00B7); `•` ve `-` kullanılmaz | — | `30-sosyal.md` §2b |
-| "Yanına bir kadın al" adı yalnız ikinci yer teklifine aittir. Herkese açık paylaşım çağrısı başka adla yapılır | 672 ←647 | `01-kararlar.tsv` |
+| "Yanına bir kadın al" adı yalnız ikinci yer teklifine aittir. Herkese açık paylaşım çağrısı başka adla yapılır | 672 ←647 | `01-kararlar.tsv` · ⚠ 18 Ekim'de teklif "Bir kadını daha çağır" adıyla gitti (675) |
+| Davet kodu yalnız o etkinliğin günü geçer. Çağrı fiziksel birliktelik ima etmez: çağrılan kadın kendi evinden, kendi ekranından katılır | 675 | `ACIK-KAPI-19-EKIM/00-kampanya.md` bölüm 15 |
+| Ateşi büyütenin fazlası ve OCAK'ın eşiti bir yer açar. Kamuda "açılan yer" denir, "burs" denmez. DM'ler elle cevaplanır | 676 | `icerik/1019-O-uc-yer-acildi.md` |
 | Advaita'nın yüzlü işinin yanında yüz görünmeyen alternatifi yazılır. Advaita hakkında olumsuz tercih dili kullanılmaz | 646 | `ACIK-KAPI-19-EKIM/advaita-10-ekim-brief.md` |
 
 ### Görsel

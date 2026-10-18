@@ -204,3 +204,45 @@ Aynı gün, yarım saat. Sayılar Notion ve Ads Manager'dan.
 - **Kasım:** `1101-A-acik-kapi-kalibi` ve `TAKVIM.md` Bölüm 3
 
 Tarihler 8 Ekim korpus ölçümünden (`90-kronoloji/2026-10.md`); her davetten önce takvimden teyit.
+
+## 15 · 18 Ekim akşamı · son iki gün işleri (gerçekleşen)
+
+Kaan'ın 18 Ekim 19:41 listesi; sohbette yürüdü, Claude.ai doğrudan uyguladı. Planın canlı belgesi Claude Docs'ta: "19 Ekim Açık Kapı · Son İki Gün".
+
+**Gönderilen mailler.** Ölçüm: Resend `list-emails`, 18 Eki 22:4x İst; `to` alanı `kaan@yap.com.tr` olan örnekler hariç, konu satırına göre sayıldı. Hepsinin durumu `delivered`.
+
+| Konu | Kime | Adet | Saat (UTC) |
+|---|---|---|---|
+| "Kapı hâlâ aralık" | Kart ya da havale adımında kalan kadınlar | 6 | 17:13 |
+| "Yarın akşam bir kapı daha var" | Başka tarihe kayıtlı, cevabı bu akşama uyan bir kadın (değiştirme daveti) | 1 | 17:13 |
+| "Bir kadını daha çağır" | Bu akşama kayıtlı kadınlar, kişisel kodla | 30 | 17:15 · 17:20 · 17:25 (üç parti) |
+| "Bir kadını daha çağır" | Gönderimden sonra ödeyen kadın | 1 | 19:19 |
+
+Toplam 38. Beş örnek ve bir v2 örneği önce Kaan'a gitti (16:45–17:09 UTC), gönderim onayından sonra yapıldı.
+
+- **Ateşi büyütenlere teşekkür** ayrı mail olmadı; davet mailinin içinde onlara özel paragraf olarak gitti (üç kadın).
+- **Eski Zoom linki** (8 Ekim'deki elle gönderim, `83331580580`) ilk dört kayda gitmişti, "son beş"e değil (ölçüm: mail içeriği). Doğru link (`83723478808`, Notion Etkinlik sayfası) bu dört kadına davet mailinin içinde gitti. Advaita doğru odayı açacak (Kaan).
+- Bir kadına mail atılmadı; Kaan: "o bizde".
+- Advaita'nın test kaydının kodu kapatıldı.
+
+**Kodlar.** Ölçüm: Notion Kodlar, SQL, 18 Eki 22:4x İst — `Kod LIKE 'YANINDA%' OR 'YER19%'`, `Aktif`e göre gruplu.
+
+| Kod | Aktif | Adet | Kullanım Sayısı toplamı |
+|---|---|---|---|
+| `YANINDA` + Kayıt ID'nin son dört hanesi | evet | 31 | 2 |
+| aynı (Advaita testi) | hayır | 1 | 0 |
+| `YER19A` · `YER19B` · `YER19C` | evet | 3 | 0 |
+
+Hepsi tam ücretsiz, tek kullanım, `Son Geçerlilik` 19 Ekim 22:00 (+03:00), `Hariç Formatlar`: Yolculuk · Anadolu Yolculuğu · Seremoni · Mini Retreat · Şehir Akşamı · Atölye · Çember (KARAR 675 · 676). Sitenin kod kontrolünün tarihi saatle mi günle mi karşılaştırdığı **ölçülmedi**; bu yüzden ikinci kat: tek seferlik planlı görev "YANINDA kodlarını kapat", 19 Ekim 22:05 İst, bu sohbete döner, 35 kodu kapatır, doğrular, kullanımı raporlar. Görev Kaan'ın Mac'ine bağlı.
+
+**İlk dönüşler (Notion Kayıtlar, 18 Eki akşamı).** İki kadın davet koduyla ücretsiz kaydoldu. Hatırlatma alan altı kadından biri yeniden kaydoldu (havale, bekliyor). Gönderimden sonra bir yeni ücretli kayıt geldi; ona da kod ve mail gitti.
+
+**Hatırlatma şablonu.** Resend `gun-hatirlatma-online` (buluşmadan altı saat önce, KARAR 608) yanına al satırını taşıyor: mum ve çakmak, su, kâğıt ve kalem; kapısı kapanan oda ve kulaklık. Şablon ortak; bütün online buluşmalara geçti (KARAR 677).
+
+**Sabah gönderisi.** `icerik/1019-O-uc-yer-acildi.md`, 09:30, Kaan zamanlar. ⚠ Aynı sabah takvimde `1019-O-bir-esikte-duruyorsun` 09:00 kartı da var; Kaan, Advaita'nın mektubunu 18 Ekim akşamı paylaştığını söyledi. İkisinin sırası Kaan'da. Hesapta ölçülmedi.
+
+**Açık kalanlar.**
+- Değiştirme davetine cevap: "evet" gelirse Notion'da `Seçilen Tarih` ve etkinlik ilişkisi 19 Ekim'e alınır, link gönderilir.
+- Havalesi bekleyen yeniden kayıt öderse ona da kod verilir mi: Kaan.
+- Instagram hazır ve otomatik yanıtları: Kaan bakacak.
+- 20 Ekim retrosunun "Kaynak dökümü" satırına davet kodu ve açılan yer sayısı girer (22:05 raporundan).
