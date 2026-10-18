@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 11 Ekim 2026 · **Kart derleyici v5 turu**
+**Son güncelleme:** 18 Ekim 2026 · **Pazarlama kayıt turu** (📱 SOSYAL MEDYA HATTI açıldı)
 
 ---
 
@@ -708,6 +708,25 @@ Beşi de bu turda açıldı; ikisi tarih baskılı (19 Eki 19:00 kampanya bitiş
 | **R-5a** | ✅ **Vercel Web Analytics açıldı** (17 Eki, `f8d5a77`) | CC | — | `astro.config.mjs` `enabled: true`; `dist/client` 38/38 sayfada `/_vercel/insights/script.js` (birinci taraf). **Aydınlatma kontrolü yapıldı, sonucu: satır gerekiyordu** — `/gizlilik`'e "Onaydan Bağımsız Toplu Ölçüm" paragrafı girdi, GA4/GTM paragrafının kapsamı daraltıldı. Atomiklik testle kilitli. ⚠ Proje tarafı **1 Tem 2026'dan beri açıkmış**; 404 "kapalı" değil "veri yok" demekti (B240 düzeltmesi) |
 | **R-5b** | ✅ **Canlı ölçüm yapıldı** (17 Eki, `dpl_AVsVrhmU…`) | CC | — | **Rıza vermeden:** `/_vercel/insights/script.js` 200 · `/_vercel/insights/view` **200** (302 B — sayım gerçekten aktı) · çerez **yalnız `__vercel_toolbar`**, yani analytics **hiç çerez yazmıyor** ("üçüncü taraf çerez yok" pratikte "hiç çerez yok" çıktı) · host yalnız `www.ocak.biz` + fonts + `vercel.live` · **GTM yok** (KARAR 627 sağlam). **Rıza kabulünde:** GTM yüklü, `_ga`/`_ga_7NQ73Q2WSL`/`_fbp`, Meta+Google hostları, insights/view yine 200 — iki yol birlikte çalışıyor, **regresyon yok**. Proje kaydı `hasData` **false → true**. ⚠ `count_pageviews` hâlâ 404 (panel toplaması gecikmeli); otoriter sinyal `hasData`. ⚠ `vercel.live`/`__vercel_toolbar` Kaan'ın tarayıcısındaki Vercel toolbar'ından, normal ziyaretçide yok |
 | **R-5c** | **Lead CAPI** | CC | **Pzt 19 Eki 19:00 İst sonrası** | Kampanya ortasında optimizasyon sinyali değiştirilmiyor (Kaan). Rıza koşulu ve `event_id` tekilleştirmesi aynen kalır; KARAR 634'ün Purchase deseni Lead'e uyarlanır. **B240**'ın ikinci ayağı |
+
+---
+
+### 📱 SOSYAL MEDYA HATTI — 18 Ekim pazarlama kayıt turundan
+
+Beşi de bu turda açıldı. İkisi **Kaan'ın kararını** bekliyor, biri **ön koşul** taşıyor.
+
+| # | iş | kim | ön koşul | not |
+|---|---|---|---|---|
+| **S-1** | **Yayın kaydı + sosyal medya skill'i.** Tablo: tarih · saat · hesap · tür · içerik dosyası · not. Hedef dosya `docs/pazarlama/YAYIN-KAYDI.md` | Claude.ai (yazım) · Kaan (envanter) | **Instagram envanteri** | ⏸ **Bekletildi** (Kaan, 18 Eki) — tablo envanter dosyasından kurulacak, bellekten değil. Kaan kayıt yazımında **A yolunu** seçti: Claude doğrudan korpusa yazar. **Başlamadı.** ⚠ Envanter geldiğinde karşılaştırılacak bulgu: **dosya adındaki tarih plan tarihidir, yayın tarihi değil** — 11–17 Eki'de −1 ile +3 gün ayrışmış (`1012-O` Fatma Aliye → 14 Eki · `1014-A` O Akşam → 17 Eki · `1013-O` Advaita tanışma → 12 Eki · `1017-A` Kamera → 16 Eki · `1018-O` Yanına al → 17 Eki). Altı yayının içerik dosyası **yok**: Eşik Kadını · Kadın çemberi nedir · Hiç Katılmadım · Adımız 1/3 ve 2/3 (yalnız `30-sosyal.md`) · Kırsal Kadınlar Günü. Otuz dört içerik dosyasının otuz dördünde `- **Durum:**` satırı var → güncelleme mekanik |
+| **S-2** | **Karusele müzik — evet mi hayır mı** | Kaan | — | Korpus bugün **"yok"** diyor; yani sessizlik şu an kayıtlı durum, boşluk değil. Karar verilirse ledger'a girer, verilmezse bugünkü hâliyle sürer |
+| **S-3** | **Advaita hesabında emoji — serbest mi değil mi** | Kaan + Advaita | — | Korpus bugün **"yok"** diyor. `@ocak.biz` tarafında emoji kullanılmıyor; Advaita'nın kendi hesabı ayrı bir ses olduğu için kural oraya otomatik uzamıyor — bu yüzden karar gerekiyor |
+| **S-4** | **Derleyiciye "işaret sabit yerde" seçeneği** | CC · Kaan (onay) | KARAR 671 ✅ | **B242.** 18 Eki partisi derleyiciye elle uygulanan **yerel bir yamayla** basıldı, yama kaydedilmedi; bir sonraki baskı sessizce eski düzende çıkar. KARAR 671'in iki ışık düzeni gömülü ön ayar olmalı |
+| **S-5** | **Adımız 3/3 öncesi kaynak kontrolü** | Claude.ai · Kaan | — | ⚠ **Kapsam 3/3'ten geniş:** 18 Eki turu C06'nın dördünü ve C10'un **yalnız K4'ünü** düzeltti. C10'un K2 · K3 (*"alev parlar, evin anası selamı almıştır"*) · K5 · K6 (bahar ateşi) kaynak kontrolünden **geçmedi**. Seri yarısı denetlenmiş yarısı denetlenmemiş yayına gitmesin. Kaynak kümesi `30-sosyal.md` C06'nın **KAYNAK** satırında yazılı (Nişanyan · Kumartaşlıoğlu · TDV · Radloff · Ögel) |
+
+⚠ **Advaita videoları 720p geliyor** → **B243**. Orijinal kamera dosyası istenmeli;
+WhatsApp ve Instagram üzerinden gelen kopya yeniden sıkıştırılmış olur. KARAR 662
+reels standardını 1080×1920 üstüne kuruyor, ölçüler o genişliğe göre tanımlı.
+Talep tek seferlik sorulmakla kalmayıp çekim brief'ine yazılmalı.
 
 ---
 

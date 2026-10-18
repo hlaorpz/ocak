@@ -4133,3 +4133,21 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** iki yoldan biri — (a) havale `Ödendi`'ye çekilirken `Ödenen Tutar`ın da yazılması alışkanlığa/kontrol listesine girsin · (b) ciro sayımı `Ödenen Tutar` yerine `COALESCE(Ödenen, Beklenen)` tanımıyla yapılsın ve bu tanım yazılı olsun. (b) geçmişi de düzeltir, (a) veriyi düzeltir; ikisi birlikte en sağlamı.
 - **Bağ:** KARAR 668 · B239 (ikisi de "rakamın tanımı" sınıfı)
 - **Ölçüm (17 Eki, sayfa okuması):** `OCAK-NY7U` (`3f8b61eb…4071`) ve `OCAK-VL39` (`3fab61eb…1d89`) sayfalarında `Ödenen Tutar` **anahtarı hiç yok**; `Ödeme Durumu` `Ödendi`, `Ödeme Yöntemi` `Havale`, `Beklenen Tutar` 450 ve 300. 19 Ekim etkinliği toplamı: 25 ödenmiş kayıt · `Ödenen Tutar` 6.750 TL · `Beklenen Tutar` 7.800 TL — fark **1.050 TL**, üç boş alan.
+
+## B242 — Karusel "işaret sabit yerde" seçeneği derleyicide yok, kart yerel yamayla basıldı
+
+- [ ] **Sahip:** CC (derleyici) · Kaan (onay)
+- **Ne:** KARAR 671 gündüz karuselinde işaretin sabit konumda durmasını (y≈209/1350) ve metnin kartın ortasında toplanmasını mühürlüyor. `tools/ocak-kart-derleyici.html` bu düzeni **üretemiyor** — 18 Ekim'de basılan parti derleyiciye elle uygulanan yerel bir yamayla çıktı, yama kaydedilmedi.
+- **Risk:** Kararın tek uygulaması, kaydı olmayan ve sürmeyen bir yerel değişiklikte yaşıyor. Aynı partinin bir sonraki baskısı sessizce **eski düzende** çıkar ve fark ancak kartlara gözle bakılırsa görülür — KARAR 652'nin "tek ve kanonik araç" iddiası bu kalem açık kaldıkça gerçek değil. Kaan'ın kaydettiği ön ayarlar `localStorage`'da yaşadığı için yama başka makinede de yok.
+- **Kapanış şartı:** derleyiciye Biçim → Karusel altında seçenek girer (işaret sabit / akışta), KARAR 671'in iki ışık düzeni gömülü ön ayar olarak tanımlanır, ve bir kart her iki modda basılıp gözle karşılaştırılır.
+- **Bağ:** KARAR 671 · KARAR 652 · KARAR 556 · B235 (ikisi de "araç korpusun anlattığını yapmıyor" sınıfı)
+- **Ölçüm (18 Eki):** ledger'da `209` · `1,28` · `punto 88` · `O sabit` dizelerinin hiçbiri KARAR 671 öncesi geçmiyordu (`grep -nE "209|1[.,]28|punto 88|O sabit" docs/01-kararlar.tsv` → yalnız KARAR 209'un kendi satırı); yani düzenin yazılı kaydı bu tura kadar hiç yoktu.
+
+## B243 — Advaita'dan gelen videolar 720p; orijinal dosya istenmiyor
+
+- [ ] **Sahip:** Kaan (talep) · Advaita (dosya)
+- **Ne:** Advaita'nın çektiği videolar 720p olarak geliyor. KARAR 662 reels standardını **1080×1920** üzerine kuruyor; 720p kaynak o çerçeveye büyütülerek giriyor.
+- **Risk:** Altyazı ve üst bant ölçüleri (metin üstten 210 px, altyazı 54 px, kapanış işareti 150 px) 1080 genişliğe göre tanımlı — 720p kaynakta bu ölçüler orana göre bozulur ya da büyütme yumuşaklığı metnin altında görünür. Kayıp **geri alınamaz**: yayınlanmış videonun kaynağı sonradan bulunamazsa yeniden kurgu da 720p'den çıkar. En güçlü organik sinyal (kurgusuz davet reels'i, 75 beğeni) bu hattan geldiği için kalite kaybı doğrudan dönüşümü taşıyan yüzeyde.
+- **Kapanış şartı:** Advaita'dan **orijinal kamera dosyası** istenir (WhatsApp/Instagram üzerinden değil — ikisi de yeniden sıkıştırır), bir dosyada çözünürlük ölçülür ve ≥1080×1920 teyit edilir; talep akışa (çekim brief'ine) yazılır ki her seferinde tekrar sorulmasın.
+- **Bağ:** KARAR 662 · KARAR 663 (Advaita videosunun ilk karesi öne çıkan kapak)
+- **Ölçüm:** **TEYITSIZ** — dosyalar CC'ye kapalı; "720p geliyor" Kaan'ın bildirimi, bu turda tek dosya üzerinde ölçülmedi.
