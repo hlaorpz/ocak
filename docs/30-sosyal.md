@@ -303,16 +303,17 @@ Ses: ateş çıtırtısı loop veya sessiz ambient.
 ### C06 · S1 · F2 — ADIMIZ 1/3 (6 kart)
 **GÖRSEL:** V02 (kül dokusu) tek üretim → 6 crop · 4:5 · Kart metinleri (krem):
 > K1: Bir kelimeyi kazıyalım: OCAK.
-> K2: Eski Türkçede od, ateş demek. Ocak: od-çak — ateşin yeri.
-> K3: Kelimenin yaşı yazıdan eski. Bozkırdan Anadolu'ya, hangi Türkçe konuşulduysa orada bir ocak yandı.
-> K4: Ve eski inanışta odun ruhu bir kadın: Od Ana.
-> K5: Ateşe su dökülmez. Ocağa basılmaz. Küle tükürülmez. Bunlar yakıt kuralı değil — bir anaya gösterilen saygı.
+> K2: Eski Türkçede ot, bizde od: ateş demek. Ocak, ateşin yeri.
+> K3: Yazılı kaydı bin yıllık; kendisi daha da eski. Bozkırdan Anadolu'ya, hangi Türkçe konuşulduysa orada bir ocak yandı.
+> K4: Ve eski inanışta ateşin ruhu bir kadın: Od Ana.
+> K5: Ateşe su dökülmez. Külüne basılmaz. Ateşe tükürülmez. Bunlar yakıt kuralı değil — bir anaya gösterilen saygı.
 > K6: Adımızın çekirdeğinde, bin yıldır, bir ateş yanıyor.
 **CAPTION:**
 > Bu adı biz bulmadık. Dilin içinde bekliyordu — kazdık, altından bir kadın çıktı.
 > #ocak #odana #anadolu
-**İLK YORUM:** Adın bütün katmanları: https://www.ocak.biz/adimiz
+**İLK YORUM:** Senin evinde ateşe dair hangi söz söylenirdi?
 **STORY:** yok
+**KAYNAK:** Nişanyan (*ot* > *od* etimolojisi) · Kumartaşlıoğlu, *Türk Kültüründe Ateş ve Ocak İyeleri* · TDV İslâm Ansiklopedisi · Radloff · Ögel. Adımız serisinin üçünün ortak kümesi.
 
 ---
 
@@ -363,14 +364,15 @@ Ses: ateş çıtırtısı loop veya sessiz ambient.
 > K1: Adımızı kazıyoruz — ikinci katman: ritüeller.
 > K2: Gelin yeni evine girdiğinde önce insanlarla değil, ocakla tanıştırılır.
 > K3: Ateşe yağ atar — alev parlar, evin anası selamı almıştır. Artık bu ocağın kadınıdır.
-> K4: Yeni ev kurulurken ateş çakmakla yakılmaz. Baba ocağından kor alınır, taşınır, yeni ocağa üflenir.
+> K4: Yeni ev kurulurken ateş baba ocağından alınır. Kor taşınır, yeni ocağa üflenir.
 > K5: Ateş sıfırdan başlamaz — devralınır. Bir ateşten çok ocak yanar.
 > K6: Baharda ateşin üstünden atlanır. Eski yük alevde kalır. Ateş yakmaz — arındırır.
 **CAPTION:**
 > Bu topraklarda ateş bir ritüeller dili. Gelin ocakla tanışır, kor elden ele devralınır, baharda ateşin üstünden atlanır. OCAK'ta da öyle: bir çemberden kıvılcım alan kadın gidip kendi ocağını kuruyor.
 > #ocak #anadolu #ritüel
-**İLK YORUM:** Devamı: https://www.ocak.biz/adimiz
+**İLK YORUM:** Sizin evde bayram ateşinden atlanır mıydı?
 **STORY:** yok
+**KAYNAK:** C06 ile aynı küme; ritüel katmanında Kumartaşlıoğlu ve Ögel ağırlıkta.
 
 ---
 
