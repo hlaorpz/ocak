@@ -1,6 +1,6 @@
 # OCAK — DOKÜMAN HARİTASI
 
-**Son güncelleme:** 11 Ekim 2026 · pazarlama v2 turu (yeni dosya: `pazarlama/`) · önceki: 11 Eylül 2026 · ölçüm / yargı ayrımı turu (KARAR 578–582)
+**Son güncelleme:** 18 Ekim 2026 · kart partileri "yalnız yerel" teyidi · önceki: 11 Ekim 2026 · pazarlama v2 turu (yeni dosya: `pazarlama/`)
 
 > Bu dosya **liste değildir.** Dosya listesi iki yerde zaten var ve ikisi de geçerli:
 > `CLAUDE.md` sonundaki *Doküman haritası* paragrafı (CC'nin oturum başında gördüğü) ve
@@ -151,11 +151,27 @@ Denetçi: `scripts/baslik-denetim.mjs` — bulursa dosya + satır + sebep basar,
   kökündeki **`pazarlama-ekler/`**'dedir; MCP orayı servis etmez (yalnız `docs` · `scripts`).
   Adı anılması gereken tek PDF — **Advaita'nın reklam devri:**
   `pazarlama-ekler/kartlar-2026-10-12-reklam/OCAK-reklamlar-Advaita-icin-2026-10-16.pdf`
-  (12 sayfa, 1.752 KB; `/Type/Page` sayımı ve `ls` ile ölçüldü 17 Eki).
+  (12 sayfa, 1.752 KB; `/Type/Page` sayımı ve `ls` ile ölçüldü 17 Eki)
+  — ⚠ **YALNIZ YEREL, depoda yok** (18 Eki'de yeniden teyit edildi, aşağıdaki madde).
   ⚠ **YALNIZ YEREL — bu yol taze klonda çözülmez.** Kart partileri 17 Eki'de
   `.gitignore`'a alındı (`pazarlama-ekler/kartlar-*/`, Kaan kararı): parti başına 2–21 MB
   binary, beş parti ~33 MB. Bu satır **Kaan'ın diskindeki** dosyayı adlandırıyor, deponun
   içindekini değil — bir yolu adlandırmak onu depoya koymaz ve bunu söylemek zorundayız.
+- **17 Eki kararı 18 Eki'de gözden geçirildi ve geçerli kaldı** (Kaan). Claude.ai'nin
+  16 Eki brief'i beş partiyi *izlenmeyen* sayıp commit istedi; ölçüm beşinin de `.gitignore`
+  deseninde olduğunu gösterdi ve karar Kaan'a geri verildi. Sonuç: **`.gitignore` kalır,
+  hiçbiri girmez.** Bu, görsel dışı dosyaları da kapsar — `-10-12-reklam/` içindeki **üç PDF**
+  (`OCAK-acik-kapi-reklam-metinleri-2026-10-12.pdf` **719 KB** · `OCAK-kart-yurtdisi-talep-mektubu-2026-10-12.pdf`
+  **4.034 KB** · yukarıda adı anılan Advaita devri **1.752 KB**) ve **`00-NOT.md`** (**4.883 B**)
+  de depoya girmez. Ölçüm (18 Eki, Kaan'ın diski): `find -type f ! -name .DS_Store` +
+  `stat -f%z` bayt toplamı — beş parti **34.501.145 B = 32,9 MiB**, **67 dosya**. KB'ler
+  **1024 tabanlı**, yukarıdaki `1.752 KB` ile aynı tanım. ⚠ `du -sh` aynı partiler için
+  **33,3 MB** sayar; fark blok ayırmasındandır, dosya farkı değil (KARAR 470 — iki ölçüm
+  çelişirse önce tanımlar karşılaştırılır). Taze klonda hiçbiri yok, bu yüzden bu rakamlar
+  `04-olcum.md`'den **üretilemez** ve yöntemiyle burada duruyor (KARAR 470-b).
+  ⚠ Bir metin dosyasının (`00-NOT.md`) binary partisiyle birlikte dışarıda kalması bilinçlidir:
+  desen dizin düzeyinde çalışır, dosya tipine bakmaz. O notun içeriği gerekirse korpusa
+  **taşınır** (KARAR 61), partiden tek dosya çekilerek değil.
 - **Yalnız yerel olanlar** (desenin tuttuğu, 17 Eki): `kartlar-2026-10-12-reklam/` (21 MB,
   Advaita PDF'i burada) · `kartlar-2026-10-15-adimiz-1/` · `-2026-10-15-fatma-aliye/` ·
   `-2026-10-16-adimiz-2/` · `-2026-10-17-cumartesi/`. **İzlenmeye devam edenler**
