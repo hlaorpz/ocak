@@ -372,7 +372,7 @@ Ses: ateş çıtırtısı loop veya sessiz ambient.
 > #ocak #anadolu #ritüel
 **İLK YORUM:** Sizin evde bayram ateşinden atlanır mıydı?
 **STORY:** yok
-**KAYNAK:** C06 ile aynı küme; ritüel katmanında Kumartaşlıoğlu ve Ögel ağırlıkta.
+**KAYNAK:** C06 ile aynı küme; ritüel katmanında Kumartaşlıoğlu ve Ögel ağırlıkta. **Kontrol 16 Eki'de altı kartın altısına yapıldı** (Kaan): K2–K3 TDV (Kırgız-Kazak'ta gelin ocağa yağ atar · Tatar'da gelin önce ocağa getirilir) · Radloff (Altay) · Ögel ile **uyumlu** — ⚠ "yağ atar" **bölgesel** (Kırgız-Kazak), evrensel değil; metin bu yüzden aynen kalıyor. K5 yorumdur, sorun yok (Çuvaş'ta gelin ana-baba ocağından kor taşır, Altay'da aile büyüğü). K6 **uyumlu**: Hıdırellez ve Nevruz'da ateşten atlanır, "bahar" ikisini de kapsar.
 
 ---
 
