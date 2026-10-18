@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Cuma 16 Ekim, 09:30
 - **Kanal:** Advaita'nın hesabı, @ocak.biz ortak; tek fotoğraf ya da iki kare
 - **Işık:** İnsan (gündüz çekimi)
-- **Durum:** Mektup ve fotoğraf bekliyor (10 Ekim listesi).
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). Sıraya döndü; mektup ve fotoğraf bekliyor. *(18 Ekim öncesi: Mektup ve fotoğraf bekliyor (10 Ekim listesi).)*
 - **Yapılmazsa:** Sıraya döner; o sabah için yedek: havuzdan bir söz kartı.
 
 ## Görsel

@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Cuma 16 Ekim, 20:30
 - **Kanal:** @ocak.biz reels, Advaita ortak
 - **Işık:** İnsan
-- **Durum:** Çekim bekliyor (10 Ekim listesi, V-B).
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). V-B videosu yerelde yok. Kural gereği 18 Ekim akşamına kadar açık, sonra düşer. Advaita'nın kendi kurgusuz davet reels'i ayrıdır → YAYIN-KAYDI #14. *(18 Ekim öncesi: Çekim bekliyor (10 Ekim listesi, V-B).)*
 - **Yapılmazsa:** 18 Ekim akşamına kadar kayabilir; çıkmazsa düşer, yerine G2 kartı ("Bazı şeylere gün içinde bakılmaz") yayınlanır.
 
 ## Görsel

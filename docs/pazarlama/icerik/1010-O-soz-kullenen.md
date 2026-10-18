@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Cumartesi 10 Ekim, 09:30
 - **Kanal:** @ocak.biz tek kart (4:5), story (9:16)
 - **Işık:** Gündüz
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** Çıktı → YAYIN-KAYDI #5 (Paz 11 Ekim 09:30). *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** Sıraya döner; herhangi bir sabah çıkabilir (tarihe bağlı değil).
 
 ## Görsel

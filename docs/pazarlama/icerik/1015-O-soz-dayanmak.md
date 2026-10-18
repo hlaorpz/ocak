@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Perşembe 15 Ekim, 09:30
 - **Kanal:** @ocak.biz tek kart
 - **Işık:** Gündüz (zeytin zemin)
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). Sıraya döndü. *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** Sıraya döner.
 
 ## Görsel

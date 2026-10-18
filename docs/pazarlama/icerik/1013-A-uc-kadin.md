@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Salı 13 Ekim, 20:30
 - **Kanal:** @ocak.biz tek kart; reklam
 - **Işık:** Gece
-- **Durum:** Metin hazır; Z-C zemini Kaan'da, kart basılmadı.
+- **Durum:** Metni çıktı → YAYIN-KAYDI #8 (Pzt 12 Ekim 14:32). Kart olarak değil, Advaita'nın V-A videosuyla reels olarak. *(18 Ekim öncesi: Metin hazır; Z-C zemini Kaan'da, kart basılmadı.)*
 - **Yapılmazsa:** 19 Ekim'e kadar herhangi bir akşam çıkabilir.
 
 ## Görsel

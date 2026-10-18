@@ -22,16 +22,18 @@ Tek takvim, iki hat. Bu sayfa her günün işini tek satırda gösterir; ayrınt
 
 | Gün | 09:30 · Hat O | 20:30 · Hat A | Story (çekirdek) | Ek (bağımsız) |
 |---|---|---|---|---|
-| Cmt 10 | `1010-O-soz-kullenen` · söz kartı · **hazır** | `1010-A-eller-ve-mum` · reels · çekim bugün | Anket 1 (sabah) · cevap kartı + köprü (akşam) | Advaita'nın hesabında çekim arkası tek kare |
-| Paz 11 | `1011-O-ocak-nedir` · karusel, sabitlenir | `1011-A-bir-saat` · kart · **hazır** | OCAK Nedir kapağı · "Kime gönderirdin?" (**hazır**) · Advaita kısa cevap 1 (V-G); portresi kendi hesabında | TikTok hesabı açılır, ilk video (Eller ve Mum) |
-| Pzt 12 | `1012-O-fatma-aliye` · karusel · **hazır** | `1012-A-soru-reels-1` · reels | Anket 2 · cevap + köprü · Advaita: "Şu an neyin eşiğindesin?" · kısa cevap 2 | Ateş Mektubu "Bir akşamlığına gel" (Hat A; çekirdek sayılır, yalnız kanal farklı) |
-| Sal 13 | `1013-O-advaita-tanisma` · reels, sabitlenir (çekim 10 Ekim; yedek: basılı söz kartı) | `1013-A-uc-kadin` · kart | Bir Kadın Vardı kapağı · isimsiz cevap kartı + köprü | Reklam okuması (72 saat); 5 dış yorum |
-| Çar 14 | `1014-O-kulun-altindan-derman` · kart · **hazır** | `1014-A-o-aksam-ne-olur` · karusel · **hazır** | Anket 3 · "İkisi de olur." · Advaita kısa cevap 3 | Kayıtlılara "Yanına bir kadın al" maili |
-| Per 15 | `1015-O-soz-dayanmak` · söz kartı · **hazır** | `1015-A-soru-reels-2-ve-canli` · 18:30 reels, 21:00 canlı | Anket 4 · canlı duyurusu · Advaita kısa cevap 4 | Pinterest panosu açılır; ilk on kart |
-| Cum 16 | `1016-O-el-yazisi-mektup` · fotoğraf | `1016-A-advaita-davet` · reels | Mektup yakın plan · sesli cevap 1 | LinkedIn: Kaan ve Advaita'nın kişisel paylaşımı |
-| Cmt 17 | `1017-O-fureya-koral` · karusel · **hazır** | `1017-A-kameran-kapali` · reels ya da kart | Kapak · Advaita kısa cevap 5 | "Bir Dakika" sessiz reels'i (21:00) |
+| Cmt 10 | `1010-O-soz-kullenen` · söz kartı · **hazır** · **çıktı 11 Eki → YAYIN-KAYDI #5** | `1010-A-eller-ve-mum` · reels · çekim bugün · **çıkmadı** | Anket 1 (sabah) · cevap kartı + köprü (akşam) | Advaita'nın hesabında çekim arkası tek kare |
+| Paz 11 | `1011-O-ocak-nedir` · karusel, sabitlenir · **çıktı 12 Eki → YAYIN-KAYDI #7** | `1011-A-bir-saat` · kart · **hazır** · **çıkmadı** | OCAK Nedir kapağı · "Kime gönderirdin?" (**hazır**) · Advaita kısa cevap 1 (V-G); portresi kendi hesabında | TikTok hesabı açılır, ilk video (Eller ve Mum) |
+| Pzt 12 | `1012-O-fatma-aliye` · karusel · **hazır** · **çıktı 14 Eki → YAYIN-KAYDI #11** | `1012-A-soru-reels-1` · reels · **çıkmadı** | Anket 2 · cevap + köprü · Advaita: "Şu an neyin eşiğindesin?" · kısa cevap 2 | Ateş Mektubu "Bir akşamlığına gel" (Hat A; çekirdek sayılır, yalnız kanal farklı) |
+| Sal 13 | `1013-O-advaita-tanisma` · reels, sabitlenir (çekim 10 Ekim; yedek: basılı söz kartı) · **V-A videosu 12 Eki → YAYIN-KAYDI #8** | `1013-A-uc-kadin` · kart · **metni 12 Eki → YAYIN-KAYDI #8** | Bir Kadın Vardı kapağı · isimsiz cevap kartı + köprü | Reklam okuması (72 saat); 5 dış yorum |
+| Çar 14 | `1014-O-kulun-altindan-derman` · kart · **hazır** · **çıkmadı** | `1014-A-o-aksam-ne-olur` · karusel · **hazır** · **çıkmadı** | Anket 3 · "İkisi de olur." · Advaita kısa cevap 3 | Kayıtlılara "Yanına bir kadın al" maili |
+| Per 15 | `1015-O-soz-dayanmak` · söz kartı · **hazır** · **çıkmadı** | `1015-A-soru-reels-2-ve-canli` · 18:30 reels, 21:00 canlı · **reels çıkmadı; canlı ölçülmedi** | Anket 4 · canlı duyurusu · Advaita kısa cevap 4 | Pinterest panosu açılır; ilk on kart |
+| Cum 16 | `1016-O-el-yazisi-mektup` · fotoğraf · **çıkmadı** | `1016-A-advaita-davet` · reels · **çıkmadı** (Advaita'nın kendi daveti → #14) | Mektup yakın plan · sesli cevap 1 | LinkedIn: Kaan ve Advaita'nın kişisel paylaşımı |
+| Cmt 17 | `1017-O-fureya-koral` · karusel · **hazır** · **çıkmadı** | `1017-A-kameran-kapali` · reels ya da kart · **çıktı 16 Eki → YAYIN-KAYDI #17** | Kapak · Advaita kısa cevap 5 | "Bir Dakika" sessiz reels'i (21:00) |
 | Paz 18 | `1018-O-yanina-al` · kart · **hazır** | `1018-A-yarin-aksam` · reels ya da kart | Anket 5 · "Yarın akşam 21:00" | Advaita'nın yirmi kişisel mesajının ikinci turu |
 | Pzt 19 | `1019-O-bir-esikte-duruyorsun` · 09:00 kart | `1019-A-bu-aksam` · 12:30 reels | "Bu akşam 21:00. Kapı aralık." · 16:00 gelen mumlar · 19:00'dan sonra yok | Yok; akşam Açık Kapı |
+
+**Gerçekleşen (18 Ekim taraması, `YAYIN-KAYDI.md`).** Kalın notlar hesapta görülene göredir. Plan dışında çıkanlar: #6 Kız Çocukları (11 Eki) · #9 Eşik Kadını kimdir? (13 Eki) · #10 Kadın çemberi nedir (13 Eki) · #12 Hiç katılmadım (14 Eki) · #13 Kadın Çiftçiler Günü (15 Eki) · #14 Advaita'nın kurgusuz daveti (15 Eki, onun hesabı) · #15 Adımız 1/3 (15 Eki) · #16 Adımız 2/3 (16 Eki). 17 Ekim'de hiçbir şey çıkmadı (Kaan). 18 Ekim 15:10 itibarıyla bugünün iki satırı da açık. Hesapta 18 Ekim sabahı on yedi gönderi var.
 
 19 Ekim sabahı ızgarada yirmi dört gönderi olur (bugünkü dört + yirmi). Önizleme: `ornekler/izgara-once-sonra.jpg`.
 

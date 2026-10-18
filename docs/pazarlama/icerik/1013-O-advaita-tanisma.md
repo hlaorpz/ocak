@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Salı 13 Ekim, 09:30
 - **Kanal:** @ocak.biz reels, Advaita ortak; sabitlenir
 - **Işık:** İnsan (gündüz çekimi)
-- **Durum:** Çekim bekliyor (10 Ekim listesi, V-A).
+- **Durum:** V-A videosu çıktı → YAYIN-KAYDI #8 (Pzt 12 Ekim 14:32). Ayrı bir tanışma gönderisi çıkmadı; reels 1013-A'nın metnini taşıyor. *(18 Ekim öncesi: Çekim bekliyor (10 Ekim listesi, V-A).)*
 - **Yapılmazsa:** Sıraya döner; ilk hazır olduğu sabah çıkar. O sabah için yedek: havuzdan bir söz kartı.
 
 ## Görsel

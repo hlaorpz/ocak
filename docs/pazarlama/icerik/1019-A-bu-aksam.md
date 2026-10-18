@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazartesi 19 Ekim, 12:30
 - **Kanal:** @ocak.biz reels; story
 - **Işık:** Gece ya da insan
-- **Durum:** Çekim bekliyor (10 Ekim listesi, V-F); yedek mum videosu Kaan'da.
+- **Durum:** Tercih V-F videosu yerelde yok (`Ocak Media/Advaita/`, 18 Ekim). Alternatif mum döngüsü. *(18 Ekim öncesi: Çekim bekliyor (10 Ekim listesi, V-F); yedek mum videosu Kaan'da.)*
 - **Yapılmazsa:** Düşer (tarihe bağlı).
 
 ## Görsel

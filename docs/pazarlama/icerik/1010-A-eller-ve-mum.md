@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Cumartesi 10 Ekim, 20:30 (çekim aynı gün)
 - **Kanal:** @ocak.biz reels, Advaita ortak; sabitlenir
 - **Işık:** İnsan
-- **Durum:** Çekim bekliyor (10 Ekim, Advaita). Yayınlanmadı.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). V-0 videosu yerelde yok (`Ocak Media/Advaita/`). Kural gereği video hazır olduğu ilk akşam çıkar. *(18 Ekim öncesi: Çekim bekliyor (10 Ekim, Advaita). Yayınlanmadı.)*
 - **Yapılmazsa:** Pazar 11 Ekim 20:30'a kayar; o da olmazsa yerine soru reels'i 1 çıkar ve bu video ilk hazır olduğu akşam yayınlanır.
 
 ## Görsel

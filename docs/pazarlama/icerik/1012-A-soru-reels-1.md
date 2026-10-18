@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazartesi 12 Ekim, 20:30
 - **Kanal:** @ocak.biz reels; reklam
 - **Işık:** Gece
-- **Durum:** Metin hazır; mum videosu Kaan'da. Kurgu bekliyor.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). Kural gereği 19 Ekim akşamına kadar açık. *(18 Ekim öncesi: Metin hazır; mum videosu Kaan'da. Kurgu bekliyor.)*
 - **Yapılmazsa:** 19 Ekim'e kadar herhangi bir akşam çıkabilir.
 
 ## Görsel

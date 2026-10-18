@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazar 18 Ekim, 20:30
 - **Kanal:** @ocak.biz reels ya da kart; story
 - **Işık:** İnsan ya da gece
-- **Durum:** Çekim bekliyor (10 Ekim listesi, V-F); saat kartı için Z-A zemini Kaan'da.
+- **Durum:** Tercih V-F videosu yerelde yok (`Ocak Media/Advaita/`, 18 Ekim). Alternatif G5 saat kartı. Yurt dışı saat kartı basılı: `pazarlama-ekler/kartlar-2026-10-12-reklam/reklam-yd-saat-karti-*`. Bu gönderiye uygunluğu bakılmadı. *(18 Ekim öncesi: Çekim bekliyor (10 Ekim listesi, V-F); saat kartı için Z-A zemini Kaan'da.)*
 - **Yapılmazsa:** Düşer (tarihe bağlı).
 
 ## Görsel

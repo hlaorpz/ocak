@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazar 11 Ekim, 09:30
 - **Kanal:** @ocak.biz karusel (8 kart); sabitlenir
 - **Işık:** Gece
-- **Durum:** Metin hazır; sekiz zemin crop'u Kaan'da (1080×1350). Kartlar basılmadı, yayınlanmadı.
+- **Durum:** Çıktı → YAYIN-KAYDI #7 (Pzt 12 Ekim 11:33, sabit). Yayınlanan açıklama bu dosyadakinden farklı. *(18 Ekim öncesi: Metin hazır; sekiz zemin crop'u Kaan'da (1080×1350). Kartlar basılmadı, yayınlanmadı.)*
 - **Yapılmazsa:** Sıraya döner; sabit gönderi olduğu için ilk boş sabah çıkar.
 
 ## Görsel

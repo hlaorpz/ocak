@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Çarşamba 14 Ekim, 09:30
 - **Kanal:** @ocak.biz tek kart; story anketi
 - **Işık:** Gündüz
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). Sıraya döndü; herhangi bir Cuma. *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** Sıraya döner; herhangi bir Cuma çıkabilir.
 
 ## Görsel

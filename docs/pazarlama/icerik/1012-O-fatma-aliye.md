@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazartesi 12 Ekim, 09:30
 - **Kanal:** @ocak.biz karusel (5 kart)
 - **Işık:** Gündüz
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir. Olgular iki kaynaktan doğrulandı. Fotoğrafsız.
+- **Durum:** Çıktı → YAYIN-KAYDI #11 (Çar 14 Ekim 08:23). *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir. Olgular iki kaynaktan doğrulandı. Fotoğrafsız.)*
 - **Yapılmazsa:** Sıraya döner; herhangi bir Cumartesi ya da boş sabah çıkar.
 
 ## Görsel

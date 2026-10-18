@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Perşembe 15 Ekim; reels 18:30, canlı yayın 21:00
 - **Kanal:** @ocak.biz reels; Advaita'nın hesabında canlı yayın
 - **Işık:** Gece
-- **Durum:** Reels metni hazır, kurgu bekliyor. Canlı yayın Advaita'da.
+- **Durum:** Reels çıkmadı (18 Ekim hesap taraması). Canlı yayının yapılıp yapılmadığı ölçülmedi (canlı arşivi taranmadı). *(18 Ekim öncesi: Reels metni hazır, kurgu bekliyor. Canlı yayın Advaita'da.)*
 - **Yapılmazsa:** Reels herhangi bir akşama kayabilir. Canlı yayın yapılmazsa düşer; yerine 21:00 mumu story'si atılır.
 
 ## Görsel

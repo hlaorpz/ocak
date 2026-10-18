@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Cumartesi 17 Ekim, 20:30
 - **Kanal:** @ocak.biz reels ya da tek kart
 - **Işık:** İnsan ya da gece
-- **Durum:** Çekim bekliyor (10 Ekim listesi, V-D); kart alternatifi için Z-B zemini Kaan'da.
+- **Durum:** Çıktı → YAYIN-KAYDI #17 (Cum 16 Ekim 20:10, V-D). *(18 Ekim öncesi: Çekim bekliyor (10 Ekim listesi, V-D); kart alternatifi için Z-B zemini Kaan'da.)*
 - **Yapılmazsa:** Düşer; aynı mesajı O Akşam Ne Olur K5 ve anket 3 taşıyor. Yerine soru reels'i 3 çıkar.
 
 ## Görsel

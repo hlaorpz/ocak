@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazar 18 Ekim, 09:30
 - **Kanal:** @ocak.biz tek kart; story
 - **Işık:** Gündüz
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** 18 Ekim 15:10 itibarıyla çıkmadı. Tarihe bağlı; yalnız bugün geçerli. *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** Düşer (tarihe bağlı). Sonraki Açık Kapı'ların arifesinde alt bant değiştirilerek kullanılır.
 
 ## Görsel

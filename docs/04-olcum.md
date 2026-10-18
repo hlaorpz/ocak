@@ -2,7 +2,7 @@
 
 # OCAK — ÖLÇÜM
 
-**Koşum:** 18.10.2026 11:01 (Europe/Istanbul) · bayraklar: `--test`
+**Koşum:** 18.10.2026 15:35 (Europe/Istanbul) · bayraklar: `(yok)`
 
 > Bu dosyadaki her satır bir komutun çıktısıdır (**KARAR 578**). Yanlışsa dosya
 > düzeltilmez — `scripts/durum-uret.mjs` düzeltilir ve yeniden koşulur
@@ -18,22 +18,23 @@
 
 | alan | değer | kaynak |
 |---|---|---|
-| canlı HEAD | `6b65cdb` | `git log -1` |
+| canlı HEAD | `4141b46` | `git log -1` |
 | HEAD tarihi | 2026-10-18 | `git log -1 --date=short` |
-| HEAD konusu | içerik: Adımız 1/3 ve 2/3 kart metinleri — olgu düzeltmesi + kaynak satırı | `git log -1 --format=%s` |
-| çalışma ağacı | **kirli** — 5 kayıt | `git status --porcelain` |
-| uzak dal sayısı | **2** | `git branch -r` |
+| HEAD konusu | docs: kart partileri "yalnız yerel" — PDF yolu işaretlendi, 17 Eki kararı teyitli | `git log -1 --format=%s` |
+| çalışma ağacı | **kirli** — 26 kayıt | `git status --porcelain` |
+| uzak dal sayısı | **1** | `git branch -r` |
 
 | uzak dal | main'e göre | kaynak |
 |---|---|---|
-| `origin/main` | main **1** commit önde · **0** commit geride | `git rev-list --count` |
-| `origin/nkolay-test` | main **106** commit önde · **1** commit geride | `git rev-list --count` |
+| `origin/main` | main **0** commit önde · **0** commit geride | `git rev-list --count` |
 
 ## TEST
 
 | alan | değer | kaynak |
 |---|---|---|
-| vitest sonucu | 1094 passed (1094) · dosya: 44 passed (44) | `npx vitest run` |
+| vitest sonucu | *bu koşumda ölçülmedi* | `npx vitest run` |
+
+*`--test` bayrağıyla koşulur.*
 
 ## BUILD
 
@@ -46,8 +47,8 @@
 | `docs/00-durum.md` | 199 |
 | `docs/02-borclar.md` | 4153 |
 | `docs/03-sira.md` | 1021 |
-| `docs/05-harita.md` | 222 |
-| `docs/01-kararlar.tsv` | 673 |
+| `docs/05-harita.md` | 238 |
+| `docs/01-kararlar.tsv` | 675 |
 
 `00-durum.md` tavanı (**≤200**, KARAR 457): **199** — ✅ altında
 
@@ -67,8 +68,8 @@
 
 | alan | değer | beklenen |
 |---|---|---|
-| son KARAR numarası | **672** | — |
-| satır sayısı (başlık dahil) | 673 | — |
+| son KARAR numarası | **674** | — |
+| satır sayısı (başlık dahil) | 675 | — |
 | altı sütun dışı satır | 0 | 0 ✅ |
 | mükerrer numara | 0 | 0 ✅ |
 | enum dışı `durum` | 0 | 0 ✅ |
@@ -76,17 +77,8 @@
 
 ## VERCEL KİMLİĞİ
 
-| alan | değer |
-|---|---|
-| kaynak dosya | `.vercel/repo.json` |
-| proje adı | ocak |
-| proje ID | `prj_CxW3Nm85TGzdrZdePCk74WLAv23f` |
-| team / org ID | `team_EVx2zHhI9iYscmqsuHckk599` |
-
-`project.json` **yok** — değerler `repo.json`'un `projects[0]` kaydından okundu.
-**Beklenen hâldir, arıza değil** (KARAR 584): proje GitHub'a bağlı olduğu için
-CLI repo seviyesinde bağlıyor. `vercel --prod` yolu bu dosyayla kurulmaz ve
-kurulması beklenmiyor — deploy git push ve `notion-content-update-main` hook'uyla gidiyor.
+*Alan atlandı* — ne `.vercel/project.json` ne `.vercel/repo.json` okunabildi.
+Uydurulmaz (**KARAR 470**).
 
 ---
 

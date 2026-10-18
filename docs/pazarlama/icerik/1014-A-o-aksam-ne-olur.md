@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Çarşamba 14 Ekim, 20:30
 - **Kanal:** @ocak.biz karusel (6 kart)
 - **Işık:** Gündüz (kapak toprak)
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması; Kaan: 17 Ekim'de bir şey çıkmadı). Kartlar basılı: `pazarlama-ekler/kartlar-2026-10-17-cumartesi/`. Kural gereği 19 Ekim akşamına kadar açık. *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** 19 Ekim'e kadar herhangi bir akşam çıkabilir; sonraki Açık Kapı'lar için K6 alt bandı değişir.
 
 ## Görsel

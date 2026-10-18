@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazar 11 Ekim, 20:30
 - **Kanal:** @ocak.biz tek kart (4:5), story (9:16)
 - **Işık:** Gündüz
-- **Durum:** Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.
+- **Durum:** Çıkmadı (18 Ekim hesap taraması). Kural gereği 19 Ekim akşamına kadar açık; sonra alt bant yeni tarihle yeniden basılır. *(18 Ekim öncesi: Hazır. Kart bu pakette basıldı (`hazir-kartlar/`); kodla çizilmiş zemin. Midjourney zemini gelince aynı metinle yeniden basılabilir.)*
 - **Yapılmazsa:** 19 Ekim'e kadar herhangi bir akşam çıkabilir; 19 Ekim'den sonra alt bant yeni tarihle yeniden basılır.
 
 ## Görsel
