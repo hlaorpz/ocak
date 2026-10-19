@@ -37,6 +37,12 @@ Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı).
 
 ```
 Üç kadın ateşi büyüttü.|Üç kadına *ücretsiz yer* açıldı.
+```
+
+**19 Ekim 09:21 · son hâl, "ücretsiz" yerine "hediye":** "ücretsiz" kampanya diline götürüyordu; "hediye" hem karşılıksızlığı hem verenin jestini taşıyor. "Ücretsiz" açıklamanın ilk satırında ve DM'de kalır. Basılan ve Advaita'ya giden:
+
+```
+Üç kadın ateşi büyüttü.|Üç kadına *hediye yer* açıldı.
 ``` Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
 
 4:5 ve 9:16 birlikte basılır.
@@ -48,6 +54,8 @@ Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı).
 ```
 Bu akşam üç kadının yeri ücretsiz.
 ```
+
+09:23'te Advaita'ya giden pakette ilk satır: `Bu akşam üç kadına hediye yer var; ücreti yok.` Paketteki açıklamanın tamamı ikinci paragrafı da değiştirdi: "Bu akşam için üç kadın \"Ateşi büyüten\" kademesini seçti; fazladan koydukları pay başka bir kadının yolunu açsın diye. Onların koyduğu kadar biz de koyduk."
 
 İlk taslak, olduğu gibi:
 
@@ -72,6 +80,8 @@ Açık Kapı: Bir Eşikte Duruyorsun · 19 Ekim Pazartesi · 21:00 · online
 Gönderiden story'ye geçiş KARAR 661'e uyar: gönderi 09:30, story 11:00.
 
 ## DM akışı (elle)
+
+**19 Ekim sabahı (Kaan):** Instagram botu kapatıldı; bugün DM'ler elle. Advaita'ya PDF yayın paketi gitti (kart, açıklama, ilk yorum, saatler, kod tablosu, yedi hazır cevap).
 
 Instagram DM'ine bağlı bot yok. Hat Meta App Review'a kadar dondurulmuş (`20-ref-bot.md` 773–775. satırlar). DM'leri Kaan ya da Advaita elle cevaplar.
 
