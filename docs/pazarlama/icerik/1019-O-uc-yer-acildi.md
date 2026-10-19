@@ -31,7 +31,13 @@ Alt bant: `Bu akşam 21:00 · online`
 Üç kadın ateşi büyüttü.|*Üç kadına ücretsiz yer açıldı.*
 ```
 
-Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı). Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
+Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı).
+
+**19 Ekim 09:20 · vurgu daraltıldı:** iki satırlık kırmızı blok etkiyi dağıtıyordu; vurgu yalnız "ücretsiz yer"de (kart kuralı: en çok bir kelime ya da bir satır). Basılan:
+
+```
+Üç kadın ateşi büyüttü.|Üç kadına *ücretsiz yer* açıldı.
+``` Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
 
 4:5 ve 9:16 birlikte basılır.
 
