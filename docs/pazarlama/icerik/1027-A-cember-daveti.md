@@ -2,7 +2,7 @@
 
 - **Hat:** A · Açık Kapı daveti
 - **Amaç:** Açık Kapı'ya gelen kadına ikinci kapıyı göstermek; ilk çemberi on altı kadınla doldurmak.
-- **Tarih ve saat:** Salı 27 Ekim 09:30 (ilk duyuru 19 Ekim kapanışında ve 20 Ekim Salı mailinde); çember Çarşamba 28 Ekim 21:00–22:30
+- **Tarih ve saat:** Salı 27 Ekim 09:30 (ilk duyuru 19 Ekim kapanışında ve 20 Ekim Salı mailinde); çember Çarşamba 28 Ekim 21:00–23:00 (19 Eki'de iki saate çıktı; önceki 21:00–22:30)
 - **Kanal:** @ocak.biz tek kart; Salı maili; Açık Kapı'ya katılanlara birebir mesaj; geri dönüş reklam seti
 - **Işık:** Gündüz
 - **Durum:** Metin taslak; çemberin gövdesini bu oturumda okumadım, başlık takvimden alınır. Kart kireç zeminle basıldı (`hazir-kartlar/`); D3 gelince yeniden basılır.
@@ -38,7 +38,7 @@ Alt bant: `Çember · 28 Ekim Çarşamba · 21:00 · online`
 ```
 Çember OCAK'ın evi.
 
-On altı kadın, bir söz değneği, doksan dakika. Söz değneği kimdeyse o konuşur; kalanlar dinler. Tavsiye verilmez, yargılanmaz, dışarı taşınmaz. Kayıt yoktur.
+On altı kadın, bir söz değneği, iki saat. Söz değneği kimdeyse o konuşur; kalanlar dinler. Tavsiye verilmez, yargılanmaz, dışarı taşınmaz. Kayıt yoktur.
 
 Söz sana geldiğinde geçmek de bir sözdür.
 
@@ -76,5 +76,5 @@ Yorum sorusu yok. Çember daveti soru sormaz; on altı kişilik odaya çağırı
 ## Notlar ve kaynak
 
 - Açık Kapı ile Çember'in farkı yazmak ile konuşmak üzerinden kurulur (KARAR 626; `/acik-kapi` SSS).
-- Çember kuralları `30-sosyal.md` Bölüm 7'den (C14, C18). Saat ve kapasite: 7–8 Ekim ölçümü, 21:00–22:30, on altı.
+- Çember kuralları `30-sosyal.md` Bölüm 7'den (C14, C18). Saat ve kapasite: 7–8 Ekim ölçümü, 21:00–22:30, on altı. **19 Ekim:** çember süresi iki saate çıktı (Kaan); Etkinlikler DB `Saat` 21:00–23:00, Notion SQL ile okundu, 19 Eki ~20:55 İst.
 - Kontenjan yalnız bilgi cümlesidir; "son yerler" denmez. Reklam metninde de.

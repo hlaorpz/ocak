@@ -56,7 +56,7 @@ Dün akşam bir saat aynı yerdeydik. Herkes kendi evinde, kendi mumuyla.
 
 Açık Kapı kaydedilmez; o akşam orada kaldı. Senden tek bir şey rica ediyoruz: ertesi sabah sende ne kaldıysa tek kelimeyle yaz. Bu maile cevap vermen yeter.
 
-Sıradaki kapı çember: 28 Ekim Çarşamba akşamı. On altı kadın, doksan dakika. Bu kez yazmıyoruz, konuşuyoruz.
+Sıradaki kapı çember: 28 Ekim Çarşamba akşamı. On altı kadın, iki saat. Bu kez yazmıyoruz, konuşuyoruz.
 ocak.biz/cember
 
 Açık Kapı da sürüyor. Sıradaki akşam 26 Ekim Pazartesi: İstek mi, İhtiyaç mı?
