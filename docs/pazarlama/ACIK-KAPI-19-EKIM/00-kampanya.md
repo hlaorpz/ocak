@@ -246,3 +246,5 @@ Hepsi tam ücretsiz, tek kullanım, `Son Geçerlilik` 19 Ekim 22:00 (+03:00), `H
 - Havalesi bekleyen yeniden kayıt öderse ona da kod verilir mi: Kaan.
 - Instagram hazır ve otomatik yanıtları: Kaan bakacak.
 - 20 Ekim retrosunun "Kaynak dökümü" satırına davet kodu ve açılan yer sayısı girer (22:05 raporundan).
+
+**19 Ekim sabahı · yanlış hatırlatma düzeltmesi.** "Kapı hâlâ aralık" alan altı kadından biri (OCAK-E2TM) havaleyle ödemişti; kaydında eski kart denemesinin iptal notu kaldığı için listeye girdi, havalesine bakılmadı. Kaan Notion'da kaydı elle Ödendi yaptı (18 Eki 23:45'te sistem "Yerin hazır" maili attı — Resend). 19 Eki 10:3x'te özür maili gitti: "Bir kusur bizden" · Zoom bağlantısı ve şifre içinde (Advaita'nın isteği) · `YANINDAE2TM` kodu (Notion Kodlar'da açıldı, 22:05 kapanış görevinin `YANINDA%` kapsamında). Örnek önce Kaan'a, oradan Advaita'ya gitti.

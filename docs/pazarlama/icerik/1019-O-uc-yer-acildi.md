@@ -43,7 +43,9 @@ Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı).
 
 ```
 Üç kadın ateşi büyüttü.|Üç kadına *hediye yer* açıldı.
-``` Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
+```
+
+Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
 
 4:5 ve 9:16 birlikte basılır.
 
