@@ -5,7 +5,7 @@
 - **Tarih ve saat:** Pazartesi 19 Ekim, 09:30 (Kaan zamanlar)
 - **Kanal:** @ocak.biz tek kart · story 11:00
 - **Işık:** Gündüz, kül zemin
-- **Durum:** 18 Ekim 22:40 itibarıyla metin hazır, kart basılmadı. Kaan derleyiciyle basıp zamanlayacak. Yayında değil.
+- **Durum:** 19 Ekim 09:19 · kart C metniyle basıldı (4:5 + 9:16), Kaan paylaşacak. Hesapta ölçülmedi. *(18 Ekim 22:40: metin hazır, kart basılmadı.)*
 - **Yapılmazsa:** Düşer (tarihe bağlı). Ateşi büyüten kademesi bir sonraki Açık Kapı'da yeniden yer açarsa aynı kalıp sayı değiştirilerek kullanılır (KARAR 676).
 - **Doğduğu yer:** 18 Ekim akşam sohbeti. Kaan: "Advaita mektubu akşam post etti, ateşi büyütenler sabah basalım. Ancak postunu bugün hazırlayalım, ben schedule edeyim."
 
@@ -25,9 +25,25 @@ Ekran metni (derleyici biçimi, `*vurgu*`):
 
 Alt bant: `Bu akşam 21:00 · online`
 
+**19 Ekim 09:19 · Kaan'ın seçimi (C):** ilk metin okuyana yerin kimin için olduğunu ve ücretsiz olduğunu söylemiyordu. Basılan metin:
+
+```
+Üç kadın ateşi büyüttü.|*Üç kadına ücretsiz yer açıldı.*
+```
+
+Alt bant: `DM'den "yer" yaz · bu akşam 21:00` (feed ve story aynı). Kart Claude.ai'de derleyiciyle basıldı (headless Chromium, yazı tipleri @fontsource kopyası; z15 kireç düz). "Kül zemin" gündüzde yok; z15 kullanıldı.
+
 4:5 ve 9:16 birlikte basılır.
 
 ## Açıklama
+
+**19 Ekim 09:19 itibarıyla ilk satır eklendi** (Instagram'da yalnız o görünür):
+
+```
+Bu akşam üç kadının yeri ücretsiz.
+```
+
+İlk taslak, olduğu gibi:
 
 ```
 Açık Kapı'da katılım payını üç kademeden biriyle ödersin. Elinin bollaştığı bir dönemdeysen "Ateşi büyüten" kademesini seçebilirsin; fazladan koyduğun pay başka bir kadının yolunu açar.
