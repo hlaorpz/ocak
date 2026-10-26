@@ -101,7 +101,8 @@ Yerine yürümez, yanında yürür.
 ## Pratik Bilgi
 
 - Buluşma Zoom üzerinden; kayıt olduğunda bağlantı e-postana gelir
-- Kayıt alınır, hemen ardından e-postana düşer — gelemezsen sonradan izlersin
+- Buluşma kaydedilmez; o akşam orada olanlarla yaşanır
+- Gelemeyeceksen buluşmadan önce selam@ocak.biz adresine yaz; dilediğin bir Açık Kapı için sana bir kod göndeririz
 - Geç kalırsan da gel, kapı kapanmıyor
 ```
 

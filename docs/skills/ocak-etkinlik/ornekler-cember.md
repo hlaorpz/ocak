@@ -79,15 +79,15 @@ Söz değneği ona da gelir, o da paylaşır. Yerine yürümez, yanında yürür
 ```
 - Buluşma Zoom üzerinden; kaydını yaptığında bağlantı e-postana gelir
 - Kamera açık; çember birbirini görerek döner
-- Tema bölümü kaydedilebilir, gelemeyen kadınlar erişsin diye
-- Paylaşım turu kaydedilmez — söylenen o çemberde kalır
+- Gelemezsen açılış, tema ve pratiğin kaydı sana ulaşır
+- Paylaşım kayda girmez — söylenen o çemberde kalır
 - Baştan başlıyoruz; geç kalırsan sessizce katıl, tur bozulmaz
 ```
 
 ⚠ **"Kayıt" iki ayrı şeydir.** Katılım kaydı Çember'de alınır (`/cember/kayit`:
 tarih + niyet + katılım payı). Ses/video kaydı yalnız tema bölümü için alınır;
-paylaşım turu hiç kaydedilmez (KARAR 57.1). Açık Kapı'nın tek satırlık
-"Kayıt alınır, sonradan izlersin" cümlesi burada ikiye ayrılır.
+paylaşım turu hiç kaydedilmez (KARAR 57.1 · 678). Açık Kapı'nın tek satırlık
+"Kayıt alınır, sonradan izlersin" cümlesi burada ikiye ayrılır. *(26 Eki: Açık Kapı'da kayıt yok, KARAR 626 — bu cümle tarihçedir.)*
 
 ---
 

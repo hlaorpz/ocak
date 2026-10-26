@@ -1,6 +1,6 @@
 # OCAK — DURUM
 
-**Son güncelleme:** 18 Ekim 2026 · **Sosyal medya düzeni turu** · dönem HEAD `4141b46`
+**Son güncelleme:** 26 Ekim 2026 · **Kayıt kuralı turu** · dönem HEAD `c336d2e`
 
 ---
 
@@ -47,7 +47,7 @@ Yol haritası: `2026-08-06-ocak-gecis-plani.md` — **sonundaki SAPMA KAYDI'nı 
 - **Marka işareti ✅ (18–19 Ağu)** — logo + başlık kanonu (**KARAR 522 · 523**). Blok 24 Ağustos'ta kronolojiye **indi**; canlı ayağı **B105**: Instagram ✅ (avatar yüklendi, 11 Eyl) · WhatsApp ayağı **B197**'ye devredildi (Kanal düştü, KARAR 589) · **e-posta anteti hâlâ eski**.
 
 - **Sayfalar metin turu ✅ (24 Ağu)** — on dört yüzeyde yirmi bir yazım, C listesinin beşi
-  kapandı, **deploy aynı gün alındı.** Doktrin **558** (Seremoni + Çember'de kayıt yoktur,
+  kapandı, **deploy aynı gün alındı.** Doktrin **558** (Seremoni + Çember'de kayıt yoktur — *26 Eki: Çember ayağı daraldı, KARAR 678* —
   istisnasız — söz ile mekanizma çeliştiğinde **söz kazanır**) · **561** · **562** · **563**
   (mühürle birlikte denetim satırı; KARAR 86 üç ay denetimsiz yaşadı, **B80**) ·
   ölçüm doktrini **565** · **566** · **567**. Gerekçeler kronolojide.

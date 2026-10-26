@@ -365,6 +365,7 @@ Kakao & Sohbet, Ayurveda ve Kadın, Astroloji ve İç Yolculuk, Kristal ve Taş 
 - **Ücret:** Sembolik (bedava değil — ücret filtre yaratır). Açık Kapı ücreti şu an geçici boş (KARAR 84). Lansmana yakın netleşecek.
 - **Sonrası:** Otomatik email — "Dün akşam güzeldi. OCAK'ta neler var." Yumuşak yönlendirme.
 - **Kayıt:** Her Açık Kapı kaydedilir. Gelemeyenler izler. İleride Dijital Ocak içeriği olabilir.
+  ⚠ *Düştü (8 Eki, KARAR 626): Açık Kapı kaydedilmez. Gelemeyecek kadın buluşmadan önce yazar, kod alır. Çember'de gelemeyene kayıt: KARAR 678 (26 Eki).*
 - **Boyut:** 50-500 kadın. Üst limit yok.
 - **Reklam:** Evet, agresif. Reklam Açık Kapı'ya ve workshoplara yönlendirilmeli, direkt çembere değil.
 

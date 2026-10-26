@@ -729,6 +729,7 @@ otomatik yenileme yok · 1000/5000 satır tavanı · tarih aralığı süzgeci y
 **Lansman engeli (31 Ağustos):**
 - Zoom kaydı süreci — site *"Açık Kapı kaydedilir, kayıt katılımcılarla
   paylaşılır"* diye vaat ediyor, süreç kurulmadı (Vimeo yok)
+  ⚠ *Düştü (8 Eki, KARAR 626): Açık Kapı kaydedilmez; bot SSS 26 Eki'de düzeltildi. Süreç borcu Çember'e geçti: KARAR 678 · B244.*
 - **🔴 DAVET AKIŞI KAPALI — lansmandan önce AÇILMALI.**
   `davet-bot-korumasi` merge edildi (`a5ade5a`, 22 Ağu). Musluk + Origin +
   honeypot + zaman damgası canlıda. Ama `DAVET_AKISI` **tanımlı değil →

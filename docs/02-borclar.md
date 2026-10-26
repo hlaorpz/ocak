@@ -3985,6 +3985,7 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Ne (d) — kodun kendisi:** süreç elle (Kaan: *"mail atacaklar, biz yaparız"*). Yüzde yüz indirimli bir kodun kayıt akışından ödemesiz geçip geçmediği **ölçülmedi.**
 - **Ölçüm:** Claude.ai Notion bağlantısı, Etkinlikler DB, SQL `instr("Detay", …)` + `"Kayıt Var"`, 8 Eki. ~19:25 UTC'de altı kayıtta eski dize vardı, `Kayıt Var` işaretliydi; ~19:27'de gövdeler yeni hâlde, ~19:30'da `Kayıt Var` altısında işaretsiz. Korpus satırları: `docs_ara` regex `Tema ve pratik kaydedilir|Açık Kapı kaydedilir|kaydı hemen ardından|sonradan izle`, `f2bd9df`. ⚠ Notion kapalı yüzey — CC doğrulamaya çalışmaz.
 - **Kapanış şartı:** (c) üç korpus satırı güncellenir ya da düşüş notu alır · deploy + bir etkinlik sayfası gözle.
+- ✅ **(c) — 26 Eki (`docs-patch-2026-10-26`):** üç satırın üçü düştü — `skills/ocak-etkinlik/SKILL.md` Açık Kapı sabit satırı canlı gövdeyle eşitlendi · `20-ref-program.md` ve `20-ref-bot.md` satırlarına düşüş notu girdi (silinmedi, KARAR 61). Kalan: deploy + bir etkinlik sayfası gözle. Ayrıca WhatsApp botunun iki SSS cevabı 8 Eki'den beri *"Açık Kapı kaydedilir"* diyordu; Claude.ai 26 Eki'de düzeltti (KARAR 678 kaydı).
 - **Bağ:** KARAR 626 · KARAR 547 · 558 · B167
 
 ## B227 — Meta piksel kimliği korpusta ve test fixture'ında yanlış
@@ -4151,3 +4152,15 @@ yerinde. Robots açıldığında Taslak sayfa sitemap üzerinden sızmaz.
 - **Kapanış şartı:** Advaita'dan **orijinal kamera dosyası** istenir (WhatsApp/Instagram üzerinden değil — ikisi de yeniden sıkıştırır), bir dosyada çözünürlük ölçülür ve ≥1080×1920 teyit edilir; talep akışa (çekim brief'ine) yazılır ki her seferinde tekrar sorulmasın.
 - **Bağ:** KARAR 662 · KARAR 663 (Advaita videosunun ilk karesi öne çıkan kapak)
 - **Ölçüm:** **TEYITSIZ** — dosyalar CC'ye kapalı; "720p geliyor" Kaan'ın bildirimi, bu turda tek dosya üzerinde ölçülmedi.
+
+## B244 — Çember'de kayıt sözü verildi; gövdeler ve teslim yolu eski hâlde
+
+- [ ] **Sahip:** Kaan (gövdeler · Zoom · teslim) · Claude.ai (doğrulama) · **Tetikleyici:** **11 Kasım** — yayındaki ilk Çember (`ellerin-dolu`), kayıtlı kadın var
+- **Ne:** KARAR 678 ile `/cember` artık *"gelemeyen kadın için kayıt alınır"* diyor. Söz ile mekanizma üç yerde ayrışıyordu:
+  1. ✅ **Gövde (26 Eki, aynı tur):** yedi Çember kaydının `Detay` → `Pratik Bilgi` maddesi *"Çember kaydedilmez — söylenen o çemberde kalır"* idi. Kaan 625(e)'yi bu iş için kaldırdı, Claude.ai yazdı: *"Gelemezsen açılış, tema ve pratiğin kaydı sana ulaşır"* · *"Paylaşım kayda girmez — söylenen o çemberde kalır"*. Parmak iziyle doğrulandı (kronoloji kaydı).
+  2. **Teslim yolu yok:** kaydı kimin alacağı, nereye yükleneceği (Etkinlikler'de `Kayıt Yüklendi (Vimeo)` alanı var, süreç yok), gelemeyen kadına hangi yoldan gideceği (Resend şablonu yok) ve ne kadar saklanacağı tanımsız. `20-ref-bot.md` §16'nın Ağustos'taki Açık Kapı borcunun aynısı: söz verilmiş, süreç kurulmamış.
+  3. **Kayıt biçimi:** online çemberde *"Kamera açık"*. Tema bölümünde kaydedilen görüntüde katılımcıların yüzü olur. Öneri: kayıt yalnız alan tutucunun görüntüsü (Zoom'da konuşmacı görünümü), Zoom AI Companion ve transkript kapalı (KARAR 57).
+- **Risk:** Kadın kaydın geleceğine güvenip gelmeyebilir; kayıt gelmezse söz kırılır. Gövde ile sayfa çeliştiği sürece hangisinin geçerli olduğu kadına belirsiz. Yüz görüntüsü kişisel veri; `/gizlilik` buluşma kaydını anlatıyor mu, **ölçülmedi**.
+- **Kapanış şartı:** (1) ✅ yedi gövde güncellendi — SQL `instr("Detay",'Çember kaydedilmez')` = 0 (26 Eki) · (2) teslim yolu yazılı ve bir kez denenmiş · (3) `/gizlilik` okundu, gerekiyorsa satır girdi · (4) deploy + `/cember` gözle.
+- **Bağ:** KARAR 678 · 558 · 547 · 57 · 625 · B167 · B226
+- **Ölçüm:** Claude.ai Notion bağlantısı, Etkinlikler DB, 26 Eki — ~10:43 UTC yedi Çember gövdesinin yedisinde eski madde vardı; ~11:50 UTC yedisinde **0**, yeni iki madde yerinde; `Kayıt Var` yedisinde `__YES__`. ⚠ Notion kapalı yüzey — CC doğrulamaya çalışmaz.

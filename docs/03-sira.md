@@ -1,6 +1,6 @@
 # OCAK — SIRA
 
-**Son güncelleme:** 18 Ekim 2026 · **Sosyal medya düzeni turu** (S-1 yayın kaydı yazıldı)
+**Son güncelleme:** 26 Ekim 2026 · **Kayıt kuralı turu**
 
 ---
 
@@ -29,6 +29,8 @@ Kuyruk aşağıda, `📄 İÇERİK HATTI` bölümünde.
 **Sıradaki iş (kayıt yolu, 14 Eki — tur bitti, üç şey açık kaldı):** ✅ ön seçim ve hero düğmesi canlıda (`fffed28`, KARAR 660). Kalanlar: **(1) `/acik-kapi` hero'suna en yakın etkinliğin "Yerini ayır" düğmesi — Kaan kararı.** Ölçüm: telefonda (390×844) "En Yakın Açık Kapı" kartı **y=1456**, düğme **y=1672**, ekran 844'te bitiyor; ikisi de ilk ekranda değil, kadın iki ekran kaydırıyor. Etkinlik sayfasına yapılanın aynısı buraya da yapılabilir. **(2) Kayıt sayfası "adım adım" turu** — CC salt-read inceledi, kod yazılmadı; **üç karar Kaan'da**: (a) `?etkinlik` ile gelindiğinde hero başlığı etkinlik adı olacaksa kaynak nedir — istemci (ilk boyada göz kırpar) · SSR (edge cache ölür, ölçüldü: `x-vercel-cache: HIT`, age ~13,7 saat) · ya da başlık genel kalsın, etkinlik adı Buluşma adımının özet satırında dursun (**CC önerisi**) · (b) Başvuru tipinde Ödeme adımı hiç yok → "Adım n/4" yalan olur, n/3 mü · (c) KVKK ve Mesafeli onay son adıma mı girsin, bugünkü gibi adım dışında mı kalsın. Önerilen sıra: **alan sırası + katılım payı → kısa hero → adım adım**. ⚠ Ölçüm: katılım payı (300 TL) şu an **etkinlik sayfasında hiç görünmüyor** — ne hero'da ne kartta; kadın tutarı ancak formda, tarihi seçtikten sonra görüyor. **(3) Telefon göz kontrolü** — Instagram uygulama içi tarayıcısından profil linki → etkinlik sayfası → hero düğmesi → formda 19 Ekim seçili (Kaan; 16 Eki itibarıyla alınmadı). Kontrol listesi: `~/Desktop/OCAK-kontrol-listesi-16-ekim.md`.
 
 **Açık soru (Kaan teyidi bekliyor, 11 Eki'den):** *"Kor yalnız siyah zeminde"* kuralı — öne çıkan kapakları gece zemininde kaldı (KARAR 663), kural değişmedi. Teyit gelirse ledger'a girer; gelmezse kural bugünkü hâliyle sürer. ⚠ `pazarlama/TAKVIM.md`'nin story satırları **KARAR 661'e göre eski** (feed gönderisi story'ye hemen alınmaz) — bir sonraki pazarlama patch'inde düzelecek.
+
+**Sıradaki iş (kayıt kuralı, 26 Eki — 11 Kasım çemberinden önce):** KARAR 678. (1) ✅ Yedi Çember gövdesinin `Pratik Bilgi` maddesi (Claude.ai, 26 Eki) → (2) teslim yolu: kim kaydeder, nereye yüklenir, gelemeyene nasıl gider (Kaan) → (3) Zoom ayarı: konuşmacı görünümü, AI Companion kapalı (Kaan) → (4) deploy + `/cember` gözle (Kaan) → (5) `/gizlilik` kontrolü (Claude.ai okur, gerekirse CC). ⚠ `Ellerin Dolu` slug'ı Notion'da `-2026-11-11`, canlıda `-2026-10-21` — deploy eski bağlantıyı kırabilir (**B238**).
 
 **Sıradaki iş (kod/altyapı hattı, 8 Eki):** **Başvuru → kayıt köprüsü → havale otomatik eşleştirme → B68.** ✅ n8n ödeme onayı **düştü** (B211, 8 Eki — n8n yalnız saat, mantık `/api/bildirim-tara`'da). B69'un konusu düştü (aşağıda).
 ✅ Kuyruğun başındaki **B64 düştü** (11 Eyl, kapandı) — 20 Ağustos'tan beri değişmeyen
