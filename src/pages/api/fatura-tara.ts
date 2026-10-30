@@ -17,6 +17,7 @@
 //                    listeyi görüp onaylar, kesim ondan sonra).
 //   `?kayit=OCAK-X`  yalnız o kayıt — canlı tek kayıt testi için.
 //   env `FATURA_AKISI=acik` değilse yalnız kuru koşu çalışır (409).
+//   Test ortamında (`UYUMSOFT_ORTAM` boş/test) gerçek koşu `?kayit=` ister.
 //
 // ── SIRA ── fatura kesilir → Notion'a No/ETTN/Tarih yazılır → PDF alınır →
 // mail gider → `Fatura Maili Gitti`. Mail düşerse fatura yeniden KESİLMEZ;
@@ -182,6 +183,12 @@ async function handle(request: Request): Promise<Response> {
   });
   if (!ayarSonucu.ok) return json({ hata: ayarSonucu.hata }, 500);
   const ayar = ayarSonucu.ayar;
+  // ⚠ Test ortamı Notion'un CANLI Kayıtlar'ını okur. Toplu gerçek koşu,
+  // gerçek kadınlara test faturası maili + Notion'a test numarası demekti.
+  // Testte gerçek koşu yalnız tek kayıtla (?kayit=, Kaan'ın test kaydı).
+  if (ayar.ortam === 'test' && !kuru && !kayitFiltresi) {
+    return json({ hata: 'test ortamında gerçek koşu yalnız ?kayit= ile' }, 409);
+  }
 
   const simdi = new Date();
   const bugun = trGun(simdi);
