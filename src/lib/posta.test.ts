@@ -266,7 +266,7 @@ describe('yerinHazirSablonu — dal artık KODDA, otomasyonda değil', () => {
 describe('fatura maili — PDF eki', () => {
   const FATURA = {
     AD: 'Deniz', FATURA_NO: 'OCK2026000000001',
-    SATIR: 'Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli', TUTAR: '750 TL', REFERANS_NO: 'OCAK-7K2M',
+    SATIR: 'Açık Kapı - 19 Ekim - Katılım Bedeli', TUTAR: '750 TL', REFERANS_NO: 'OCAK-7K2M',
   };
   const EK = { dosyaAdi: 'OCK2026000000001.pdf', icerikBase64: 'JVBERi0x', tur: 'application/pdf' };
 

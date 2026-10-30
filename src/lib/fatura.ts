@@ -34,14 +34,12 @@ export const KDV_ORANI = 20;
 export const ODEME_ARACISI_KART = 'N-Kolay';
 export const SITE_ADRESI = 'https://www.ocak.biz';
 
-/**
- * Satır adındaki buluşma adı — `Format` → görünen ad. TEK tablo.
- * Kaan'ın örneği: "Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli".
- * Tabloda olmayan Format kendi adıyla yazılır (sessiz boşluk yerine).
+/*
+ * Satır adı = "<Etkinlik Formatı> - <gün ay> - Katılım Bedeli" (Kaan, 31 Eki):
+ * Format Notion'daki hâliyle, Açık Kapı DAHİL eşleme tablosu yok
+ * ("Açık Kapı - 19 Ekim - Katılım Bedeli", "Çember - 11 Kasım - Katılım Bedeli").
+ * 30 Eki'deki "Açık Kapı Buluşması" örneğinin yerine geçti.
  */
-export const BULUSMA_ADI: Record<string, string> = {
-  'Açık Kapı': 'Açık Kapı Buluşması',
-};
 
 const AYLAR = [
   'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
@@ -175,9 +173,9 @@ export function adSoyadBol(kadin: string): { ad: string; soyad: string } {
   return { ad: parcalar.slice(0, -1).join(' '), soyad: parcalar[parcalar.length - 1] };
 }
 
-/** "Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli" */
+/** "Açık Kapı - 19 Ekim - Katılım Bedeli" — Format olduğu gibi. */
 export function satirAdi(formatHam: string, etkinlikTarihi: string): string {
-  const ad = BULUSMA_ADI[formatHam] ?? formatHam;
+  const ad = formatHam.trim();
   const gun = etkinlikTarihi.length > 10 ? trGun(new Date(etkinlikTarihi)) : etkinlikTarihi;
   const [, ay, g] = gun.split('-').map(Number);
   const tarih = ay && g ? `${g} ${AYLAR[ay - 1]}` : '';

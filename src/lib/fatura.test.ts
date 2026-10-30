@@ -170,14 +170,14 @@ describe('adSoyadBol', () => {
 });
 
 describe('satirAdi', () => {
-  it("Kaan'ın örneği", () => {
-    expect(satirAdi('Açık Kapı', '2026-10-19T19:00:00.000+03:00')).toBe('Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli');
+  it('Format olduğu gibi — Açık Kapı dahil (Kaan, 31 Eki)', () => {
+    expect(satirAdi('Açık Kapı', '2026-10-19T19:00:00.000+03:00')).toBe('Açık Kapı - 19 Ekim - Katılım Bedeli');
   });
-  it('tabloda olmayan Format kendi adıyla', () => {
+  it('Çember', () => {
     expect(satirAdi('Çember', '2026-11-02')).toBe('Çember - 2 Kasım - Katılım Bedeli');
   });
   it('UTC damgalı tarih TR gününe çevrilir', () => {
-    expect(satirAdi('Açık Kapı', '2026-10-19T21:30:00.000Z')).toBe('Açık Kapı Buluşması - 20 Ekim - Katılım Bedeli');
+    expect(satirAdi('Açık Kapı', '2026-10-19T21:30:00.000Z')).toBe('Açık Kapı - 20 Ekim - Katılım Bedeli');
   });
 });
 
@@ -218,7 +218,7 @@ describe('faturaGovdesi', () => {
     expect(t.TaxExclusiveAmount.value).toBe(625);
     expect(t.PayableAmount.value).toBe(750);
     expect(g.Invoice.TaxTotal[0].TaxAmount.value).toBe(125);
-    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli');
+    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Açık Kapı - 19 Ekim - Katılım Bedeli');
   });
 
   it('kart: aracı N-Kolay; havale: aracı yok, EFT/HAVALE', () => {

@@ -104,7 +104,7 @@ export const SABLON_DEGISKENLERI: Record<SablonAdi, readonly string[]> = {
     // şablonunda var; online'da yol tarifi anlamsız.
     'YOL_TARIFI_LINKI',
   ],
-  // `SATIR` = faturadaki satır adı ("Açık Kapı Buluşması - 19 Ekim - Katılım
+  // `SATIR` = faturadaki satır adı ("Açık Kapı - 19 Ekim - Katılım
   // Bedeli"); `TUTAR` KDV dahil, birimli ("750 TL").
   [SABLON.fatura]: ['AD', 'FATURA_NO', 'SATIR', 'TUTAR', 'REFERANS_NO'],
 };
