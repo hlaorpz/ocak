@@ -149,11 +149,17 @@ const HATIRLATMA_ADAYI: SahteSatir = {
 };
 
 beforeEach(() => {
+  // Saat SABİT (31 Eki 2026): fixture'ların etkinliği 2026-10-20'de; gerçek
+  // saat o günü geçince 11 test "Etkinlik başladı" iptaline düşüyordu. Yalnız
+  // `Date` sahte — zamanlayıcılar gerçek kalır, async akış etkilenmez.
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date('2026-10-10T09:00:00.000Z'));
   for (const m of ['log', 'warn', 'error'] as const) {
     vi.spyOn(console, m).mockImplementation(() => {});
   }
 });
 afterEach(() => {
+  vi.useRealTimers();
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
   vi.resetModules();
