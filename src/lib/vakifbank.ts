@@ -71,7 +71,20 @@ export function vbAyari(env: Record<string, string | undefined>): Sonuc<VbAyar> 
   return { ok: true, deger: { ortam, clientId, clientSecret, rizaNo, hesapNo, taban, tokenUrl } };
 }
 
-async function istek(getir: VbGetir, url: string, headers: Record<string, string>, body: string, ad: string): Promise<Sonuc<unknown>> {
+/**
+ * "Bu aralıkta hareket yok" — banka bunu HTTP 400 + bu kodla söylüyor
+ * (31 Eki sandbox ölçümü). Hata DEĞİL, sıfır hareket.
+ */
+export const HAREKET_YOK_KODU = 'ACBH000202';
+
+async function istek(
+  getir: VbGetir,
+  url: string,
+  headers: Record<string, string>,
+  body: string,
+  ad: string,
+  bosKodu?: string,
+): Promise<Sonuc<unknown>> {
   let status = 0;
   let metin = '';
   try {
@@ -87,7 +100,11 @@ async function istek(getir: VbGetir, url: string, headers: Record<string, string
   } catch {
     return { ok: false, hata: `${ad}: HTTP ${status}, JSON değil: ${kirp(metin)}` };
   }
-  if (status >= 400) return { ok: false, hata: `${ad}: HTTP ${status}: ${kirp(JSON.stringify(govde))}` };
+  if (status >= 400) {
+    const kod = (govde as { Header?: { StatusCode?: string } })?.Header?.StatusCode;
+    if (bosKodu && kod === bosKodu) return { ok: true, deger: { Header: { StatusCode: 'APIGW000000' }, Data: { AccountTransactions: [] } } };
+    return { ok: false, hata: `${ad}: HTTP ${status}: ${kirp(JSON.stringify(govde))}` };
+  }
   return { ok: true, deger: govde };
 }
 
@@ -144,10 +161,15 @@ export async function hareketleriOku(
       { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       JSON.stringify({ AccountNumber: a.hesapNo, StartDate: trGunBasi(gun), EndDate: trGunBasi(gunEkle(gun, 1)) }),
       `hareket ${gun}`,
+      HAREKET_YOK_KODU,
     );
     if (!r.ok) return r;
     const g = r.deger as { Header?: { StatusCode?: string; StatusDescription?: string }; Data?: { AccountTransactions?: unknown[] } };
     const kod = g.Header?.StatusCode ?? '';
+    if (kod === HAREKET_YOK_KODU) {
+      gunler.push({ gun, adet: 0, tavanaDegdi: false });
+      continue;
+    }
     if (kod && kod !== 'APIGW000000') {
       return { ok: false, hata: `hareket ${gun}: ${kod} ${kirp(String(g.Header?.StatusDescription ?? ''))}` };
     }

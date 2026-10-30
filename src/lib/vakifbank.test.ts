@@ -108,3 +108,20 @@ describe('hesapListesi', () => {
     expect(r).toEqual({ ok: true, deger: { Accounts: [{ AccountNumber: '1' }] } });
   });
 });
+
+describe('hareketsiz gün', () => {
+  it('HTTP 400 + ACBH000202 → sıfır hareket, hata değil (31 Eki sandbox ölçümü)', async () => {
+    const bos = { Header: { StatusCode: 'ACBH000202', StatusDescription: 'Seçilen tarih aralığında hesap hareketi bulunmamaktadır.' } };
+    const r = await hareketleriOku(AYAR, 'T', '2026-10-27', '2026-10-28', (_u, i) =>
+      JSON.parse(i.body).StartDate.startsWith('2026-10-27') ? yanit(bos, 400) : yanit(ORNEK));
+    expect(r.ok).toBe(true);
+    expect(r.ok && r.deger.gunler).toEqual([
+      { gun: '2026-10-27', adet: 0, tavanaDegdi: false },
+      { gun: '2026-10-28', adet: 2, tavanaDegdi: false },
+    ]);
+  });
+  it('başka 400 kodu hâlâ hata', async () => {
+    const r = await hareketleriOku(AYAR, 'T', '2026-10-27', '2026-10-27', () => yanit({ Header: { StatusCode: 'ACBH000034' } }, 400));
+    expect(r.ok).toBe(false);
+  });
+});
