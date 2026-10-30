@@ -78,12 +78,28 @@ export function faturaEttnOku(p: Ozellikler): string {
 
 const rt = (s: string) => ({ rich_text: [{ type: 'text' as const, text: { content: s.slice(0, 2000) } }] });
 
-/** Fatura kesildi — İLK yazım. Mail bundan SONRA denenir. */
+/**
+ * KİLİT — Uyumsoft'a gitmeden ÖNCE yazılır (31 Eki ölçümü: test hesabında
+ * aynı LocalDocumentId ile ikinci fatura KESİLDİ, BOX…2415 ve …2416).
+ * Uyumsoft'un mükerrer korumasına yaslanılmaz. Kesimden sonra Notion yazımı
+ * düşerse kilit kalır → kayıt `onceki-hata` olur, bir daha denenmez; Kaan
+ * portalda kontrol edip temizler.
+ */
+export function faturaKilidiYazimi(gun: string) {
+  return {
+    [ALAN.faturaHatasi]: rt(
+      `${gun} · kesim başladı, sonuç yazılamadı — Uyumsoft portalında bu Kayıt ID ile fatura var mı bak; yoksa bu alanı temizle`,
+    ),
+  };
+}
+
+/** Fatura kesildi — İLK yazım; kilidi de kaldırır. Mail bundan SONRA denenir. */
 export function faturaKesildiYazimi(numara: string, ettn: string, gun: string) {
   return {
     [ALAN.faturaNo]: rt(numara),
     [ALAN.faturaEttn]: rt(ettn),
     [ALAN.faturaTarihi]: { date: { start: gun } },
+    [ALAN.faturaHatasi]: { rich_text: [] },
   };
 }
 

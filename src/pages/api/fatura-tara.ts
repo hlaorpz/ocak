@@ -21,8 +21,11 @@
 //
 // ── SIRA ── fatura kesilir → Notion'a No/ETTN/Tarih yazılır → PDF alınır →
 // mail gider → `Fatura Maili Gitti`. Mail düşerse fatura yeniden KESİLMEZ;
-// sonraki tarama yalnız maili dener (`mail-tekrar`). Aynı kayda ikinci fatura
-// ayrıca Uyumsoft'ta `LocalDocumentId = Kayıt ID` ile engelli.
+// sonraki tarama yalnız maili dener (`mail-tekrar`). Aynı kayda ikinci fatura:
+// Uyumsoft'un `LocalDocumentId` korumasına YASLANILMAZ (31 Eki: test hesabında
+// ikinci fatura kesildi). Kendi kilidimiz: kesimden önce `Fatura Hatası`'na
+// "kesim başladı" yazılır, başarıda silinir; yarıda kalırsa kayıt bir daha
+// denenmez, Kaan bakar.
 //
 // ── YANIT ── yalnız Kayıt ID, sebep, tutar, satır adı. Ad/e-posta YOK (§8).
 import type { APIRoute } from 'astro';
@@ -45,6 +48,7 @@ import {
   faturaSatiriOku,
   faturaEttnOku,
   faturaKesildiYazimi,
+  faturaKilidiYazimi,
   faturaHatasiYazimi,
   faturaMailiGittiYazimi,
   type EtkinlikOzeti,
@@ -248,6 +252,13 @@ async function handle(request: Request): Promise<Response> {
       saticiSec(ayar.ortam),
       simdi,
     );
+    // Kilit yazılamıyorsa KESME: sonucu Notion'a yazamayacağımız bir faturayı
+    // hiç kesmemek, iki kez kesmekten iyidir.
+    if (!(await guncelle(s.pageId, faturaKilidiYazimi(bugun)))) {
+      kayit.sonuc = 'kilit-yazilamadi';
+      say('kilit-yazilamadi');
+      continue;
+    }
     const gonder = await faturaGonder(ayar, govde);
     if (!gonder.ok) {
       console.error(`[fatura-tara] fatura kesilemedi — kayitId=${s.kayitId} ${gonder.hata}`);

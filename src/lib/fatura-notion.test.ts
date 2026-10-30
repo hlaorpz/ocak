@@ -63,3 +63,16 @@ describe('yazımlar', () => {
     expect(y[ALAN.faturaHatasi].rich_text[0].text.content.length).toBe(2000);
   });
 });
+
+describe('kilit', () => {
+  it('kesimden önce Fatura Hatası dolar → kayıt bir daha aday olmaz', async () => {
+    const { faturaKilidiYazimi } = await import('./fatura-notion.ts');
+    const y = faturaKilidiYazimi('2026-10-31');
+    const metin = y[ALAN.faturaHatasi].rich_text[0].text.content;
+    const s = faturaSatiriOku('p', { ...KAYIT, 'Fatura Hatası': yazi(metin) }, etkinlikOzetiOku(ETKINLIK));
+    expect(faturaKarari(s, new Date('2026-10-31T07:00:00Z'))).toEqual({ tip: 'atla', sebep: 'onceki-hata' });
+  });
+  it('kesildi yazımı kilidi kaldırır', () => {
+    expect(faturaKesildiYazimi('N', 'E', '2026-10-31')[ALAN.faturaHatasi]).toEqual({ rich_text: [] });
+  });
+});
