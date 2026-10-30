@@ -98,3 +98,13 @@ describe('hareketleriOku', () => {
     expect(r.ok && r.deger.gunler).toEqual([{ gun: '2026-10-31', adet: 100, tavanaDegdi: true }]);
   });
 });
+
+describe('hesapListesi', () => {
+  it('Bearer ile /accountList, Data döner', async () => {
+    const { hesapListesi } = await import('./vakifbank.ts');
+    let url = '';
+    const r = await hesapListesi(AYAR, 'T', (u) => { url = u; return yanit({ Header: { StatusCode: 'APIGW000000' }, Data: { Accounts: [{ AccountNumber: '1' }] } }); });
+    expect(url).toBe('https://apigw.vakifbank.com.tr:8443/accountList');
+    expect(r).toEqual({ ok: true, deger: { Accounts: [{ AccountNumber: '1' }] } });
+  });
+});

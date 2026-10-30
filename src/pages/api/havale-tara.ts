@@ -13,6 +13,8 @@
 // ── KİP ──
 //   `?kuru=1`  hiçbir şey yazılmaz; hareket başına karar listesi döner.
 //   `?gun=N`   bugün dahil geriye N gün (varsayılan 3, en çok 31).
+//   `?hesaplar=1`  tanı: rızanın gösterdiği hesap listesi (yalnız okur).
+//   `?hesap=…`     yalnız sandbox: hesap no'yu env'e dokunmadan dene.
 //   env `HAVALE_AKISI=acik` değilse yalnız kuru koşu (409).
 //
 // ── YANIT ── işlem no, tarih, tutar, kod, karar. Banka AÇIKLAMASI YOK:
@@ -23,7 +25,7 @@ import { sabitZamanliEsit } from '../../lib/sabit-zamanli.ts';
 import { trGun } from '../../lib/format-etkinlik.ts';
 import { ALAN } from '../../lib/fatura-notion.ts';
 import { havalePlani, type HavaleKaydi } from '../../lib/havale.ts';
-import { vbAyari, tokenAl, hareketleriOku } from '../../lib/vakifbank.ts';
+import { vbAyari, tokenAl, hareketleriOku, hesapListesi } from '../../lib/vakifbank.ts';
 
 export const prerender = false;
 
@@ -116,7 +118,15 @@ async function handle(request: Request): Promise<Response> {
     console.error(`[havale-tara] ${token.hata}`);
     return json({ hata: token.hata }, 502);
   }
-  const okuma = await hareketleriOku(ayar.deger, token.deger, baslangic, bugun);
+  // Tanı: `?hesaplar=1` → rızanın gösterdiği hesap listesi, başka hiçbir şey.
+  if (url.searchParams.get('hesaplar') === '1') {
+    const liste = await hesapListesi(ayar.deger, token.deger);
+    return liste.ok ? json({ ortam: ayar.deger.ortam, hesaplar: liste.deger }) : json({ hata: liste.hata }, 502);
+  }
+  // Yalnız sandbox: `?hesap=` ile hesap no denenebilir (env'e dokunmadan).
+  const hesapDene = (url.searchParams.get('hesap') ?? '').trim();
+  const okumaAyari = ayar.deger.ortam === 'sandbox' && hesapDene ? { ...ayar.deger, hesapNo: hesapDene } : ayar.deger;
+  const okuma = await hareketleriOku(okumaAyari, token.deger, baslangic, bugun);
   if (!okuma.ok) {
     console.error(`[havale-tara] ${okuma.hata}`);
     return json({ hata: okuma.hata }, 502);

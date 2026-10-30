@@ -171,3 +171,21 @@ export async function hareketleriOku(
   }
   return { ok: true, deger: { hareketler, gunler } };
 }
+
+/**
+ * Hesap listesi — rızanın gösterdiği hesaplar. Yanıt biçimi ÖLÇÜLMEDİ
+ * (koleksiyonda örnek yok); `Data` olduğu gibi döner. Tanı içindir:
+ * sandbox'ın hesap numarasını ve canlıda OCAK hesabının API'deki yazımını
+ * görmek için (31 Eki: hareket sorgusu "Hesap numarası boş olamaz" dedi).
+ */
+export async function hesapListesi(a: VbAyar, token: string, getir: VbGetir = fetch as unknown as VbGetir): Promise<Sonuc<unknown>> {
+  const r = await istek(
+    getir,
+    `${a.taban}/accountList`,
+    { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    '{}',
+    'hesap listesi',
+  );
+  if (!r.ok) return r;
+  return { ok: true, deger: (r.deger as { Data?: unknown }).Data ?? r.deger };
+}
