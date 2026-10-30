@@ -124,6 +124,8 @@ export type PostaTasima = (istek: {
   replyTo: string;
   template: { id: string; variables: Record<string, string> };
   ekler?: PostaEki[];
+  /** Gizli kopya — bugün yalnız fatura maili, OCAK'ın kendi kutusuna. */
+  bcc?: string[];
 }) => Promise<PostaSonuc>;
 
 /**
@@ -147,6 +149,7 @@ export function resendTasima(): PostaTasima {
         from: istek.from,
         to: istek.to,
         replyTo: istek.replyTo,
+        ...(istek.bcc?.length ? { bcc: istek.bcc } : {}),
         template: istek.template,
         // Resend SDK 6.14.0 tipi `template` ile `attachments`'ı birlikte kabul
         // ediyor; base64 string `content` olarak gider.
@@ -186,10 +189,11 @@ export async function postaGonder(
     degiskenler: Record<string, string>;
     kayitId: string;
     ekler?: PostaEki[];
+    bcc?: string[];
   },
   tasima: PostaTasima,
 ): Promise<PostaSonuc> {
-  const { sablon, alici, degiskenler, kayitId, ekler } = args;
+  const { sablon, alici, degiskenler, kayitId, ekler, bcc } = args;
 
   const basarisiz = (hata: string): PostaSonuc => {
     console.error(`[posta] gönderilemedi — kayitId=${kayitId} sablon=${sablon} sebep=${hata}`);
@@ -215,6 +219,7 @@ export async function postaGonder(
       replyTo: POSTA_REPLY_TO,
       template: { id: sablon, variables: degiskenler },
       ...(ekler?.length ? { ekler } : {}),
+      ...(bcc?.length ? { bcc } : {}),
     });
   } catch (err) {
     // Taşıma throw etmemeli; "etmemeli" bir gözlem, sözleşme değil.

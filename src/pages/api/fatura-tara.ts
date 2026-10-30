@@ -33,7 +33,7 @@ import { notion, queryDatabase, NOTION_KAYITLAR_DB } from '../../lib/notion.ts';
 import { sabitZamanliEsit } from '../../lib/sabit-zamanli.ts';
 import { trGun } from '../../lib/format-etkinlik.ts';
 import { ilkAd } from '../../lib/davet-baglam.ts';
-import { postaGonder, resendTasima, tutarMetni, SABLON } from '../../lib/posta.ts';
+import { postaGonder, resendTasima, tutarMetni, SABLON, POSTA_REPLY_TO } from '../../lib/posta.ts';
 import {
   faturaKarari,
   faturaGovdesi,
@@ -160,6 +160,9 @@ async function mailGonder(ayar: UyumsoftAyar, s: FaturaSatiri, faturaNo: string,
         REFERANS_NO: s.kayitId,
       },
       ekler: [{ dosyaAdi: `${faturaNo}.pdf`, icerikBase64: pdf.deger, tur: 'application/pdf' }],
+      // Her faturanın kopyası OCAK'ın kutusuna (Kaan, 31 Eki) — gizli kopya,
+      // alıcı görmez.
+      bcc: [POSTA_REPLY_TO],
     },
     resendTasima(),
   );

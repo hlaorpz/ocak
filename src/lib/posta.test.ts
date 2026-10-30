@@ -290,3 +290,26 @@ describe('fatura maili — PDF eki', () => {
     expect('ekler' in cagrilar[0]).toBe(false);
   });
 });
+
+describe('gizli kopya (bcc)', () => {
+  const FATURA = {
+    AD: 'Deniz', FATURA_NO: 'OCK2026000000001',
+    SATIR: 'Açık Kapı - 19 Ekim - Katılım Bedeli', TUTAR: '300 TL', REFERANS_NO: 'OCAK-7K2M',
+  };
+  it('bcc taşımaya geçer', async () => {
+    const { tasima, cagrilar } = tasimaSahtesi();
+    await postaGonder(
+      { sablon: SABLON.fatura, alici: 'a@b.invalid', degiskenler: { ...FATURA }, kayitId: 'OCAK-7K2M', bcc: [POSTA_REPLY_TO] },
+      tasima,
+    );
+    expect(cagrilar[0].bcc).toEqual(['selam@ocak.biz']);
+  });
+  it('bcc verilmeyen mailde alan yok (mevcut mailler değişmez)', async () => {
+    const { tasima, cagrilar } = tasimaSahtesi();
+    await postaGonder(
+      { sablon: SABLON.fatura, alici: 'a@b.invalid', degiskenler: { ...FATURA }, kayitId: 'OCAK-7K2M' },
+      tasima,
+    );
+    expect('bcc' in cagrilar[0]).toBe(false);
+  });
+});
