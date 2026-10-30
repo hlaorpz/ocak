@@ -56,6 +56,11 @@ export const SABLON = {
   /** Buluşma günü hatırlatması (İŞ 8). `GUN` değişkeni "Bugün"/"Bu akşam". */
   gunHatirlatmaOnline: 'gun-hatirlatma-online',
   gunHatirlatmaYuzyuze: 'gun-hatirlatma-yuzyuze',
+  /**
+   * e-Arşiv faturası maili (Kaan, 30 Eki) — PDF EKLİ gider (`ekler`).
+   * Uyumsoft'un kendi bildirimi kullanılmaz; gönderim Resend arşivinde kalsın.
+   */
+  fatura: 'fatura',
 } as const;
 
 export type SablonAdi = (typeof SABLON)[keyof typeof SABLON];
@@ -99,9 +104,15 @@ export const SABLON_DEGISKENLERI: Record<SablonAdi, readonly string[]> = {
     // şablonunda var; online'da yol tarifi anlamsız.
     'YOL_TARIFI_LINKI',
   ],
+  // `SATIR` = faturadaki satır adı ("Açık Kapı Buluşması - 19 Ekim - Katılım
+  // Bedeli"); `TUTAR` KDV dahil, birimli ("750 TL").
+  [SABLON.fatura]: ['AD', 'FATURA_NO', 'SATIR', 'TUTAR', 'REFERANS_NO'],
 };
 
 export type PostaSonuc = { ok: boolean; hata?: string };
+
+/** Ek dosya — `content` base64. Bugün yalnız fatura PDF'i. */
+export type PostaEki = { dosyaAdi: string; icerikBase64: string; tur: string };
 
 /**
  * Taşıma katmanı — enjekte edilebilir olması testin tek şartı. Üretimde
@@ -112,6 +123,7 @@ export type PostaTasima = (istek: {
   to: string;
   replyTo: string;
   template: { id: string; variables: Record<string, string> };
+  ekler?: PostaEki[];
 }) => Promise<PostaSonuc>;
 
 /**
@@ -136,6 +148,17 @@ export function resendTasima(): PostaTasima {
         to: istek.to,
         replyTo: istek.replyTo,
         template: istek.template,
+        // Resend SDK 6.14.0 tipi `template` ile `attachments`'ı birlikte kabul
+        // ediyor; base64 string `content` olarak gider.
+        ...(istek.ekler?.length
+          ? {
+              attachments: istek.ekler.map((e) => ({
+                filename: e.dosyaAdi,
+                content: e.icerikBase64,
+                contentType: e.tur,
+              })),
+            }
+          : {}),
       });
       if (sonuc.error) {
         return { ok: false, hata: `${sonuc.error.name}: ${String(sonuc.error.message).slice(0, 200)}` };
@@ -162,10 +185,11 @@ export async function postaGonder(
     alici: string;
     degiskenler: Record<string, string>;
     kayitId: string;
+    ekler?: PostaEki[];
   },
   tasima: PostaTasima,
 ): Promise<PostaSonuc> {
-  const { sablon, alici, degiskenler, kayitId } = args;
+  const { sablon, alici, degiskenler, kayitId, ekler } = args;
 
   const basarisiz = (hata: string): PostaSonuc => {
     console.error(`[posta] gönderilemedi — kayitId=${kayitId} sablon=${sablon} sebep=${hata}`);
@@ -190,6 +214,7 @@ export async function postaGonder(
       to: alici,
       replyTo: POSTA_REPLY_TO,
       template: { id: sablon, variables: degiskenler },
+      ...(ekler?.length ? { ekler } : {}),
     });
   } catch (err) {
     // Taşıma throw etmemeli; "etmemeli" bir gözlem, sözleşme değil.

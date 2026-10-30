@@ -262,3 +262,31 @@ describe('yerinHazirSablonu — dal artık KODDA, otomasyonda değil', () => {
     expect(yerinHazirSablonu('Kapadokya')).toBe('yerin-hazir-yuzyuze');
   });
 });
+
+describe('fatura maili — PDF eki', () => {
+  const FATURA = {
+    AD: 'Deniz', FATURA_NO: 'OCK2026000000001',
+    SATIR: 'Açık Kapı Buluşması - 19 Ekim - Katılım Bedeli', TUTAR: '750 TL', REFERANS_NO: 'OCAK-7K2M',
+  };
+  const EK = { dosyaAdi: 'OCK2026000000001.pdf', icerikBase64: 'JVBERi0x', tur: 'application/pdf' };
+
+  it('ek taşımaya olduğu gibi geçer, değişken kümesi katı kalır', async () => {
+    const { tasima, cagrilar } = tasimaSahtesi();
+    const r = await postaGonder(
+      { sablon: SABLON.fatura, alici: 'a@b.invalid', degiskenler: { ...FATURA }, kayitId: 'OCAK-7K2M', ekler: [EK] },
+      tasima,
+    );
+    expect(r.ok).toBe(true);
+    expect(cagrilar[0].template.id).toBe('fatura');
+    expect(cagrilar[0].ekler).toEqual([EK]);
+  });
+
+  it('eki olmayan mailde `ekler` alanı hiç yok (mevcut maillerin yükü değişmez)', async () => {
+    const { tasima, cagrilar } = tasimaSahtesi();
+    await postaGonder(
+      { sablon: SABLON.fatura, alici: 'a@b.invalid', degiskenler: { ...FATURA }, kayitId: 'OCAK-7K2M' },
+      tasima,
+    );
+    expect('ekler' in cagrilar[0]).toBe(false);
+  });
+});
