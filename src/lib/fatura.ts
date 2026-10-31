@@ -174,8 +174,11 @@ export function adSoyadBol(kadin: string): { ad: string; soyad: string } {
 }
 
 /** "Açık Kapı - 19 Ekim - Katılım Bedeli" — Format olduğu gibi. */
-export function satirAdi(formatHam: string, etkinlikTarihi: string): string {
+export function satirAdi(formatHam: string, etkinlikTarihi: string, tarihsiz = false): string {
   const ad = formatHam.trim();
+  // Tek seferlik (Kaan, 31 Eki): 19 Ekim'in geriye dönük faturaları ay sonu
+  // tarihiyle kesilirken satırda etkinlik günü YAZILMAZ → "Açık Kapı - Katılım Bedeli".
+  if (tarihsiz) return [ad, 'Katılım Bedeli'].filter(Boolean).join(' - ');
   const gun = etkinlikTarihi.length > 10 ? trGun(new Date(etkinlikTarihi)) : etkinlikTarihi;
   const [, ay, g] = gun.split('-').map(Number);
   const tarih = ay && g ? `${g} ${AYLAR[ay - 1]}` : '';
@@ -222,6 +225,8 @@ export type FaturaGirdisi = {
   odemeTarihi: string;
   yontem: 'kart' | 'havale';
   toplam: number;
+  /** Satır adında etkinlik günü olmasın (`?satir=tarihsiz`, tek seferlik). */
+  satirTarihsiz?: boolean;
 };
 
 const v = <T>(value: T) => ({ value });
@@ -328,7 +333,7 @@ export function faturaGovdesi(g: FaturaGirdisi, satici: Satici, simdi: Date): Re
             TaxCategory: kdvKategori,
           }],
         },
-        Item: { Name: v(satirAdi(g.formatHam, g.etkinlikTarihi)) },
+        Item: { Name: v(satirAdi(g.formatHam, g.etkinlikTarihi, g.satirTarihsiz)) },
         Price: { PriceAmount: para(matrah) },
       }],
     },

@@ -16,6 +16,8 @@
 //                    karar listesi döner. İlk canlı çalıştırma BÖYLE (Kaan
 //                    listeyi görüp onaylar, kesim ondan sonra).
 //   `?kayit=OCAK-X`  yalnız o kayıt — canlı tek kayıt testi için.
+//   `?satir=tarihsiz` satır adında etkinlik günü yazılmaz (19 Ekim'in ay sonu
+//                    toplu kesimi için, tek seferlik — Kaan, 31 Eki).
 //   env `FATURA_AKISI=acik` değilse yalnız kuru koşu çalışır (409).
 //   Test ortamında (`UYUMSOFT_ORTAM` boş/test) gerçek koşu `?kayit=` ister.
 //
@@ -140,7 +142,13 @@ type Satir = {
   sonuc?: string;
 };
 
-async function mailGonder(ayar: UyumsoftAyar, s: FaturaSatiri, faturaNo: string, ettn: string): Promise<string> {
+async function mailGonder(
+  ayar: UyumsoftAyar,
+  s: FaturaSatiri,
+  faturaNo: string,
+  ettn: string,
+  satirTarihsiz: boolean,
+): Promise<string> {
   if (!s.email) return 'mail-adres-yok';
   const pdf = await faturaPdf(ayar, ettn);
   if (!pdf.ok) {
@@ -155,7 +163,7 @@ async function mailGonder(ayar: UyumsoftAyar, s: FaturaSatiri, faturaNo: string,
       degiskenler: {
         AD: ilkAd(s.kadin),
         FATURA_NO: faturaNo,
-        SATIR: satirAdi(s.formatHam, s.etkinlikTarihi),
+        SATIR: satirAdi(s.formatHam, s.etkinlikTarihi, satirTarihsiz),
         TUTAR: tutarMetni(faturaTutari(s) ?? 0, 'TRY'),
         REFERANS_NO: s.kayitId,
       },
@@ -180,6 +188,8 @@ async function handle(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const kuru = url.searchParams.get('kuru') === '1';
   const kayitFiltresi = (url.searchParams.get('kayit') ?? '').trim();
+  // Tek seferlik (Kaan, 31 Eki): `?satir=tarihsiz` → satır adında etkinlik günü yok.
+  const satirTarihsiz = url.searchParams.get('satir') === 'tarihsiz';
   const acik = (import.meta.env.FATURA_AKISI ?? '').trim() === 'acik';
   if (!kuru && !acik) return json({ hata: 'FATURA_AKISI kapalı — yalnız ?kuru=1 çalışır' }, 409);
 
@@ -227,7 +237,7 @@ async function handle(request: Request): Promise<Response> {
       const kayit: Satir = { kayitId: s.kayitId, karar: 'mail-tekrar', faturaNo: s.faturaNo };
       if (!kuru && islenen < TAVAN) {
         islenen++;
-        kayit.sonuc = ettn ? await mailGonder(ayar, s, s.faturaNo, ettn) : 'ettn-yok';
+        kayit.sonuc = ettn ? await mailGonder(ayar, s, s.faturaNo, ettn, satirTarihsiz) : 'ettn-yok';
       }
       satirlar.push(kayit);
       continue;
@@ -239,7 +249,7 @@ async function handle(request: Request): Promise<Response> {
       karar: 'kes',
       yontem: karar.yontem,
       tutar: karar.toplam,
-      satirAdi: satirAdi(s.formatHam, s.etkinlikTarihi),
+      satirAdi: satirAdi(s.formatHam, s.etkinlikTarihi, satirTarihsiz),
     };
     satirlar.push(kayit);
     if (kuru) continue;
@@ -250,7 +260,7 @@ async function handle(request: Request): Promise<Response> {
       {
         kayitId: s.kayitId, kadin: s.kadin, sehir: s.sehir, email: s.email,
         formatHam: s.formatHam, etkinlikTarihi: s.etkinlikTarihi, odemeTarihi: s.odemeTarihi,
-        yontem: karar.yontem, toplam: karar.toplam,
+        yontem: karar.yontem, toplam: karar.toplam, satirTarihsiz,
       },
       saticiSec(ayar.ortam),
       simdi,
@@ -281,11 +291,12 @@ async function handle(request: Request): Promise<Response> {
       say('kesildi-notion-yazilamadi');
       continue;
     }
-    kayit.sonuc = await mailGonder(ayar, s, numara, yeniEttn);
+    kayit.sonuc = await mailGonder(ayar, s, numara, yeniEttn, satirTarihsiz);
   }
 
   return json({
     kip: kuru ? 'kuru' : 'gercek',
+    satirTarihsiz,
     ortam: ayar.ortam,
     bugun,
     okunan: adaylar.length,

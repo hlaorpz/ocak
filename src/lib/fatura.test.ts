@@ -235,3 +235,18 @@ describe('faturaGovdesi', () => {
     expect(g.Invoice.IssueDate.value).toBe('2026-10-20');
   });
 });
+
+describe('satirAdi — tarihsiz (31 Eki tek seferlik)', () => {
+  it('etkinlik günü yazılmaz', () => {
+    expect(satirAdi('Açık Kapı', '2026-10-19T19:00:00.000+03:00', true)).toBe('Açık Kapı - Katılım Bedeli');
+  });
+  it('faturaGovdesi satırı da tarihsiz', () => {
+    // biome-ignore lint: test erişimi
+    const g = faturaGovdesi({
+      kayitId: 'OCAK-1', kadin: 'A B', sehir: 'İzmir', email: 'a@b.invalid', formatHam: 'Açık Kapı',
+      etkinlikTarihi: '2026-10-19', odemeTarihi: '2026-10-12', yontem: 'kart', toplam: 300, satirTarihsiz: true,
+    }, SATICI_TEST, new Date('2026-10-31T17:00:00Z')) as any;
+    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Açık Kapı - Katılım Bedeli');
+    expect(g.Invoice.IssueDate.value).toBe('2026-10-31');
+  });
+});
