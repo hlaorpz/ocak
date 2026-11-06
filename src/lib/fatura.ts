@@ -43,6 +43,13 @@ export const SITE_ADRESI = 'https://www.ocak.biz';
  */
 export const FATURA_SATIR_ADI = 'Eğitim Danışmanlık Hizmet Bedeli';
 
+/**
+ * 19 Ekim'in geriye dönük toplu kesimine ÖZEL satır adı (Kaan, 6 Kas 14:09:
+ * "Bu faturalar özelinde Eğitim Bedeli yazalım sadece"). `?satir=tarihsiz`
+ * verilen koşuda kullanılır; varsayılan `FATURA_SATIR_ADI` kalır.
+ */
+export const FATURA_SATIR_ADI_TOPLU = 'Eğitim Bedeli';
+
 /*
  * Satır adı = "<Etkinlik Formatı> - <gün ay> - Katılım Bedeli" (Kaan, 31 Eki):
  * Format Notion'daki hâliyle, Açık Kapı DAHİL eşleme tablosu yok
@@ -351,7 +358,7 @@ export function faturaGovdesi(g: FaturaGirdisi, satici: Satici, simdi: Date): Re
             TaxCategory: kdvKategori,
           }],
         },
-        Item: { Name: v(FATURA_SATIR_ADI) },
+        Item: { Name: v(g.satirTarihsiz ? FATURA_SATIR_ADI_TOPLU : FATURA_SATIR_ADI) },
         Price: { PriceAmount: para(matrah) },
       }],
     },

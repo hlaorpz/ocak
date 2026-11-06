@@ -246,7 +246,7 @@ describe('satirAdi — tarihsiz (31 Eki tek seferlik)', () => {
       kayitId: 'OCAK-1', kadin: 'A B', sehir: 'İzmir', email: 'a@b.invalid', formatHam: 'Açık Kapı',
       etkinlikTarihi: '2026-10-19', odemeTarihi: '2026-10-12', yontem: 'kart', toplam: 300, satirTarihsiz: true,
     }, SATICI_TEST, new Date('2026-10-31T17:00:00Z')) as any;
-    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Eğitim Danışmanlık Hizmet Bedeli');
+    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Eğitim Bedeli');
     expect(g.Invoice.IssueDate.value).toBe('2026-10-31');
   });
 });
@@ -261,6 +261,6 @@ describe('faturaGunu — geriye dönük kesim (6 Kas)', () => {
     }, SATICI_TEST, new Date('2026-11-06T11:00:00Z')) as any;
     expect(g.Invoice.IssueDate.value).toBe('2026-10-31');
     expect(g.Invoice.IssueTime.value).toBe('12:00:00');
-    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Eğitim Danışmanlık Hizmet Bedeli');
+    expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Eğitim Bedeli');
   });
 });
