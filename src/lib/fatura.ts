@@ -227,6 +227,12 @@ export type FaturaGirdisi = {
   toplam: number;
   /** Satır adında etkinlik günü olmasın (`?satir=tarihsiz`, tek seferlik). */
   satirTarihsiz?: boolean;
+  /**
+   * Fatura düzenleme günü (YYYY-MM-DD), bugünden farklıysa. Yalnız 19 Ekim'in
+   * geriye dönük "ayın son günü" kesimi için (Kaan, 6 Kas: "Ayın son günü
+   * keseceğiz"). Boşsa bugün (TR).
+   */
+  faturaGunu?: string;
 };
 
 const v = <T>(value: T) => ({ value });
@@ -250,10 +256,13 @@ export function faturaGovdesi(g: FaturaGirdisi, satici: Satici, simdi: Date): Re
   const { matrah, kdv, toplam } = kdvBol(g.toplam);
   const { ad, soyad } = adSoyadBol(g.kadin);
   const tamAd = g.kadin.trim();
-  const bugun = trGun(simdi);
-  const saat = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
-  }).format(simdi);
+  const bugun = g.faturaGunu ?? trGun(simdi);
+  // Geriye dönük günde saat anlamsız → gün ortası; bugünse gerçek saat.
+  const saat = g.faturaGunu
+    ? '12:00:00'
+    : new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+      }).format(simdi);
   const kdvKategori = { TaxScheme: { Name: v('KDV'), TaxTypeCode: v('0015') } };
 
   const internetSatis: Record<string, unknown> = {

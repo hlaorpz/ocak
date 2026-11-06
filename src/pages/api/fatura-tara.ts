@@ -18,6 +18,8 @@
 //   `?kayit=OCAK-X`  yalnız o kayıt — canlı tek kayıt testi için.
 //   `?satir=tarihsiz` satır adında etkinlik günü yazılmaz (19 Ekim'in ay sonu
 //                    toplu kesimi için, tek seferlik — Kaan, 31 Eki).
+//   `?tarih=YYYY-MM-DD&etkinlik=YYYY-MM-DD` geriye dönük fatura günü, yalnız o
+//                    günün buluşması (Kaan, 6 Kas: "Ayın son günü keseceğiz").
 //   env `FATURA_AKISI=acik` değilse yalnız kuru koşu çalışır (409).
 //   Test ortamında (`UYUMSOFT_ORTAM` boş/test) gerçek koşu `?kayit=` ister.
 //
@@ -209,6 +211,23 @@ async function handle(request: Request): Promise<Response> {
 
   const simdi = new Date();
   const bugun = trGun(simdi);
+
+  // ── Tek seferlik geriye dönük kesim (Kaan, 6 Kas) ──
+  // `?tarih=2026-10-31` → fatura bu günle düzenlenir (bugünden önce, en çok 31 gün geri).
+  // `?etkinlik=2026-10-19` → yalnız o gün yapılmış buluşmanın kayıtları.
+  const tarihHam = (url.searchParams.get('tarih') ?? '').trim();
+  const etkinlikFiltresi = (url.searchParams.get('etkinlik') ?? '').trim();
+  const gunBicimi = /^\d{4}-\d{2}-\d{2}$/;
+  if (tarihHam) {
+    const enEski = trGun(new Date(simdi.getTime() - 31 * 864e5));
+    if (!gunBicimi.test(tarihHam) || !(tarihHam < bugun) || tarihHam < enEski) {
+      return json({ hata: `tarih geçersiz: ${tarihHam} (YYYY-MM-DD, bugünden önce, en çok 31 gün geri)` }, 400);
+    }
+    if (!etkinlikFiltresi) return json({ hata: 'geriye dönük tarih yalnız ?etkinlik= ile birlikte' }, 400);
+  }
+  if (etkinlikFiltresi && !gunBicimi.test(etkinlikFiltresi)) return json({ hata: `etkinlik geçersiz: ${etkinlikFiltresi}` }, 400);
+  const faturaGunu = tarihHam || undefined;
+  const etkinlikGunu = (iso: string) => (iso.length > 10 ? trGun(new Date(iso)) : iso.slice(0, 10));
   let adaylar: Aday[];
   try {
     adaylar = await adaylariOku(kayitFiltresi);
@@ -223,6 +242,10 @@ async function handle(request: Request): Promise<Response> {
   let islenen = 0;
 
   for (const { satir: s, ettn } of adaylar) {
+    if (etkinlikFiltresi && etkinlikGunu(s.etkinlikTarihi) !== etkinlikFiltresi) {
+      say('baska-etkinlik');
+      continue;
+    }
     const karar = faturaKarari(s, simdi);
 
     if (karar.tip === 'atla') {
@@ -260,7 +283,7 @@ async function handle(request: Request): Promise<Response> {
       {
         kayitId: s.kayitId, kadin: s.kadin, sehir: s.sehir, email: s.email,
         formatHam: s.formatHam, etkinlikTarihi: s.etkinlikTarihi, odemeTarihi: s.odemeTarihi,
-        yontem: karar.yontem, toplam: karar.toplam, satirTarihsiz,
+        yontem: karar.yontem, toplam: karar.toplam, satirTarihsiz, faturaGunu,
       },
       saticiSec(ayar.ortam),
       simdi,
@@ -284,7 +307,7 @@ async function handle(request: Request): Promise<Response> {
     kayit.faturaNo = numara;
     console.log(`[fatura-tara] kesildi — kayitId=${s.kayitId} no=${numara} ortam=${ayar.ortam}`);
     say('kesildi');
-    if (!(await guncelle(s.pageId, faturaKesildiYazimi(numara, yeniEttn, bugun)))) {
+    if (!(await guncelle(s.pageId, faturaKesildiYazimi(numara, yeniEttn, faturaGunu ?? bugun)))) {
       // Fatura VAR ama Notion bilmiyor. Mükerrer kesim LocalDocumentId'ye takılır;
       // yine de elle kapatılmalı → yanıtta ayrı sayılır.
       kayit.sonuc = 'kesildi-notion-yazilamadi';
@@ -297,6 +320,8 @@ async function handle(request: Request): Promise<Response> {
   return json({
     kip: kuru ? 'kuru' : 'gercek',
     satirTarihsiz,
+    faturaGunu: faturaGunu ?? bugun,
+    ...(etkinlikFiltresi ? { etkinlik: etkinlikFiltresi } : {}),
     ortam: ayar.ortam,
     bugun,
     okunan: adaylar.length,
