@@ -34,6 +34,15 @@ export const KDV_ORANI = 20;
 export const ODEME_ARACISI_KART = 'N-Kolay';
 export const SITE_ADRESI = 'https://www.ocak.biz';
 
+/**
+ * Faturadaki TEK satırın adı — jenerik, her buluşma için aynı (Kaan, 6 Kas:
+ * "Açıklama olarak | Eğitim Danışmanlık Hizmet Bedeli | yazalım sadece").
+ * 31 Eki'deki "<Format> - <gün ay> - Katılım Bedeli" kararının yerine geçti.
+ * `satirAdi()` artık yalnız maile ve rapora gider: kadın hangi buluşmanın
+ * faturası olduğunu mailde görür, faturada görmez.
+ */
+export const FATURA_SATIR_ADI = 'Eğitim Danışmanlık Hizmet Bedeli';
+
 /*
  * Satır adı = "<Etkinlik Formatı> - <gün ay> - Katılım Bedeli" (Kaan, 31 Eki):
  * Format Notion'daki hâliyle, Açık Kapı DAHİL eşleme tablosu yok
@@ -342,7 +351,7 @@ export function faturaGovdesi(g: FaturaGirdisi, satici: Satici, simdi: Date): Re
             TaxCategory: kdvKategori,
           }],
         },
-        Item: { Name: v(satirAdi(g.formatHam, g.etkinlikTarihi, g.satirTarihsiz)) },
+        Item: { Name: v(FATURA_SATIR_ADI) },
         Price: { PriceAmount: para(matrah) },
       }],
     },
