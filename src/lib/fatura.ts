@@ -50,6 +50,9 @@ export const FATURA_SATIR_ADI = 'Eğitim Danışmanlık Hizmet Bedeli';
  */
 export const FATURA_SATIR_ADI_TOPLU = 'Eğitim Bedeli';
 
+/** Alıcı ilçesi — formda yok; boş gidince fatura hataya düşüyor (7 Kas). */
+export const ALICI_ILCE = '.';
+
 /*
  * Satır adı = "<Etkinlik Formatı> - <gün ay> - Katılım Bedeli" (Kaan, 31 Eki):
  * Format Notion'daki hâliyle, Açık Kapı DAHİL eşleme tablosu yok
@@ -324,6 +327,10 @@ export function faturaGovdesi(g: FaturaGirdisi, satici: Satici, simdi: Date): Re
           PartyIdentification: [{ Id: { schemeId: 'TCKN', value: NIHAI_TUKETICI_TCKN } }],
           Person: { FirstName: v(ad), FamilyName: v(soyad) },
           PostalAddress: {
+            // İlçe ZORUNLU: 19 Ekim faturaları ilçe boş gittiği için hataya
+            // düştü; Kaan portalda "." koyarak düzeltti (7 Kas). Formda ilçe
+            // alınmıyor → aynı değer.
+            CitySubdivisionName: v(ALICI_ILCE),
             CityName: v(g.sehir.trim()),
             Country: { Name: v('Türkiye') },
           },

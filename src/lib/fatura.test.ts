@@ -264,3 +264,16 @@ describe('faturaGunu — geriye dönük kesim (6 Kas)', () => {
     expect(g.Invoice.InvoiceLine[0].Item.Name.value).toBe('Eğitim Bedeli');
   });
 });
+
+describe('alıcı adresi — ilçe zorunlu (7 Kas)', () => {
+  it('CitySubdivisionName "." gider', () => {
+    // biome-ignore lint: test erişimi
+    const g = faturaGovdesi({
+      kayitId: 'OCAK-1', kadin: 'A B', sehir: 'İzmir', email: 'a@b.invalid', formatHam: 'Açık Kapı',
+      etkinlikTarihi: '2026-11-02', odemeTarihi: '2026-10-25', yontem: 'kart', toplam: 300,
+    }, SATICI_TEST, new Date('2026-11-07T11:00:00Z')) as any;
+    const adres = g.Invoice.AccountingCustomerParty.Party.PostalAddress;
+    expect(adres.CitySubdivisionName.value).toBe('.');
+    expect(adres.CityName.value).toBe('İzmir');
+  });
+});
